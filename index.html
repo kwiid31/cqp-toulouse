@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comité des Quartiers Populaires — Toulouse</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--rouge:#C8102E;--or:#F5A623;--noir:#0D0D0D;--gris-fonce:#1A1A1A;--gris:#2D2D2D;--blanc:#F4F1EB;--beige:#E8DCC8}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--noir);color:var(--blanc);font-family:'Barlow',sans-serif;overflow-x:hidden}
+nav{position:sticky;top:0;z-index:100;background:rgba(13,13,13,0.97);backdrop-filter:blur(10px);border-bottom:2px solid var(--rouge);display:flex;justify-content:space-between;align-items:center;padding:0 6vw;height:68px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo-icon{width:42px;height:42px;background:var(--rouge);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:white}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--blanc);line-height:1.1}
+.logo-text span{display:block;font-family:'Barlow Condensed',sans-serif;font-size:0.6rem;letter-spacing:3px;color:var(--or);text-transform:uppercase}
+.nav-right{display:flex;align-items:center;gap:20px}
+.nav-right a{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:0.85rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:var(--blanc);transition:color 0.2s}
+.nav-right a:hover{color:var(--or)}
+.btn-admin{background:transparent;border:1px solid rgba(255,255,255,0.2);padding:7px 16px;border-radius:3px;font-size:0.75rem;color:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.2s;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.btn-admin:hover{border-color:var(--or);color:var(--or)}
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,16,46,0.18) 0%,transparent 55%),linear-gradient(to bottom,rgba(13,13,13,0.2) 0%,rgba(13,13,13,0.92) 100%),url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1600&q=80') center/cover no-repeat}
+.hero-word{position:absolute;right:-3%;bottom:-5%;font-family:'Bebas Neue',sans-serif;font-size:22vw;color:rgba(200,16,46,0.07);line-height:1;pointer-events:none;user-select:none}
+.hero-content{position:relative;z-index:1;padding:0 8vw;max-width:860px}
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:0.78rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;animation:fadeUp 0.7s ease both}
+.eyebrow::before{content:'';width:36px;height:2px;background:var(--or)}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,9vw,8.5rem);line-height:0.92;margin-bottom:8px;animation:fadeUp 0.7s 0.12s ease both}
+.hero h1 .rouge{color:var(--rouge);display:block}
+.hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1rem,2.5vw,1.6rem);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--beige);margin-bottom:24px;animation:fadeUp 0.7s 0.24s ease both}
+.hero p{font-size:1.05rem;color:rgba(244,241,235,0.78);max-width:520px;line-height:1.75;margin-bottom:38px;animation:fadeUp 0.7s 0.36s ease both}
+.hero-cta{animation:fadeUp 0.7s 0.48s ease both}
+.btn-primary{display:inline-block;background:var(--rouge);color:white;padding:16px 38px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:3px;border:2px solid var(--rouge);cursor:pointer;transition:all 0.25s}
+.btn-primary:hover{background:transparent;color:var(--rouge)}
+.banderole{background:var(--rouge);overflow:hidden;padding:13px 0;white-space:nowrap}
+.banderole-track{display:inline-flex;animation:scrollLeft 22s linear infinite}
+.banderole-item{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;padding:0 36px;color:white}
+.banderole-item::after{content:'✊';margin-left:36px}
+@keyframes scrollLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+section{padding:90px 8vw}
+.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.section-tag::before{content:'';width:28px;height:2px;background:var(--or)}
+h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,5vw,4.2rem);line-height:1;color:var(--blanc);margin-bottom:16px}
+h2 em{color:var(--rouge);font-style:normal}
+.qui{background:var(--gris-fonce);border-top:1px solid rgba(255,255,255,0.05)}
+.qui-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start;margin-top:10px}
+.qui-texte p{color:rgba(244,241,235,0.72);line-height:1.8;margin-bottom:18px;font-size:1rem}
+.quote-block{border-left:4px solid var(--rouge);padding-left:20px;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:600;color:var(--blanc);line-height:1.4;margin:28px 0}
+.valeurs{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.valeur-tag{font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(200,16,46,0.5);color:rgba(244,241,235,0.7);padding:6px 14px;border-radius:2px}
+.visual-box{background:var(--gris);border:1px solid rgba(255,255,255,0.07);border-radius:6px;overflow:hidden}
+.visual-placeholder{height:260px;background:linear-gradient(135deg,#2D0A11,#1A1A1A);display:flex;align-items:center;justify-content:center;font-size:4rem}
+.visual-body{padding:24px}
+.visual-body h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;margin-bottom:8px}
+.visual-body p{font-size:0.85rem;color:rgba(244,241,235,0.55);line-height:1.6}
+.stats-row{display:flex;margin-top:20px;border-top:1px solid rgba(255,255,255,0.07)}
+.stat{flex:1;text-align:center;padding:16px 10px;border-right:1px solid rgba(255,255,255,0.07)}
+.stat:last-child{border-right:none}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--rouge);display:block}
+.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:2px;color:rgba(244,241,235,0.45);text-transform:uppercase}
+.adhesion{background:var(--noir)}
+.adhesion-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start}
+.adhesion-left p{color:rgba(244,241,235,0.7);line-height:1.8;margin-bottom:14px;font-size:0.95rem}
+.form-card{background:var(--gris-fonce);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:38px}
+.form-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:1px;margin-bottom:26px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,0.55);margin-bottom:7px}
+.form-group input,.form-group select{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:12px 15px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s}
+.form-group input:focus,.form-group select:focus{border-color:var(--rouge)}
+.form-group select option{background:var(--gris-fonce)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rgpd-check{display:flex;align-items:flex-start;gap:10px;font-size:0.8rem;color:rgba(244,241,235,0.55);line-height:1.5;margin:18px 0}
+.rgpd-check input{width:15px;height:15px;min-width:15px;margin-top:2px;accent-color:var(--rouge)}
+.btn-submit{width:100%;background:var(--rouge);color:white;border:2px solid var(--rouge);padding:15px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all 0.25s}
+.btn-submit:hover{background:transparent;color:var(--rouge)}
+.btn-submit:disabled{opacity:0.5;cursor:not-allowed}
+.msg{display:none;margin-top:14px;padding:14px 18px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;letter-spacing:1px}
+.msg.success{background:rgba(76,175,80,0.1);border:1px solid #4CAF50;color:#4CAF50;display:block}
+.msg.error{background:rgba(200,16,46,0.1);border:1px solid var(--rouge);color:var(--rouge);display:block}
+footer{background:var(--gris-fonce);border-top:1px solid rgba(255,255,255,0.07);padding:50px 8vw 28px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:50px;margin-bottom:40px}
+.footer-brand p{font-size:0.82rem;color:rgba(244,241,235,0.45);line-height:1.7;margin-top:14px;max-width:280px}
+.footer-col h4{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--or);margin-bottom:14px}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.footer-col ul li,.footer-col ul a{font-size:0.82rem;color:rgba(244,241,235,0.45);text-decoration:none;transition:color 0.2s}
+.footer-col ul a:hover{color:var(--blanc)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:22px;display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;color:rgba(244,241,235,0.28)}
+.footer-bottom button{background:none;border:none;cursor:pointer;font-size:0.72rem;color:rgba(244,241,235,0.2);font-family:'Barlow',sans-serif;transition:color 0.2s}
+.footer-bottom button:hover{color:var(--or)}
+.modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.88);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+@keyframes popIn{from{opacity:0;transform:scale(0.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.login-modal{background:var(--gris-fonce);border:1px solid rgba(255,255,255,0.1);border-radius:8px;width:92%;max-width:380px;padding:40px;animation:popIn 0.3s ease}
+.login-modal h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:8px}
+.login-modal p{font-size:0.82rem;color:rgba(244,241,235,0.5);margin-bottom:24px}
+.login-modal input{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:12px 15px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;margin-bottom:14px}
+.login-modal input:focus{border-color:var(--rouge)}
+.login-error{font-size:0.8rem;color:var(--rouge);margin-bottom:12px;display:none;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.login-btns{display:flex;gap:10px}
+.btn-login{flex:1;background:var(--rouge);color:white;border:2px solid var(--rouge);padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all 0.25s}
+.btn-login:hover{background:transparent;color:var(--rouge)}
+.btn-cancel{background:transparent;color:rgba(244,241,235,0.5);border:1px solid rgba(255,255,255,0.15);padding:12px 18px;font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;letter-spacing:1px;text-transform:uppercase;border-radius:3px;cursor:pointer}
+.admin-modal{background:var(--gris-fonce);border:1px solid rgba(255,255,255,0.1);border-radius:8px;width:95%;max-width:1100px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;animation:popIn 0.3s ease}
+.admin-header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid rgba(255,255,255,0.08);background:var(--noir);flex-shrink:0}
+.admin-header h2{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--blanc);margin:0}
+.admin-header h2 span{color:var(--rouge)}
+.admin-close-btn{background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.admin-close-btn:hover{border-color:var(--rouge);color:var(--rouge)}
+.admin-tabs{display:flex;gap:4px;background:var(--gris-fonce);padding:0 28px;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0}
+.tab-btn{background:none;border:none;color:rgba(244,241,235,0.45);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:0.82rem;letter-spacing:2px;text-transform:uppercase;padding:14px 20px;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
+.tab-btn:hover{color:var(--blanc)}
+.tab-btn.active{color:var(--or);border-bottom-color:var(--or)}
+.admin-content{overflow-y:auto;flex:1}
+.tab-panel{display:none;padding:28px}
+.tab-panel.active{display:block}
+.panel-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.badge-count{background:var(--rouge);color:white;font-family:'Bebas Neue',sans-serif;font-size:1rem;padding:4px 14px;border-radius:20px}
+.btn-export{background:var(--or);color:var(--noir);border:none;padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:1.5px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:opacity 0.2s}
+.btn-export:hover{opacity:0.85}
+.admin-empty{padding:50px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;color:rgba(244,241,235,0.3);letter-spacing:1px}
+.admin-empty span{display:block;font-size:3rem;margin-bottom:12px}
+.loading-spin{text-align:center;padding:40px;color:rgba(244,241,235,0.4);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:0.85rem}
+table{width:100%;border-collapse:collapse}
+thead{position:sticky;top:0;background:var(--noir);z-index:1}
+thead th{padding:12px 16px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--or);border-bottom:1px solid rgba(255,255,255,0.08)}
+tbody tr{border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s}
+tbody tr:hover{background:rgba(255,255,255,0.03)}
+tbody td{padding:12px 16px;font-size:0.87rem;color:rgba(244,241,235,0.8)}
+.q-badge{font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;background:rgba(200,16,46,0.15);border:1px solid rgba(200,16,46,0.3);color:#ff6b6b;padding:3px 9px;border-radius:2px}
+.d-text{color:rgba(244,241,235,0.38);font-size:0.76rem}
+.btn-del{background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(244,241,235,0.3);padding:3px 9px;border-radius:3px;cursor:pointer;font-size:0.72rem;transition:all 0.2s}
+.btn-del:hover{border-color:var(--rouge);color:var(--rouge)}
+.content-editor{display:flex;flex-direction:column;gap:20px}
+.cb{background:var(--noir);border:1px solid rgba(255,255,255,0.08);border-radius:6px;overflow:hidden}
+.cb-head{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02)}
+.cb-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--or)}
+.cb-head span{font-size:0.7rem;color:rgba(244,241,235,0.28);font-family:'Barlow Condensed',sans-serif}
+.cb-body{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.ef label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,0.45);margin-bottom:6px}
+.ef input[type=text],.ef textarea{width:100%;background:var(--gris-fonce);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:10px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:0.88rem;outline:none;transition:border-color 0.2s;resize:vertical}
+.ef input[type=text]:focus,.ef textarea:focus{border-color:var(--or)}
+.ef textarea{min-height:85px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.save-btn{align-self:flex-end;background:var(--rouge);color:white;border:2px solid var(--rouge);padding:9px 24px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.8rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all 0.25s}
+.save-btn:hover{background:transparent;color:var(--rouge)}
+.flash{font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;letter-spacing:1px;color:#4CAF50;opacity:0;transition:opacity 0.4s;align-self:flex-end}
+.flash.show{opacity:1}
+.save-row{display:flex;align-items:center;gap:16px}
+@media(max-width:850px){.qui-grid,.adhesion-grid{grid-template-columns:1fr;gap:40px}.footer-grid{grid-template-columns:1fr 1fr}.form-row{grid-template-columns:1fr}section{padding:60px 5vw}}
+@media(max-width:550px){.footer-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-icon">CQP</div>
+    <div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div>
+  </a>
+  <div class="nav-right">
+    <a href="#qui">Notre mouvement</a>
+    <a href="#adhesion">Adhérer</a>
+    <button class="btn-admin" onclick="openLogin()">⚙ Admin</button>
+  </div>
+</nav>
+
+<section class="hero" id="accueil">
+  <div class="hero-bg"></div>
+  <div class="hero-word">LUTTE</div>
+  <div class="hero-content">
+    <div class="eyebrow">Toulouse, ensemble</div>
+    <h1>Le Peuple<span class="rouge">s'organise.</span></h1>
+    <div class="hero-sub">Comité des Quartiers Populaires de Toulouse</div>
+    <p id="site-hero-texte"></p>
+    <div class="hero-cta"><a href="#adhesion" class="btn-primary">✊ Rejoindre le mouvement</a></div>
+  </div>
+</section>
+<div class="banderole">
+  <div class="banderole-track">
+    <span class="banderole-item">Logement digne pour tou·tes</span>
+    <span class="banderole-item">Services publics dans nos quartiers</span>
+    <span class="banderole-item">Dignité et respect</span>
+    <span class="banderole-item">Éducation pour tous les enfants</span>
+    <span class="banderole-item">Toulouse aux Toulousain·es</span>
+    <span class="banderole-item">Contre les discriminations</span>
+    <span class="banderole-item">Logement digne pour tou·tes</span>
+    <span class="banderole-item">Services publics dans nos quartiers</span>
+    <span class="banderole-item">Dignité et respect</span>
+    <span class="banderole-item">Éducation pour tous les enfants</span>
+    <span class="banderole-item">Toulouse aux Toulousain·es</span>
+    <span class="banderole-item">Contre les discriminations</span>
+  </div>
+</div>
+<section class="qui" id="qui">
+  <div class="qui-grid">
+    <div class="qui-texte">
+      <div class="section-tag">Notre histoire</div>
+      <h2>Un mouvement <em>né du bas</em></h2>
+      <p id="site-histoire-p1"></p>
+      <div class="quote-block" id="site-histoire-citation"></div>
+      <p id="site-histoire-p2"></p>
+      <div class="valeurs">
+        <span class="valeur-tag">Autonomie populaire</span>
+        <span class="valeur-tag">Solidarité</span>
+        <span class="valeur-tag">Féminisme</span>
+        <span class="valeur-tag">Antiracisme</span>
+        <span class="valeur-tag">Écologie sociale</span>
+        <span class="valeur-tag">Non-violence</span>
+      </div>
+    </div>
+    <div class="visual-box">
+      <div class="visual-placeholder">🏘️</div>
+      <div class="visual-body">
+        <h3 id="site-encart-titre"></h3>
+        <p id="site-encart-texte"></p>
+        <div class="stats-row">
+          <div class="stat"><span class="stat-num" id="site-stat1-num"></span><span class="stat-lbl" id="site-stat1-lbl"></span></div>
+          <div class="stat"><span class="stat-num" id="site-stat2-num"></span><span class="stat-lbl" id="site-stat2-lbl"></span></div>
+          <div class="stat"><span class="stat-num" id="site-stat3-num"></span><span class="stat-lbl" id="site-stat3-lbl"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="adhesion" id="adhesion">
+  <div class="adhesion-grid">
+    <div class="adhesion-left">
+      <div class="section-tag">Passer à l'action</div>
+      <h2>Rejoins <em>le mouvement</em></h2>
+      <p id="site-adhesion-p1"></p>
+      <p id="site-adhesion-p2"></p>
+      <p><strong style="color:var(--or)">C'est gratuit et sans engagement.</strong><br>Tu décides toi-même de ton niveau d'implication.</p>
+    </div>
+    <div class="form-card">
+      <h3>Formulaire d'adhésion</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"></div>
+        <div class="form-group"><label>Nom *</label><input type="text" id="f-nom" placeholder="Dupont"></div>
+      </div>
+      <div class="form-group"><label>Adresse e-mail *</label><input type="email" id="f-email" placeholder="marie@exemple.fr"></div>
+      <div class="form-group">
+        <label>Votre quartier *</label>
+        <select id="f-quartier">
+          <option value="">— Choisissez votre quartier —</option>
+          <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
+          <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
+          <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
+          <option>Autre quartier de Toulouse</option>
+        </select>
+      </div>
+      <div class="rgpd-check">
+        <input type="checkbox" id="f-rgpd">
+        <label for="f-rgpd">J'accepte que mes données soient utilisées par le CQP Toulouse pour me contacter. Aucune donnée ne sera transmise à des tiers.</label>
+      </div>
+      <button class="btn-submit" id="submitBtn" onclick="soumettre()">✊ Je rejoins le mouvement</button>
+      <div class="msg" id="formMsg"></div>
+    </div>
+  </div>
+</section>
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></div>
+      <p>Un mouvement citoyen ancré dans les quartiers populaires de Toulouse, pour plus de justice sociale et de solidarité.</p>
+    </div>
+    <div class="footer-col"><h4>Le comité</h4><ul><li><a href="#qui">Notre histoire</a></li><li><a href="#">Notre charte</a></li></ul></div>
+    <div class="footer-col"><h4>Contact</h4><ul><li id="footer-email"></li><li id="footer-tel"></li><li><a href="#">Mentions légales</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Comité des Quartiers Populaires de Toulouse</span>
+    <button onclick="openLogin()">⚙ Accès administrateur</button>
+  </div>
+</footer>
+
+<!-- LOGIN -->
+<div class="modal-overlay" id="loginOverlay" onclick="closeOnBg(event,'loginOverlay')">
+  <div class="login-modal">
+    <h3>🔐 Espace Admin</h3>
+    <p>Entrez le mot de passe pour accéder au panneau d'administration.</p>
+    <input type="password" id="pwdInput" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkPwd()">
+    <div class="login-error" id="loginError">❌ Mot de passe incorrect</div>
+    <div class="login-btns">
+      <button class="btn-login" onclick="checkPwd()">Connexion</button>
+      <button class="btn-cancel" onclick="closeModal('loginOverlay')">Annuler</button>
+    </div>
+  </div>
+</div>
+<!-- ADMIN -->
+<div class="modal-overlay" id="adminOverlay" onclick="closeOnBg(event,'adminOverlay')">
+  <div class="admin-modal">
+    <div class="admin-header">
+      <h2>Panneau <span>Admin</span></h2>
+      <button class="admin-close-btn" onclick="closeModal('adminOverlay')">✕</button>
+    </div>
+    <div class="admin-tabs">
+      <button class="tab-btn active" data-tab="adherents" onclick="switchTab(this)">👥 Adhérent·es</button>
+      <button class="tab-btn" data-tab="contenus" onclick="switchTab(this)">✏️ Modifier les textes</button>
+      <button class="tab-btn" data-tab="contact" onclick="switchTab(this)">📬 Infos contact</button>
+    </div>
+    <div class="admin-content">
+      <div class="tab-panel active" id="tab-adherents">
+        <div class="panel-toolbar">
+          <span class="badge-count" id="totalCount">…</span>
+          <button class="btn-export" onclick="exportCSV()">⬇ Exporter CSV</button>
+        </div>
+        <div id="adminBody"><div class="loading-spin">⏳ CHARGEMENT…</div></div>
+      </div>
+      <div class="tab-panel" id="tab-contenus">
+        <div class="content-editor">
+          <div class="cb">
+            <div class="cb-head"><h4>🦸 Texte d'accueil</h4><span>Sous le grand titre</span></div>
+            <div class="cb-body">
+              <div class="ef"><label>Paragraphe d'introduction</label><textarea id="ed-hero-texte" rows="3"></textarea></div>
+              <div class="save-row"><button class="save-btn" onclick="saveOne('hero-texte')">Enregistrer</button><span class="flash" id="flash-hero-texte">✓ Sauvegardé !</span></div>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-head"><h4>📖 Notre histoire</h4><span>3 zones de texte</span></div>
+            <div class="cb-body">
+              <div class="ef"><label>Premier paragraphe</label><textarea id="ed-histoire-p1" rows="4"></textarea></div>
+              <div class="ef"><label>Citation mise en avant</label><input type="text" id="ed-histoire-citation"></div>
+              <div class="ef"><label>Deuxième paragraphe</label><textarea id="ed-histoire-p2" rows="4"></textarea></div>
+              <div class="save-row"><button class="save-btn" onclick="saveGroup(['histoire-p1','histoire-citation','histoire-p2'],'flash-histoire')">Enregistrer tout</button><span class="flash" id="flash-histoire">✓ Sauvegardé !</span></div>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-head"><h4>📊 Encart & chiffres</h4><span>Titre, texte et stats</span></div>
+            <div class="cb-body">
+              <div class="form-row">
+                <div class="ef"><label>Titre</label><input type="text" id="ed-encart-titre"></div>
+                <div class="ef"><label>Texte</label><input type="text" id="ed-encart-texte"></div>
+              </div>
+              <div class="row3">
+                <div class="ef"><label>Chiffre 1</label><input type="text" id="ed-stat1-num"></div>
+                <div class="ef"><label>Chiffre 2</label><input type="text" id="ed-stat2-num"></div>
+                <div class="ef"><label>Chiffre 3</label><input type="text" id="ed-stat3-num"></div>
+                <div class="ef"><label>Label 1</label><input type="text" id="ed-stat1-lbl"></div>
+                <div class="ef"><label>Label 2</label><input type="text" id="ed-stat2-lbl"></div>
+                <div class="ef"><label>Label 3</label><input type="text" id="ed-stat3-lbl"></div>
+              </div>
+              <div class="save-row"><button class="save-btn" onclick="saveGroup(['encart-titre','encart-texte','stat1-num','stat2-num','stat3-num','stat1-lbl','stat2-lbl','stat3-lbl'],'flash-encart')">Enregistrer tout</button><span class="flash" id="flash-encart">✓ Sauvegardé !</span></div>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-head"><h4>✊ Section Adhésion</h4><span>Texte à gauche du formulaire</span></div>
+            <div class="cb-body">
+              <div class="ef"><label>Premier paragraphe</label><textarea id="ed-adhesion-p1" rows="3"></textarea></div>
+              <div class="ef"><label>Deuxième paragraphe</label><textarea id="ed-adhesion-p2" rows="3"></textarea></div>
+              <div class="save-row"><button class="save-btn" onclick="saveGroup(['adhesion-p1','adhesion-p2'],'flash-adhesion')">Enregistrer tout</button><span class="flash" id="flash-adhesion">✓ Sauvegardé !</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-contact">
+        <div class="content-editor">
+          <div class="cb">
+            <div class="cb-head"><h4>📬 Informations de contact</h4><span>Pied de page</span></div>
+            <div class="cb-body">
+              <div class="form-row">
+                <div class="ef"><label>Email</label><input type="text" id="ed-footer-email"></div>
+                <div class="ef"><label>Téléphone</label><input type="text" id="ed-footer-tel"></div>
+              </div>
+              <div class="save-row"><button class="save-btn" onclick="saveGroup(['footer-email','footer-tel'],'flash-contact')">Enregistrer</button><span class="flash" id="flash-contact">✓ Sauvegardé !</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL='https://vzfwtyczqfbhbjzotjft.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+const ADMIN_PWD='toulouse2026';
+const CONTENT_KEY='cqp_contenus';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const DEFAULTS={'hero-texte':"Né en 2026 pour faire entendre la voix des quartiers populaires de Toulouse, le Comité agit là où les besoins sont les plus forts — logement, transports, écoles, dignité.",'histoire-p1':"Écris ici le premier paragraphe de votre histoire.",'histoire-citation':'"Nos quartiers ont des problèmes. Mais ils ont surtout des forces."','histoire-p2':"Écris ici la suite de votre histoire.",'encart-titre':"Ancrés dans la réalité",'encart-texte':"Permanences, aide aux démarches, soutien scolaire — notre action est quotidienne.",'stat1-num':"—",'stat1-lbl':"Membres",'stat2-num':"—",'stat2-lbl':"Quartiers",'stat3-num':"2026",'stat3-lbl':"Fondé en",'adhesion-p1':"Adhérer au Comité, c'est rejoindre une force collective qui agit concrètement dans tes rues, ton immeuble, ton quartier.",'adhesion-p2':"Remplis le formulaire — nous te recontacterons pour te présenter les actions en cours.",'footer-email':"contact@cqp-toulouse.fr",'footer-tel':"06 XX XX XX XX"};
+const DOM_MAP={'hero-texte':'site-hero-texte','histoire-p1':'site-histoire-p1','histoire-citation':'site-histoire-citation','histoire-p2':'site-histoire-p2','encart-titre':'site-encart-titre','encart-texte':'site-encart-texte','stat1-num':'site-stat1-num','stat2-num':'site-stat2-num','stat3-num':'site-stat3-num','stat1-lbl':'site-stat1-lbl','stat2-lbl':'site-stat2-lbl','stat3-lbl':'site-stat3-lbl','adhesion-p1':'site-adhesion-p1','adhesion-p2':'site-adhesion-p2','footer-email':'footer-email','footer-tel':'footer-tel'};
+function getContent(){try{return Object.assign({},DEFAULTS,JSON.parse(localStorage.getItem(CONTENT_KEY))||{});}catch{return{...DEFAULTS};}}
+function saveContent(obj){localStorage.setItem(CONTENT_KEY,JSON.stringify(obj));}
+function applyContent(){const c=getContent();Object.entries(DOM_MAP).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=c[k]||'';});}
+function loadEditors(){const c=getContent();Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('ed-'+k);if(el)el.value=c[k]||'';});}
+function saveOne(key){const c=getContent();const ed=document.getElementById('ed-'+key);if(!ed)return;c[key]=ed.value;saveContent(c);const dom=document.getElementById(DOM_MAP[key]);if(dom)dom.textContent=ed.value;showFlash('flash-'+key);}
+function saveGroup(keys,flashId){const c=getContent();keys.forEach(k=>{const ed=document.getElementById('ed-'+k);if(!ed)return;c[k]=ed.value;const dom=document.getElementById(DOM_MAP[k]);if(dom)dom.textContent=ed.value;});saveContent(c);showFlash(flashId);}
+function showFlash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
+function switchTab(btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');if(btn.dataset.tab==='adherents')renderAdherents();}
+let adherentsCache=[];
+async function renderAdherents(){const body=document.getElementById('adminBody');body.innerHTML='<div class="loading-spin">⏳ CHARGEMENT…</div>';try{const{data,error}=await sb.from('adherents').select('*').order('date_inscription',{ascending:false});if(error)throw error;adherentsCache=data||[];document.getElementById('totalCount').textContent=adherentsCache.length+' inscrit·e'+(adherentsCache.length>1?'s':'');if(!adherentsCache.length){body.innerHTML='<div class="admin-empty"><span>📋</span>Aucun·e adhérent·e pour l\'instant.</div>';return;}body.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Quartier</th><th>Date</th><th></th></tr></thead><tbody>${adherentsCache.map((a,i)=>`<tr><td style="color:rgba(244,241,235,0.3);font-size:0.75rem">${i+1}</td><td>${esc(a.prenom)}</td><td>${esc(a.nom)}</td><td>${esc(a.email)}</td><td><span class="q-badge">${esc(a.quartier)}</span></td><td><span class="d-text">${new Date(a.date_inscription).toLocaleDateString('fr-FR')}</span></td><td><button class="btn-del" onclick="supprimerAdherent(${a.id})">✕</button></td></tr>`).join('')}</tbody></table>`;}catch(e){body.innerHTML=`<div class="admin-empty"><span>⚠️</span>Erreur : ${e.message}</div>`;}}
+async function supprimerAdherent(id){if(!confirm('Supprimer ?'))return;const{error}=await sb.from('adherents').delete().eq('id',id);if(!error)renderAdherents();else alert('Erreur : '+error.message);}
+function exportCSV(){if(!adherentsCache.length){alert('Aucune donnée.');return;}const rows=[['#','Prénom','Nom','Email','Quartier','Date'],...adherentsCache.map((a,i)=>[i+1,a.prenom,a.nom,a.email,a.quartier,new Date(a.date_inscription).toLocaleDateString('fr-FR')])];const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(';')).join('\n');const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`adherents-cqp-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);}
+async function soumettre(){const prenom=document.getElementById('f-prenom').value.trim();const nom=document.getElementById('f-nom').value.trim();const email=document.getElementById('f-email').value.trim();const quartier=document.getElementById('f-quartier').value;const rgpd=document.getElementById('f-rgpd').checked;if(!prenom||!nom||!email||!quartier){showMsg('error','⚠ Merci de remplir tous les champs obligatoires.');return;}if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('error','⚠ Adresse e-mail invalide.');return;}if(!rgpd){showMsg('error','⚠ Merci d\'accepter la politique de confidentialité.');return;}const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';try{const{error}=await sb.from('adherents').insert({prenom,nom,email,quartier});if(error){if(error.code==='23505')showMsg('error','⚠ Email déjà enregistré.');else showMsg('error','⚠ Erreur : '+error.message);btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';return;}showMsg('success','🎉 Bienvenue dans le mouvement ! Nous te contacterons très prochainement.');['f-prenom','f-nom','f-email'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-quartier').value='';document.getElementById('f-rgpd').checked=false;setTimeout(()=>{btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';},6000);}catch(e){showMsg('error','⚠ Erreur réseau.');btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';}}
+function showMsg(type,txt){const m=document.getElementById('formMsg');m.className='msg '+type;m.textContent=txt;m.style.display='block';}
+function openLogin(){document.getElementById('loginError').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginOverlay').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
+function checkPwd(){if(document.getElementById('pwdInput').value===ADMIN_PWD){closeModal('loginOverlay');loadEditors();renderAdherents();document.getElementById('adminOverlay').classList.add('open');}else{document.getElementById('loginError').style.display='block';document.getElementById('pwdInput').value='';}}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeOnBg(e,id){if(e.target.id===id)closeModal(id);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:0.1});
+document.querySelectorAll('.visual-box,.form-card,.adhesion-left,.qui-texte').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity 0.55s ease,transform 0.55s ease';obs.observe(el);});
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}});});
+applyContent();
+</script>
+</body>
+</html>
