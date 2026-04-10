@@ -278,8 +278,8 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 <nav>
   <a href="#" class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></a>
   <div class="nav-center">
-    <a href="#actus">Actualités</a>
-    <a href="#evenements">Événements</a>
+    <a href="actus.html">Actualités</a>
+    <a href="evenements.html">Événements</a>
     <a href="annonces.html" class="ext">Annonces</a>
     <a href="presse.html" class="ext">Presse locale</a>
     <a href="newsletter.html" class="ext">Newsletter</a>
@@ -292,8 +292,8 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 </nav>
 <div class="mobile-menu" id="mobileMenu">
   <a href="#qui" onclick="closeMenu()">Notre mouvement</a>
-  <a href="#actus" onclick="closeMenu()">Actualités</a>
-  <a href="#evenements" onclick="closeMenu()">Événements</a>
+  <a href="actus.html">Actualités</a>
+  <a href="evenements.html">Événements</a>
   <a href="annonces.html">Annonces</a>
   <a href="presse.html">Presse locale</a>
   <a href="newsletter.html">📧 Newsletter</a>
@@ -355,68 +355,77 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     </div>
   </div>
 </section>
-<section class="actus" id="actus">
-  <div class="section-tag">Le comité vous informe</div>
-  <h2>Actualités <em>& infos</em></h2>
-  <div class="actus-grid" id="actus-grid"><div class="spin" style="grid-column:1/-1">⏳ Chargement…</div></div>
-</section>
-<section class="events" id="evenements">
-  <div class="section-tag">Rejoignez-nous</div>
-  <h2>Événements <em>à venir</em></h2>
-  <p style="color:rgba(244,241,235,.6);margin-top:-8px;margin-bottom:10px;font-size:.95rem">Réunions, ateliers, manifestations — cliquez pour vous inscrire.</p>
-  <div class="events-grid" id="events-grid"><div class="spin" style="grid-column:1/-1">⏳ Chargement…</div></div>
-  <div style="margin-top:30px;text-align:center">
-    <button class="btn-secondary" onclick="document.getElementById('proposer-evt').style.display=document.getElementById('proposer-evt').style.display==='none'?'block':'none'" style="margin:0 auto">+ Proposer un événement</button>
-  </div>
-  <div id="proposer-evt" style="display:none;max-width:600px;margin:24px auto 0">
-    <div class="form-card dark">
-      <h3>Proposer un événement</h3>
-      <p style="font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:20px;line-height:1.5">Votre proposition sera examinée par notre équipe avant publication.</p>
+
+<!-- ADHÉSION — juste après "né du bas" -->
+<section id="adhesion" style="background:var(--rouge);padding:60px 8vw">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center">
+    <div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:4px;color:rgba(255,255,255,.7);text-transform:uppercase;margin-bottom:10px">Passer à l'action</div>
+      <h2 style="color:#fff;margin-bottom:16px">Rejoins <em style="color:rgba(255,255,255,.65);font-style:normal">le mouvement</em></h2>
+      <p id="site-adh-p1" style="color:rgba(255,255,255,.8);font-size:.95rem;line-height:1.8;margin-bottom:12px"></p>
+      <p style="color:rgba(255,255,255,.6);font-size:.88rem">Gratuit · Sans engagement · Tu décides de ton niveau d'implication.</p>
+    </div>
+    <div style="background:rgba(0,0,0,.15);border-radius:6px;padding:32px">
       <div class="fr">
-        <div class="fg"><label>Votre prénom *</label><input type="text" id="pe-prenom" placeholder="Marie"></div>
-        <div class="fg"><label>Votre email *</label><input type="email" id="pe-email" placeholder="marie@exemple.fr"></div>
+        <div class="fg"><label style="color:rgba(255,255,255,.7)">Prénom *</label><input type="text" id="f-prenom" placeholder="Marie" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff"></div>
+        <div class="fg"><label style="color:rgba(255,255,255,.7)">Nom *</label><input type="text" id="f-nom" placeholder="Dupont" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff"></div>
       </div>
-      <div class="fg"><label>Titre de l'événement *</label><input type="text" id="pe-titre" placeholder="Ex: Réunion de quartier Mirail"></div>
-      <div class="fr">
-        <div class="fg"><label>Date *</label><input type="datetime-local" id="pe-date"></div>
-        <div class="fg"><label>Lieu *</label><input type="text" id="pe-lieu" placeholder="Salle des fêtes Bellefontaine"></div>
+      <div class="fg"><label style="color:rgba(255,255,255,.7)">Email *</label><input type="email" id="f-email" placeholder="marie@exemple.fr" style="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.25);color:#fff"></div>
+      <div class="fg"><label style="color:rgba(255,255,255,.7)">Votre quartier *</label>
+        <select id="f-quartier" style="background:rgba(0,0,0,.25);border-color:rgba(255,255,255,.25);color:#fff">
+          <option value="">— Choisissez —</option>
+          <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
+          <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
+          <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
+          <option>Autre quartier de Toulouse</option>
+        </select>
       </div>
-      <div class="fg"><label>Description *</label><textarea id="pe-desc" rows="3" placeholder="Décrivez l'événement…"></textarea></div>
-      <button class="btn-sub" id="peBtn" onclick="proposerEvt()">📅 Soumettre ma proposition</button>
-      <div class="msg" id="peMsg"></div>
+      <div class="rgpd" style="color:rgba(255,255,255,.6)">
+        <input type="checkbox" id="f-rgpd">
+        <label for="f-rgpd">J'accepte que mes données soient utilisées par le CQP Toulouse pour me contacter.</label>
+      </div>
+      <button class="btn-sub" id="submitBtn" onclick="soumettre()" style="background:#fff;color:var(--rouge);border-color:#fff">✊ Je rejoins le mouvement</button>
+      <div class="msg" id="formMsg"></div>
     </div>
   </div>
 </section>
-<section style="background:var(--gf);padding:50px 8vw" id="decouvrir">
-  <div class="section-tag">Explorer le site</div>
-  <h2>Tout ce que <em>vous pouvez faire</em></h2>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:32px" id="hub-grid">
-    <a href="annonces.html" style="text-decoration:none;background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:24px;display:block;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+<section style="background:var(--noir);padding:60px 8vw">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:32px;flex-wrap:wrap;gap:12px">
+    <div><div class="section-tag">Le comité vous informe</div><h2>Dernières <em>actualités</em></h2></div>
+    <a href="actus.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none">Toutes les actus →</a>
+  </div>
+  <div class="actus-grid" id="actus-grid"><div class="spin" style="grid-column:1/-1">⏳ Chargement…</div></div>
+</section>
+<section style="background:var(--gf);padding:60px 8vw">
+  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:32px;flex-wrap:wrap;gap:12px">
+    <div><div class="section-tag">Rejoignez-nous</div><h2>Prochains <em>événements</em></h2></div>
+    <a href="evenements.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none">Tous les événements →</a>
+  </div>
+  <div class="events-grid" id="events-grid"><div class="spin" style="grid-column:1/-1">⏳ Chargement…</div></div>
+  <div style="text-align:center;margin-top:28px"><a href="evenements.html" class="btn-secondary">📅 Voir tous les événements · Proposer le vôtre</a></div>
+</section>
+<section style="background:var(--noir);padding:50px 8vw">
+  <div class="section-tag" style="justify-content:center;margin-bottom:12px">Explorer le site</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px">
+    <a href="annonces.html" style="text-decoration:none;background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:24px;display:block;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
       <div style="font-size:2rem;margin-bottom:12px">📋</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;margin-bottom:8px;color:var(--blanc)">Annonces</div>
-      <div style="font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6">Logement, emploi, services, solidarité — les habitants s'entraident directement.</div>
+      <div style="font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6">Logement, emploi, services, solidarité — les habitants s'entraident.</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-top:14px">Voir les annonces →</div>
     </a>
-    <a href="presse.html" style="text-decoration:none;background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:24px;display:block;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+    <a href="presse.html" style="text-decoration:none;background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:24px;display:block;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
       <div style="font-size:2rem;margin-bottom:12px">📰</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;margin-bottom:8px;color:var(--blanc)">Presse locale</div>
-      <div style="font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6">Articles récents sur Toulouse et les quartiers populaires issus de la presse.</div>
+      <div style="font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6">Articles de la semaine sur Toulouse et les quartiers populaires.</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-top:14px">Lire les articles →</div>
     </a>
-    <a href="newsletter.html" style="text-decoration:none;background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:24px;display:block;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+    <a href="newsletter.html" style="text-decoration:none;background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:24px;display:block;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
       <div style="font-size:2rem;margin-bottom:12px">📧</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;margin-bottom:8px;color:var(--blanc)">Newsletter</div>
-      <div style="font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6">Recevez les actus, événements et victoires directement dans votre boite mail.</div>
+      <div style="font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6">Recevez actus et événements directement dans votre boite mail.</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-top:14px">S'abonner →</div>
     </a>
   </div>
-</section>
-<section class="adhesion" id="adhesion" style="text-align:center;padding:60px 8vw">
-  <div class="section-tag" style="justify-content:center">Passer à l'action</div>
-  <h2 style="text-align:center">Rejoins <em>le mouvement</em></h2>
-  <p id="site-adh-p1" style="color:rgba(244,241,235,.6);max-width:500px;margin:0 auto 12px;font-size:.95rem;line-height:1.7"></p>
-  <p style="color:rgba(244,241,235,.5);font-size:.88rem;margin-bottom:32px"><strong style="color:var(--or)">Gratuit et sans engagement.</strong></p>
-  <button class="btn-primary" onclick="openDr('dAdhesion')">✊ Rejoindre le mouvement</button>
 </section>
 <footer>
   <div class="footer-grid">
