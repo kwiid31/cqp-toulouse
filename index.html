@@ -6,251 +6,229 @@
 <title>Comité des Quartiers Populaires — Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root{--rouge:#C8102E;--or:#F5A623;--noir:#0D0D0D;--gris-fonce:#1A1A1A;--gris:#2D2D2D;--blanc:#F4F1EB;--beige:#E8DCC8;--vert:#2E7D32}
+
+:root{--rouge:#C8102E;--or:#F5A623;--noir:#0D0D0D;--gf:#1A1A1A;--gris:#2D2D2D;--blanc:#F4F1EB;--beige:#E8DCC8}
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
 body{background:var(--noir);color:var(--blanc);font-family:'Barlow',sans-serif;overflow-x:hidden}
-/* NAV */
-nav{position:sticky;top:0;z-index:100;background:rgba(13,13,13,0.97);backdrop-filter:blur(10px);border-bottom:2px solid var(--rouge);display:flex;justify-content:space-between;align-items:center;padding:0 5vw;height:68px}
+nav{position:sticky;top:0;z-index:200;background:rgba(13,13,13,.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--rouge);display:flex;justify-content:space-between;align-items:center;padding:0 5vw;height:68px}
 .logo{display:flex;align-items:center;gap:12px;text-decoration:none}
-.logo-icon{width:42px;height:42px;background:var(--rouge);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:white}
+.logo-icon{width:42px;height:42px;background:var(--rouge);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff}
 .logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--blanc);line-height:1.1}
-.logo-text span{display:block;font-family:'Barlow Condensed',sans-serif;font-size:0.6rem;letter-spacing:3px;color:var(--or);text-transform:uppercase}
-.nav-links{display:flex;align-items:center;gap:20px}
-.nav-links a{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:0.82rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:var(--blanc);transition:color 0.2s}
+.logo-text span{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:3px;color:var(--or);text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:18px}
+.nav-links a{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:var(--blanc);transition:color .2s}
 .nav-links a:hover{color:var(--or)}
-.btn-admin{background:transparent;border:1px solid rgba(255,255,255,0.2);padding:7px 14px;border-radius:3px;font-size:0.72rem;color:rgba(255,255,255,0.4);cursor:pointer;transition:all 0.2s;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.btn-admin{background:transparent;border:1px solid rgba(255,255,255,.2);padding:7px 14px;border-radius:3px;font-size:.72rem;color:rgba(255,255,255,.4);cursor:pointer;transition:all .2s;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
 .btn-admin:hover{border-color:var(--or);color:var(--or)}
-/* HERO */
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
-.hero-bg{position:absolute;inset:0;background-image:linear-gradient(135deg,rgba(200,16,46,0.18) 0%,transparent 55%),linear-gradient(to bottom,rgba(13,13,13,0.2) 0%,rgba(13,13,13,0.92) 100%),var(--hero-photo,url('https://images.unsplash.com/photo-1560221328-12fe60f83ab8?w=1600&q=80'));background-size:cover;background-position:center;background-repeat:no-repeat}
-.hero-word{position:absolute;right:-3%;bottom:-5%;font-family:'Bebas Neue',sans-serif;font-size:22vw;color:rgba(200,16,46,0.07);line-height:1;pointer-events:none;user-select:none}
-.hero-content{position:relative;z-index:1;padding:0 8vw;max-width:860px}
-.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:0.78rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;animation:fadeUp 0.7s ease both}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:background .5s}
+.hero-word{position:absolute;right:-2%;bottom:-5%;font-family:'Bebas Neue',sans-serif;font-size:22vw;color:rgba(200,16,46,.06);line-height:1;pointer-events:none;user-select:none}
+.hero-content{position:relative;z-index:1;padding:0 8vw;max-width:880px}
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;animation:fadeUp .7s ease both}
 .eyebrow::before{content:'';width:36px;height:2px;background:var(--or)}
-.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,9vw,8.5rem);line-height:0.92;margin-bottom:8px;animation:fadeUp 0.7s 0.12s ease both}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,9vw,8.5rem);line-height:.92;margin-bottom:8px;animation:fadeUp .7s .12s ease both}
 .hero h1 .rouge{color:var(--rouge);display:block}
-.hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1rem,2.5vw,1.6rem);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--beige);margin-bottom:24px;animation:fadeUp 0.7s 0.24s ease both}
-.hero p{font-size:1.05rem;color:rgba(244,241,235,0.78);max-width:520px;line-height:1.75;margin-bottom:38px;animation:fadeUp 0.7s 0.36s ease both}
-.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;animation:fadeUp 0.7s 0.48s ease both}
-.btn-primary{display:inline-block;background:var(--rouge);color:white;padding:14px 32px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:3px;border:2px solid var(--rouge);cursor:pointer;transition:all 0.25s}
+.hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:clamp(1rem,2.5vw,1.6rem);font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--beige);margin-bottom:24px;animation:fadeUp .7s .24s ease both}
+.hero p{font-size:1.05rem;color:rgba(244,241,235,.78);max-width:520px;line-height:1.75;margin-bottom:38px;animation:fadeUp .7s .36s ease both}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;animation:fadeUp .7s .48s ease both}
+.btn-primary{display:inline-block;background:var(--rouge);color:#fff;padding:14px 32px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:3px;border:2px solid var(--rouge);cursor:pointer;transition:all .25s}
 .btn-primary:hover{background:transparent;color:var(--rouge)}
-.btn-secondary{display:inline-block;background:transparent;color:var(--blanc);padding:14px 32px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:3px;border:2px solid rgba(255,255,255,0.3);cursor:pointer;transition:all 0.25s}
+.btn-secondary{display:inline-block;background:transparent;color:var(--blanc);padding:14px 32px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:3px;border:2px solid rgba(255,255,255,.3);cursor:pointer;transition:all .25s}
 .btn-secondary:hover{border-color:var(--or);color:var(--or)}
-/* BANDEROLE */
+
+
 .banderole{background:var(--rouge);overflow:hidden;padding:13px 0;white-space:nowrap}
 .banderole-track{display:inline-flex;animation:scrollLeft 22s linear infinite}
-.banderole-item{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;padding:0 36px;color:white}
+.banderole-item{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;padding:0 36px;color:#fff}
 .banderole-item::after{content:'✊';margin-left:36px}
 @keyframes scrollLeft{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-/* SECTIONS COMMUNES */
 section{padding:80px 8vw}
-.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px}
 .section-tag::before{content:'';width:28px;height:2px;background:var(--or)}
 h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.2rem,5vw,4.2rem);line-height:1;color:var(--blanc);margin-bottom:16px}
 h2 em{color:var(--rouge);font-style:normal}
-/* QUI */
-.qui{background:var(--gris-fonce);border-top:1px solid rgba(255,255,255,0.05)}
+.qui{background:var(--gf);border-top:1px solid rgba(255,255,255,.05)}
 .qui-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start;margin-top:10px}
-.qui-texte p{color:rgba(244,241,235,0.72);line-height:1.8;margin-bottom:18px;font-size:1rem}
+.qui-texte p{color:rgba(244,241,235,.72);line-height:1.8;margin-bottom:18px;font-size:1rem}
 .quote-block{border-left:4px solid var(--rouge);padding-left:20px;font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:600;color:var(--blanc);line-height:1.4;margin:28px 0}
 .valeurs{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-.valeur-tag{font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(200,16,46,0.5);color:rgba(244,241,235,0.7);padding:6px 14px;border-radius:2px}
-.visual-box{background:var(--gris);border:1px solid rgba(255,255,255,0.07);border-radius:6px;overflow:hidden}
-.visual-placeholder{height:240px;background:linear-gradient(135deg,#2D0A11,#1A1A1A);display:flex;align-items:center;justify-content:center;font-size:4rem;background-image:var(--encart-photo,none);background-size:cover;background-position:center;overflow:hidden}
+.valeur-tag{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(200,16,46,.5);color:rgba(244,241,235,.7);padding:6px 14px;border-radius:2px}
+.visual-box{background:var(--gris);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden}
+.visual-img{height:260px;background:linear-gradient(135deg,#2D0A11,#1A1A1A);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:4rem}
 .visual-body{padding:24px}
 .visual-body h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;margin-bottom:8px}
-.visual-body p{font-size:0.85rem;color:rgba(244,241,235,0.55);line-height:1.6}
-.stats-row{display:flex;margin-top:20px;border-top:1px solid rgba(255,255,255,0.07)}
-.stat{flex:1;text-align:center;padding:16px 10px;border-right:1px solid rgba(255,255,255,0.07)}
+.visual-body p{font-size:.85rem;color:rgba(244,241,235,.55);line-height:1.6}
+.stats-row{display:flex;margin-top:20px;border-top:1px solid rgba(255,255,255,.07)}
+.stat{flex:1;text-align:center;padding:16px 10px;border-right:1px solid rgba(255,255,255,.07)}
 .stat:last-child{border-right:none}
 .stat-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--rouge);display:block}
-.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:2px;color:rgba(244,241,235,0.45);text-transform:uppercase}
-/* ACTUALITÉS */
+.stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;color:rgba(244,241,235,.45);text-transform:uppercase}
 .actus{background:var(--noir)}
 .actus-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
-.actu-card{background:var(--gris-fonce);border:1px solid rgba(255,255,255,0.07);border-radius:6px;overflow:hidden;transition:all 0.25s;cursor:pointer}
-.actu-card:hover{border-color:var(--rouge);transform:translateY(-3px);box-shadow:0 8px 30px rgba(200,16,46,0.15)}
-/* DRAWER LATERAL */
-.drawer-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px)}
-.drawer-overlay.open{display:flex;justify-content:flex-end}
-.drawer{width:min(560px,95vw);height:100vh;background:var(--gris-fonce);border-left:2px solid var(--rouge);overflow-y:auto;animation:slideIn 0.3s ease;display:flex;flex-direction:column}
-@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
-.drawer-head{padding:24px 28px 20px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-shrink:0;background:var(--noir)}
-.drawer-head h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1.1;color:var(--blanc);flex:1}
-.drawer-close{background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);width:34px;height:34px;min-width:34px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
-.drawer-close:hover{border-color:var(--rouge);color:var(--rouge)}
-.drawer-body{padding:24px 28px;flex:1}
-.drawer-meta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
-.drawer-body .full-content{font-size:0.92rem;color:rgba(244,241,235,0.78);line-height:1.85;white-space:pre-wrap}
-.drawer-body .actu-date{margin-bottom:20px}
-/* CONTACT ANNONCE */
-.contact-box{background:var(--noir);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:20px;margin-top:24px}
-.contact-box h4{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:6px}
-.contact-box p{font-size:0.8rem;color:rgba(244,241,235,0.5);margin-bottom:16px;line-height:1.5}
-.btn-contact-toggle{background:var(--or);color:var(--noir);border:none;padding:10px 22px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:opacity 0.2s;width:100%}
-.btn-contact-toggle:hover{opacity:0.85}
-.contact-form{display:none;margin-top:16px}
-.contact-form.open{display:block}
-.annonce-card:hover{border-color:var(--or);transform:translateY(-3px);box-shadow:0 8px 30px rgba(245,166,35,0.1)}
-.actu-cat{font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:2px;text-transform:uppercase;background:var(--rouge);color:white;padding:4px 12px;display:inline-block}
+.actu-card{background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden;cursor:pointer;transition:all .25s}
+.actu-card:hover{border-color:var(--rouge);transform:translateY(-4px);box-shadow:0 10px 30px rgba(200,16,46,.15)}
+.actu-cat{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;background:var(--rouge);color:#fff;padding:5px 14px;display:inline-block}
 .actu-body{padding:20px}
-.actu-body h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.5px;margin-bottom:8px;line-height:1.2}
-.actu-body p{font-size:0.82rem;color:rgba(244,241,235,0.6);line-height:1.6;margin-bottom:12px}
-.actu-date{font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2px;color:rgba(244,241,235,0.35);text-transform:uppercase}
-.actus-empty{text-align:center;padding:60px;color:rgba(244,241,235,0.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
-/* ANNONCES */
-.annonces{background:var(--gris-fonce)}
-.annonces-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:40px}
-.annonce-card{background:var(--noir);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:22px;transition:border-color 0.25s}
-.annonce-card:hover{border-color:var(--or)}
-.annonce-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:10px}
-.annonce-cat{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:2px;border:1px solid}
-.cat-logement{color:#64B5F6;border-color:#64B5F6}
-.cat-emploi{color:#81C784;border-color:#81C784}
-.cat-service{color:#FFB74D;border-color:#FFB74D}
-.cat-solidarite{color:#F06292;border-color:#F06292}
-.cat-autre{color:rgba(244,241,235,0.5);border-color:rgba(244,241,235,0.3)}
-.annonce-titre{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px}
-.annonce-desc{font-size:0.82rem;color:rgba(244,241,235,0.6);line-height:1.6;margin-bottom:12px}
-.annonce-meta{display:flex;gap:14px;flex-wrap:wrap}
-.annonce-meta span{font-family:'Barlow Condensed',sans-serif;font-size:0.68rem;letter-spacing:1px;color:rgba(244,241,235,0.35);text-transform:uppercase}
-.annonces-empty{text-align:center;padding:60px;color:rgba(244,241,235,0.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
-/* DEPOT ANNONCE */
+.actu-body h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:8px;line-height:1.2}
+.actu-body p{font-size:.82rem;color:rgba(244,241,235,.6);line-height:1.6;margin-bottom:12px}
+.actu-date{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;color:rgba(244,241,235,.35);text-transform:uppercase}
+.empty-msg{text-align:center;padding:60px;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;grid-column:1/-1}
+.empty-msg span{display:block;font-size:3rem;margin-bottom:12px}
+.annonces{background:var(--gf)}
+.annonces-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px}
+.annonce-card{background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:22px;cursor:pointer;transition:all .25s}
+.annonce-card:hover{border-color:var(--or);transform:translateY(-3px);box-shadow:0 8px 24px rgba(245,166,35,.1)}
+.ann-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:10px}
+.ann-cat{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:2px;border:1px solid}
+.cat-Logement{color:#64B5F6;border-color:#64B5F6}.cat-Emploi{color:#81C784;border-color:#81C784}
+.cat-Service{color:#FFB74D;border-color:#FFB74D}.cat-Solidarite{color:#F06292;border-color:#F06292}
+.cat-Autre{color:rgba(244,241,235,.5);border-color:rgba(244,241,235,.3)}
+.ann-titre{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.ann-desc{font-size:.82rem;color:rgba(244,241,235,.6);line-height:1.6;margin-bottom:12px}
+.ann-meta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.ann-meta span{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;color:rgba(244,241,235,.35);text-transform:uppercase}
+.ann-cta{color:rgba(245,166,35,.7)!important;margin-left:auto!important}
 .depot{background:var(--noir)}
 .depot-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start}
-.depot-left p{color:rgba(244,241,235,0.7);line-height:1.8;margin-bottom:14px;font-size:0.95rem}
-/* ADHESION & FORMULAIRES */
-.adhesion{background:var(--gris-fonce)}
+.depot-left p{color:rgba(244,241,235,.7);line-height:1.8;margin-bottom:14px;font-size:.95rem}
+.adhesion{background:var(--gf)}
 .adhesion-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start}
-.adhesion-left p{color:rgba(244,241,235,0.7);line-height:1.8;margin-bottom:14px;font-size:0.95rem}
-.form-card{background:var(--gris-fonce);border:1px solid rgba(255,255,255,0.08);border-radius:6px;padding:36px}
+.adhesion-left p{color:rgba(244,241,235,.7);line-height:1.8;margin-bottom:14px;font-size:.95rem}
+.form-card{background:var(--gf);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:36px}
 .form-card.dark{background:var(--noir)}
 .form-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:1px;margin-bottom:24px}
-.form-group{margin-bottom:14px}
-.form-group label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,0.5);margin-bottom:6px}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:11px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:0.88rem;outline:none;transition:border-color 0.2s;resize:vertical}
-.form-card.dark .form-group input,.form-card.dark .form-group select,.form-card.dark .form-group textarea{background:var(--gris-fonce)}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--rouge)}
-.form-group select option{background:var(--gris-fonce)}
-.form-group textarea{min-height:90px}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.rgpd-check{display:flex;align-items:flex-start;gap:10px;font-size:0.78rem;color:rgba(244,241,235,0.5);line-height:1.5;margin:16px 0}
-.rgpd-check input{width:15px;height:15px;min-width:15px;margin-top:2px;accent-color:var(--rouge)}
-.btn-submit{width:100%;background:var(--rouge);color:white;border:2px solid var(--rouge);padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.95rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all 0.25s}
-.btn-submit:hover{background:transparent;color:var(--rouge)}
-.btn-submit:disabled{opacity:0.5;cursor:not-allowed}
-.msg{display:none;margin-top:12px;padding:12px 16px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:0.88rem;letter-spacing:1px}
-.msg.success{background:rgba(76,175,80,0.1);border:1px solid #4CAF50;color:#4CAF50;display:block}
-.msg.error{background:rgba(200,16,46,0.1);border:1px solid var(--rouge);color:var(--rouge);display:block}
-/* FOOTER */
-footer{background:var(--gris-fonce);border-top:1px solid rgba(255,255,255,0.07);padding:50px 8vw 28px}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.5);margin-bottom:6px}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:11px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;resize:vertical}
+.form-card.dark .fg input,.form-card.dark .fg select,.form-card.dark .fg textarea{background:var(--gf)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--rouge)}
+.fg select option{background:var(--gf)}
+.fg textarea{min-height:90px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rgpd{display:flex;align-items:flex-start;gap:10px;font-size:.78rem;color:rgba(244,241,235,.5);line-height:1.5;margin:16px 0}
+.rgpd input[type=checkbox]{width:15px;height:15px;min-width:15px;margin-top:2px;accent-color:var(--rouge)}
+.btn-sub{width:100%;background:var(--rouge);color:#fff;border:2px solid var(--rouge);padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all .25s}
+.btn-sub:hover{background:transparent;color:var(--rouge)}
+.btn-sub:disabled{opacity:.5;cursor:not-allowed}
+.msg{display:none;margin-top:12px;padding:12px 16px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:1px}
+.msg.ok{background:rgba(76,175,80,.1);border:1px solid #4CAF50;color:#4CAF50;display:block}
+.msg.err{background:rgba(200,16,46,.1);border:1px solid var(--rouge);color:var(--rouge);display:block}
+footer{background:var(--gf);border-top:1px solid rgba(255,255,255,.07);padding:50px 8vw 28px}
 .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:50px;margin-bottom:40px}
-.footer-brand p{font-size:0.82rem;color:rgba(244,241,235,0.45);line-height:1.7;margin-top:14px;max-width:280px}
-.footer-col h4{font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--or);margin-bottom:14px}
+.footer-brand p{font-size:.82rem;color:rgba(244,241,235,.45);line-height:1.7;margin-top:14px;max-width:280px}
+.footer-col h4{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--or);margin-bottom:14px}
 .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:9px}
-.footer-col ul li,.footer-col ul a{font-size:0.82rem;color:rgba(244,241,235,0.45);text-decoration:none;transition:color 0.2s}
+.footer-col ul li,.footer-col ul a{font-size:.82rem;color:rgba(244,241,235,.45);text-decoration:none;transition:color .2s}
 .footer-col ul a:hover{color:var(--blanc)}
-.footer-bottom{border-top:1px solid rgba(255,255,255,0.06);padding-top:22px;display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;color:rgba(244,241,235,0.28)}
-.footer-bottom button{background:none;border:none;cursor:pointer;font-size:0.72rem;color:rgba(244,241,235,0.2);font-family:'Barlow',sans-serif;transition:color 0.2s}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:22px;display:flex;justify-content:space-between;align-items:center;font-size:.75rem;color:rgba(244,241,235,.28)}
+.footer-bottom button{background:none;border:none;cursor:pointer;font-size:.72rem;color:rgba(244,241,235,.2);font-family:'Barlow',sans-serif;transition:color .2s}
 .footer-bottom button:hover{color:var(--or)}
-/* MODALS */
-.modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.88);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+
+
+.drawer-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.65);backdrop-filter:blur(4px)}
+.drawer-overlay.open{display:flex;justify-content:flex-end}
+.drawer{width:min(580px,96vw);height:100vh;background:var(--gf);border-left:2px solid var(--rouge);overflow-y:auto;display:flex;flex-direction:column;animation:slideIn .3s ease}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.drawer-head{padding:24px 28px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-shrink:0;background:var(--noir)}
+.drawer-head h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1.1;color:var(--blanc);flex:1}
+.drawer-close{background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);width:34px;height:34px;min-width:34px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.drawer-close:hover{border-color:var(--rouge);color:var(--rouge)}
+.drawer-body{padding:24px 28px;flex:1}
+.drawer-meta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.drawer-content{font-size:.92rem;color:rgba(244,241,235,.78);line-height:1.9;white-space:pre-wrap}
+.contact-box{background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:22px;margin-top:28px}
+.contact-box h4{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:6px}
+.contact-box > p{font-size:.8rem;color:rgba(244,241,235,.5);margin-bottom:16px;line-height:1.5}
+.btn-ct{background:var(--or);color:var(--noir);border:none;padding:10px 22px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;width:100%;transition:opacity .2s}
+.btn-ct:hover{opacity:.85}
+.ct-form{display:none;margin-top:16px}
+.ct-form.open{display:block}
+.modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.88);backdrop-filter:blur(6px);align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
-@keyframes popIn{from{opacity:0;transform:scale(0.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
-.login-modal{background:var(--gris-fonce);border:1px solid rgba(255,255,255,0.1);border-radius:8px;width:92%;max-width:380px;padding:40px;animation:popIn 0.3s ease}
-.login-modal h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:8px}
-.login-modal p{font-size:0.82rem;color:rgba(244,241,235,0.5);margin-bottom:24px}
-.login-modal input{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:12px 15px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:0.9rem;outline:none;transition:border-color 0.2s;margin-bottom:14px}
-.login-modal input:focus{border-color:var(--rouge)}
-.login-error{font-size:0.8rem;color:var(--rouge);margin-bottom:12px;display:none;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.login-box{background:var(--gf);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:92%;max-width:380px;padding:40px;animation:popIn .3s ease}
+.login-box h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:8px}
+.login-box p{font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:24px}
+.login-box input{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:12px 15px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;margin-bottom:14px}
+.login-box input:focus{border-color:var(--rouge)}
+.login-err{font-size:.8rem;color:var(--rouge);margin-bottom:12px;display:none;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
 .login-btns{display:flex;gap:10px}
-.btn-login{flex:1;background:var(--rouge);color:white;border:2px solid var(--rouge);padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all 0.25s}
+.btn-login{flex:1;background:var(--rouge);color:#fff;border:2px solid var(--rouge);padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all .25s}
 .btn-login:hover{background:transparent;color:var(--rouge)}
-.btn-cancel{background:transparent;color:rgba(244,241,235,0.5);border:1px solid rgba(255,255,255,0.15);padding:12px 18px;font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;letter-spacing:1px;text-transform:uppercase;border-radius:3px;cursor:pointer}
-/* ADMIN MODAL */
-.admin-modal{background:var(--gris-fonce);border:1px solid rgba(255,255,255,0.1);border-radius:8px;width:96%;max-width:1200px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;animation:popIn 0.3s ease}
-.admin-header{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid rgba(255,255,255,0.08);background:var(--noir);flex-shrink:0}
-.admin-header h2{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--blanc);margin:0}
-.admin-header h2 span{color:var(--rouge)}
-.admin-close-btn{background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
-.admin-close-btn:hover{border-color:var(--rouge);color:var(--rouge)}
-.admin-tabs{display:flex;gap:4px;background:var(--gris-fonce);padding:0 26px;border-bottom:1px solid rgba(255,255,255,0.07);flex-shrink:0;overflow-x:auto}
-.tab-btn{background:none;border:none;color:rgba(244,241,235,0.45);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;padding:13px 18px;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap}
+.btn-cancel-l{background:transparent;color:rgba(244,241,235,.5);border:1px solid rgba(255,255,255,.15);padding:12px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:1px;text-transform:uppercase;border-radius:3px;cursor:pointer}
+.admin-modal{background:var(--gf);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:96%;max-width:1200px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;animation:popIn .3s ease}
+.admin-head{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid rgba(255,255,255,.08);background:var(--noir);flex-shrink:0}
+.admin-head h2{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--blanc);margin:0}
+.admin-head h2 span{color:var(--rouge)}
+.a-close{background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.a-close:hover{border-color:var(--rouge);color:var(--rouge)}
+.admin-tabs{display:flex;gap:4px;background:var(--gf);padding:0 26px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;overflow-x:auto}
+.tab-btn{background:none;border:none;color:rgba(244,241,235,.45);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;padding:13px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
 .tab-btn:hover{color:var(--blanc)}
 .tab-btn.active{color:var(--or);border-bottom-color:var(--or)}
 .admin-content{overflow-y:auto;flex:1}
-.tab-panel{display:none;padding:26px}
+.tab-panel{display:none;padding:24px}
 .tab-panel.active{display:block}
-.panel-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
-.badge-count{background:var(--rouge);color:white;font-family:'Bebas Neue',sans-serif;font-size:1rem;padding:4px 14px;border-radius:20px}
-.btn-export{background:var(--or);color:var(--noir);border:none;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:1.5px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:opacity 0.2s}
-.btn-export:hover{opacity:0.85}
-.btn-add-actu{background:var(--rouge);color:white;border:none;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:1.5px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:opacity 0.2s}
-.btn-add-actu:hover{opacity:0.85}
-.loading-spin{text-align:center;padding:40px;color:rgba(244,241,235,0.4);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:0.82rem}
-.admin-empty{padding:50px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;color:rgba(244,241,235,0.3);letter-spacing:1px}
-.admin-empty span{display:block;font-size:3rem;margin-bottom:12px}
+.panel-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.badge{background:var(--rouge);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1rem;padding:4px 14px;border-radius:20px}
+.btn-export{background:var(--or);color:var(--noir);border:none;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;border-radius:3px;cursor:pointer}
+.btn-new{background:var(--rouge);color:#fff;border:none;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;border-radius:3px;cursor:pointer}
+.spin{text-align:center;padding:40px;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:.82rem}
+.empty{padding:50px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;color:rgba(244,241,235,.3);letter-spacing:1px}
+.empty span{display:block;font-size:3rem;margin-bottom:12px}
 table{width:100%;border-collapse:collapse}
 thead{position:sticky;top:0;background:var(--noir);z-index:1}
-thead th{padding:10px 14px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:0.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--or);border-bottom:1px solid rgba(255,255,255,0.08)}
-tbody tr{border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.15s}
-tbody tr:hover{background:rgba(255,255,255,0.03)}
-tbody td{padding:10px 14px;font-size:0.84rem;color:rgba(244,241,235,0.8)}
-.q-badge{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;background:rgba(200,16,46,0.15);border:1px solid rgba(200,16,46,0.3);color:#ff6b6b;padding:2px 8px;border-radius:2px}
-.d-text{color:rgba(244,241,235,0.35);font-size:0.74rem}
-.btn-del{background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(244,241,235,0.3);padding:3px 9px;border-radius:3px;cursor:pointer;font-size:0.7rem;transition:all 0.2s}
+thead th{padding:10px 14px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--or);border-bottom:1px solid rgba(255,255,255,.08)}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
+.qb{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;background:rgba(200,16,46,.15);border:1px solid rgba(200,16,46,.3);color:#ff6b6b;padding:2px 8px;border-radius:2px}
+.dt{color:rgba(244,241,235,.35);font-size:.74rem}
+.btn-del{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(244,241,235,.3);padding:3px 9px;border-radius:3px;cursor:pointer;font-size:.7rem;transition:all .2s}
 .btn-del:hover{border-color:var(--rouge);color:var(--rouge)}
-.btn-valider{background:rgba(76,175,80,0.15);border:1px solid #4CAF50;color:#4CAF50;padding:3px 9px;border-radius:3px;cursor:pointer;font-size:0.7rem;transition:all 0.2s;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
-.btn-valider:hover{background:rgba(76,175,80,0.3)}
-.btn-refuser{background:rgba(200,16,46,0.1);border:1px solid var(--rouge);color:var(--rouge);padding:3px 9px;border-radius:3px;cursor:pointer;font-size:0.7rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
-.status-badge-ok{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;background:rgba(76,175,80,0.15);border:1px solid #4CAF50;color:#4CAF50;padding:2px 8px;border-radius:2px}
-.status-badge-ko{font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;background:rgba(255,152,0,0.15);border:1px solid #FF9800;color:#FF9800;padding:2px 8px;border-radius:2px}
-/* CONTENT EDITOR */
-.content-editor{display:flex;flex-direction:column;gap:18px}
-.cb{background:var(--noir);border:1px solid rgba(255,255,255,0.08);border-radius:6px;overflow:hidden}
-.cb-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02)}
-.cb-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--or)}
-.cb-head span{font-size:0.68rem;color:rgba(244,241,235,0.25);font-family:'Barlow Condensed',sans-serif}
+.btn-ok{background:rgba(76,175,80,.15);border:1px solid #4CAF50;color:#4CAF50;padding:3px 9px;border-radius:3px;cursor:pointer;font-size:.7rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.btn-ko{background:rgba(200,16,46,.1);border:1px solid var(--rouge);color:var(--rouge);padding:3px 9px;border-radius:3px;cursor:pointer;font-size:.7rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.s-ok{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;background:rgba(76,175,80,.15);border:1px solid #4CAF50;color:#4CAF50;padding:2px 8px;border-radius:2px}
+.s-ko{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;background:rgba(255,152,0,.15);border:1px solid #FF9800;color:#FF9800;padding:2px 8px;border-radius:2px}
+.actu-form-box{background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:22px;margin-bottom:20px;display:none}
+.actu-form-box.open{display:block}
+.actu-form-box h4{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:16px}
+.ce{display:flex;flex-direction:column;gap:16px}
+.cb{background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;overflow:hidden}
+.cb-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}
+.cb-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--or)}
+.cb-head span{font-size:.68rem;color:rgba(244,241,235,.25);font-family:'Barlow Condensed',sans-serif}
 .cb-body{padding:14px 18px;display:flex;flex-direction:column;gap:10px}
-.ef label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:0.66rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,0.4);margin-bottom:5px}
-.ef input[type=text],.ef textarea{width:100%;background:var(--gris-fonce);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:9px 12px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:0.86rem;outline:none;transition:border-color 0.2s;resize:vertical}
-.ef input[type=text]:focus,.ef textarea:focus{border-color:var(--or)}
+.ef label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.66rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-bottom:5px}
+.ef input,.ef textarea{width:100%;background:var(--gf);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:9px 12px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.86rem;outline:none;transition:border-color .2s;resize:vertical}
+.ef input:focus,.ef textarea:focus{border-color:var(--or)}
 .ef textarea{min-height:80px}
-.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.save-btn{align-self:flex-end;background:var(--rouge);color:white;border:2px solid var(--rouge);padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.78rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all 0.25s}
+.r3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.save-btn{align-self:flex-end;background:var(--rouge);color:#fff;border:2px solid var(--rouge);padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all .25s}
 .save-btn:hover{background:transparent;color:var(--rouge)}
-.flash{font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:1px;color:#4CAF50;opacity:0;transition:opacity 0.4s;align-self:flex-end}
+.flash{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:#4CAF50;opacity:0;transition:opacity .4s;align-self:flex-end}
 .flash.show{opacity:1}
 .save-row{display:flex;align-items:center;gap:14px}
-/* ACTU FORM IN ADMIN */
-.actu-form-box{background:var(--noir);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:24px;margin-bottom:24px;display:none}
-.actu-form-box.open{display:block}
-.actu-form-box h4{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:18px;color:var(--blanc)}
-/* RESPONSIVE */
-@media(max-width:900px){.qui-grid,.adhesion-grid,.depot-grid{grid-template-columns:1fr;gap:40px}.actus-grid{grid-template-columns:1fr 1fr}.annonces-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}.form-row{grid-template-columns:1fr}section{padding:60px 5vw}}
+.photo-tip{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:4px;padding:12px 14px;font-size:.78rem;color:rgba(244,241,235,.55);line-height:1.6}
+.photo-tip strong{color:var(--blanc)}
+.photo-tip a{color:var(--or)}
+@media(max-width:900px){.qui-grid,.adhesion-grid,.depot-grid{grid-template-columns:1fr;gap:40px}.actus-grid{grid-template-columns:1fr 1fr}.annonces-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}.fr{grid-template-columns:1fr}section{padding:60px 5vw}}
 @media(max-width:600px){.actus-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.nav-links a:not(.btn-admin){display:none}}
+
 </style>
 </head>
 <body>
-<!-- NAV -->
 <nav>
-  <a href="#" class="logo">
-    <div class="logo-icon">CQP</div>
-    <div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div>
-  </a>
+  <a href="#" class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></a>
   <div class="nav-links">
-    <a href="#qui">Notre mouvement</a>
-    <a href="#actus">Actualités</a>
-    <a href="#annonces">Annonces</a>
-    <a href="#adhesion">Adhérer</a>
+    <a href="#qui">Notre mouvement</a><a href="#actus">Actualités</a>
+    <a href="#annonces">Annonces</a><a href="#adhesion">Adhérer</a>
     <button class="btn-admin" onclick="openLogin()">⚙ Admin</button>
   </div>
 </nav>
-<!-- HERO -->
 <section class="hero" id="accueil">
-  <div class="hero-bg"></div>
+  <div class="hero-bg" id="hero-bg"></div>
   <div class="hero-word">LUTTE</div>
   <div class="hero-content">
     <div class="eyebrow">Toulouse, ensemble</div>
@@ -259,109 +237,88 @@ tbody td{padding:10px 14px;font-size:0.84rem;color:rgba(244,241,235,0.8)}
     <p id="site-hero-texte"></p>
     <div class="hero-ctas">
       <a href="#adhesion" class="btn-primary">✊ Rejoindre le mouvement</a>
-      <a href="#annonces" class="btn-secondary">📋 Déposer une annonce</a>
+      <a href="#depot" class="btn-secondary">📋 Déposer une annonce</a>
     </div>
   </div>
 </section>
-<!-- BANDEROLE -->
-<div class="banderole">
-  <div class="banderole-track">
-    <span class="banderole-item">Logement digne pour tou·tes</span>
-    <span class="banderole-item">Services publics dans nos quartiers</span>
-    <span class="banderole-item">Dignité et respect</span>
-    <span class="banderole-item">Éducation pour tous les enfants</span>
-    <span class="banderole-item">Toulouse aux Toulousain·es</span>
-    <span class="banderole-item">Contre les discriminations</span>
-    <span class="banderole-item">Logement digne pour tou·tes</span>
-    <span class="banderole-item">Services publics dans nos quartiers</span>
-    <span class="banderole-item">Dignité et respect</span>
-    <span class="banderole-item">Éducation pour tous les enfants</span>
-    <span class="banderole-item">Toulouse aux Toulousain·es</span>
-    <span class="banderole-item">Contre les discriminations</span>
-  </div>
-</div>
-<!-- QUI SOMMES NOUS -->
+<div class="banderole"><div class="banderole-track">
+  <span class="banderole-item">Logement digne pour tou·tes</span>
+  <span class="banderole-item">Services publics dans nos quartiers</span>
+  <span class="banderole-item">Dignité et respect</span>
+  <span class="banderole-item">Éducation pour tous les enfants</span>
+  <span class="banderole-item">Toulouse aux Toulousain·es</span>
+  <span class="banderole-item">Contre les discriminations</span>
+  <span class="banderole-item">Logement digne pour tou·tes</span>
+  <span class="banderole-item">Services publics dans nos quartiers</span>
+  <span class="banderole-item">Dignité et respect</span>
+  <span class="banderole-item">Éducation pour tous les enfants</span>
+  <span class="banderole-item">Toulouse aux Toulousain·es</span>
+  <span class="banderole-item">Contre les discriminations</span>
+</div></div>
 <section class="qui" id="qui">
   <div class="qui-grid">
     <div class="qui-texte">
       <div class="section-tag">Notre histoire</div>
       <h2>Un mouvement <em>né du bas</em></h2>
-      <p id="site-histoire-p1"></p>
-      <div class="quote-block" id="site-histoire-citation"></div>
-      <p id="site-histoire-p2"></p>
+      <p id="site-hist-p1"></p>
+      <div class="quote-block" id="site-hist-cit"></div>
+      <p id="site-hist-p2"></p>
       <div class="valeurs">
-        <span class="valeur-tag">Autonomie populaire</span>
-        <span class="valeur-tag">Solidarité</span>
-        <span class="valeur-tag">Féminisme</span>
-        <span class="valeur-tag">Antiracisme</span>
-        <span class="valeur-tag">Écologie sociale</span>
-        <span class="valeur-tag">Non-violence</span>
+        <span class="valeur-tag">Autonomie populaire</span><span class="valeur-tag">Solidarité</span>
+        <span class="valeur-tag">Féminisme</span><span class="valeur-tag">Antiracisme</span>
+        <span class="valeur-tag">Écologie sociale</span><span class="valeur-tag">Non-violence</span>
       </div>
     </div>
     <div class="visual-box">
-      <div class="visual-placeholder">🏘️</div>
+      <div class="visual-img" id="encart-img"><span id="encart-emoji">🏘️</span></div>
       <div class="visual-body">
-        <h3 id="site-encart-titre"></h3>
-        <p id="site-encart-texte"></p>
+        <h3 id="site-enc-titre"></h3><p id="site-enc-texte"></p>
         <div class="stats-row">
-          <div class="stat"><span class="stat-num" id="site-stat1-num"></span><span class="stat-lbl" id="site-stat1-lbl"></span></div>
-          <div class="stat"><span class="stat-num" id="site-stat2-num"></span><span class="stat-lbl" id="site-stat2-lbl"></span></div>
-          <div class="stat"><span class="stat-num" id="site-stat3-num"></span><span class="stat-lbl" id="site-stat3-lbl"></span></div>
+          <div class="stat"><span class="stat-num" id="site-s1n"></span><span class="stat-lbl" id="site-s1l"></span></div>
+          <div class="stat"><span class="stat-num" id="site-s2n"></span><span class="stat-lbl" id="site-s2l"></span></div>
+          <div class="stat"><span class="stat-num" id="site-s3n"></span><span class="stat-lbl" id="site-s3l"></span></div>
         </div>
       </div>
     </div>
   </div>
 </section>
-<!-- ACTUALITÉS -->
 <section class="actus" id="actus">
   <div class="section-tag">Le comité vous informe</div>
   <h2>Actualités <em>& infos</em></h2>
-  <div class="actus-grid" id="actus-grid">
-    <div class="loading-spin" style="grid-column:1/-1">⏳ Chargement…</div>
-  </div>
+  <div class="actus-grid" id="actus-grid"><div class="spin" style="grid-column:1/-1">⏳ Chargement…</div></div>
 </section>
-<!-- ANNONCES DÉPOSÉES -->
 <section class="annonces" id="annonces">
   <div class="section-tag">Entraide citoyenne</div>
   <h2>Annonces <em>des habitants</em></h2>
-  <p style="color:rgba(244,241,235,0.6);margin-top:-8px;margin-bottom:10px;font-size:0.95rem">Logement, emploi, services, solidarité — les habitants du quartier s'entraident.</p>
-  <div class="annonces-grid" id="annonces-grid">
-    <div class="loading-spin" style="grid-column:1/-1">⏳ Chargement…</div>
-  </div>
+  <p style="color:rgba(244,241,235,.6);margin-top:-8px;margin-bottom:10px;font-size:.95rem">Cliquez sur une annonce pour voir les détails et entrer en contact.</p>
+  <div class="annonces-grid" id="annonces-grid"><div class="spin" style="grid-column:1/-1">⏳ Chargement…</div></div>
 </section>
-<!-- DÉPOSER UNE ANNONCE -->
 <section class="depot" id="depot">
   <div class="depot-grid">
     <div class="depot-left">
       <div class="section-tag">Vous avez besoin d'aide ?</div>
       <h2>Déposez <em>votre annonce</em></h2>
-      <p>Le comité met à disposition cet espace d'entraide entre habitants. Cherche logement, propose un service, offre de l'aide à un voisin…</p>
-      <p>Chaque annonce est vérifiée par notre équipe avant publication. Délai habituel : 24–48h.</p>
+      <p>Le comité met à disposition cet espace d'entraide entre habitants. Cherche logement, propose un service, offre de l'aide…</p>
+      <p>Chaque annonce est vérifiée avant publication. Délai : 24–48h.</p>
       <p><strong style="color:var(--or)">Gratuit · Solidaire · Local</strong></p>
     </div>
     <div class="form-card dark">
       <h3>Déposer une annonce</h3>
-      <div class="form-row">
-        <div class="form-group"><label>Prénom *</label><input type="text" id="a-prenom" placeholder="Marie"></div>
-        <div class="form-group"><label>Nom *</label><input type="text" id="a-nom" placeholder="Dupont"></div>
+      <div class="fr">
+        <div class="fg"><label>Prénom *</label><input type="text" id="a-prenom" placeholder="Marie"></div>
+        <div class="fg"><label>Nom *</label><input type="text" id="a-nom" placeholder="Dupont"></div>
       </div>
-      <div class="form-group"><label>Email *</label><input type="email" id="a-email" placeholder="marie@exemple.fr"></div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Catégorie *</label>
-          <select id="a-categorie">
-            <option value="">— Choisir —</option>
-            <option value="Logement">🏠 Logement</option>
-            <option value="Emploi">💼 Emploi</option>
-            <option value="Service">🔧 Service / Compétence</option>
-            <option value="Solidarité">🤝 Solidarité</option>
+      <div class="fg"><label>Email *</label><input type="email" id="a-email" placeholder="marie@exemple.fr"></div>
+      <div class="fr">
+        <div class="fg"><label>Catégorie *</label>
+          <select id="a-cat"><option value="">— Choisir —</option>
+            <option value="Logement">🏠 Logement</option><option value="Emploi">💼 Emploi</option>
+            <option value="Service">🔧 Service</option><option value="Solidarité">🤝 Solidarité</option>
             <option value="Autre">📌 Autre</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Quartier *</label>
-          <select id="a-quartier">
-            <option value="">— Choisir —</option>
+        <div class="fg"><label>Quartier *</label>
+          <select id="a-quartier"><option value="">— Choisir —</option>
             <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
             <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
             <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
@@ -369,60 +326,54 @@ tbody td{padding:10px 14px;font-size:0.84rem;color:rgba(244,241,235,0.8)}
           </select>
         </div>
       </div>
-      <div class="form-group"><label>Titre de l'annonce *</label><input type="text" id="a-titre" placeholder="Ex: Cherche logement T2 urgence familiale"></div>
-      <div class="form-group"><label>Description *</label><textarea id="a-description" placeholder="Décrivez votre besoin ou ce que vous proposez…" rows="4"></textarea></div>
-      <div class="form-group"><label>Contact public (optionnel)</label><input type="text" id="a-contact" placeholder="Ex: 06 XX XX XX XX ou votre email"></div>
-      <div class="rgpd-check">
+      <div class="fg"><label>Titre *</label><input type="text" id="a-titre" placeholder="Ex: Cherche T2 urgence familiale"></div>
+      <div class="fg"><label>Description *</label><textarea id="a-desc" rows="4" placeholder="Décrivez votre besoin ou ce que vous proposez…"></textarea></div>
+      <div class="rgpd">
         <input type="checkbox" id="a-rgpd">
         <label for="a-rgpd">J'accepte que ces informations soient publiées sur le site après validation. Aucune donnée ne sera transmise à des tiers.</label>
       </div>
-      <button class="btn-submit" id="depotBtn" onclick="deposerAnnonce()">📋 Soumettre mon annonce</button>
+      <button class="btn-sub" id="depotBtn" onclick="deposerAnnonce()">📋 Soumettre mon annonce</button>
       <div class="msg" id="depotMsg"></div>
     </div>
   </div>
 </section>
-<!-- ADHÉSION -->
 <section class="adhesion" id="adhesion">
   <div class="adhesion-grid">
     <div class="adhesion-left">
       <div class="section-tag">Passer à l'action</div>
       <h2>Rejoins <em>le mouvement</em></h2>
-      <p id="site-adhesion-p1"></p>
-      <p id="site-adhesion-p2"></p>
-      <p><strong style="color:var(--or)">C'est gratuit et sans engagement.</strong><br>Tu décides toi-même de ton niveau d'implication.</p>
+      <p id="site-adh-p1"></p><p id="site-adh-p2"></p>
+      <p><strong style="color:var(--or)">Gratuit et sans engagement.</strong><br>Tu décides toi-même de ton niveau d'implication.</p>
     </div>
     <div class="form-card">
       <h3>Formulaire d'adhésion</h3>
-      <div class="form-row">
-        <div class="form-group"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"></div>
-        <div class="form-group"><label>Nom *</label><input type="text" id="f-nom" placeholder="Dupont"></div>
+      <div class="fr">
+        <div class="fg"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"></div>
+        <div class="fg"><label>Nom *</label><input type="text" id="f-nom" placeholder="Dupont"></div>
       </div>
-      <div class="form-group"><label>Email *</label><input type="email" id="f-email" placeholder="marie@exemple.fr"></div>
-      <div class="form-group">
-        <label>Votre quartier *</label>
-        <select id="f-quartier">
-          <option value="">— Choisissez —</option>
+      <div class="fg"><label>Email *</label><input type="email" id="f-email" placeholder="marie@exemple.fr"></div>
+      <div class="fg"><label>Votre quartier *</label>
+        <select id="f-quartier"><option value="">— Choisissez —</option>
           <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
           <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
           <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
           <option>Autre quartier de Toulouse</option>
         </select>
       </div>
-      <div class="rgpd-check">
+      <div class="rgpd">
         <input type="checkbox" id="f-rgpd">
         <label for="f-rgpd">J'accepte que mes données soient utilisées par le CQP Toulouse pour me contacter. Aucune donnée ne sera transmise à des tiers.</label>
       </div>
-      <button class="btn-submit" id="submitBtn" onclick="soumettre()">✊ Je rejoins le mouvement</button>
+      <button class="btn-sub" id="submitBtn" onclick="soumettre()">✊ Je rejoins le mouvement</button>
       <div class="msg" id="formMsg"></div>
     </div>
   </div>
 </section>
-<!-- FOOTER -->
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
       <div class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></div>
-      <p>Un mouvement citoyen ancré dans les quartiers populaires de Toulouse.</p>
+      <p>Un mouvement citoyen ancré dans les quartiers populaires de Toulouse, pour plus de justice sociale et de solidarité.</p>
     </div>
     <div class="footer-col"><h4>Le comité</h4><ul><li><a href="#qui">Notre histoire</a></li><li><a href="#actus">Actualités</a></li><li><a href="#">Notre charte</a></li></ul></div>
     <div class="footer-col"><h4>Contact</h4><ul><li id="footer-email"></li><li id="footer-tel"></li><li><a href="#">Mentions légales</a></li></ul></div>
@@ -433,47 +384,34 @@ tbody td{padding:10px 14px;font-size:0.84rem;color:rgba(244,241,235,0.8)}
   </div>
 </footer>
 <!-- DRAWER ACTU -->
-<div class="drawer-overlay" id="actuDrawer" onclick="closeDrawerOnBg(event,'actuDrawer')">
+<div class="drawer-overlay" id="dActu" onclick="if(event.target.id==='dActu')closeDr('dActu')">
   <div class="drawer">
-    <div class="drawer-head">
-      <h3 id="drawer-actu-titre"></h3>
-      <button class="drawer-close" onclick="closeDrawer('actuDrawer')">✕</button>
-    </div>
+    <div class="drawer-head"><h3 id="dr-actu-titre"></h3><button class="drawer-close" onclick="closeDr('dActu')">✕</button></div>
     <div class="drawer-body">
-      <div class="drawer-meta">
-        <span class="actu-cat" id="drawer-actu-cat"></span>
-        <span class="actu-date" id="drawer-actu-date"></span>
-      </div>
-      <div class="full-content" id="drawer-actu-contenu"></div>
+      <div class="drawer-meta"><span class="actu-cat" id="dr-actu-cat"></span><span class="actu-date" id="dr-actu-date"></span></div>
+      <div class="drawer-content" id="dr-actu-content"></div>
     </div>
   </div>
 </div>
 <!-- DRAWER ANNONCE -->
-<div class="drawer-overlay" id="annonceDrawer" onclick="closeDrawerOnBg(event,'annonceDrawer')">
+<div class="drawer-overlay" id="dAnn" onclick="if(event.target.id==='dAnn')closeDr('dAnn')">
   <div class="drawer">
-    <div class="drawer-head">
-      <h3 id="drawer-ann-titre"></h3>
-      <button class="drawer-close" onclick="closeDrawer('annonceDrawer')">✕</button>
-    </div>
+    <div class="drawer-head"><h3 id="dr-ann-titre"></h3><button class="drawer-close" onclick="closeDr('dAnn')">✕</button></div>
     <div class="drawer-body">
-      <div class="drawer-meta">
-        <span class="annonce-cat" id="drawer-ann-cat"></span>
-        <span class="annonce-meta"><span id="drawer-ann-quartier"></span></span>
-        <span class="actu-date" id="drawer-ann-date"></span>
-      </div>
-      <div class="full-content" id="drawer-ann-desc"></div>
+      <div class="drawer-meta"><span class="ann-cat" id="dr-ann-cat"></span><span class="actu-date" id="dr-ann-meta"></span></div>
+      <div class="drawer-content" id="dr-ann-content"></div>
       <div class="contact-box">
         <h4>📬 Entrer en contact</h4>
-        <p>Les coordonnées de l'auteur sont protégées. Laissez vos informations et nous mettrons les deux parties en relation.</p>
-        <button class="btn-contact-toggle" onclick="toggleContactForm()">✉️ Je souhaite entrer en contact</button>
-        <div class="contact-form" id="contactForm">
-          <div class="form-row" style="margin-top:14px">
-            <div class="form-group"><label>Votre prénom *</label><input type="text" id="c-prenom" placeholder="Marie"></div>
-            <div class="form-group"><label>Votre nom *</label><input type="text" id="c-nom" placeholder="Dupont"></div>
+        <p>Les coordonnées sont protégées. Laissez vos informations et nous mettrons les deux parties en relation.</p>
+        <button class="btn-ct" onclick="document.getElementById('ct-form').classList.toggle('open')">✉️ Je souhaite entrer en contact</button>
+        <div class="ct-form" id="ct-form">
+          <div class="fr" style="margin-top:14px">
+            <div class="fg"><label>Votre prénom *</label><input type="text" id="c-prenom" placeholder="Marie"></div>
+            <div class="fg"><label>Votre nom *</label><input type="text" id="c-nom" placeholder="Dupont"></div>
           </div>
-          <div class="form-group"><label>Votre email *</label><input type="email" id="c-email" placeholder="marie@exemple.fr"></div>
-          <div class="form-group"><label>Votre message (optionnel)</label><textarea id="c-message" rows="3" placeholder="Bonjour, je suis intéressé·e par votre annonce…"></textarea></div>
-          <button class="btn-submit" style="margin-top:8px" onclick="envoyerContact()">📨 Envoyer ma demande</button>
+          <div class="fg"><label>Votre email *</label><input type="email" id="c-email" placeholder="marie@exemple.fr"></div>
+          <div class="fg"><label>Message (optionnel)</label><textarea id="c-msg" rows="3" placeholder="Bonjour, je suis intéressé·e par votre annonce…"></textarea></div>
+          <button class="btn-sub" style="margin-top:8px" onclick="envoyerContact()">📨 Envoyer ma demande</button>
           <div class="msg" id="contactMsg"></div>
         </div>
       </div>
@@ -481,165 +419,130 @@ tbody td{padding:10px 14px;font-size:0.84rem;color:rgba(244,241,235,0.8)}
   </div>
 </div>
 <!-- LOGIN -->
-<div class="modal-overlay" id="loginOverlay" onclick="closeOnBg(event,'loginOverlay')">
-  <div class="login-modal">
+<div class="modal-overlay" id="loginModal" onclick="if(event.target.id==='loginModal')closeM('loginModal')">
+  <div class="login-box">
     <h3>🔐 Espace Admin</h3>
     <p>Entrez le mot de passe pour accéder au panneau d'administration.</p>
     <input type="password" id="pwdInput" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkPwd()">
-    <div class="login-error" id="loginError">❌ Mot de passe incorrect</div>
+    <div class="login-err" id="loginErr">❌ Mot de passe incorrect</div>
     <div class="login-btns">
       <button class="btn-login" onclick="checkPwd()">Connexion</button>
-      <button class="btn-cancel" onclick="closeModal('loginOverlay')">Annuler</button>
+      <button class="btn-cancel-l" onclick="closeM('loginModal')">Annuler</button>
     </div>
   </div>
 </div>
 <!-- ADMIN -->
-<div class="modal-overlay" id="adminOverlay" onclick="closeOnBg(event,'adminOverlay')">
+<div class="modal-overlay" id="adminModal" onclick="if(event.target.id==='adminModal')closeM('adminModal')">
   <div class="admin-modal">
-    <div class="admin-header">
-      <h2>Panneau <span>Admin</span></h2>
-      <button class="admin-close-btn" onclick="closeModal('adminOverlay')">✕</button>
-    </div>
+    <div class="admin-head"><h2>Panneau <span>Admin</span></h2><button class="a-close" onclick="closeM('adminModal')">✕</button></div>
     <div class="admin-tabs">
-      <button class="tab-btn active" data-tab="adherents" onclick="switchTab(this)">👥 Adhérent·es</button>
-      <button class="tab-btn" data-tab="actus-admin" onclick="switchTab(this)">📰 Actualités</button>
-      <button class="tab-btn" data-tab="annonces-admin" onclick="switchTab(this)">📋 Annonces</button>
-      <button class="tab-btn" data-tab="contacts-admin" onclick="switchTab(this)">📨 Demandes contact</button>
-      <button class="tab-btn" data-tab="contenus" onclick="switchTab(this)">✏️ Textes du site</button>
-      <button class="tab-btn" data-tab="contact" onclick="switchTab(this)">📬 Contact</button>
+      <button class="tab-btn active" data-tab="t-adh" onclick="switchTab(this)">👥 Adhérent·es</button>
+      <button class="tab-btn" data-tab="t-actus" onclick="switchTab(this)">📰 Actualités</button>
+      <button class="tab-btn" data-tab="t-ann" onclick="switchTab(this)">📋 Annonces</button>
+      <button class="tab-btn" data-tab="t-contacts" onclick="switchTab(this)">📨 Contacts</button>
+      <button class="tab-btn" data-tab="t-textes" onclick="switchTab(this)">✏️ Textes & Photos</button>
     </div>
     <div class="admin-content">
-      <!-- ADHERENTS -->
-      <div class="tab-panel active" id="tab-adherents">
-        <div class="panel-toolbar">
-          <span class="badge-count" id="totalCount">…</span>
-          <button class="btn-export" onclick="exportCSV('adherents')">⬇ Exporter CSV</button>
-        </div>
-        <div id="adminBody"><div class="loading-spin">⏳ CHARGEMENT…</div></div>
+      <div class="tab-panel active" id="t-adh">
+        <div class="panel-top"><span class="badge" id="adhCount">…</span><button class="btn-export" onclick="exportCSV('adh')">⬇ Export CSV</button></div>
+        <div id="adhBody"><div class="spin">⏳</div></div>
       </div>
-      <!-- ACTUS ADMIN -->
-      <div class="tab-panel" id="tab-actus-admin">
-        <div class="panel-toolbar">
-          <span class="badge-count" id="actusCount">…</span>
-          <button class="btn-add-actu" onclick="toggleActuForm()">+ Nouvelle actualité</button>
-        </div>
+      <div class="tab-panel" id="t-actus">
+        <div class="panel-top"><span class="badge" id="actusCount">…</span><button class="btn-new" onclick="document.getElementById('actuFormBox').classList.toggle('open')">+ Nouvelle actualité</button></div>
         <div class="actu-form-box" id="actuFormBox">
           <h4>✏️ Nouvelle actualité</h4>
-          <div class="form-row">
-            <div class="form-group"><label>Titre *</label><input type="text" id="actu-titre" placeholder="Titre de l'actualité"></div>
-            <div class="form-group"><label>Catégorie</label>
+          <div class="fr">
+            <div class="fg"><label>Titre *</label><input type="text" id="actu-titre" placeholder="Titre"></div>
+            <div class="fg"><label>Catégorie</label>
               <select id="actu-cat">
-                <option value="Actualité">Actualité</option>
-                <option value="Événement">Événement</option>
-                <option value="Mobilisation">Mobilisation</option>
-                <option value="Victoire">Victoire</option>
+                <option value="Actualité">Actualité</option><option value="Événement">Événement</option>
+                <option value="Mobilisation">Mobilisation</option><option value="Victoire">Victoire</option>
                 <option value="Communiqué">Communiqué</option>
               </select>
             </div>
           </div>
-          <div class="form-group"><label>Contenu *</label><textarea id="actu-contenu" rows="5" placeholder="Contenu de l'actualité…"></textarea></div>
+          <div class="fg"><label>Contenu *</label><textarea id="actu-contenu" rows="5" placeholder="Contenu…"></textarea></div>
           <div style="display:flex;gap:10px;margin-top:8px">
-            <button class="btn-add-actu" onclick="publierActu()">✅ Publier</button>
-            <button class="btn-cancel" style="padding:8px 18px;border-radius:3px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;letter-spacing:1px;text-transform:uppercase" onclick="toggleActuForm()">Annuler</button>
+            <button class="btn-new" onclick="publierActu()">✅ Publier</button>
+            <button class="btn-cancel-l" onclick="document.getElementById('actuFormBox').classList.remove('open')">Annuler</button>
           </div>
           <div class="msg" id="actuMsg"></div>
         </div>
-        <div id="actusAdminBody"><div class="loading-spin">⏳ CHARGEMENT…</div></div>
+        <div id="actusBody"><div class="spin">⏳</div></div>
       </div>
-      <!-- ANNONCES ADMIN -->
-      <div class="tab-panel" id="tab-annonces-admin">
-        <div class="panel-toolbar">
-          <span class="badge-count" id="annoncesCount">…</span>
-          <button class="btn-export" onclick="exportCSV('annonces')">⬇ Exporter CSV</button>
-        </div>
-        <div id="annoncesAdminBody"><div class="loading-spin">⏳ CHARGEMENT…</div></div>
+      <div class="tab-panel" id="t-ann">
+        <div class="panel-top"><span class="badge" id="annCount">…</span><button class="btn-export" onclick="exportCSV('ann')">⬇ Export CSV</button></div>
+        <div id="annBody"><div class="spin">⏳</div></div>
       </div>
-      <!-- CONTACTS ANNONCES -->
-      <div class="tab-panel" id="tab-contacts-admin">
-        <div class="panel-toolbar">
-          <span class="badge-count" id="contactsCount">…</span>
-          <button class="btn-export" onclick="exportCSV('contacts')">⬇ Exporter CSV</button>
-        </div>
-        <div id="contactsAdminBody"><div class="loading-spin">⏳ CHARGEMENT…</div></div>
+      <div class="tab-panel" id="t-contacts">
+        <div class="panel-top"><span class="badge" id="ctCount">…</span><button class="btn-export" onclick="exportCSV('ct')">⬇ Export CSV</button></div>
+        <div id="ctBody"><div class="spin">⏳</div></div>
       </div>
-      <!-- CONTENUS -->
-      <div class="tab-panel" id="tab-contenus">
-        <div class="content-editor">
+      <div class="tab-panel" id="t-textes">
+        <div class="ce">
           <div class="cb">
-            <div class="cb-head"><h4>🖼️ Photos du site</h4><span>URL des images (colle un lien direct)</span></div>
+            <div class="cb-head"><h4>🖼️ Photos du site</h4><span>URL directe d'une image</span></div>
             <div class="cb-body">
-              <div class="ef"><label>Photo d'accueil (Hero)</label><input type="text" id="ed-photo-hero" placeholder="https://... colle ici l'adresse d'une image"></div>
-              <div style="background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.2);border-radius:4px;padding:12px 14px;margin:4px 0 8px">
-                <p style="color:var(--or);font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">💡 Comment obtenir l'URL d'une photo ?</p>
-                <p style="color:rgba(244,241,235,0.55);font-size:0.78rem;line-height:1.6">
-                  <strong style="color:var(--blanc)">Depuis ton téléphone :</strong> envoie la photo sur WhatsApp Web, clique-droit → "Copier l'adresse de l'image"<br>
-                  <strong style="color:var(--blanc)">Depuis Google Images :</strong> clique sur une image → clic-droit → "Copier l'adresse de l'image"<br>
-                  <strong style="color:var(--blanc)">Depuis Unsplash/Pexels :</strong> cherche "Mirail Toulouse" → ouvre la photo → clic-droit → copie l'URL<br>
-                  <strong style="color:var(--blanc)">Depuis ImgBB.com :</strong> uploader ta propre photo gratuitement → copie le "Direct link"
-                </p>
+              <div class="ef"><label>Photo d'accueil (Hero)</label><input type="text" id="ed-photo-hero" placeholder="https://..."></div>
+              <div class="photo-tip"><strong>Comment obtenir l'URL ?</strong><br>
+                • <strong>Google Images</strong> → clic-droit → "Copier l'adresse de l'image"<br>
+                • <strong>Ton téléphone</strong> → upload sur <a href="https://imgbb.com" target="_blank">imgbb.com</a> (gratuit) → copie "Direct link"<br>
+                • <strong>Unsplash</strong> → cherche "Mirail Toulouse" → ouvre → clic-droit → copie l'URL
               </div>
-              <div class="ef" style="margin-top:6px"><label>Photo de l'encart "Ancrés dans la réalité"</label><input type="text" id="ed-photo-encart" placeholder="https://... (laisser vide pour garder l'icône 🏘️)"></div>
-              <div class="save-row">
-                <button class="save-btn" onclick="saveGroup(['photo-hero','photo-encart'],'flash-photos');applyContent()">Enregistrer les photos</button>
-                <span class="flash" id="flash-photos">✓ Sauvegardé !</span>
-              </div>
+              <div class="ef"><label>Photo de l'encart (vide = icône 🏘️)</label><input type="text" id="ed-photo-encart" placeholder="https://..."></div>
+              <div class="save-row"><button class="save-btn" onclick="savePhotos()">Enregistrer les photos</button><span class="flash" id="flash-photos">✓ Sauvegardé !</span></div>
             </div>
           </div>
           <div class="cb">
             <div class="cb-head"><h4>🦸 Texte d'accueil</h4><span>Sous le grand titre</span></div>
             <div class="cb-body">
               <div class="ef"><label>Paragraphe d'intro</label><textarea id="ed-hero-texte" rows="3"></textarea></div>
-              <div class="save-row"><button class="save-btn" onclick="saveOne('hero-texte')">Enregistrer</button><span class="flash" id="flash-hero-texte">✓ Sauvegardé !</span></div>
+              <div class="save-row"><button class="save-btn" onclick="save1('hero-texte')">Enregistrer</button><span class="flash" id="flash-hero-texte">✓</span></div>
             </div>
           </div>
           <div class="cb">
             <div class="cb-head"><h4>📖 Notre histoire</h4><span>3 zones de texte</span></div>
             <div class="cb-body">
-              <div class="ef"><label>Premier paragraphe</label><textarea id="ed-histoire-p1" rows="4"></textarea></div>
-              <div class="ef"><label>Citation</label><input type="text" id="ed-histoire-citation"></div>
-              <div class="ef"><label>Deuxième paragraphe</label><textarea id="ed-histoire-p2" rows="4"></textarea></div>
-              <div class="save-row"><button class="save-btn" onclick="saveGroup(['histoire-p1','histoire-citation','histoire-p2'],'flash-histoire')">Enregistrer tout</button><span class="flash" id="flash-histoire">✓ Sauvegardé !</span></div>
+              <div class="ef"><label>Premier paragraphe</label><textarea id="ed-hist-p1" rows="4"></textarea></div>
+              <div class="ef"><label>Citation</label><input type="text" id="ed-hist-cit"></div>
+              <div class="ef"><label>Deuxième paragraphe</label><textarea id="ed-hist-p2" rows="4"></textarea></div>
+              <div class="save-row"><button class="save-btn" onclick="saveN(['hist-p1','hist-cit','hist-p2'],'flash-histoire')">Enregistrer tout</button><span class="flash" id="flash-histoire">✓</span></div>
             </div>
           </div>
           <div class="cb">
             <div class="cb-head"><h4>📊 Encart & chiffres</h4><span>Titre, texte et stats</span></div>
             <div class="cb-body">
-              <div class="form-row">
-                <div class="ef"><label>Titre encart</label><input type="text" id="ed-encart-titre"></div>
-                <div class="ef"><label>Texte encart</label><input type="text" id="ed-encart-texte"></div>
+              <div class="fr">
+                <div class="ef"><label>Titre</label><input type="text" id="ed-enc-titre"></div>
+                <div class="ef"><label>Texte</label><input type="text" id="ed-enc-texte"></div>
               </div>
-              <div class="row3">
-                <div class="ef"><label>Chiffre 1</label><input type="text" id="ed-stat1-num"></div>
-                <div class="ef"><label>Chiffre 2</label><input type="text" id="ed-stat2-num"></div>
-                <div class="ef"><label>Chiffre 3</label><input type="text" id="ed-stat3-num"></div>
-                <div class="ef"><label>Label 1</label><input type="text" id="ed-stat1-lbl"></div>
-                <div class="ef"><label>Label 2</label><input type="text" id="ed-stat2-lbl"></div>
-                <div class="ef"><label>Label 3</label><input type="text" id="ed-stat3-lbl"></div>
+              <div class="r3">
+                <div class="ef"><label>Chiffre 1</label><input type="text" id="ed-s1n"></div>
+                <div class="ef"><label>Chiffre 2</label><input type="text" id="ed-s2n"></div>
+                <div class="ef"><label>Chiffre 3</label><input type="text" id="ed-s3n"></div>
+                <div class="ef"><label>Label 1</label><input type="text" id="ed-s1l"></div>
+                <div class="ef"><label>Label 2</label><input type="text" id="ed-s2l"></div>
+                <div class="ef"><label>Label 3</label><input type="text" id="ed-s3l"></div>
               </div>
-              <div class="save-row"><button class="save-btn" onclick="saveGroup(['encart-titre','encart-texte','stat1-num','stat2-num','stat3-num','stat1-lbl','stat2-lbl','stat3-lbl'],'flash-encart')">Enregistrer tout</button><span class="flash" id="flash-encart">✓ Sauvegardé !</span></div>
+              <div class="save-row"><button class="save-btn" onclick="saveN(['enc-titre','enc-texte','s1n','s2n','s3n','s1l','s2l','s3l'],'flash-encart')">Enregistrer tout</button><span class="flash" id="flash-encart">✓</span></div>
             </div>
           </div>
           <div class="cb">
             <div class="cb-head"><h4>✊ Section Adhésion</h4><span>Texte gauche</span></div>
             <div class="cb-body">
-              <div class="ef"><label>Paragraphe 1</label><textarea id="ed-adhesion-p1" rows="3"></textarea></div>
-              <div class="ef"><label>Paragraphe 2</label><textarea id="ed-adhesion-p2" rows="3"></textarea></div>
-              <div class="save-row"><button class="save-btn" onclick="saveGroup(['adhesion-p1','adhesion-p2'],'flash-adhesion')">Enregistrer tout</button><span class="flash" id="flash-adhesion">✓ Sauvegardé !</span></div>
+              <div class="ef"><label>Paragraphe 1</label><textarea id="ed-adh-p1" rows="3"></textarea></div>
+              <div class="ef"><label>Paragraphe 2</label><textarea id="ed-adh-p2" rows="3"></textarea></div>
+              <div class="save-row"><button class="save-btn" onclick="saveN(['adh-p1','adh-p2'],'flash-adh')">Enregistrer tout</button><span class="flash" id="flash-adh">✓</span></div>
             </div>
           </div>
-        </div>
-      </div>
-      <!-- CONTACT -->
-      <div class="tab-panel" id="tab-contact">
-        <div class="content-editor">
           <div class="cb">
-            <div class="cb-head"><h4>📬 Informations de contact</h4><span>Pied de page</span></div>
+            <div class="cb-head"><h4>📬 Infos contact</h4><span>Pied de page</span></div>
             <div class="cb-body">
-              <div class="form-row">
+              <div class="fr">
                 <div class="ef"><label>Email</label><input type="text" id="ed-footer-email"></div>
                 <div class="ef"><label>Téléphone</label><input type="text" id="ed-footer-tel"></div>
               </div>
-              <div class="save-row"><button class="save-btn" onclick="saveGroup(['footer-email','footer-tel'],'flash-contact')">Enregistrer</button><span class="flash" id="flash-contact">✓ Sauvegardé !</span></div>
+              <div class="save-row"><button class="save-btn" onclick="saveN(['footer-email','footer-tel'],'flash-contact')">Enregistrer</button><span class="flash" id="flash-contact">✓</span></div>
             </div>
           </div>
         </div>
@@ -648,256 +551,234 @@ tbody td{padding:10px 14px;font-size:0.84rem;color:rgba(244,241,235,0.8)}
   </div>
 </div>
 <script>
-const SB_URL='https://vzfwtyczqfbhbjzotjft.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
-const ADMIN_PWD='toulouse2026';
-const CONTENT_KEY='cqp_contenus';
-const sb=supabase.createClient(SB_URL,SB_KEY);
-const DEFAULTS={'hero-texte':"Né en 2026 pour faire entendre la voix des quartiers populaires de Toulouse, le Comité agit là où les besoins sont les plus forts — logement, transports, écoles, dignité.",'histoire-p1':"Écris ici le premier paragraphe de votre histoire.",'histoire-citation':'"Nos quartiers ont des problèmes. Mais ils ont surtout des forces."','histoire-p2':"Écris ici la suite de votre histoire.",'encart-titre':"Ancrés dans la réalité",'encart-texte':"Permanences, aide aux démarches, soutien scolaire — notre action est quotidienne.",'stat1-num':"—",'stat1-lbl':"Membres",'stat2-num':"—",'stat2-lbl':"Quartiers",'stat3-num':"2026",'stat3-lbl':"Fondé en",'adhesion-p1':"Adhérer au Comité, c'est rejoindre une force collective qui agit concrètement dans tes rues, ton immeuble, ton quartier.",'adhesion-p2':"Remplis le formulaire — nous te recontacterons pour te présenter les actions en cours.",'footer-email':"contact@cqp-toulouse.fr",'footer-tel':"06 XX XX XX XX",'photo-hero':"https://images.unsplash.com/photo-1560221328-12fe60f83ab8?w=1600&q=80",'photo-encart':""};
-const DOM_MAP={'hero-texte':'site-hero-texte','histoire-p1':'site-histoire-p1','histoire-citation':'site-histoire-citation','histoire-p2':'site-histoire-p2','encart-titre':'site-encart-titre','encart-texte':'site-encart-texte','stat1-num':'site-stat1-num','stat2-num':'site-stat2-num','stat3-num':'site-stat3-num','stat1-lbl':'site-stat1-lbl','stat2-lbl':'site-stat2-lbl','stat3-lbl':'site-stat3-lbl','adhesion-p1':'site-adhesion-p1','adhesion-p2':'site-adhesion-p2','footer-email':'footer-email','footer-tel':'footer-tel'};
-function getContent(){try{return Object.assign({},DEFAULTS,JSON.parse(localStorage.getItem(CONTENT_KEY))||{});}catch{return{...DEFAULTS};}}
-function saveContent(obj){localStorage.setItem(CONTENT_KEY,JSON.stringify(obj));}
-function applyContent(){const c=getContent();Object.entries(DOM_MAP).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=c[k]||'';});
-  // Photos dynamiques via CSS variables
-  if(c['photo-hero'])document.documentElement.style.setProperty('--hero-photo',`url('${c['photo-hero']}')`);
-  if(c['photo-encart'])document.documentElement.style.setProperty('--encart-photo',`url('${c['photo-encart']}')`);
-  else document.documentElement.style.removeProperty('--encart-photo');
+const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
+const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+const PWD='toulouse2026';
+const CK='cqp_v3';
+const sb=supabase.createClient(SBU,SBK);
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const DEF={
+  'hero-texte':'Né en 2026 pour faire entendre la voix des quartiers populaires de Toulouse, le Comité agit là où les besoins sont les plus forts — logement, transports, écoles, dignité.',
+  'hist-p1':'Écris ici le premier paragraphe de votre histoire. Depuis quelle année le comité existe-t-il ? Comment est-il né ?',
+  'hist-cit':'"Nos quartiers ont des problèmes. Mais ils ont surtout des forces."',
+  'hist-p2':'Écris ici la suite. Quelles actions avez-vous menées ? Quels quartiers couvrez-vous ?',
+  'enc-titre':'Ancrés dans la réalité','enc-texte':'Permanences, aide aux démarches, soutien scolaire — notre action est quotidienne.',
+  's1n':'—','s1l':'Membres','s2n':'—','s2l':'Quartiers','s3n':'2026','s3l':'Fondé en',
+  'adh-p1':"Adhérer au Comité, c'est rejoindre une force collective qui agit concrètement dans tes rues, ton immeuble, ton quartier.",
+  'adh-p2':'Remplis le formulaire — nous te recontacterons pour te présenter les actions en cours.',
+  'footer-email':'contact@cqp-toulouse.fr','footer-tel':'06 XX XX XX XX',
+  'photo-hero':'https://images.unsplash.com/photo-1560221328-12fe60f83ab8?w=1600&q=80',
+  'photo-encart':''
+};
+const DOM={'hero-texte':'site-hero-texte','hist-p1':'site-hist-p1','hist-cit':'site-hist-cit','hist-p2':'site-hist-p2',
+  'enc-titre':'site-enc-titre','enc-texte':'site-enc-texte','s1n':'site-s1n','s2n':'site-s2n','s3n':'site-s3n',
+  's1l':'site-s1l','s2l':'site-s2l','s3l':'site-s3l','adh-p1':'site-adh-p1','adh-p2':'site-adh-p2',
+  'footer-email':'footer-email','footer-tel':'footer-tel'};
+function getC(){try{return Object.assign({},DEF,JSON.parse(localStorage.getItem(CK))||{});}catch{return{...DEF};}}
+function setC(o){localStorage.setItem(CK,JSON.stringify(o));}
+function applyAll(){
+  const c=getC();
+  Object.entries(DOM).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=c[k]||'';});
+  const h=c['photo-hero']||DEF['photo-hero'];
+  document.getElementById('hero-bg').style.backgroundImage=
+    `linear-gradient(135deg,rgba(200,16,46,.2) 0%,transparent 55%),linear-gradient(to bottom,rgba(13,13,13,.1) 0%,rgba(13,13,13,.9) 100%),url('${h}')`;
+  const enc=c['photo-encart'];
+  const encEl=document.getElementById('encart-img');
+  const emoji=document.getElementById('encart-emoji');
+  if(enc){encEl.style.backgroundImage=`url('${enc}')`;encEl.style.backgroundSize='cover';encEl.style.backgroundPosition='center';if(emoji)emoji.style.display='none';}
+  else{encEl.style.backgroundImage='none';if(emoji)emoji.style.display='block';}
 }
-function loadEditors(){const c=getContent();Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('ed-'+k);if(el)el.value=c[k]||'';});}
-function saveOne(key){const c=getContent();const ed=document.getElementById('ed-'+key);if(!ed)return;c[key]=ed.value;saveContent(c);const dom=document.getElementById(DOM_MAP[key]);if(dom)dom.textContent=ed.value;if(key==='photo-hero'&&ed.value)document.documentElement.style.setProperty('--hero-photo',`url('${ed.value}')`);if(key==='photo-encart'){if(ed.value)document.documentElement.style.setProperty('--encart-photo',`url('${ed.value}')`);else document.documentElement.style.removeProperty('--encart-photo');}showFlash('flash-'+key);}
-function saveGroup(keys,flashId){const c=getContent();keys.forEach(k=>{const ed=document.getElementById('ed-'+k);if(!ed)return;c[k]=ed.value;const dom=document.getElementById(DOM_MAP[k]);if(dom)dom.textContent=ed.value;});saveContent(c);showFlash(flashId);}
-function showFlash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function switchTab(btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');const tab=btn.dataset.tab;document.getElementById('tab-'+tab).classList.add('active');if(tab==='adherents')renderAdherents();if(tab==='actus-admin')renderActusAdmin();if(tab==='annonces-admin')renderAnnoncesAdmin();if(tab==='contacts-admin')renderContactsAdmin();}
-// ===== CONTACTS ANNONCES ADMIN =====
-let contactsCache=[];
-async function renderContactsAdmin(){
-  const body=document.getElementById('contactsAdminBody');body.innerHTML='<div class="loading-spin">⏳ CHARGEMENT…</div>';
-  try{
-    const{data,error}=await sb.from('contacts_annonces').select('*, annonces(titre)').order('date_contact',{ascending:false});
-    if(error)throw error;contactsCache=data||[];
-    document.getElementById('contactsCount').textContent=contactsCache.length+' demande'+(contactsCache.length>1?'s':'');
-    if(!contactsCache.length){body.innerHTML='<div class="admin-empty"><span>📨</span>Aucune demande de contact pour l\'instant.</div>';return;}
-    body.innerHTML=`<table><thead><tr><th>#</th><th>Annonce concernée</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Message</th><th>Date</th><th></th></tr></thead><tbody>${contactsCache.map((c,i)=>`<tr><td style="color:rgba(244,241,235,0.3);font-size:0.72rem">${i+1}</td><td><span class="q-badge">${esc(c.annonces?.titre||'?')}</span></td><td>${esc(c.prenom_contact)}</td><td>${esc(c.nom_contact)}</td><td>${esc(c.email_contact)}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(c.message||'')}">${esc(c.message||'—')}</td><td><span class="d-text">${new Date(c.date_contact).toLocaleDateString('fr-FR')}</span></td><td><button class="btn-del" onclick="supprimer('contacts_annonces',${c.id},renderContactsAdmin)">✕</button></td></tr>`).join('')}</tbody></table>`;
-  }catch(e){body.innerHTML=`<div class="admin-empty"><span>⚠️</span>Erreur : ${e.message}</div>`;}
-// ===== ACTUALITÉS PUBLIC =====
+function loadEditors(){const c=getC();Object.keys(DEF).forEach(k=>{const el=document.getElementById('ed-'+k);if(el)el.value=c[k]||'';});}
+function save1(k){const c=getC();const ed=document.getElementById('ed-'+k);if(!ed)return;c[k]=ed.value;setC(c);const d=document.getElementById(DOM[k]);if(d)d.textContent=ed.value;flash('flash-'+k);}
+function saveN(ks,fid){const c=getC();ks.forEach(k=>{const ed=document.getElementById('ed-'+k);if(!ed)return;c[k]=ed.value;const d=document.getElementById(DOM[k]);if(d)d.textContent=ed.value;});setC(c);flash(fid);}
+function savePhotos(){
+  const c=getC();
+  c['photo-hero']=document.getElementById('ed-photo-hero').value.trim()||DEF['photo-hero'];
+  c['photo-encart']=document.getElementById('ed-photo-encart').value.trim();
+  setC(c);applyAll();flash('flash-photos');
+}
+function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
+</script>
+<script>
+let actusPub=[],annPub=[],curAnnId=null;
+const CATS={Logement:'cat-Logement',Emploi:'cat-Emploi',Service:'cat-Service','Solidarité':'cat-Solidarite',Autre:'cat-Autre'};
 async function loadActus(){
-  const grid=document.getElementById('actus-grid');
-  try{
-    const{data,error}=await sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).limit(6);
-    if(error)throw error;
-    actusCachePublic=data||[];
-    grid.innerHTML=data.map(a=>`<div class="actu-card" onclick="openActuDrawer(${a.id})">
+  const g=document.getElementById('actus-grid');
+  try{const{data,error}=await sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).limit(6);
+    if(error)throw error;actusPub=data||[];
+    if(!actusPub.length){g.innerHTML='<div class="empty-msg" style="grid-column:1/-1"><span>📰</span>Aucune actualité pour l\'instant.</div>';return;}
+    g.innerHTML=actusPub.map(a=>`<div class="actu-card" onclick="openDrActu(${a.id})">
       <span class="actu-cat">${esc(a.categorie)}</span>
-      <div class="actu-body">
-        <h3>${esc(a.titre)}</h3>
+      <div class="actu-body"><h3>${esc(a.titre)}</h3>
         <p>${esc(a.contenu).substring(0,150)}${a.contenu.length>150?'…':''}</p>
         <div class="actu-date">${new Date(a.date_publication).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})}</div>
-      </div>
-    </div>`).join('');
-  }catch(e){grid.innerHTML='<div class="actus-empty" style="grid-column:1/-1">Impossible de charger les actualités.</div>';}
+      </div></div>`).join('');
+  }catch(e){g.innerHTML='<div class="empty-msg" style="grid-column:1/-1">Impossible de charger les actualités.</div>';}
 }
-// ===== ANNONCES PUBLIC =====
-const CAT_CLASS={Logement:'cat-logement',Emploi:'cat-emploi',Service:'cat-service','Solidarité':'cat-solidarite',Autre:'cat-autre'};
 async function loadAnnonces(){
-  const grid=document.getElementById('annonces-grid');
-  try{
-    const{data,error}=await sb.from('annonces').select('*').eq('validee',true).order('date_depot',{ascending:false}).limit(8);
-    if(error)throw error;
-    annoncesCachePublic=data||[];
-    if(!data||!data.length){grid.innerHTML='<div class="annonces-empty" style="grid-column:1/-1"><span>📋</span>Aucune annonce pour l\'instant.<br><small>Soyez le premier à déposer une annonce !</small></div>';return;}
-    grid.innerHTML=data.map(a=>`<div class="annonce-card" onclick="openAnnonceDrawer(${a.id})" style="cursor:pointer">
-      <div class="annonce-header">
-        <span class="annonce-cat ${CAT_CLASS[a.categorie]||'cat-autre'}">${esc(a.categorie)}</span>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.65rem;letter-spacing:1px;color:rgba(244,241,235,0.3);text-transform:uppercase">${new Date(a.date_depot).toLocaleDateString('fr-FR')}</span>
+  const g=document.getElementById('annonces-grid');
+  try{const{data,error}=await sb.from('annonces').select('*').eq('validee',true).order('date_depot',{ascending:false}).limit(8);
+    if(error)throw error;annPub=data||[];
+    if(!annPub.length){g.innerHTML='<div class="empty-msg" style="grid-column:1/-1"><span>📋</span>Aucune annonce pour l\'instant.<br><small>Soyez le premier à déposer !</small></div>';return;}
+    g.innerHTML=annPub.map(a=>`<div class="annonce-card" onclick="openDrAnn(${a.id})">
+      <div class="ann-head">
+        <span class="ann-cat ${CATS[a.categorie]||'cat-Autre'}">${esc(a.categorie)}</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;color:rgba(244,241,235,.3);text-transform:uppercase">${new Date(a.date_depot).toLocaleDateString('fr-FR')}</span>
       </div>
-      <div class="annonce-titre">${esc(a.titre)}</div>
-      <div class="annonce-desc">${esc(a.description).substring(0,120)}${a.description.length>120?'…':''}</div>
-      <div class="annonce-meta">
-        <span>📍 ${esc(a.quartier)}</span>
-        <span>👤 ${esc(a.prenom)}</span>
-        <span style="color:rgba(245,166,35,0.7)">→ Cliquer pour voir + contacter</span>
-      </div>
+      <div class="ann-titre">${esc(a.titre)}</div>
+      <div class="ann-desc">${esc(a.description).substring(0,120)}${a.description.length>120?'…':''}</div>
+      <div class="ann-meta"><span>📍 ${esc(a.quartier)}</span><span>👤 ${esc(a.prenom)}</span><span class="ann-cta">Voir + contacter →</span></div>
     </div>`).join('');
-  }catch(e){grid.innerHTML='<div class="annonces-empty" style="grid-column:1/-1">Impossible de charger les annonces.</div>';}
+  }catch(e){g.innerHTML='<div class="empty-msg" style="grid-column:1/-1">Impossible de charger les annonces.</div>';}
 }
-// ===== DÉPOSER ANNONCE =====
-async function deposerAnnonce(){
-  const prenom=document.getElementById('a-prenom').value.trim();
-  const nom=document.getElementById('a-nom').value.trim();
-  const email=document.getElementById('a-email').value.trim();
-  const categorie=document.getElementById('a-categorie').value;
-  const quartier=document.getElementById('a-quartier').value;
-  const titre=document.getElementById('a-titre').value.trim();
-  const description=document.getElementById('a-description').value.trim();
-  const contact=document.getElementById('a-contact').value.trim();
-  const rgpd=document.getElementById('a-rgpd').checked;
-  if(!prenom||!nom||!email||!categorie||!quartier||!titre||!description){showMsgEl('depotMsg','error','⚠ Merci de remplir tous les champs obligatoires.');return;}
-  if(!rgpd){showMsgEl('depotMsg','error','⚠ Merci d\'accepter les conditions.');return;}
-  const btn=document.getElementById('depotBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
-  try{
-    const{error}=await sb.from('annonces').insert({prenom,nom,email,quartier,categorie,titre,description,contact});
-    if(error){showMsgEl('depotMsg','error','⚠ Erreur : '+error.message);btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';return;}
-    showMsgEl('depotMsg','success','✅ Annonce soumise ! Elle sera publiée après validation par notre équipe (24–48h).');
-    ['a-prenom','a-nom','a-email','a-titre','a-description','a-contact'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('a-categorie').value='';document.getElementById('a-quartier').value='';document.getElementById('a-rgpd').checked=false;
-    setTimeout(()=>{btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';},8000);
-  }catch(e){showMsgEl('depotMsg','error','⚠ Erreur réseau.');btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';}
+function openDrActu(id){
+  const a=actusPub.find(x=>x.id===id);if(!a)return;
+  document.getElementById('dr-actu-titre').textContent=a.titre;
+  document.getElementById('dr-actu-cat').textContent=a.categorie;
+  document.getElementById('dr-actu-date').textContent=new Date(a.date_publication).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('dr-actu-content').textContent=a.contenu;
+  openDr('dActu');
 }
-// ===== ADHÉSION =====
-async function soumettre(){
-  const prenom=document.getElementById('f-prenom').value.trim();const nom=document.getElementById('f-nom').value.trim();
-  const email=document.getElementById('f-email').value.trim();const quartier=document.getElementById('f-quartier').value;
-  const rgpd=document.getElementById('f-rgpd').checked;
-  if(!prenom||!nom||!email||!quartier){showMsgEl('formMsg','error','⚠ Remplis tous les champs obligatoires.');return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsgEl('formMsg','error','⚠ Email invalide.');return;}
-  if(!rgpd){showMsgEl('formMsg','error','⚠ Accepte la politique de confidentialité.');return;}
-  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
-  try{
-    const{error}=await sb.from('adherents').insert({prenom,nom,email,quartier});
-    if(error){if(error.code==='23505')showMsgEl('formMsg','error','⚠ Email déjà enregistré.');else showMsgEl('formMsg','error','⚠ Erreur : '+error.message);btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';return;}
-    showMsgEl('formMsg','success','🎉 Bienvenue dans le mouvement ! Nous te contacterons très prochainement.');
-    ['f-prenom','f-nom','f-email'].forEach(id=>document.getElementById(id).value='');document.getElementById('f-quartier').value='';document.getElementById('f-rgpd').checked=false;
-    setTimeout(()=>{btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';},6000);
-  }catch(e){showMsgEl('formMsg','error','⚠ Erreur réseau.');btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';}
+function openDrAnn(id){
+  const a=annPub.find(x=>x.id===id);if(!a)return;
+  curAnnId=id;
+  document.getElementById('dr-ann-titre').textContent=a.titre;
+  document.getElementById('dr-ann-cat').textContent=a.categorie;
+  document.getElementById('dr-ann-cat').className='ann-cat '+(CATS[a.categorie]||'cat-Autre');
+  document.getElementById('dr-ann-meta').textContent='📍 '+a.quartier+' · 👤 '+a.prenom+' · '+new Date(a.date_depot).toLocaleDateString('fr-FR');
+  document.getElementById('dr-ann-content').textContent=a.description;
+  document.getElementById('ct-form').classList.remove('open');
+  document.getElementById('contactMsg').className='msg';document.getElementById('contactMsg').style.display='none';
+  ['c-prenom','c-nom','c-email','c-msg'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  openDr('dAnn');
 }
-function showMsgEl(id,type,txt){const m=document.getElementById(id);m.className='msg '+type;m.textContent=txt;m.style.display='block';}
-// ===== ADMIN — ADHERENTS =====
-let adherentsCache=[];
-async function renderAdherents(){
-  const body=document.getElementById('adminBody');body.innerHTML='<div class="loading-spin">⏳ CHARGEMENT…</div>';
-  try{const{data,error}=await sb.from('adherents').select('*').order('date_inscription',{ascending:false});if(error)throw error;adherentsCache=data||[];
-    document.getElementById('totalCount').textContent=adherentsCache.length+' inscrit·e'+(adherentsCache.length>1?'s':'');
-    if(!adherentsCache.length){body.innerHTML='<div class="admin-empty"><span>📋</span>Aucun·e adhérent·e.</div>';return;}
-    body.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Quartier</th><th>Date</th><th></th></tr></thead><tbody>${adherentsCache.map((a,i)=>`<tr><td style="color:rgba(244,241,235,0.3);font-size:0.72rem">${i+1}</td><td>${esc(a.prenom)}</td><td>${esc(a.nom)}</td><td>${esc(a.email)}</td><td><span class="q-badge">${esc(a.quartier)}</span></td><td><span class="d-text">${new Date(a.date_inscription).toLocaleDateString('fr-FR')}</span></td><td><button class="btn-del" onclick="supprimer('adherents',${a.id},renderAdherents)">✕</button></td></tr>`).join('')}</tbody></table>`;
-  }catch(e){body.innerHTML=`<div class="admin-empty"><span>⚠️</span>Erreur : ${e.message}</div>`;}}
-// ===== ADMIN — ACTUS =====
-let actusCache=[];
-function toggleActuForm(){const box=document.getElementById('actuFormBox');box.classList.toggle('open');}
-async function publierActu(){
-  const titre=document.getElementById('actu-titre').value.trim();
-  const contenu=document.getElementById('actu-contenu').value.trim();
-  const categorie=document.getElementById('actu-cat').value;
-  if(!titre||!contenu){showMsgEl('actuMsg','error','⚠ Titre et contenu obligatoires.');return;}
-  try{
-    const{error}=await sb.from('actus').insert({titre,contenu,categorie,visible:true});
-    if(error)throw error;
-    showMsgEl('actuMsg','success','✅ Actualité publiée !');
-    document.getElementById('actu-titre').value='';document.getElementById('actu-contenu').value='';
-    setTimeout(()=>{toggleActuForm();renderActusAdmin();loadActus();},1500);
-  }catch(e){showMsgEl('actuMsg','error','⚠ Erreur : '+e.message);}
-}
-async function renderActusAdmin(){
-  const body=document.getElementById('actusAdminBody');body.innerHTML='<div class="loading-spin">⏳ CHARGEMENT…</div>';
-  try{const{data,error}=await sb.from('actus').select('*').order('date_publication',{ascending:false});if(error)throw error;actusCache=data||[];
-    document.getElementById('actusCount').textContent=actusCache.length+' actu'+(actusCache.length>1?'s':'');
-    if(!actusCache.length){body.innerHTML='<div class="admin-empty"><span>📰</span>Aucune actualité.</div>';return;}
-    body.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Catégorie</th><th>Date</th><th>Visible</th><th></th></tr></thead><tbody>${actusCache.map((a,i)=>`<tr><td style="color:rgba(244,241,235,0.3);font-size:0.72rem">${i+1}</td><td>${esc(a.titre)}</td><td><span class="q-badge">${esc(a.categorie)}</span></td><td><span class="d-text">${new Date(a.date_publication).toLocaleDateString('fr-FR')}</span></td><td>${a.visible?'<span class="status-badge-ok">Oui</span>':'<span class="status-badge-ko">Non</span>'}</td><td style="display:flex;gap:6px;align-items:center"><button class="btn-valider" onclick="toggleVisible(${a.id},${a.visible})">${a.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="supprimer('actus',${a.id},()=>{renderActusAdmin();loadActus();})">✕</button></td></tr>`).join('')}</tbody></table>`;
-  }catch(e){body.innerHTML=`<div class="admin-empty"><span>⚠️</span>Erreur : ${e.message}</div>`;}}
-async function toggleVisible(id,actuel){
-  await sb.from('actus').update({visible:!actuel}).eq('id',id);
-  renderActusAdmin();loadActus();
-}
-// ===== ADMIN — ANNONCES =====
-let annoncesCache=[];
-async function renderAnnoncesAdmin(){
-  const body=document.getElementById('annoncesAdminBody');body.innerHTML='<div class="loading-spin">⏳ CHARGEMENT…</div>';
-  try{const{data,error}=await sb.from('annonces').select('*').order('date_depot',{ascending:false});if(error)throw error;annoncesCache=data||[];
-    document.getElementById('annoncesCount').textContent=annoncesCache.length+' annonce'+(annoncesCache.length>1?'s':'');
-    if(!annoncesCache.length){body.innerHTML='<div class="admin-empty"><span>📋</span>Aucune annonce.</div>';return;}
-    body.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Catégorie</th><th>Quartier</th><th>Auteur</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${annoncesCache.map((a,i)=>`<tr><td style="color:rgba(244,241,235,0.3);font-size:0.72rem">${i+1}</td><td title="${esc(a.description)}">${esc(a.titre)}</td><td><span class="q-badge">${esc(a.categorie)}</span></td><td>${esc(a.quartier)}</td><td>${esc(a.prenom)} ${esc(a.nom)}</td><td><span class="d-text">${new Date(a.date_depot).toLocaleDateString('fr-FR')}</span></td><td>${a.validee?'<span class="status-badge-ok">Validée</span>':'<span class="status-badge-ko">En attente</span>'}</td><td style="display:flex;gap:5px;flex-wrap:wrap">${!a.validee?`<button class="btn-valider" onclick="validerAnnonce(${a.id})">✅ Valider</button>`:'<button class="btn-del" style="color:#FF9800;border-color:#FF9800" onclick="refuserAnnonce(${a.id})">↩ Retirer</button>'}<button class="btn-del" onclick="supprimer('annonces',${a.id},()=>{renderAnnoncesAdmin();loadAnnonces();})">✕</button></td></tr>`).join('')}</tbody></table>`;
-  }catch(e){body.innerHTML=`<div class="admin-empty"><span>⚠️</span>Erreur : ${e.message}</div>`;}}
-async function validerAnnonce(id){await sb.from('annonces').update({validee:true}).eq('id',id);renderAnnoncesAdmin();loadAnnonces();}
-async function refuserAnnonce(id){await sb.from('annonces').update({validee:false}).eq('id',id);renderAnnoncesAdmin();loadAnnonces();}
-async function supprimer(table,id,cb){if(!confirm('Supprimer ?'))return;const{error}=await sb.from(table).delete().eq('id',id);if(!error&&cb)cb();else if(error)alert('Erreur : '+error.message);}
-  }catch(e){body.innerHTML=`<div class="admin-empty"><span>⚠️</span>Erreur : ${e.message}</div>`;}
-}
-// ===== EXPORT CSV =====
-function exportCSV(type){
-  const map={
-    adherents:{cache:()=>adherentsCache,cols:['#','Prénom','Nom','Email','Quartier','Date'],row:(a,i)=>[i+1,a.prenom,a.nom,a.email,a.quartier,new Date(a.date_inscription).toLocaleDateString('fr-FR')]},
-    annonces:{cache:()=>annoncesCache,cols:['#','Titre','Catégorie','Quartier','Prénom','Nom','Email','Description','Contact','Date','Validée'],row:(a,i)=>[i+1,a.titre,a.categorie,a.quartier,a.prenom,a.nom,a.email,a.description,a.contact||'',new Date(a.date_depot).toLocaleDateString('fr-FR'),a.validee?'Oui':'Non']},
-    contacts:{cache:()=>contactsCache,cols:['#','Annonce','Prénom','Nom','Email','Message','Date'],row:(c,i)=>[i+1,c.annonces?.titre||'?',c.prenom_contact,c.nom_contact,c.email_contact,c.message||'',new Date(c.date_contact).toLocaleDateString('fr-FR')]}
-  };
-  const m=map[type];if(!m)return;const data=m.cache();if(!data.length){alert('Aucune donnée.');return;}
-  const rows=[m.cols,...data.map(m.row)];
-  const csv=rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(';')).join('\n');
-  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`${type}-cqp-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
-}
-// Fermer les drawers avec Escape
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer('actuDrawer');closeDrawer('annonceDrawer');}});
-// ===== DRAWERS =====
-let actusCachePublic=[];
-let annoncesCachePublic=[];
-let currentAnnonceId=null;
-
-function openActuDrawer(id){
-  const a=actusCachePublic.find(x=>x.id===id);if(!a)return;
-  document.getElementById('drawer-actu-titre').textContent=a.titre;
-  document.getElementById('drawer-actu-cat').textContent=a.categorie;
-  document.getElementById('drawer-actu-date').textContent=new Date(a.date_publication).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-  document.getElementById('drawer-actu-contenu').textContent=a.contenu;
-  document.getElementById('actuDrawer').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-
-function openAnnonceDrawer(id){
-  const a=annoncesCachePublic.find(x=>x.id===id);if(!a)return;
-  currentAnnonceId=id;
-  document.getElementById('drawer-ann-titre').textContent=a.titre;
-  document.getElementById('drawer-ann-cat').textContent=a.categorie;
-  document.getElementById('drawer-ann-cat').className='annonce-cat '+(CAT_CLASS[a.categorie]||'cat-autre');
-  document.getElementById('drawer-ann-quartier').textContent='📍 '+a.quartier+' · 👤 '+a.prenom;
-  document.getElementById('drawer-ann-date').textContent=new Date(a.date_depot).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-  document.getElementById('drawer-ann-desc').textContent=a.description;
-  // Reset form contact
-  document.getElementById('contactForm').classList.remove('open');
-  document.getElementById('contactMsg').className='msg';
-  document.getElementById('contactMsg').style.display='none';
-  ['c-prenom','c-nom','c-email','c-message'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('annonceDrawer').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-
-function closeDrawer(id){
-  document.getElementById(id).classList.remove('open');
-  document.body.style.overflow='';
-}
-function closeDrawerOnBg(e,id){if(e.target.id===id)closeDrawer(id);}
-
-function toggleContactForm(){
-  document.getElementById('contactForm').classList.toggle('open');
-}
-
+function openDr(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeDr(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
 async function envoyerContact(){
   const prenom=document.getElementById('c-prenom').value.trim();
   const nom=document.getElementById('c-nom').value.trim();
   const email=document.getElementById('c-email').value.trim();
-  const message=document.getElementById('c-message').value.trim();
-  if(!prenom||!nom||!email){showMsgEl('contactMsg','error','⚠ Remplis prénom, nom et email.');return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsgEl('contactMsg','error','⚠ Email invalide.');return;}
-  try{
-    const{error}=await sb.from('contacts_annonces').insert({annonce_id:currentAnnonceId,prenom_contact:prenom,nom_contact:nom,email_contact:email,message});
+  const message=document.getElementById('c-msg').value.trim();
+  if(!prenom||!nom||!email){showMsg('contactMsg','err','⚠ Remplis prénom, nom et email.');return;}
+  try{const{error}=await sb.from('contacts_annonces').insert({annonce_id:curAnnId,prenom_contact:prenom,nom_contact:nom,email_contact:email,message});
     if(error)throw error;
-    showMsgEl('contactMsg','success','✅ Demande envoyée ! Nous transmettrons vos coordonnées à l\'auteur de l\'annonce.');
-    document.getElementById('contactForm').classList.remove('open');
-  }catch(e){showMsgEl('contactMsg','error','⚠ Erreur : '+e.message);}
+    showMsg('contactMsg','ok',"✅ Demande envoyée ! Nous transmettrons vos coordonnées à l'auteur.");
+    document.getElementById('ct-form').classList.remove('open');
+  }catch(e){showMsg('contactMsg','err','⚠ Erreur : '+e.message);}
 }
-
-// ===== LOGIN =====
-function openLogin(){document.getElementById('loginError').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginOverlay').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
-function checkPwd(){if(document.getElementById('pwdInput').value===ADMIN_PWD){closeModal('loginOverlay');loadEditors();renderAdherents();document.getElementById('adminOverlay').classList.add('open');}else{document.getElementById('loginError').style.display='block';document.getElementById('pwdInput').value='';}}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-function closeOnBg(e,id){if(e.target.id===id)closeModal(id);}
-// ===== SCROLL ANIM =====
-const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:0.08});
-document.querySelectorAll('.visual-box,.form-card,.adhesion-left,.qui-texte,.depot-left').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity 0.55s ease,transform 0.55s ease';obs.observe(el);});
+async function deposerAnnonce(){
+  const prenom=document.getElementById('a-prenom').value.trim(),nom=document.getElementById('a-nom').value.trim();
+  const email=document.getElementById('a-email').value.trim(),categorie=document.getElementById('a-cat').value;
+  const quartier=document.getElementById('a-quartier').value,titre=document.getElementById('a-titre').value.trim();
+  const description=document.getElementById('a-desc').value.trim(),rgpd=document.getElementById('a-rgpd').checked;
+  if(!prenom||!nom||!email||!categorie||!quartier||!titre||!description){showMsg('depotMsg','err','⚠ Remplis tous les champs obligatoires.');return;}
+  if(!rgpd){showMsg('depotMsg','err','⚠ Accepte les conditions.');return;}
+  const btn=document.getElementById('depotBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{const{error}=await sb.from('annonces').insert({prenom,nom,email,quartier,categorie,titre,description,contact:''});
+    if(error)throw error;
+    showMsg('depotMsg','ok','✅ Annonce soumise ! Elle sera publiée après validation (24–48h).');
+    ['a-prenom','a-nom','a-email','a-titre','a-desc'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('a-cat').value='';document.getElementById('a-quartier').value='';document.getElementById('a-rgpd').checked=false;
+    setTimeout(()=>{btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';},8000);
+  }catch(e){showMsg('depotMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';}
+}
+async function soumettre(){
+  const prenom=document.getElementById('f-prenom').value.trim(),nom=document.getElementById('f-nom').value.trim();
+  const email=document.getElementById('f-email').value.trim(),quartier=document.getElementById('f-quartier').value;
+  const rgpd=document.getElementById('f-rgpd').checked;
+  if(!prenom||!nom||!email||!quartier){showMsg('formMsg','err','⚠ Remplis tous les champs obligatoires.');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('formMsg','err','⚠ Email invalide.');return;}
+  if(!rgpd){showMsg('formMsg','err','⚠ Accepte la politique de confidentialité.');return;}
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{const{error}=await sb.from('adherents').insert({prenom,nom,email,quartier});
+    if(error){if(error.code==='23505')showMsg('formMsg','err','⚠ Email déjà enregistré.');else showMsg('formMsg','err','⚠ Erreur : '+error.message);btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';return;}
+    showMsg('formMsg','ok','🎉 Bienvenue dans le mouvement ! Nous te contacterons très prochainement.');
+    ['f-prenom','f-nom','f-email'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('f-quartier').value='';document.getElementById('f-rgpd').checked=false;
+    setTimeout(()=>{btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';},6000);
+  }catch(e){showMsg('formMsg','err','⚠ Erreur réseau.');btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';}
+}
+function showMsg(id,type,txt){const m=document.getElementById(id);m.className='msg '+type;m.textContent=txt;m.style.display='block';}
+function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
+function checkPwd(){if(document.getElementById('pwdInput').value===PWD){closeM('loginModal');loadEditors();renderAdh();document.getElementById('adminModal').classList.add('open');}else{document.getElementById('loginErr').style.display='block';document.getElementById('pwdInput').value='';}}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+function switchTab(btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');const t=btn.dataset.tab;document.getElementById(t).classList.add('active');
+  if(t==='t-adh')renderAdh();if(t==='t-actus')renderActusAdmin();
+  if(t==='t-ann')renderAnnAdmin();if(t==='t-contacts')renderCt();
+}
+let adhCache=[],actusAdminCache=[],annAdminCache=[],ctCache=[];
+async function renderAdh(){
+  const b=document.getElementById('adhBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{const{data,error}=await sb.from('adherents').select('*').order('date_inscription',{ascending:false});
+    if(error)throw error;adhCache=data||[];
+    document.getElementById('adhCount').textContent=adhCache.length+' inscrit·e'+(adhCache.length>1?'s':'');
+    if(!adhCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucun·e adhérent·e.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Quartier</th><th>Date</th><th></th></tr></thead><tbody>${adhCache.map((a,i)=>`<tr><td style="color:rgba(244,241,235,.3);font-size:.72rem">${i+1}</td><td>${esc(a.prenom)}</td><td>${esc(a.nom)}</td><td>${esc(a.email)}</td><td><span class="qb">${esc(a.quartier)}</span></td><td><span class="dt">${new Date(a.date_inscription).toLocaleDateString('fr-FR')}</span></td><td><button class="btn-del" onclick="del('adherents',${a.id},renderAdh)">✕</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function publierActu(){
+  const titre=document.getElementById('actu-titre').value.trim();
+  const contenu=document.getElementById('actu-contenu').value.trim();
+  const categorie=document.getElementById('actu-cat').value;
+  if(!titre||!contenu){showMsg('actuMsg','err','⚠ Titre et contenu obligatoires.');return;}
+  try{const{error}=await sb.from('actus').insert({titre,contenu,categorie,visible:true});
+    if(error)throw error;
+    showMsg('actuMsg','ok','✅ Actualité publiée !');
+    document.getElementById('actu-titre').value='';document.getElementById('actu-contenu').value='';
+    setTimeout(()=>{document.getElementById('actuFormBox').classList.remove('open');renderActusAdmin();loadActus();},1500);
+  }catch(e){showMsg('actuMsg','err','⚠ Erreur : '+e.message);}
+}
+async function renderActusAdmin(){
+  const b=document.getElementById('actusBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{const{data,error}=await sb.from('actus').select('*').order('date_publication',{ascending:false});
+    if(error)throw error;actusAdminCache=data||[];
+    document.getElementById('actusCount').textContent=actusAdminCache.length+' actu'+(actusAdminCache.length>1?'s':'');
+    if(!actusAdminCache.length){b.innerHTML='<div class="empty"><span>📰</span>Aucune actualité.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Date</th><th>Visible</th><th>Actions</th></tr></thead><tbody>${actusAdminCache.map((a,i)=>`<tr><td style="color:rgba(244,241,235,.3);font-size:.72rem">${i+1}</td><td>${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td><span class="dt">${new Date(a.date_publication).toLocaleDateString('fr-FR')}</span></td><td>${a.visible?'<span class="s-ok">Oui</span>':'<span class="s-ko">Non</span>'}</td><td style="display:flex;gap:6px"><button class="btn-ok" onclick="toggleVis(${a.id},${a.visible})">${a.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('actus',${a.id},()=>{renderActusAdmin();loadActus();})">✕</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function toggleVis(id,cur){await sb.from('actus').update({visible:!cur}).eq('id',id);renderActusAdmin();loadActus();}
+async function renderAnnAdmin(){
+  const b=document.getElementById('annBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{const{data,error}=await sb.from('annonces').select('*').order('date_depot',{ascending:false});
+    if(error)throw error;annAdminCache=data||[];
+    document.getElementById('annCount').textContent=annAdminCache.length+' annonce'+(annAdminCache.length>1?'s':'');
+    if(!annAdminCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucune annonce.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Quartier</th><th>Auteur</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${annAdminCache.map((a,i)=>`<tr><td style="color:rgba(244,241,235,.3);font-size:.72rem">${i+1}</td><td title="${esc(a.description)}">${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td>${esc(a.quartier)}</td><td>${esc(a.prenom)} ${esc(a.nom)}</td><td><span class="dt">${new Date(a.date_depot).toLocaleDateString('fr-FR')}</span></td><td>${a.validee?'<span class="s-ok">Validée</span>':'<span class="s-ko">En attente</span>'}</td><td style="display:flex;gap:5px;flex-wrap:wrap">${!a.validee?`<button class="btn-ok" onclick="valAnn(${a.id},true)">✅ Valider</button>`:`<button class="btn-ko" onclick="valAnn(${a.id},false)">↩ Retirer</button>`}<button class="btn-del" onclick="del('annonces',${a.id},()=>{renderAnnAdmin();loadAnnonces();})">✕</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function valAnn(id,v){await sb.from('annonces').update({validee:v}).eq('id',id);renderAnnAdmin();loadAnnonces();}
+async function renderCt(){
+  const b=document.getElementById('ctBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{const{data,error}=await sb.from('contacts_annonces').select('*, annonces(titre)').order('date_contact',{ascending:false});
+    if(error)throw error;ctCache=data||[];
+    document.getElementById('ctCount').textContent=ctCache.length+' demande'+(ctCache.length>1?'s':'');
+    if(!ctCache.length){b.innerHTML='<div class="empty"><span>📨</span>Aucune demande de contact.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Annonce</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Message</th><th>Date</th><th></th></tr></thead><tbody>${ctCache.map((c,i)=>`<tr><td style="color:rgba(244,241,235,.3);font-size:.72rem">${i+1}</td><td><span class="qb">${esc(c.annonces?.titre||'?')}</span></td><td>${esc(c.prenom_contact)}</td><td>${esc(c.nom_contact)}</td><td>${esc(c.email_contact)}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(c.message||'')}"><span class="dt">${esc(c.message||'—')}</span></td><td><span class="dt">${new Date(c.date_contact).toLocaleDateString('fr-FR')}</span></td><td><button class="btn-del" onclick="del('contacts_annonces',${c.id},renderCt)">✕</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function del(table,id,cb){if(!confirm('Supprimer ?'))return;const{error}=await sb.from(table).delete().eq('id',id);if(!error&&cb)cb();else if(error)alert('Erreur : '+error.message);}
+function exportCSV(type){
+  const maps={
+    adh:{c:()=>adhCache,h:['#','Prénom','Nom','Email','Quartier','Date'],r:(a,i)=>[i+1,a.prenom,a.nom,a.email,a.quartier,new Date(a.date_inscription).toLocaleDateString('fr-FR')]},
+    ann:{c:()=>annAdminCache,h:['#','Titre','Cat','Quartier','Prénom','Nom','Email','Description','Date','Validée'],r:(a,i)=>[i+1,a.titre,a.categorie,a.quartier,a.prenom,a.nom,a.email,a.description,new Date(a.date_depot).toLocaleDateString('fr-FR'),a.validee?'Oui':'Non']},
+    ct:{c:()=>ctCache,h:['#','Annonce','Prénom','Nom','Email','Message','Date'],r:(c,i)=>[i+1,c.annonces?.titre||'?',c.prenom_contact,c.nom_contact,c.email_contact,c.message||'',new Date(c.date_contact).toLocaleDateString('fr-FR')]}
+  };
+  const m=maps[type];if(!m)return;const d=m.c();if(!d.length){alert('Aucune donnée.');return;}
+  const rows=[m.h,...d.map(m.r)];
+  const csv=rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;
+  a.download=`${type}-cqp-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
+}
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.style.opacity='1';x.target.style.transform='translateY(0)';}});},{threshold:.08});
+document.querySelectorAll('.visual-box,.form-card,.adhesion-left,.qui-texte,.depot-left').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity .55s ease,transform .55s ease';obs.observe(el);});
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}});});
-// ===== INIT =====
-applyContent();
-loadActus();
-loadAnnonces();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');closeDr('dAnn');}});
+applyAll();loadActus();loadAnnonces();
 </script>
 </body>
 </html>
