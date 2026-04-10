@@ -94,8 +94,44 @@ footer a:hover{color:var(--or)}
   <a href="index.html">← Retour au site principal</a>
 </footer>
 <script>
-// rss2json.com — API publique fiable, pas de problème CORS
-const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const EDGE_URL = 'https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/rss-proxy';
+
+async function loadArticles() {
+  const grid = document.getElementById('articles-grid');
+  try {
+    const res = await fetch(EDGE_URL);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const items = data.items || [];
+
+    if (!items.length) {
+      grid.innerHTML = `<div class="empty"><span>📰</span>Aucun article disponible pour le moment.<br><small style="font-size:.8rem;color:rgba(244,241,235,.3)">Consultez directement les sites ci-dessous.</small></div>`;
+      return;
+    }
+
+    grid.innerHTML = items.map(a => {
+      const d = a.date ? new Date(a.date).toLocaleDateString('fr-FR', {day:'2-digit', month:'long'}) : '';
+      const isLocal = a.score > 0;
+      return `<a class="article-card" href="${a.link}" target="_blank" rel="noopener">
+        <div class="article-body">
+          <div class="article-source">
+            ${a.source.substring(0,25)}
+            ${isLocal ? `<span style="background:var(--rouge);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:2px">Quartiers</span>` : ''}
+          </div>
+          <div class="article-title">${a.title}</div>
+          <div class="article-date">${d}</div>
+        </div>
+      </a>`;
+    }).join('');
+  } catch(e) {
+    grid.innerHTML = `<div class="empty"><span>⚠️</span>Chargement impossible : ${e.message}<br><small style="font-size:.8rem;color:rgba(244,241,235,.3)">Consultez directement les liens ci-dessous.</small></div>`;
+  }
+}
+
+loadArticles();
+</script>
+</body>
+</html>
 
 const FEEDS = [
   {
