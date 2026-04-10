@@ -387,13 +387,28 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     </div>
   </div>
 </section>
-<section style="background:var(--gf);padding:60px 8vw;text-align:center" id="annonces">
-  <div class="section-tag" style="justify-content:center">Entraide citoyenne</div>
-  <h2>Annonces <em>des habitants</em></h2>
-  <p style="color:rgba(244,241,235,.6);max-width:500px;margin:0 auto 32px;font-size:.95rem;line-height:1.7">Logement, emploi, services, solidarité — les habitants du quartier s'entraident directement.</p>
-  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-    <a href="annonces.html" class="btn-primary">📋 Voir toutes les annonces</a>
-    <button class="btn-secondary" onclick="openDr('dDepot')">+ Déposer une annonce</button>
+<section style="background:var(--gf);padding:50px 8vw" id="decouvrir">
+  <div class="section-tag">Explorer le site</div>
+  <h2>Tout ce que <em>vous pouvez faire</em></h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:32px" id="hub-grid">
+    <a href="annonces.html" style="text-decoration:none;background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:24px;display:block;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+      <div style="font-size:2rem;margin-bottom:12px">📋</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;margin-bottom:8px;color:var(--blanc)">Annonces</div>
+      <div style="font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6">Logement, emploi, services, solidarité — les habitants s'entraident directement.</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-top:14px">Voir les annonces →</div>
+    </a>
+    <a href="presse.html" style="text-decoration:none;background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:24px;display:block;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+      <div style="font-size:2rem;margin-bottom:12px">📰</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;margin-bottom:8px;color:var(--blanc)">Presse locale</div>
+      <div style="font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6">Articles récents sur Toulouse et les quartiers populaires issus de la presse.</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-top:14px">Lire les articles →</div>
+    </a>
+    <a href="newsletter.html" style="text-decoration:none;background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:24px;display:block;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+      <div style="font-size:2rem;margin-bottom:12px">📧</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;margin-bottom:8px;color:var(--blanc)">Newsletter</div>
+      <div style="font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6">Recevez les actus, événements et victoires directement dans votre boite mail.</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-top:14px">S'abonner →</div>
+    </a>
   </div>
 </section>
 <section class="adhesion" id="adhesion" style="text-align:center;padding:60px 8vw">
