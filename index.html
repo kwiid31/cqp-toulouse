@@ -346,82 +346,18 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   <p style="color:rgba(244,241,235,.6);margin-top:-8px;margin-bottom:10px;font-size:.95rem">Cliquez sur une annonce pour voir les détails et coordonnées de l'auteur.</p>
   <div class="annonces-grid" id="annonces-grid"><div class="spin" style="grid-column:1/-1">⏳ Chargement…</div></div>
 </section>
-<section class="depot" id="depot">
-  <div class="depot-grid">
-    <div class="depot-left">
-      <div class="section-tag">Vous avez besoin d'aide ?</div>
-      <h2>Déposez <em>votre annonce</em></h2>
-      <p>Le comité met à disposition cet espace d'entraide entre habitants. Cherche logement, propose un service, offre de l'aide…</p>
-      <p>Chaque annonce est vérifiée avant publication. Délai : 24–48h.</p>
-      <p><strong style="color:var(--or)">Gratuit · Solidaire · Local</strong></p>
-    </div>
-    <div class="form-card dark">
-      <h3>Déposer une annonce</h3>
-      <div class="fr">
-        <div class="fg"><label>Prénom *</label><input type="text" id="a-prenom" placeholder="Marie"></div>
-        <div class="fg"><label>Nom *</label><input type="text" id="a-nom" placeholder="Dupont"></div>
-      </div>
-      <div class="fg"><label>Email * (affiché aux intéressés)</label><input type="email" id="a-email" placeholder="marie@exemple.fr"></div>
-      <div class="fg"><label>Téléphone (optionnel)</label><input type="tel" id="a-tel" placeholder="06 XX XX XX XX"></div>
-      <div class="fr">
-        <div class="fg"><label>Catégorie *</label>
-          <select id="a-cat"><option value="">— Choisir —</option>
-            <option value="Logement">🏠 Logement</option><option value="Emploi">💼 Emploi</option>
-            <option value="Service">🔧 Service</option><option value="Solidarité">🤝 Solidarité</option>
-            <option value="Autre">📌 Autre</option>
-          </select>
-        </div>
-        <div class="fg"><label>Quartier *</label>
-          <select id="a-quartier"><option value="">— Choisir —</option>
-            <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
-            <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
-            <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
-            <option>Autre quartier</option>
-          </select>
-        </div>
-      </div>
-      <div class="fg"><label>Titre *</label><input type="text" id="a-titre" placeholder="Ex: Cherche T2 urgence familiale"></div>
-      <div class="fg"><label>Description *</label><textarea id="a-desc" rows="4" placeholder="Décrivez votre besoin ou ce que vous proposez…"></textarea></div>
-      <div class="rgpd">
-        <input type="checkbox" id="a-rgpd">
-        <label for="a-rgpd">J'accepte que ces informations (y compris mes coordonnées) soient publiées sur le site après validation.</label>
-      </div>
-      <button class="btn-sub" id="depotBtn" onclick="deposerAnnonce()">📋 Soumettre mon annonce</button>
-      <div class="msg" id="depotMsg"></div>
-    </div>
-  </div>
+<section class="depot" id="depot" style="text-align:center;padding:60px 8vw">
+  <div class="section-tag" style="justify-content:center">Vous avez besoin d'aide ?</div>
+  <h2 style="text-align:center">Déposez <em>votre annonce</em></h2>
+  <p style="color:rgba(244,241,235,.6);max-width:500px;margin:0 auto 32px;font-size:.95rem;line-height:1.7">Logement, emploi, service, solidarité — déposez une annonce et notre équipe la publie sous 24–48h. <strong style="color:var(--or)">Gratuit · Solidaire · Local</strong></p>
+  <button class="btn-primary" onclick="openDr('dDepot')">📋 Déposer une annonce</button>
 </section>
-<section class="adhesion" id="adhesion">
-  <div class="adhesion-grid">
-    <div class="adhesion-left">
-      <div class="section-tag">Passer à l'action</div>
-      <h2>Rejoins <em>le mouvement</em></h2>
-      <p id="site-adh-p1"></p><p id="site-adh-p2"></p>
-      <p><strong style="color:var(--or)">Gratuit et sans engagement.</strong></p>
-    </div>
-    <div class="form-card">
-      <h3>Formulaire d'adhésion</h3>
-      <div class="fr">
-        <div class="fg"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"></div>
-        <div class="fg"><label>Nom *</label><input type="text" id="f-nom" placeholder="Dupont"></div>
-      </div>
-      <div class="fg"><label>Email *</label><input type="email" id="f-email" placeholder="marie@exemple.fr"></div>
-      <div class="fg"><label>Votre quartier *</label>
-        <select id="f-quartier"><option value="">— Choisissez —</option>
-          <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
-          <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
-          <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
-          <option>Autre quartier de Toulouse</option>
-        </select>
-      </div>
-      <div class="rgpd">
-        <input type="checkbox" id="f-rgpd">
-        <label for="f-rgpd">J'accepte que mes données soient utilisées par le CQP Toulouse pour me contacter.</label>
-      </div>
-      <button class="btn-sub" id="submitBtn" onclick="soumettre()">✊ Je rejoins le mouvement</button>
-      <div class="msg" id="formMsg"></div>
-    </div>
-  </div>
+<section class="adhesion" id="adhesion" style="text-align:center;padding:60px 8vw">
+  <div class="section-tag" style="justify-content:center">Passer à l'action</div>
+  <h2 style="text-align:center">Rejoins <em>le mouvement</em></h2>
+  <p id="site-adh-p1" style="color:rgba(244,241,235,.6);max-width:500px;margin:0 auto 12px;font-size:.95rem;line-height:1.7"></p>
+  <p style="color:rgba(244,241,235,.5);font-size:.88rem;margin-bottom:32px"><strong style="color:var(--or)">Gratuit et sans engagement.</strong></p>
+  <button class="btn-primary" onclick="openDr('dAdhesion')">✊ Rejoindre le mouvement</button>
 </section>
 <footer>
   <div class="footer-grid">
@@ -458,6 +394,83 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
         <h4>📞 Contacter directement</h4>
         <div class="contact-info" id="dr-contact-info"></div>
       </div>
+    </div>
+  </div>
+</div>
+<!-- DRAWER DÉPÔT ANNONCE -->
+<div class="drawer-overlay" id="dDepot" onclick="if(event.target.id==='dDepot')closeDr('dDepot')">
+  <div class="drawer">
+    <div class="drawer-head"><h3>📋 Déposer une annonce</h3><button class="drawer-close" onclick="closeDr('dDepot')">✕</button></div>
+    <div class="drawer-body">
+      <p style="font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:20px;line-height:1.5">Votre annonce sera publiée après validation par notre équipe (24–48h). Vos coordonnées seront visibles des personnes intéressées.</p>
+      <div class="fr">
+        <div class="fg"><label>Prénom *</label><input type="text" id="a-prenom" placeholder="Marie"></div>
+        <div class="fg"><label>Nom *</label><input type="text" id="a-nom" placeholder="Dupont"></div>
+      </div>
+      <div class="fg"><label>Email * (visible des intéressés)</label><input type="email" id="a-email" placeholder="marie@exemple.fr"></div>
+      <div class="fg"><label>Téléphone (optionnel)</label><input type="tel" id="a-tel" placeholder="06 XX XX XX XX"></div>
+      <div class="fr">
+        <div class="fg"><label>Catégorie *</label>
+          <select id="a-cat"><option value="">— Choisir —</option>
+            <option value="Logement">🏠 Logement</option><option value="Emploi">💼 Emploi</option>
+            <option value="Service">🔧 Service</option><option value="Solidarité">🤝 Solidarité</option>
+            <option value="Autre">📌 Autre</option>
+          </select>
+        </div>
+        <div class="fg"><label>Quartier *</label>
+          <select id="a-quartier"><option value="">— Choisir —</option>
+            <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
+            <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
+            <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
+            <option>Autre quartier</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Titre *</label><input type="text" id="a-titre" placeholder="Ex: Cherche T2 urgence familiale"></div>
+      <div class="fg"><label>Description *</label><textarea id="a-desc" rows="4" placeholder="Décrivez votre besoin ou ce que vous proposez…"></textarea></div>
+      <div class="rgpd"><input type="checkbox" id="a-rgpd"><label for="a-rgpd">J'accepte que ces informations soient publiées sur le site après validation.</label></div>
+      <button class="btn-sub" id="depotBtn" onclick="deposerAnnonce()">📋 Soumettre mon annonce</button>
+      <div class="msg" id="depotMsg"></div>
+    </div>
+  </div>
+</div>
+<!-- DRAWER ADHÉSION -->
+<div class="drawer-overlay" id="dAdhesion" onclick="if(event.target.id==='dAdhesion')closeDr('dAdhesion')">
+  <div class="drawer">
+    <div class="drawer-head"><h3>✊ Rejoindre le mouvement</h3><button class="drawer-close" onclick="closeDr('dAdhesion')">✕</button></div>
+    <div class="drawer-body">
+      <p style="font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:20px;line-height:1.5">Rejoindre le CQP c'est agir concrètement dans ton quartier. C'est gratuit et sans engagement — tu décides toi-même de ton niveau d'implication.</p>
+      <div class="fr">
+        <div class="fg"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"></div>
+        <div class="fg"><label>Nom *</label><input type="text" id="f-nom" placeholder="Dupont"></div>
+      </div>
+      <div class="fg"><label>Email *</label><input type="email" id="f-email" placeholder="marie@exemple.fr"></div>
+      <div class="fg"><label>Votre quartier *</label>
+        <select id="f-quartier"><option value="">— Choisissez —</option>
+          <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
+          <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
+          <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
+          <option>Autre quartier de Toulouse</option>
+        </select>
+      </div>
+      <div class="rgpd"><input type="checkbox" id="f-rgpd"><label for="f-rgpd">J'accepte que mes données soient utilisées par le CQP Toulouse pour me contacter.</label></div>
+      <button class="btn-sub" id="submitBtn" onclick="soumettre()">✊ Je rejoins le mouvement</button>
+      <div class="msg" id="formMsg"></div>
+    </div>
+  </div>
+</div>
+<!-- DRAWER INSCRITS ÉVÉNEMENT (admin) -->
+<div class="drawer-overlay" id="dInscrits" onclick="if(event.target.id==='dInscrits')closeDr('dInscrits')">
+  <div class="drawer">
+    <div class="drawer-head">
+      <div style="flex:1">
+        <h3 id="inscrits-titre">Inscrits</h3>
+        <span class="badge" id="inscrits-count" style="font-size:.8rem;padding:2px 10px">…</span>
+      </div>
+      <button class="drawer-close" onclick="closeDr('dInscrits')">✕</button>
+    </div>
+    <div class="drawer-body" style="padding:16px;overflow-x:auto">
+      <div id="inscrits-body"><div class="spin">⏳</div></div>
     </div>
   </div>
 </div>
@@ -741,11 +754,16 @@ async function saveN(keys,fid){
 
 async function savePhotos(type){
   const urlEl=document.getElementById('ed-photo-'+type);
-  let url=urlEl?urlEl.value.trim():'';
-  // Si crop actif, uploader le canvas recadré
-  if(cropState[type]&&cropState[type].file&&!url){
+  let url='';
+  // Priorité 1 : si un crop est actif, uploader l'image cadrée
+  if(cropState[type]&&cropState[type].file){
+    const statusEl=document.getElementById('status-'+type);
+    statusEl.textContent='⏳ Upload en cours…';statusEl.style.display='block';
     url=await uploadCroppedPhoto(type);
     if(!url)return;
+  } else {
+    // Priorité 2 : URL saisie manuellement
+    url=urlEl?urlEl.value.trim():'';
   }
   if(url){
     await saveConfig('photo-'+type,url);
@@ -1109,18 +1127,40 @@ async function creerEvt(){
 async function renderEvtAdmin(){
   const b=document.getElementById('evtBody');b.innerHTML='<div class="spin">⏳</div>';
   try{
-    const{data,error}=await sb.from('evenements').select('*, inscriptions_evenements(count)').order('date_debut',{ascending:false});
+    const{data,error}=await sb.from('evenements').select('*').order('date_debut',{ascending:false});
     if(error)throw error;evtAdmCache=data||[];
+    // Compter les inscrits pour chaque événement
+    const counts={};
+    const{data:ins}=await sb.from('inscriptions_evenements').select('evenement_id');
+    if(ins)ins.forEach(i=>{counts[i.evenement_id]=(counts[i.evenement_id]||0)+1;});
     document.getElementById('evtCount').textContent=evtAdmCache.length+' événement'+(evtAdmCache.length>1?'s':'');
     if(!evtAdmCache.length){b.innerHTML='<div class="empty"><span>📅</span>Aucun événement.</div>';return;}
     b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Date</th><th>Lieu</th><th>Cat.</th><th>Inscrits</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${evtAdmCache.map((e,i)=>{
-      const d=new Date(e.date_debut);const nb=e.inscriptions_evenements?.[0]?.count||0;
-      return `<tr><td class="dt">${i+1}</td><td>${esc(e.titre)}</td><td><span class="dt">${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span></td><td>${esc(e.lieu)}</td><td><span class="qb">${esc(e.categorie)}</span></td><td><span class="dt">${nb}${e.places_max>0?' / '+e.places_max:''}</span></td><td>${e.validee?'<span class="s-ok">Validé</span>':'<span class="s-ko">Proposition</span>'}</td><td style="display:flex;gap:5px">${!e.validee?`<button class="btn-ok" onclick="valEvt(${e.id},true)">✅</button>`:''}<button class="btn-${e.visible?'ko':'ok'}" onclick="toggleEvtVis(${e.id},${e.visible})">${e.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('evenements',${e.id},()=>{renderEvtAdmin();loadEvents();})">✕</button></td></tr>`;
+      const d=new Date(e.date_debut);const nb=counts[e.id]||0;
+      const plMax=e.places_max>0?` / ${e.places_max}`:'';
+      const couleur=e.places_max>0&&nb>=e.places_max?'color:#ff6b6b':'color:#4CAF50';
+      return `<tr><td class="dt">${i+1}</td><td>${esc(e.titre)}</td><td><span class="dt">${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span></td><td>${esc(e.lieu)}</td><td><span class="qb">${esc(e.categorie)}</span></td><td><button class="btn-ok" style="background:none;border:1px solid rgba(255,255,255,.2)" onclick="voirInscrits(${e.id},'${esc(e.titre).replace(/'/g,"\\'")}')"><span style="${couleur}">👥 ${nb}${plMax}</span></button></td><td>${e.validee?'<span class="s-ok">Validé</span>':'<span class="s-ko">Proposition</span>'}</td><td style="display:flex;gap:5px;flex-wrap:wrap">${!e.validee?`<button class="btn-ok" onclick="valEvt(${e.id},true)">✅</button>`:''}<button class="btn-${e.visible?'ko':'ok'}" onclick="toggleEvtVis(${e.id},${e.visible})">${e.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('evenements',${e.id},()=>{renderEvtAdmin();loadEvents();})">✕</button></td></tr>`;
     }).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
 async function valEvt(id,v){await sb.from('evenements').update({validee:v}).eq('id',id);renderEvtAdmin();}
 async function toggleEvtVis(id,cur){await sb.from('evenements').update({visible:!cur}).eq('id',id);renderEvtAdmin();loadEvents();}
+
+async function voirInscrits(evtId,titre){
+  const b=document.getElementById('inscrits-body');
+  document.getElementById('inscrits-titre').textContent='👥 Inscrits — '+titre;
+  b.innerHTML='<div class="spin">⏳ Chargement…</div>';
+  document.getElementById('dInscrits').classList.add('open');
+  document.body.style.overflow='hidden';
+  try{
+    const{data,error}=await sb.from('inscriptions_evenements').select('*').eq('evenement_id',evtId).order('date_inscription',{ascending:true});
+    if(error)throw error;
+    const inscrits=data||[];
+    document.getElementById('inscrits-count').textContent=inscrits.length+' inscrit·e'+(inscrits.length>1?'s':'');
+    if(!inscrits.length){b.innerHTML='<div class="empty"><span>👥</span>Aucune inscription pour l\'instant.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Téléphone</th><th>Message</th><th>Date</th></tr></thead><tbody>${inscrits.map((ins,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(ins.prenom)}</td><td>${esc(ins.nom)}</td><td>${esc(ins.email)}</td><td><span class="dt">${esc(ins.telephone||'—')}</span></td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(ins.message||'')}"><span class="dt">${esc(ins.message||'—')}</span></td><td><span class="dt">${new Date(ins.date_inscription).toLocaleDateString('fr-FR')}</span></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
 
 async function del(table,id,cb){if(!confirm('Supprimer ?'))return;const{error}=await sb.from(table).delete().eq('id',id);if(!error&&cb)cb();else if(error)alert('Erreur : '+error.message);}
 
@@ -1141,7 +1181,7 @@ function exportCSV(type){
 const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.style.opacity='1';x.target.style.transform='translateY(0)';}});},{threshold:.08});
 document.querySelectorAll('.visual-box,.form-card,.adhesion-left,.qui-texte,.depot-left').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity .55s ease,transform .55s ease';obs.observe(el);});
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}});});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');closeDr('dAnn');}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');closeDr('dAnn');closeDr('dDepot');closeDr('dAdhesion');closeDr('dInscrits');}});
 
 // Init — charger config depuis Supabase (pas localStorage !)
 loadConfig();
