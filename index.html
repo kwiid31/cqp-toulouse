@@ -489,9 +489,17 @@ tbody td{padding:10px 14px;font-size:0.84rem;color:rgba(244,241,235,0.8)}
           <div class="cb">
             <div class="cb-head"><h4>🖼️ Photos du site</h4><span>URL des images (colle un lien direct)</span></div>
             <div class="cb-body">
-              <div class="ef"><label>Photo d'accueil (Hero)</label><input type="text" id="ed-photo-hero" placeholder="https://... (URL d'une image)"></div>
-              <small style="color:rgba(244,241,235,0.35);font-size:0.7rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">💡 Astuce : utilise <a href="https://unsplash.com" target="_blank" style="color:var(--or)">Unsplash.com</a> → clique sur une photo → copie son URL</small>
-              <div class="ef" style="margin-top:10px"><label>Photo de l'encart "Ancrés dans la réalité"</label><input type="text" id="ed-photo-encart" placeholder="https://... (laisser vide pour afficher l'icône)"></div>
+              <div class="ef"><label>Photo d'accueil (Hero)</label><input type="text" id="ed-photo-hero" placeholder="https://... colle ici l'adresse d'une image"></div>
+              <div style="background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.2);border-radius:4px;padding:12px 14px;margin:4px 0 8px">
+                <p style="color:var(--or);font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">💡 Comment obtenir l'URL d'une photo ?</p>
+                <p style="color:rgba(244,241,235,0.55);font-size:0.78rem;line-height:1.6">
+                  <strong style="color:var(--blanc)">Depuis ton téléphone :</strong> envoie la photo sur WhatsApp Web, clique-droit → "Copier l'adresse de l'image"<br>
+                  <strong style="color:var(--blanc)">Depuis Google Images :</strong> clique sur une image → clic-droit → "Copier l'adresse de l'image"<br>
+                  <strong style="color:var(--blanc)">Depuis Unsplash/Pexels :</strong> cherche "Mirail Toulouse" → ouvre la photo → clic-droit → copie l'URL<br>
+                  <strong style="color:var(--blanc)">Depuis ImgBB.com :</strong> uploader ta propre photo gratuitement → copie le "Direct link"
+                </p>
+              </div>
+              <div class="ef" style="margin-top:6px"><label>Photo de l'encart "Ancrés dans la réalité"</label><input type="text" id="ed-photo-encart" placeholder="https://... (laisser vide pour garder l'icône 🏘️)"></div>
               <div class="save-row">
                 <button class="save-btn" onclick="saveGroup(['photo-hero','photo-encart'],'flash-photos');applyContent()">Enregistrer les photos</button>
                 <span class="flash" id="flash-photos">✓ Sauvegardé !</span>
