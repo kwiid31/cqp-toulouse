@@ -33,8 +33,7 @@ h1 em{color:var(--rouge);font-style:normal}
 .article-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
 .article-card:hover .article-img img{transform:scale(1.05)}
 .article-body{padding:18px}
-.article-source{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:6px;display:flex;align-items:center;gap:8px}
-.article-source::before{content:'';width:16px;height:2px;background:var(--or)}
+.article-source{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--src-color, var(--or));margin-bottom:6px;display:flex;align-items:center;gap:4px}
 .article-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;color:var(--blanc);line-height:1.3;margin-bottom:8px}
 .article-desc{font-size:.78rem;color:rgba(244,241,235,.5);line-height:1.5;margin-bottom:12px}
 .article-date{font-size:.68rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
@@ -95,8 +94,95 @@ footer a:hover{color:var(--or)}
   <a href="index.html">← Retour au site principal</a>
 </footer>
 <script>
-// Proxy CORS pour contourner les restrictions des flux RSS
-const PROXY = 'https://api.allorigins.win/get?url=';
+// rss2json.com — API publique fiable, pas de problème CORS
+const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
+
+const FEEDS = [
+  {
+    url: 'https://www.ladepeche.fr/rss/toulouse/',
+    source: 'La Dépêche du Midi',
+    color: '#E63946'
+  },
+  {
+    url: 'https://www.francebleu.fr/toulouse/articles.rss',
+    source: 'France Bleu Toulouse',
+    color: '#0077B6'
+  },
+  {
+    url: 'https://actu.fr/occitanie/toulouse_31555/rss.xml',
+    source: 'Actu.fr Toulouse',
+    color: '#2A9D8F'
+  }
+];
+
+const KEYWORDS = ['mirail','bellefontaine','izards','reynerie','quartier','populaire','logement','social','solidarité','association','banlieue','cité','habitat','expulsion','discrimination'];
+
+async function loadArticles() {
+  const grid = document.getElementById('articles-grid');
+  const allArticles = [];
+
+  await Promise.allSettled(FEEDS.map(async feed => {
+    try {
+      const res = await fetch(`${RSS2JSON}${encodeURIComponent(feed.url)}&count=20`);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      if (data.status !== 'ok' || !data.items) return;
+      data.items.forEach(item => {
+        const txt = ((item.title||'') + ' ' + (item.description||'')).toLowerCase();
+        const score = KEYWORDS.filter(k => txt.includes(k)).length;
+        allArticles.push({
+          title: item.title || '',
+          link: item.link || item.url || '',
+          description: (item.description || '').replace(/<[^>]+>/g, '').trim(),
+          date: item.pubDate || '',
+          image: item.thumbnail || item.enclosure?.link || '',
+          source: feed.source,
+          color: feed.color,
+          score
+        });
+      });
+    } catch(e) {
+      console.warn(feed.source, ':', e.message);
+    }
+  }));
+
+  if (!allArticles.length) {
+    grid.innerHTML = `<div class="empty">
+      <span>📰</span>
+      Les flux RSS sont temporairement indisponibles.<br>
+      <small style="font-size:.8rem;color:rgba(244,241,235,.3);line-height:2">
+        Consultez directement les sites ci-dessous.
+      </small>
+    </div>`;
+    return;
+  }
+
+  // Trier : articles pertinents (score > 0) d'abord, puis par date
+  allArticles.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return new Date(b.date) - new Date(a.date);
+  });
+
+  grid.innerHTML = allArticles.slice(0, 18).map(a => {
+    const d = a.date ? new Date(a.date).toLocaleDateString('fr-FR', {day:'2-digit', month:'long'}) : '';
+    const desc = a.description.substring(0, 110) + (a.description.length > 110 ? '…' : '');
+    const badge = a.score > 0 ? `<span style="background:${a.color};color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-left:6px">Quartiers</span>` : '';
+    return `<a class="article-card" href="${a.link}" target="_blank" rel="noopener">
+      ${a.image ? `<div class="article-img"><img src="${a.image}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>` : ''}
+      <div class="article-body">
+        <div class="article-source" style="--src-color:${a.color}">${a.source}${badge}</div>
+        <div class="article-title">${a.title.substring(0, 85)}${a.title.length > 85 ? '…' : ''}</div>
+        ${desc ? `<div class="article-desc">${desc}</div>` : ''}
+        <div class="article-date">${d}</div>
+      </div>
+    </a>`;
+  }).join('');
+}
+
+loadArticles();
+</script>
+</body>
+</html>
 
 // Flux RSS — URLs encodées
 const FEEDS = [
