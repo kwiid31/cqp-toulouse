@@ -23,7 +23,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(13,13,13,0.97);backdrop-fi
 .btn-admin:hover{border-color:var(--or);color:var(--or)}
 /* HERO */
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
-.hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,16,46,0.18) 0%,transparent 55%),linear-gradient(to bottom,rgba(13,13,13,0.2) 0%,rgba(13,13,13,0.92) 100%),url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1600&q=80') center/cover no-repeat}
+.hero-bg{position:absolute;inset:0;background-image:linear-gradient(135deg,rgba(200,16,46,0.18) 0%,transparent 55%),linear-gradient(to bottom,rgba(13,13,13,0.2) 0%,rgba(13,13,13,0.92) 100%),var(--hero-photo,url('https://images.unsplash.com/photo-1560221328-12fe60f83ab8?w=1600&q=80'));background-size:cover;background-position:center;background-repeat:no-repeat}
 .hero-word{position:absolute;right:-3%;bottom:-5%;font-family:'Bebas Neue',sans-serif;font-size:22vw;color:rgba(200,16,46,0.07);line-height:1;pointer-events:none;user-select:none}
 .hero-content{position:relative;z-index:1;padding:0 8vw;max-width:860px}
 .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:0.78rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;animation:fadeUp 0.7s ease both}
@@ -58,7 +58,7 @@ h2 em{color:var(--rouge);font-style:normal}
 .valeurs{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
 .valeur-tag{font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(200,16,46,0.5);color:rgba(244,241,235,0.7);padding:6px 14px;border-radius:2px}
 .visual-box{background:var(--gris);border:1px solid rgba(255,255,255,0.07);border-radius:6px;overflow:hidden}
-.visual-placeholder{height:240px;background:linear-gradient(135deg,#2D0A11,#1A1A1A);display:flex;align-items:center;justify-content:center;font-size:4rem}
+.visual-placeholder{height:240px;background:linear-gradient(135deg,#2D0A11,#1A1A1A);display:flex;align-items:center;justify-content:center;font-size:4rem;background-image:var(--encart-photo,none);background-size:cover;background-position:center;overflow:hidden}
 .visual-body{padding:24px}
 .visual-body h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;margin-bottom:8px}
 .visual-body p{font-size:0.85rem;color:rgba(244,241,235,0.55);line-height:1.6}
@@ -488,6 +488,18 @@ tbody td{padding:10px 14px;font-size:0.84rem;color:rgba(244,241,235,0.8)}
       <div class="tab-panel" id="tab-contenus">
         <div class="content-editor">
           <div class="cb">
+            <div class="cb-head"><h4>🖼️ Photos du site</h4><span>URL des images (colle un lien direct)</span></div>
+            <div class="cb-body">
+              <div class="ef"><label>Photo d'accueil (Hero)</label><input type="text" id="ed-photo-hero" placeholder="https://... (URL d'une image)"></div>
+              <small style="color:rgba(244,241,235,0.35);font-size:0.7rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">💡 Astuce : utilise <a href="https://unsplash.com" target="_blank" style="color:var(--or)">Unsplash.com</a> → clique sur une photo → copie son URL</small>
+              <div class="ef" style="margin-top:10px"><label>Photo de l'encart "Ancrés dans la réalité"</label><input type="text" id="ed-photo-encart" placeholder="https://... (laisser vide pour afficher l'icône)"></div>
+              <div class="save-row">
+                <button class="save-btn" onclick="saveGroup(['photo-hero','photo-encart'],'flash-photos');applyContent()">Enregistrer les photos</button>
+                <span class="flash" id="flash-photos">✓ Sauvegardé !</span>
+              </div>
+            </div>
+          </div>
+          <div class="cb">
             <div class="cb-head"><h4>🦸 Texte d'accueil</h4><span>Sous le grand titre</span></div>
             <div class="cb-body">
               <div class="ef"><label>Paragraphe d'intro</label><textarea id="ed-hero-texte" rows="3"></textarea></div>
@@ -555,13 +567,18 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const ADMIN_PWD='toulouse2026';
 const CONTENT_KEY='cqp_contenus';
 const sb=supabase.createClient(SB_URL,SB_KEY);
-const DEFAULTS={'hero-texte':"Né en 2026 pour faire entendre la voix des quartiers populaires de Toulouse, le Comité agit là où les besoins sont les plus forts — logement, transports, écoles, dignité.",'histoire-p1':"Écris ici le premier paragraphe de votre histoire.",'histoire-citation':'"Nos quartiers ont des problèmes. Mais ils ont surtout des forces."','histoire-p2':"Écris ici la suite de votre histoire.",'encart-titre':"Ancrés dans la réalité",'encart-texte':"Permanences, aide aux démarches, soutien scolaire — notre action est quotidienne.",'stat1-num':"—",'stat1-lbl':"Membres",'stat2-num':"—",'stat2-lbl':"Quartiers",'stat3-num':"2026",'stat3-lbl':"Fondé en",'adhesion-p1':"Adhérer au Comité, c'est rejoindre une force collective qui agit concrètement dans tes rues, ton immeuble, ton quartier.",'adhesion-p2':"Remplis le formulaire — nous te recontacterons pour te présenter les actions en cours.",'footer-email':"contact@cqp-toulouse.fr",'footer-tel':"06 XX XX XX XX"};
+const DEFAULTS={'hero-texte':"Né en 2026 pour faire entendre la voix des quartiers populaires de Toulouse, le Comité agit là où les besoins sont les plus forts — logement, transports, écoles, dignité.",'histoire-p1':"Écris ici le premier paragraphe de votre histoire.",'histoire-citation':'"Nos quartiers ont des problèmes. Mais ils ont surtout des forces."','histoire-p2':"Écris ici la suite de votre histoire.",'encart-titre':"Ancrés dans la réalité",'encart-texte':"Permanences, aide aux démarches, soutien scolaire — notre action est quotidienne.",'stat1-num':"—",'stat1-lbl':"Membres",'stat2-num':"—",'stat2-lbl':"Quartiers",'stat3-num':"2026",'stat3-lbl':"Fondé en",'adhesion-p1':"Adhérer au Comité, c'est rejoindre une force collective qui agit concrètement dans tes rues, ton immeuble, ton quartier.",'adhesion-p2':"Remplis le formulaire — nous te recontacterons pour te présenter les actions en cours.",'footer-email':"contact@cqp-toulouse.fr",'footer-tel':"06 XX XX XX XX",'photo-hero':"https://images.unsplash.com/photo-1560221328-12fe60f83ab8?w=1600&q=80",'photo-encart':""};
 const DOM_MAP={'hero-texte':'site-hero-texte','histoire-p1':'site-histoire-p1','histoire-citation':'site-histoire-citation','histoire-p2':'site-histoire-p2','encart-titre':'site-encart-titre','encart-texte':'site-encart-texte','stat1-num':'site-stat1-num','stat2-num':'site-stat2-num','stat3-num':'site-stat3-num','stat1-lbl':'site-stat1-lbl','stat2-lbl':'site-stat2-lbl','stat3-lbl':'site-stat3-lbl','adhesion-p1':'site-adhesion-p1','adhesion-p2':'site-adhesion-p2','footer-email':'footer-email','footer-tel':'footer-tel'};
 function getContent(){try{return Object.assign({},DEFAULTS,JSON.parse(localStorage.getItem(CONTENT_KEY))||{});}catch{return{...DEFAULTS};}}
 function saveContent(obj){localStorage.setItem(CONTENT_KEY,JSON.stringify(obj));}
-function applyContent(){const c=getContent();Object.entries(DOM_MAP).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=c[k]||'';});}
+function applyContent(){const c=getContent();Object.entries(DOM_MAP).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=c[k]||'';});
+  // Photos dynamiques via CSS variables
+  if(c['photo-hero'])document.documentElement.style.setProperty('--hero-photo',`url('${c['photo-hero']}')`);
+  if(c['photo-encart'])document.documentElement.style.setProperty('--encart-photo',`url('${c['photo-encart']}')`);
+  else document.documentElement.style.removeProperty('--encart-photo');
+}
 function loadEditors(){const c=getContent();Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('ed-'+k);if(el)el.value=c[k]||'';});}
-function saveOne(key){const c=getContent();const ed=document.getElementById('ed-'+key);if(!ed)return;c[key]=ed.value;saveContent(c);const dom=document.getElementById(DOM_MAP[key]);if(dom)dom.textContent=ed.value;showFlash('flash-'+key);}
+function saveOne(key){const c=getContent();const ed=document.getElementById('ed-'+key);if(!ed)return;c[key]=ed.value;saveContent(c);const dom=document.getElementById(DOM_MAP[key]);if(dom)dom.textContent=ed.value;if(key==='photo-hero'&&ed.value)document.documentElement.style.setProperty('--hero-photo',`url('${ed.value}')`);if(key==='photo-encart'){if(ed.value)document.documentElement.style.setProperty('--encart-photo',`url('${ed.value}')`);else document.documentElement.style.removeProperty('--encart-photo');}showFlash('flash-'+key);}
 function saveGroup(keys,flashId){const c=getContent();keys.forEach(k=>{const ed=document.getElementById('ed-'+k);if(!ed)return;c[k]=ed.value;const dom=document.getElementById(DOM_MAP[k]);if(dom)dom.textContent=ed.value;});saveContent(c);showFlash(flashId);}
 function showFlash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
