@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+
 :root{--rouge:#C8102E;--or:#F5A623;--noir:#0D0D0D;--gf:#1A1A1A;--gris:#2D2D2D;--blanc:#F4F1EB;--beige:#E8DCC8}
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
 body{background:var(--noir);color:var(--blanc);font-family:'Barlow',sans-serif;overflow-x:hidden}
@@ -20,8 +21,10 @@ nav{position:sticky;top:0;z-index:200;background:rgba(13,13,13,.97);backdrop-fil
 .nav-links a:hover{color:var(--or)}
 .btn-admin{background:transparent;border:1px solid rgba(255,255,255,.2);padding:7px 14px;border-radius:3px;font-size:.72rem;color:rgba(255,255,255,.4);cursor:pointer;transition:all .2s;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
 .btn-admin:hover{border-color:var(--or);color:var(--or)}
+
+
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
-.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:background .5s}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
 .hero-word{position:absolute;right:-2%;bottom:-5%;font-family:'Bebas Neue',sans-serif;font-size:22vw;color:rgba(200,16,46,.06);line-height:1;pointer-events:none;user-select:none}
 .hero-content{position:relative;z-index:1;padding:0 8vw;max-width:880px}
 .eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;animation:fadeUp .7s ease both}
@@ -35,8 +38,6 @@ nav{position:sticky;top:0;z-index:200;background:rgba(13,13,13,.97);backdrop-fil
 .btn-primary:hover{background:transparent;color:var(--rouge)}
 .btn-secondary{display:inline-block;background:transparent;color:var(--blanc);padding:14px 32px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:3px;border:2px solid rgba(255,255,255,.3);cursor:pointer;transition:all .25s}
 .btn-secondary:hover{border-color:var(--or);color:var(--or)}
-
-
 .banderole{background:var(--rouge);overflow:hidden;padding:13px 0;white-space:nowrap}
 .banderole-track{display:inline-flex;animation:scrollLeft 22s linear infinite}
 .banderole-item{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:3px;padding:0 36px;color:#fff}
@@ -63,6 +64,8 @@ h2 em{color:var(--rouge);font-style:normal}
 .stat:last-child{border-right:none}
 .stat-num{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--rouge);display:block}
 .stat-lbl{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;color:rgba(244,241,235,.45);text-transform:uppercase}
+
+
 .actus{background:var(--noir)}
 .actus-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
 .actu-card{background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden;cursor:pointer;transition:all .25s}
@@ -72,8 +75,6 @@ h2 em{color:var(--rouge);font-style:normal}
 .actu-body h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:8px;line-height:1.2}
 .actu-body p{font-size:.82rem;color:rgba(244,241,235,.6);line-height:1.6;margin-bottom:12px}
 .actu-date{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;color:rgba(244,241,235,.35);text-transform:uppercase}
-.empty-msg{text-align:center;padding:60px;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;grid-column:1/-1}
-.empty-msg span{display:block;font-size:3rem;margin-bottom:12px}
 .annonces{background:var(--gf)}
 .annonces-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px}
 .annonce-card{background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:22px;cursor:pointer;transition:all .25s}
@@ -81,13 +82,13 @@ h2 em{color:var(--rouge);font-style:normal}
 .ann-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;gap:10px}
 .ann-cat{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:2px;border:1px solid}
 .cat-Logement{color:#64B5F6;border-color:#64B5F6}.cat-Emploi{color:#81C784;border-color:#81C784}
-.cat-Service{color:#FFB74D;border-color:#FFB74D}.cat-Solidarite{color:#F06292;border-color:#F06292}
+.cat-Service{color:#FFB74D;border-color:#FFB74D}.cat-Solidarité{color:#F06292;border-color:#F06292}
 .cat-Autre{color:rgba(244,241,235,.5);border-color:rgba(244,241,235,.3)}
 .ann-titre{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
 .ann-desc{font-size:.82rem;color:rgba(244,241,235,.6);line-height:1.6;margin-bottom:12px}
 .ann-meta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
 .ann-meta span{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;color:rgba(244,241,235,.35);text-transform:uppercase}
-.ann-cta{color:rgba(245,166,35,.7)!important;margin-left:auto!important}
+.ann-cta{color:rgba(245,166,35,.8)!important;margin-left:auto!important}
 .depot{background:var(--noir)}
 .depot-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:start}
 .depot-left p{color:rgba(244,241,235,.7);line-height:1.8;margin-bottom:14px;font-size:.95rem}
@@ -118,10 +119,10 @@ footer{background:var(--gf);border-top:1px solid rgba(255,255,255,.07);padding:5
 .footer-brand p{font-size:.82rem;color:rgba(244,241,235,.45);line-height:1.7;margin-top:14px;max-width:280px}
 .footer-col h4{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--or);margin-bottom:14px}
 .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:9px}
-.footer-col ul li,.footer-col ul a{font-size:.82rem;color:rgba(244,241,235,.45);text-decoration:none;transition:color .2s}
+.footer-col ul li,.footer-col ul a{font-size:.82rem;color:rgba(244,241,235,.45);text-decoration:none}
 .footer-col ul a:hover{color:var(--blanc)}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:22px;display:flex;justify-content:space-between;align-items:center;font-size:.75rem;color:rgba(244,241,235,.28)}
-.footer-bottom button{background:none;border:none;cursor:pointer;font-size:.72rem;color:rgba(244,241,235,.2);font-family:'Barlow',sans-serif;transition:color .2s}
+.footer-bottom button{background:none;border:none;cursor:pointer;font-size:.72rem;color:rgba(244,241,235,.2);font-family:'Barlow',sans-serif}
 .footer-bottom button:hover{color:var(--or)}
 
 
@@ -131,18 +132,16 @@ footer{background:var(--gf);border-top:1px solid rgba(255,255,255,.07);padding:5
 @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
 .drawer-head{padding:24px 28px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-shrink:0;background:var(--noir)}
 .drawer-head h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1.1;color:var(--blanc);flex:1}
-.drawer-close{background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);width:34px;height:34px;min-width:34px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.drawer-close{background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);width:34px;height:34px;min-width:34px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
 .drawer-close:hover{border-color:var(--rouge);color:var(--rouge)}
 .drawer-body{padding:24px 28px;flex:1}
 .drawer-meta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
 .drawer-content{font-size:.92rem;color:rgba(244,241,235,.78);line-height:1.9;white-space:pre-wrap}
-.contact-box{background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:22px;margin-top:28px}
-.contact-box h4{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:6px}
-.contact-box > p{font-size:.8rem;color:rgba(244,241,235,.5);margin-bottom:16px;line-height:1.5}
-.btn-ct{background:var(--or);color:var(--noir);border:none;padding:10px 22px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;width:100%;transition:opacity .2s}
-.btn-ct:hover{opacity:.85}
-.ct-form{display:none;margin-top:16px}
-.ct-form.open{display:block}
+.contact-direct{background:var(--noir);border:1px solid rgba(245,166,35,.3);border-radius:6px;padding:20px;margin-top:24px}
+.contact-direct h4{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;margin-bottom:12px;color:var(--or)}
+.contact-info{display:flex;flex-direction:column;gap:10px}
+.contact-info a{display:flex;align-items:center;gap:10px;color:var(--blanc);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:1px;padding:10px 14px;background:rgba(255,255,255,.05);border-radius:4px;border:1px solid rgba(255,255,255,.1);transition:all .2s}
+.contact-info a:hover{border-color:var(--or);background:rgba(245,166,35,.08)}
 .modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.88);backdrop-filter:blur(6px);align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 @keyframes popIn{from{opacity:0;transform:scale(.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -150,18 +149,18 @@ footer{background:var(--gf);border-top:1px solid rgba(255,255,255,.07);padding:5
 .login-box{background:var(--gf);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:92%;max-width:380px;padding:40px;animation:popIn .3s ease}
 .login-box h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:8px}
 .login-box p{font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:24px}
-.login-box input{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:12px 15px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s;margin-bottom:14px}
+.login-box input{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:12px 15px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;margin-bottom:14px}
 .login-box input:focus{border-color:var(--rouge)}
 .login-err{font-size:.8rem;color:var(--rouge);margin-bottom:12px;display:none;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
 .login-btns{display:flex;gap:10px}
 .btn-login{flex:1;background:var(--rouge);color:#fff;border:2px solid var(--rouge);padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all .25s}
 .btn-login:hover{background:transparent;color:var(--rouge)}
-.btn-cancel-l{background:transparent;color:rgba(244,241,235,.5);border:1px solid rgba(255,255,255,.15);padding:12px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:1px;text-transform:uppercase;border-radius:3px;cursor:pointer}
+.btn-cx{background:transparent;color:rgba(244,241,235,.5);border:1px solid rgba(255,255,255,.15);padding:12px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:1px;text-transform:uppercase;border-radius:3px;cursor:pointer}
 .admin-modal{background:var(--gf);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:96%;max-width:1200px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;animation:popIn .3s ease}
 .admin-head{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid rgba(255,255,255,.08);background:var(--noir);flex-shrink:0}
 .admin-head h2{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--blanc);margin:0}
 .admin-head h2 span{color:var(--rouge)}
-.a-close{background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.a-close{background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
 .a-close:hover{border-color:var(--rouge);color:var(--rouge)}
 .admin-tabs{display:flex;gap:4px;background:var(--gf);padding:0 26px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;overflow-x:auto}
 .tab-btn{background:none;border:none;color:rgba(244,241,235,.45);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;padding:13px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
@@ -175,22 +174,22 @@ footer{background:var(--gf);border-top:1px solid rgba(255,255,255,.07);padding:5
 .btn-export{background:var(--or);color:var(--noir);border:none;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;border-radius:3px;cursor:pointer}
 .btn-new{background:var(--rouge);color:#fff;border:none;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;border-radius:3px;cursor:pointer}
 .spin{text-align:center;padding:40px;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:.82rem}
-.empty{padding:50px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;color:rgba(244,241,235,.3);letter-spacing:1px}
+.empty{padding:50px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;color:rgba(244,241,235,.3)}
 .empty span{display:block;font-size:3rem;margin-bottom:12px}
 table{width:100%;border-collapse:collapse}
 thead{position:sticky;top:0;background:var(--noir);z-index:1}
 thead th{padding:10px 14px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--or);border-bottom:1px solid rgba(255,255,255,.08)}
-tbody tr{border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.05)}
 tbody tr:hover{background:rgba(255,255,255,.03)}
 tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .qb{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;background:rgba(200,16,46,.15);border:1px solid rgba(200,16,46,.3);color:#ff6b6b;padding:2px 8px;border-radius:2px}
 .dt{color:rgba(244,241,235,.35);font-size:.74rem}
-.btn-del{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(244,241,235,.3);padding:3px 9px;border-radius:3px;cursor:pointer;font-size:.7rem;transition:all .2s}
+.btn-del{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(244,241,235,.3);padding:3px 9px;border-radius:3px;cursor:pointer;font-size:.7rem}
 .btn-del:hover{border-color:var(--rouge);color:var(--rouge)}
 .btn-ok{background:rgba(76,175,80,.15);border:1px solid #4CAF50;color:#4CAF50;padding:3px 9px;border-radius:3px;cursor:pointer;font-size:.7rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
 .btn-ko{background:rgba(200,16,46,.1);border:1px solid var(--rouge);color:var(--rouge);padding:3px 9px;border-radius:3px;cursor:pointer;font-size:.7rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
-.s-ok{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;background:rgba(76,175,80,.15);border:1px solid #4CAF50;color:#4CAF50;padding:2px 8px;border-radius:2px}
-.s-ko{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;background:rgba(255,152,0,.15);border:1px solid #FF9800;color:#FF9800;padding:2px 8px;border-radius:2px}
+.s-ok{background:rgba(76,175,80,.15);border:1px solid #4CAF50;color:#4CAF50;padding:2px 8px;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase}
+.s-ko{background:rgba(255,152,0,.15);border:1px solid #FF9800;color:#FF9800;padding:2px 8px;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase}
 .actu-form-box{background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:22px;margin-bottom:20px;display:none}
 .actu-form-box.open{display:block}
 .actu-form-box h4{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:16px}
@@ -198,7 +197,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .cb{background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;overflow:hidden}
 .cb-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}
 .cb-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--or)}
-.cb-head span{font-size:.68rem;color:rgba(244,241,235,.25);font-family:'Barlow Condensed',sans-serif}
+.cb-head span{font-size:.68rem;color:rgba(244,241,235,.25)}
 .cb-body{padding:14px 18px;display:flex;flex-direction:column;gap:10px}
 .ef label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.66rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-bottom:5px}
 .ef input,.ef textarea{width:100%;background:var(--gf);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:9px 12px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.86rem;outline:none;transition:border-color .2s;resize:vertical}
@@ -210,9 +209,13 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .flash{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:#4CAF50;opacity:0;transition:opacity .4s;align-self:flex-end}
 .flash.show{opacity:1}
 .save-row{display:flex;align-items:center;gap:14px}
-.photo-tip{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:4px;padding:12px 14px;font-size:.78rem;color:rgba(244,241,235,.55);line-height:1.6}
-.photo-tip strong{color:var(--blanc)}
-.photo-tip a{color:var(--or)}
+.upload-zone{border:2px dashed rgba(255,255,255,.2);border-radius:6px;padding:24px;text-align:center;cursor:pointer;transition:all .25s;position:relative}
+.upload-zone:hover{border-color:var(--or);background:rgba(245,166,35,.05)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone p{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:1px;color:rgba(244,241,235,.5)}
+.upload-zone .icon{font-size:2rem;margin-bottom:8px;display:block}
+.upload-preview{width:100%;height:120px;object-fit:cover;border-radius:4px;margin-top:10px;display:none}
+.upload-status{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;color:var(--or);margin-top:8px;display:none}
 @media(max-width:900px){.qui-grid,.adhesion-grid,.depot-grid{grid-template-columns:1fr;gap:40px}.actus-grid{grid-template-columns:1fr 1fr}.annonces-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}.fr{grid-template-columns:1fr}section{padding:60px 5vw}}
 @media(max-width:600px){.actus-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.nav-links a:not(.btn-admin){display:none}}
 
@@ -290,7 +293,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 <section class="annonces" id="annonces">
   <div class="section-tag">Entraide citoyenne</div>
   <h2>Annonces <em>des habitants</em></h2>
-  <p style="color:rgba(244,241,235,.6);margin-top:-8px;margin-bottom:10px;font-size:.95rem">Cliquez sur une annonce pour voir les détails et entrer en contact.</p>
+  <p style="color:rgba(244,241,235,.6);margin-top:-8px;margin-bottom:10px;font-size:.95rem">Cliquez sur une annonce pour voir les détails et coordonnées de l'auteur.</p>
   <div class="annonces-grid" id="annonces-grid"><div class="spin" style="grid-column:1/-1">⏳ Chargement…</div></div>
 </section>
 <section class="depot" id="depot">
@@ -308,7 +311,8 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
         <div class="fg"><label>Prénom *</label><input type="text" id="a-prenom" placeholder="Marie"></div>
         <div class="fg"><label>Nom *</label><input type="text" id="a-nom" placeholder="Dupont"></div>
       </div>
-      <div class="fg"><label>Email *</label><input type="email" id="a-email" placeholder="marie@exemple.fr"></div>
+      <div class="fg"><label>Email * (affiché aux intéressés)</label><input type="email" id="a-email" placeholder="marie@exemple.fr"></div>
+      <div class="fg"><label>Téléphone (optionnel)</label><input type="tel" id="a-tel" placeholder="06 XX XX XX XX"></div>
       <div class="fr">
         <div class="fg"><label>Catégorie *</label>
           <select id="a-cat"><option value="">— Choisir —</option>
@@ -330,7 +334,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <div class="fg"><label>Description *</label><textarea id="a-desc" rows="4" placeholder="Décrivez votre besoin ou ce que vous proposez…"></textarea></div>
       <div class="rgpd">
         <input type="checkbox" id="a-rgpd">
-        <label for="a-rgpd">J'accepte que ces informations soient publiées sur le site après validation. Aucune donnée ne sera transmise à des tiers.</label>
+        <label for="a-rgpd">J'accepte que ces informations (y compris mes coordonnées) soient publiées sur le site après validation.</label>
       </div>
       <button class="btn-sub" id="depotBtn" onclick="deposerAnnonce()">📋 Soumettre mon annonce</button>
       <div class="msg" id="depotMsg"></div>
@@ -343,7 +347,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <div class="section-tag">Passer à l'action</div>
       <h2>Rejoins <em>le mouvement</em></h2>
       <p id="site-adh-p1"></p><p id="site-adh-p2"></p>
-      <p><strong style="color:var(--or)">Gratuit et sans engagement.</strong><br>Tu décides toi-même de ton niveau d'implication.</p>
+      <p><strong style="color:var(--or)">Gratuit et sans engagement.</strong></p>
     </div>
     <div class="form-card">
       <h3>Formulaire d'adhésion</h3>
@@ -362,7 +366,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       </div>
       <div class="rgpd">
         <input type="checkbox" id="f-rgpd">
-        <label for="f-rgpd">J'accepte que mes données soient utilisées par le CQP Toulouse pour me contacter. Aucune donnée ne sera transmise à des tiers.</label>
+        <label for="f-rgpd">J'accepte que mes données soient utilisées par le CQP Toulouse pour me contacter.</label>
       </div>
       <button class="btn-sub" id="submitBtn" onclick="soumettre()">✊ Je rejoins le mouvement</button>
       <div class="msg" id="formMsg"></div>
@@ -373,10 +377,10 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   <div class="footer-grid">
     <div class="footer-brand">
       <div class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></div>
-      <p>Un mouvement citoyen ancré dans les quartiers populaires de Toulouse, pour plus de justice sociale et de solidarité.</p>
+      <p>Un mouvement citoyen ancré dans les quartiers populaires de Toulouse.</p>
     </div>
-    <div class="footer-col"><h4>Le comité</h4><ul><li><a href="#qui">Notre histoire</a></li><li><a href="#actus">Actualités</a></li><li><a href="#">Notre charte</a></li></ul></div>
-    <div class="footer-col"><h4>Contact</h4><ul><li id="footer-email"></li><li id="footer-tel"></li><li><a href="#">Mentions légales</a></li></ul></div>
+    <div class="footer-col"><h4>Le comité</h4><ul><li><a href="#qui">Notre histoire</a></li><li><a href="#actus">Actualités</a></li></ul></div>
+    <div class="footer-col"><h4>Contact</h4><ul><li id="footer-email"></li><li id="footer-tel"></li></ul></div>
   </div>
   <div class="footer-bottom">
     <span>© 2026 Comité des Quartiers Populaires de Toulouse</span>
@@ -393,27 +397,16 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     </div>
   </div>
 </div>
-<!-- DRAWER ANNONCE -->
+<!-- DRAWER ANNONCE — contact direct -->
 <div class="drawer-overlay" id="dAnn" onclick="if(event.target.id==='dAnn')closeDr('dAnn')">
   <div class="drawer">
     <div class="drawer-head"><h3 id="dr-ann-titre"></h3><button class="drawer-close" onclick="closeDr('dAnn')">✕</button></div>
     <div class="drawer-body">
       <div class="drawer-meta"><span class="ann-cat" id="dr-ann-cat"></span><span class="actu-date" id="dr-ann-meta"></span></div>
       <div class="drawer-content" id="dr-ann-content"></div>
-      <div class="contact-box">
-        <h4>📬 Entrer en contact</h4>
-        <p>Les coordonnées sont protégées. Laissez vos informations et nous mettrons les deux parties en relation.</p>
-        <button class="btn-ct" onclick="document.getElementById('ct-form').classList.toggle('open')">✉️ Je souhaite entrer en contact</button>
-        <div class="ct-form" id="ct-form">
-          <div class="fr" style="margin-top:14px">
-            <div class="fg"><label>Votre prénom *</label><input type="text" id="c-prenom" placeholder="Marie"></div>
-            <div class="fg"><label>Votre nom *</label><input type="text" id="c-nom" placeholder="Dupont"></div>
-          </div>
-          <div class="fg"><label>Votre email *</label><input type="email" id="c-email" placeholder="marie@exemple.fr"></div>
-          <div class="fg"><label>Message (optionnel)</label><textarea id="c-msg" rows="3" placeholder="Bonjour, je suis intéressé·e par votre annonce…"></textarea></div>
-          <button class="btn-sub" style="margin-top:8px" onclick="envoyerContact()">📨 Envoyer ma demande</button>
-          <div class="msg" id="contactMsg"></div>
-        </div>
+      <div class="contact-direct" id="dr-contact-box">
+        <h4>📞 Contacter directement</h4>
+        <div class="contact-info" id="dr-contact-info"></div>
       </div>
     </div>
   </div>
@@ -427,7 +420,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     <div class="login-err" id="loginErr">❌ Mot de passe incorrect</div>
     <div class="login-btns">
       <button class="btn-login" onclick="checkPwd()">Connexion</button>
-      <button class="btn-cancel-l" onclick="closeM('loginModal')">Annuler</button>
+      <button class="btn-cx" onclick="closeM('loginModal')">Annuler</button>
     </div>
   </div>
 </div>
@@ -439,7 +432,6 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <button class="tab-btn active" data-tab="t-adh" onclick="switchTab(this)">👥 Adhérent·es</button>
       <button class="tab-btn" data-tab="t-actus" onclick="switchTab(this)">📰 Actualités</button>
       <button class="tab-btn" data-tab="t-ann" onclick="switchTab(this)">📋 Annonces</button>
-      <button class="tab-btn" data-tab="t-contacts" onclick="switchTab(this)">📨 Contacts</button>
       <button class="tab-btn" data-tab="t-textes" onclick="switchTab(this)">✏️ Textes & Photos</button>
     </div>
     <div class="admin-content">
@@ -464,7 +456,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
           <div class="fg"><label>Contenu *</label><textarea id="actu-contenu" rows="5" placeholder="Contenu…"></textarea></div>
           <div style="display:flex;gap:10px;margin-top:8px">
             <button class="btn-new" onclick="publierActu()">✅ Publier</button>
-            <button class="btn-cancel-l" onclick="document.getElementById('actuFormBox').classList.remove('open')">Annuler</button>
+            <button class="btn-cx" onclick="document.getElementById('actuFormBox').classList.remove('open')">Annuler</button>
           </div>
           <div class="msg" id="actuMsg"></div>
         </div>
@@ -474,25 +466,38 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
         <div class="panel-top"><span class="badge" id="annCount">…</span><button class="btn-export" onclick="exportCSV('ann')">⬇ Export CSV</button></div>
         <div id="annBody"><div class="spin">⏳</div></div>
       </div>
-      <div class="tab-panel" id="t-contacts">
-        <div class="panel-top"><span class="badge" id="ctCount">…</span><button class="btn-export" onclick="exportCSV('ct')">⬇ Export CSV</button></div>
-        <div id="ctBody"><div class="spin">⏳</div></div>
-      </div>
       <div class="tab-panel" id="t-textes">
         <div class="ce">
+          <!-- PHOTOS -->
           <div class="cb">
-            <div class="cb-head"><h4>🖼️ Photos du site</h4><span>URL directe d'une image</span></div>
+            <div class="cb-head"><h4>🖼️ Photo d'accueil (Hero)</h4><span>Depuis ton téléphone ou ordi</span></div>
             <div class="cb-body">
-              <div class="ef"><label>Photo d'accueil (Hero)</label><input type="text" id="ed-photo-hero" placeholder="https://..."></div>
-              <div class="photo-tip"><strong>Comment obtenir l'URL ?</strong><br>
-                • <strong>Google Images</strong> → clic-droit → "Copier l'adresse de l'image"<br>
-                • <strong>Ton téléphone</strong> → upload sur <a href="https://imgbb.com" target="_blank">imgbb.com</a> (gratuit) → copie "Direct link"<br>
-                • <strong>Unsplash</strong> → cherche "Mirail Toulouse" → ouvre → clic-droit → copie l'URL
+              <div class="upload-zone" id="upload-hero-zone">
+                <input type="file" id="upload-hero-file" accept="image/*" onchange="uploadPhoto('hero',this)">
+                <span class="icon">📸</span>
+                <p>Clique ou glisse ta photo ici<br><small style="color:rgba(244,241,235,.3)">JPG, PNG, WEBP — max 5MB — fonctionne depuis téléphone</small></p>
               </div>
-              <div class="ef"><label>Photo de l'encart (vide = icône 🏘️)</label><input type="text" id="ed-photo-encart" placeholder="https://..."></div>
+              <img class="upload-preview" id="preview-hero" alt="Aperçu hero">
+              <div class="upload-status" id="status-hero"></div>
+              <p style="font-size:.75rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;margin-top:4px">Ou colle une URL directement :</p>
+              <div class="ef"><input type="text" id="ed-photo-hero" placeholder="https://... (optionnel si upload)"></div>
               <div class="save-row"><button class="save-btn" onclick="savePhotos()">Enregistrer les photos</button><span class="flash" id="flash-photos">✓ Sauvegardé !</span></div>
             </div>
           </div>
+          <div class="cb">
+            <div class="cb-head"><h4>🖼️ Photo de l'encart</h4><span>"Ancrés dans la réalité"</span></div>
+            <div class="cb-body">
+              <div class="upload-zone" id="upload-encart-zone">
+                <input type="file" id="upload-encart-file" accept="image/*" onchange="uploadPhoto('encart',this)">
+                <span class="icon">📸</span>
+                <p>Clique ou glisse ta photo ici<br><small style="color:rgba(244,241,235,.3)">Vide = icône 🏘️</small></p>
+              </div>
+              <img class="upload-preview" id="preview-encart" alt="Aperçu encart">
+              <div class="upload-status" id="status-encart"></div>
+              <div class="ef" style="margin-top:8px"><input type="text" id="ed-photo-encart" placeholder="https://... (ou laisse vide)"></div>
+            </div>
+          </div>
+          <!-- TEXTES -->
           <div class="cb">
             <div class="cb-head"><h4>🦸 Texte d'accueil</h4><span>Sous le grand titre</span></div>
             <div class="cb-body">
@@ -528,7 +533,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
             </div>
           </div>
           <div class="cb">
-            <div class="cb-head"><h4>✊ Section Adhésion</h4><span>Texte gauche</span></div>
+            <div class="cb-head"><h4>✊ Section Adhésion</h4></div>
             <div class="cb-body">
               <div class="ef"><label>Paragraphe 1</label><textarea id="ed-adh-p1" rows="3"></textarea></div>
               <div class="ef"><label>Paragraphe 2</label><textarea id="ed-adh-p2" rows="3"></textarea></div>
@@ -536,7 +541,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
             </div>
           </div>
           <div class="cb">
-            <div class="cb-head"><h4>📬 Infos contact</h4><span>Pied de page</span></div>
+            <div class="cb-head"><h4>📬 Infos contact</h4></div>
             <div class="cb-body">
               <div class="fr">
                 <div class="ef"><label>Email</label><input type="text" id="ed-footer-email"></div>
@@ -554,83 +559,150 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const PWD='toulouse2026';
-const CK='cqp_v3';
 const sb=supabase.createClient(SBU,SBK);
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const DEF={
-  'hero-texte':'Né en 2026 pour faire entendre la voix des quartiers populaires de Toulouse, le Comité agit là où les besoins sont les plus forts — logement, transports, écoles, dignité.',
-  'hist-p1':'Écris ici le premier paragraphe de votre histoire. Depuis quelle année le comité existe-t-il ? Comment est-il né ?',
+
+// Clés de config Supabase → DOM
+const DOM_KEYS={
+  'hero-texte':'site-hero-texte','hist-p1':'site-hist-p1','hist-cit':'site-hist-cit','hist-p2':'site-hist-p2',
+  'enc-titre':'site-enc-titre','enc-texte':'site-enc-texte',
+  's1n':'site-s1n','s2n':'site-s2n','s3n':'site-s3n','s1l':'site-s1l','s2l':'site-s2l','s3l':'site-s3l',
+  'adh-p1':'site-adh-p1','adh-p2':'site-adh-p2','footer-email':'footer-email','footer-tel':'footer-tel'
+};
+const DEFAULTS={
+  'hero-texte':'Né en 2026 pour faire entendre la voix des quartiers populaires de Toulouse, le Comité agit là où les besoins sont les plus forts.',
+  'hist-p1':'Écris ici le premier paragraphe de votre histoire.',
   'hist-cit':'"Nos quartiers ont des problèmes. Mais ils ont surtout des forces."',
-  'hist-p2':'Écris ici la suite. Quelles actions avez-vous menées ? Quels quartiers couvrez-vous ?',
-  'enc-titre':'Ancrés dans la réalité','enc-texte':'Permanences, aide aux démarches, soutien scolaire — notre action est quotidienne.',
+  'hist-p2':'Écris ici la suite de votre histoire.',
+  'enc-titre':'Ancrés dans la réalité','enc-texte':'Permanences, aide aux démarches, soutien scolaire.',
   's1n':'—','s1l':'Membres','s2n':'—','s2l':'Quartiers','s3n':'2026','s3l':'Fondé en',
-  'adh-p1':"Adhérer au Comité, c'est rejoindre une force collective qui agit concrètement dans tes rues, ton immeuble, ton quartier.",
+  'adh-p1':"Adhérer au Comité, c'est rejoindre une force collective qui agit dans tes rues.",
   'adh-p2':'Remplis le formulaire — nous te recontacterons pour te présenter les actions en cours.',
   'footer-email':'contact@cqp-toulouse.fr','footer-tel':'06 XX XX XX XX',
   'photo-hero':'https://images.unsplash.com/photo-1560221328-12fe60f83ab8?w=1600&q=80',
   'photo-encart':''
 };
-const DOM={'hero-texte':'site-hero-texte','hist-p1':'site-hist-p1','hist-cit':'site-hist-cit','hist-p2':'site-hist-p2',
-  'enc-titre':'site-enc-titre','enc-texte':'site-enc-texte','s1n':'site-s1n','s2n':'site-s2n','s3n':'site-s3n',
-  's1l':'site-s1l','s2l':'site-s2l','s3l':'site-s3l','adh-p1':'site-adh-p1','adh-p2':'site-adh-p2',
-  'footer-email':'footer-email','footer-tel':'footer-tel'};
-function getC(){try{return Object.assign({},DEF,JSON.parse(localStorage.getItem(CK))||{});}catch{return{...DEF};}}
-function setC(o){localStorage.setItem(CK,JSON.stringify(o));}
+let siteConfig={...DEFAULTS};
+
+// Charger la config depuis Supabase
+async function loadConfig(){
+  try{
+    const{data}=await sb.from('site_config').select('key,value');
+    if(data)data.forEach(r=>{siteConfig[r.key]=r.value;});
+    applyAll();
+  }catch(e){applyAll();}
+}
+
+async function saveConfig(key,value){
+  siteConfig[key]=value;
+  await sb.from('site_config').upsert({key,value,updated_at:new Date().toISOString()},{onConflict:'key'});
+}
+
 function applyAll(){
-  const c=getC();
-  Object.entries(DOM).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=c[k]||'';});
-  const h=c['photo-hero']||DEF['photo-hero'];
+  Object.entries(DOM_KEYS).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=siteConfig[k]||'';});
+  // Photo hero
+  const h=siteConfig['photo-hero']||DEFAULTS['photo-hero'];
   document.getElementById('hero-bg').style.backgroundImage=
     `linear-gradient(135deg,rgba(200,16,46,.2) 0%,transparent 55%),linear-gradient(to bottom,rgba(13,13,13,.1) 0%,rgba(13,13,13,.9) 100%),url('${h}')`;
-  const enc=c['photo-encart'];
+  // Photo encart
+  const enc=siteConfig['photo-encart'];
   const encEl=document.getElementById('encart-img');
   const emoji=document.getElementById('encart-emoji');
   if(enc){encEl.style.backgroundImage=`url('${enc}')`;encEl.style.backgroundSize='cover';encEl.style.backgroundPosition='center';if(emoji)emoji.style.display='none';}
   else{encEl.style.backgroundImage='none';if(emoji)emoji.style.display='block';}
 }
-function loadEditors(){const c=getC();Object.keys(DEF).forEach(k=>{const el=document.getElementById('ed-'+k);if(el)el.value=c[k]||'';});}
-function save1(k){const c=getC();const ed=document.getElementById('ed-'+k);if(!ed)return;c[k]=ed.value;setC(c);const d=document.getElementById(DOM[k]);if(d)d.textContent=ed.value;flash('flash-'+k);}
-function saveN(ks,fid){const c=getC();ks.forEach(k=>{const ed=document.getElementById('ed-'+k);if(!ed)return;c[k]=ed.value;const d=document.getElementById(DOM[k]);if(d)d.textContent=ed.value;});setC(c);flash(fid);}
-function savePhotos(){
-  const c=getC();
-  c['photo-hero']=document.getElementById('ed-photo-hero').value.trim()||DEF['photo-hero'];
-  c['photo-encart']=document.getElementById('ed-photo-encart').value.trim();
-  setC(c);applyAll();flash('flash-photos');
+
+function loadEditors(){
+  Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('ed-'+k);if(el)el.value=siteConfig[k]||'';});
 }
+
+async function save1(key){
+  const ed=document.getElementById('ed-'+key);if(!ed)return;
+  await saveConfig(key,ed.value);
+  const dom=document.getElementById(DOM_KEYS[key]);if(dom)dom.textContent=ed.value;
+  flash('flash-'+key);
+}
+
+async function saveN(keys,fid){
+  for(const k of keys){
+    const ed=document.getElementById('ed-'+k);if(!ed)continue;
+    await saveConfig(k,ed.value);
+    const dom=document.getElementById(DOM_KEYS[k]);if(dom)dom.textContent=ed.value;
+  }
+  flash(fid);
+}
+
+async function savePhotos(){
+  const hero=document.getElementById('ed-photo-hero').value.trim();
+  const enc=document.getElementById('ed-photo-encart').value.trim();
+  if(hero)await saveConfig('photo-hero',hero);
+  await saveConfig('photo-encart',enc);
+  applyAll();flash('flash-photos');
+}
+
+// Upload photo vers Supabase Storage
+async function uploadPhoto(type,input){
+  const file=input.files[0];if(!file)return;
+  const statusEl=document.getElementById('status-'+type);
+  const previewEl=document.getElementById('preview-'+type);
+  statusEl.textContent='⏳ Upload en cours…';statusEl.style.display='block';
+  try{
+    const ext=file.name.split('.').pop();
+    const filename=`${type}-${Date.now()}.${ext}`;
+    const{data,error}=await sb.storage.from('site-photos').upload(filename,file,{upsert:true,contentType:file.type});
+    if(error)throw error;
+    const{data:{publicUrl}}=sb.storage.from('site-photos').getPublicUrl(filename);
+    // Mettre à jour le champ texte et la config
+    document.getElementById('ed-photo-'+type).value=publicUrl;
+    await saveConfig('photo-'+type,publicUrl);
+    applyAll();
+    // Aperçu
+    previewEl.src=publicUrl;previewEl.style.display='block';
+    statusEl.textContent='✅ Photo uploadée et appliquée !';statusEl.style.color='#4CAF50';
+    flash('flash-photos');
+  }catch(e){statusEl.textContent='⚠ Erreur : '+e.message;statusEl.style.color='var(--rouge)';}
+}
+
 function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
 </script>
 <script>
-let actusPub=[],annPub=[],curAnnId=null;
-const CATS={Logement:'cat-Logement',Emploi:'cat-Emploi',Service:'cat-Service','Solidarité':'cat-Solidarite',Autre:'cat-Autre'};
+// Actus public
+let actusPub=[];
+const CATS={Logement:'cat-Logement',Emploi:'cat-Emploi',Service:'cat-Service','Solidarité':'cat-Solidarité',Autre:'cat-Autre'};
 async function loadActus(){
   const g=document.getElementById('actus-grid');
-  try{const{data,error}=await sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).limit(6);
+  try{
+    const{data,error}=await sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).limit(6);
     if(error)throw error;actusPub=data||[];
-    if(!actusPub.length){g.innerHTML='<div class="empty-msg" style="grid-column:1/-1"><span>📰</span>Aucune actualité pour l\'instant.</div>';return;}
+    if(!actusPub.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><span>📰</span>Aucune actualité pour l\'instant.</div>';return;}
     g.innerHTML=actusPub.map(a=>`<div class="actu-card" onclick="openDrActu(${a.id})">
       <span class="actu-cat">${esc(a.categorie)}</span>
       <div class="actu-body"><h3>${esc(a.titre)}</h3>
         <p>${esc(a.contenu).substring(0,150)}${a.contenu.length>150?'…':''}</p>
         <div class="actu-date">${new Date(a.date_publication).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})}</div>
       </div></div>`).join('');
-  }catch(e){g.innerHTML='<div class="empty-msg" style="grid-column:1/-1">Impossible de charger les actualités.</div>';}
+  }catch(e){g.innerHTML='<div class="empty" style="grid-column:1/-1">Impossible de charger.</div>';}
 }
+
+let annPub=[];
 async function loadAnnonces(){
   const g=document.getElementById('annonces-grid');
-  try{const{data,error}=await sb.from('annonces').select('*').eq('validee',true).order('date_depot',{ascending:false}).limit(8);
+  try{
+    const{data,error}=await sb.from('annonces').select('*').eq('validee',true).order('date_depot',{ascending:false}).limit(8);
     if(error)throw error;annPub=data||[];
-    if(!annPub.length){g.innerHTML='<div class="empty-msg" style="grid-column:1/-1"><span>📋</span>Aucune annonce pour l\'instant.<br><small>Soyez le premier à déposer !</small></div>';return;}
+    if(!annPub.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><span>📋</span>Aucune annonce pour l\'instant.</div>';return;}
     g.innerHTML=annPub.map(a=>`<div class="annonce-card" onclick="openDrAnn(${a.id})">
       <div class="ann-head">
         <span class="ann-cat ${CATS[a.categorie]||'cat-Autre'}">${esc(a.categorie)}</span>
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;color:rgba(244,241,235,.3);text-transform:uppercase">${new Date(a.date_depot).toLocaleDateString('fr-FR')}</span>
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;color:rgba(244,241,235,.3)">${new Date(a.date_depot).toLocaleDateString('fr-FR')}</span>
       </div>
       <div class="ann-titre">${esc(a.titre)}</div>
       <div class="ann-desc">${esc(a.description).substring(0,120)}${a.description.length>120?'…':''}</div>
       <div class="ann-meta"><span>📍 ${esc(a.quartier)}</span><span>👤 ${esc(a.prenom)}</span><span class="ann-cta">Voir + contacter →</span></div>
     </div>`).join('');
-  }catch(e){g.innerHTML='<div class="empty-msg" style="grid-column:1/-1">Impossible de charger les annonces.</div>';}
+  }catch(e){g.innerHTML='<div class="empty" style="grid-column:1/-1">Impossible de charger.</div>';}
 }
+
 function openDrActu(id){
   const a=actusPub.find(x=>x.id===id);if(!a)return;
   document.getElementById('dr-actu-titre').textContent=a.titre;
@@ -639,133 +711,133 @@ function openDrActu(id){
   document.getElementById('dr-actu-content').textContent=a.contenu;
   openDr('dActu');
 }
+
 function openDrAnn(id){
   const a=annPub.find(x=>x.id===id);if(!a)return;
-  curAnnId=id;
   document.getElementById('dr-ann-titre').textContent=a.titre;
   document.getElementById('dr-ann-cat').textContent=a.categorie;
   document.getElementById('dr-ann-cat').className='ann-cat '+(CATS[a.categorie]||'cat-Autre');
-  document.getElementById('dr-ann-meta').textContent='📍 '+a.quartier+' · 👤 '+a.prenom+' · '+new Date(a.date_depot).toLocaleDateString('fr-FR');
+  document.getElementById('dr-ann-meta').textContent='📍 '+a.quartier+' · '+new Date(a.date_depot).toLocaleDateString('fr-FR');
   document.getElementById('dr-ann-content').textContent=a.description;
-  document.getElementById('ct-form').classList.remove('open');
-  document.getElementById('contactMsg').className='msg';document.getElementById('contactMsg').style.display='none';
-  ['c-prenom','c-nom','c-email','c-msg'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  // Coordonnées directes
+  let html='';
+  if(a.email)html+=`<a href="mailto:${esc(a.email)}">✉️ ${esc(a.email)}</a>`;
+  if(a.telephone)html+=`<a href="tel:${esc(a.telephone)}">📞 ${esc(a.telephone)}</a>`;
+  if(!a.email&&!a.telephone)html='<p style="color:rgba(244,241,235,.4);font-size:.82rem">Aucun contact renseigné.</p>';
+  document.getElementById('dr-contact-info').innerHTML=html;
   openDr('dAnn');
 }
+
 function openDr(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
 function closeDr(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
-async function envoyerContact(){
-  const prenom=document.getElementById('c-prenom').value.trim();
-  const nom=document.getElementById('c-nom').value.trim();
-  const email=document.getElementById('c-email').value.trim();
-  const message=document.getElementById('c-msg').value.trim();
-  if(!prenom||!nom||!email){showMsg('contactMsg','err','⚠ Remplis prénom, nom et email.');return;}
-  try{const{error}=await sb.from('contacts_annonces').insert({annonce_id:curAnnId,prenom_contact:prenom,nom_contact:nom,email_contact:email,message});
-    if(error)throw error;
-    showMsg('contactMsg','ok',"✅ Demande envoyée ! Nous transmettrons vos coordonnées à l'auteur.");
-    document.getElementById('ct-form').classList.remove('open');
-  }catch(e){showMsg('contactMsg','err','⚠ Erreur : '+e.message);}
-}
+
 async function deposerAnnonce(){
   const prenom=document.getElementById('a-prenom').value.trim(),nom=document.getElementById('a-nom').value.trim();
-  const email=document.getElementById('a-email').value.trim(),categorie=document.getElementById('a-cat').value;
-  const quartier=document.getElementById('a-quartier').value,titre=document.getElementById('a-titre').value.trim();
-  const description=document.getElementById('a-desc').value.trim(),rgpd=document.getElementById('a-rgpd').checked;
+  const email=document.getElementById('a-email').value.trim(),telephone=document.getElementById('a-tel').value.trim();
+  const categorie=document.getElementById('a-cat').value,quartier=document.getElementById('a-quartier').value;
+  const titre=document.getElementById('a-titre').value.trim(),description=document.getElementById('a-desc').value.trim();
+  const rgpd=document.getElementById('a-rgpd').checked;
   if(!prenom||!nom||!email||!categorie||!quartier||!titre||!description){showMsg('depotMsg','err','⚠ Remplis tous les champs obligatoires.');return;}
   if(!rgpd){showMsg('depotMsg','err','⚠ Accepte les conditions.');return;}
   const btn=document.getElementById('depotBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
-  try{const{error}=await sb.from('annonces').insert({prenom,nom,email,quartier,categorie,titre,description,contact:''});
+  try{
+    const{error}=await sb.from('annonces').insert({prenom,nom,email,telephone,quartier,categorie,titre,description,contact:email});
     if(error)throw error;
     showMsg('depotMsg','ok','✅ Annonce soumise ! Elle sera publiée après validation (24–48h).');
-    ['a-prenom','a-nom','a-email','a-titre','a-desc'].forEach(i=>document.getElementById(i).value='');
+    ['a-prenom','a-nom','a-email','a-tel','a-titre','a-desc'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('a-cat').value='';document.getElementById('a-quartier').value='';document.getElementById('a-rgpd').checked=false;
     setTimeout(()=>{btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';},8000);
   }catch(e){showMsg('depotMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';}
 }
+
 async function soumettre(){
   const prenom=document.getElementById('f-prenom').value.trim(),nom=document.getElementById('f-nom').value.trim();
   const email=document.getElementById('f-email').value.trim(),quartier=document.getElementById('f-quartier').value;
   const rgpd=document.getElementById('f-rgpd').checked;
-  if(!prenom||!nom||!email||!quartier){showMsg('formMsg','err','⚠ Remplis tous les champs obligatoires.');return;}
+  if(!prenom||!nom||!email||!quartier){showMsg('formMsg','err','⚠ Remplis tous les champs.');return;}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('formMsg','err','⚠ Email invalide.');return;}
-  if(!rgpd){showMsg('formMsg','err','⚠ Accepte la politique de confidentialité.');return;}
+  if(!rgpd){showMsg('formMsg','err','⚠ Accepte la politique.');return;}
   const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
-  try{const{error}=await sb.from('adherents').insert({prenom,nom,email,quartier});
+  try{
+    const{error}=await sb.from('adherents').insert({prenom,nom,email,quartier});
     if(error){if(error.code==='23505')showMsg('formMsg','err','⚠ Email déjà enregistré.');else showMsg('formMsg','err','⚠ Erreur : '+error.message);btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';return;}
-    showMsg('formMsg','ok','🎉 Bienvenue dans le mouvement ! Nous te contacterons très prochainement.');
+    showMsg('formMsg','ok','🎉 Bienvenue dans le mouvement !');
     ['f-prenom','f-nom','f-email'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('f-quartier').value='';document.getElementById('f-rgpd').checked=false;
     setTimeout(()=>{btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';},6000);
   }catch(e){showMsg('formMsg','err','⚠ Erreur réseau.');btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';}
 }
 function showMsg(id,type,txt){const m=document.getElementById(id);m.className='msg '+type;m.textContent=txt;m.style.display='block';}
+</script>
+<script>
+// Login
 function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
 function checkPwd(){if(document.getElementById('pwdInput').value===PWD){closeM('loginModal');loadEditors();renderAdh();document.getElementById('adminModal').classList.add('open');}else{document.getElementById('loginErr').style.display='block';document.getElementById('pwdInput').value='';}}
 function closeM(id){document.getElementById(id).classList.remove('open');}
+
 function switchTab(btn){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');const t=btn.dataset.tab;document.getElementById(t).classList.add('active');
-  if(t==='t-adh')renderAdh();if(t==='t-actus')renderActusAdmin();
-  if(t==='t-ann')renderAnnAdmin();if(t==='t-contacts')renderCt();
+  if(t==='t-adh')renderAdh();if(t==='t-actus')renderActusAdmin();if(t==='t-ann')renderAnnAdmin();
 }
-let adhCache=[],actusAdminCache=[],annAdminCache=[],ctCache=[];
+
+// Admin adhérents
+let adhCache=[];
 async function renderAdh(){
   const b=document.getElementById('adhBody');b.innerHTML='<div class="spin">⏳</div>';
-  try{const{data,error}=await sb.from('adherents').select('*').order('date_inscription',{ascending:false});
+  try{
+    const{data,error}=await sb.from('adherents').select('*').order('date_inscription',{ascending:false});
     if(error)throw error;adhCache=data||[];
     document.getElementById('adhCount').textContent=adhCache.length+' inscrit·e'+(adhCache.length>1?'s':'');
     if(!adhCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucun·e adhérent·e.</div>';return;}
-    b.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Quartier</th><th>Date</th><th></th></tr></thead><tbody>${adhCache.map((a,i)=>`<tr><td style="color:rgba(244,241,235,.3);font-size:.72rem">${i+1}</td><td>${esc(a.prenom)}</td><td>${esc(a.nom)}</td><td>${esc(a.email)}</td><td><span class="qb">${esc(a.quartier)}</span></td><td><span class="dt">${new Date(a.date_inscription).toLocaleDateString('fr-FR')}</span></td><td><button class="btn-del" onclick="del('adherents',${a.id},renderAdh)">✕</button></td></tr>`).join('')}</tbody></table>`;
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Quartier</th><th>Date</th><th></th></tr></thead><tbody>${adhCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(a.prenom)}</td><td>${esc(a.nom)}</td><td>${esc(a.email)}</td><td><span class="qb">${esc(a.quartier)}</span></td><td><span class="dt">${new Date(a.date_inscription).toLocaleDateString('fr-FR')}</span></td><td><button class="btn-del" onclick="del('adherents',${a.id},renderAdh)">✕</button></td></tr>`).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
+
+// Admin actus
+let actusAdmCache=[];
 async function publierActu(){
-  const titre=document.getElementById('actu-titre').value.trim();
-  const contenu=document.getElementById('actu-contenu').value.trim();
+  const titre=document.getElementById('actu-titre').value.trim(),contenu=document.getElementById('actu-contenu').value.trim();
   const categorie=document.getElementById('actu-cat').value;
   if(!titre||!contenu){showMsg('actuMsg','err','⚠ Titre et contenu obligatoires.');return;}
   try{const{error}=await sb.from('actus').insert({titre,contenu,categorie,visible:true});
     if(error)throw error;
-    showMsg('actuMsg','ok','✅ Actualité publiée !');
+    showMsg('actuMsg','ok','✅ Publié !');
     document.getElementById('actu-titre').value='';document.getElementById('actu-contenu').value='';
     setTimeout(()=>{document.getElementById('actuFormBox').classList.remove('open');renderActusAdmin();loadActus();},1500);
-  }catch(e){showMsg('actuMsg','err','⚠ Erreur : '+e.message);}
+  }catch(e){showMsg('actuMsg','err','⚠ '+e.message);}
 }
 async function renderActusAdmin(){
   const b=document.getElementById('actusBody');b.innerHTML='<div class="spin">⏳</div>';
   try{const{data,error}=await sb.from('actus').select('*').order('date_publication',{ascending:false});
-    if(error)throw error;actusAdminCache=data||[];
-    document.getElementById('actusCount').textContent=actusAdminCache.length+' actu'+(actusAdminCache.length>1?'s':'');
-    if(!actusAdminCache.length){b.innerHTML='<div class="empty"><span>📰</span>Aucune actualité.</div>';return;}
-    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Date</th><th>Visible</th><th>Actions</th></tr></thead><tbody>${actusAdminCache.map((a,i)=>`<tr><td style="color:rgba(244,241,235,.3);font-size:.72rem">${i+1}</td><td>${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td><span class="dt">${new Date(a.date_publication).toLocaleDateString('fr-FR')}</span></td><td>${a.visible?'<span class="s-ok">Oui</span>':'<span class="s-ko">Non</span>'}</td><td style="display:flex;gap:6px"><button class="btn-ok" onclick="toggleVis(${a.id},${a.visible})">${a.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('actus',${a.id},()=>{renderActusAdmin();loadActus();})">✕</button></td></tr>`).join('')}</tbody></table>`;
+    if(error)throw error;actusAdmCache=data||[];
+    document.getElementById('actusCount').textContent=actusAdmCache.length+' actu'+(actusAdmCache.length>1?'s':'');
+    if(!actusAdmCache.length){b.innerHTML='<div class="empty"><span>📰</span>Aucune.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Date</th><th>Visible</th><th>Actions</th></tr></thead><tbody>${actusAdmCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td><span class="dt">${new Date(a.date_publication).toLocaleDateString('fr-FR')}</span></td><td>${a.visible?'<span class="s-ok">Oui</span>':'<span class="s-ko">Non</span>'}</td><td style="display:flex;gap:6px"><button class="btn-ok" onclick="toggleVis(${a.id},${a.visible})">${a.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('actus',${a.id},()=>{renderActusAdmin();loadActus();})">✕</button></td></tr>`).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
 async function toggleVis(id,cur){await sb.from('actus').update({visible:!cur}).eq('id',id);renderActusAdmin();loadActus();}
+
+// Admin annonces
+let annAdmCache=[];
 async function renderAnnAdmin(){
   const b=document.getElementById('annBody');b.innerHTML='<div class="spin">⏳</div>';
   try{const{data,error}=await sb.from('annonces').select('*').order('date_depot',{ascending:false});
-    if(error)throw error;annAdminCache=data||[];
-    document.getElementById('annCount').textContent=annAdminCache.length+' annonce'+(annAdminCache.length>1?'s':'');
-    if(!annAdminCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucune annonce.</div>';return;}
-    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Quartier</th><th>Auteur</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${annAdminCache.map((a,i)=>`<tr><td style="color:rgba(244,241,235,.3);font-size:.72rem">${i+1}</td><td title="${esc(a.description)}">${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td>${esc(a.quartier)}</td><td>${esc(a.prenom)} ${esc(a.nom)}</td><td><span class="dt">${new Date(a.date_depot).toLocaleDateString('fr-FR')}</span></td><td>${a.validee?'<span class="s-ok">Validée</span>':'<span class="s-ko">En attente</span>'}</td><td style="display:flex;gap:5px;flex-wrap:wrap">${!a.validee?`<button class="btn-ok" onclick="valAnn(${a.id},true)">✅ Valider</button>`:`<button class="btn-ko" onclick="valAnn(${a.id},false)">↩ Retirer</button>`}<button class="btn-del" onclick="del('annonces',${a.id},()=>{renderAnnAdmin();loadAnnonces();})">✕</button></td></tr>`).join('')}</tbody></table>`;
+    if(error)throw error;annAdmCache=data||[];
+    document.getElementById('annCount').textContent=annAdmCache.length+' annonce'+(annAdmCache.length>1?'s':'');
+    if(!annAdmCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucune.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Quartier</th><th>Email</th><th>Tél</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${annAdmCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td title="${esc(a.description)}">${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td>${esc(a.quartier)}</td><td><span class="dt">${esc(a.email)}</span></td><td><span class="dt">${esc(a.telephone||'—')}</span></td><td>${a.validee?'<span class="s-ok">Validée</span>':'<span class="s-ko">En attente</span>'}</td><td style="display:flex;gap:5px">${!a.validee?`<button class="btn-ok" onclick="valAnn(${a.id},true)">✅</button>`:`<button class="btn-ko" onclick="valAnn(${a.id},false)">↩</button>`}<button class="btn-del" onclick="del('annonces',${a.id},()=>{renderAnnAdmin();loadAnnonces();})">✕</button></td></tr>`).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
 async function valAnn(id,v){await sb.from('annonces').update({validee:v}).eq('id',id);renderAnnAdmin();loadAnnonces();}
-async function renderCt(){
-  const b=document.getElementById('ctBody');b.innerHTML='<div class="spin">⏳</div>';
-  try{const{data,error}=await sb.from('contacts_annonces').select('*, annonces(titre)').order('date_contact',{ascending:false});
-    if(error)throw error;ctCache=data||[];
-    document.getElementById('ctCount').textContent=ctCache.length+' demande'+(ctCache.length>1?'s':'');
-    if(!ctCache.length){b.innerHTML='<div class="empty"><span>📨</span>Aucune demande de contact.</div>';return;}
-    b.innerHTML=`<table><thead><tr><th>#</th><th>Annonce</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Message</th><th>Date</th><th></th></tr></thead><tbody>${ctCache.map((c,i)=>`<tr><td style="color:rgba(244,241,235,.3);font-size:.72rem">${i+1}</td><td><span class="qb">${esc(c.annonces?.titre||'?')}</span></td><td>${esc(c.prenom_contact)}</td><td>${esc(c.nom_contact)}</td><td>${esc(c.email_contact)}</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(c.message||'')}"><span class="dt">${esc(c.message||'—')}</span></td><td><span class="dt">${new Date(c.date_contact).toLocaleDateString('fr-FR')}</span></td><td><button class="btn-del" onclick="del('contacts_annonces',${c.id},renderCt)">✕</button></td></tr>`).join('')}</tbody></table>`;
-  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
-}
+
 async function del(table,id,cb){if(!confirm('Supprimer ?'))return;const{error}=await sb.from(table).delete().eq('id',id);if(!error&&cb)cb();else if(error)alert('Erreur : '+error.message);}
+
 function exportCSV(type){
   const maps={
     adh:{c:()=>adhCache,h:['#','Prénom','Nom','Email','Quartier','Date'],r:(a,i)=>[i+1,a.prenom,a.nom,a.email,a.quartier,new Date(a.date_inscription).toLocaleDateString('fr-FR')]},
-    ann:{c:()=>annAdminCache,h:['#','Titre','Cat','Quartier','Prénom','Nom','Email','Description','Date','Validée'],r:(a,i)=>[i+1,a.titre,a.categorie,a.quartier,a.prenom,a.nom,a.email,a.description,new Date(a.date_depot).toLocaleDateString('fr-FR'),a.validee?'Oui':'Non']},
-    ct:{c:()=>ctCache,h:['#','Annonce','Prénom','Nom','Email','Message','Date'],r:(c,i)=>[i+1,c.annonces?.titre||'?',c.prenom_contact,c.nom_contact,c.email_contact,c.message||'',new Date(c.date_contact).toLocaleDateString('fr-FR')]}
+    ann:{c:()=>annAdmCache,h:['#','Titre','Cat','Quartier','Prénom','Nom','Email','Téléphone','Description','Date','Validée'],r:(a,i)=>[i+1,a.titre,a.categorie,a.quartier,a.prenom,a.nom,a.email,a.telephone||'',a.description,new Date(a.date_depot).toLocaleDateString('fr-FR'),a.validee?'Oui':'Non']}
   };
   const m=maps[type];if(!m)return;const d=m.c();if(!d.length){alert('Aucune donnée.');return;}
   const rows=[m.h,...d.map(m.r)];
@@ -774,11 +846,17 @@ function exportCSV(type){
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;
   a.download=`${type}-cqp-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
 }
+
+// Animations
 const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.style.opacity='1';x.target.style.transform='translateY(0)';}});},{threshold:.08});
 document.querySelectorAll('.visual-box,.form-card,.adhesion-left,.qui-texte,.depot-left').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity .55s ease,transform .55s ease';obs.observe(el);});
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}});});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');closeDr('dAnn');}});
-applyAll();loadActus();loadAnnonces();
+
+// Init — charger config depuis Supabase (pas localStorage !)
+loadConfig();
+loadActus();
+loadAnnonces();
 </script>
 </body>
 </html>
