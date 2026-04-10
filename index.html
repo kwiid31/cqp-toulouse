@@ -216,8 +216,31 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .upload-zone .icon{font-size:2rem;margin-bottom:8px;display:block}
 .upload-preview{width:100%;height:120px;object-fit:cover;border-radius:4px;margin-top:10px;display:none}
 .upload-status{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;color:var(--or);margin-top:8px;display:none}
-@media(max-width:900px){.qui-grid,.adhesion-grid,.depot-grid{grid-template-columns:1fr;gap:40px}.actus-grid{grid-template-columns:1fr 1fr}.annonces-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}.fr{grid-template-columns:1fr}section{padding:60px 5vw}}
-@media(max-width:600px){.actus-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.nav-links a:not(.btn-admin){display:none}}
+/* ÉVÉNEMENTS */
+.events{background:var(--noir)}
+.events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.event-card{background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative}
+.event-card:hover{border-color:var(--or);transform:translateY(-4px);box-shadow:0 10px 30px rgba(245,166,35,.12)}
+.event-date-band{background:var(--rouge);padding:12px 16px;display:flex;align-items:center;gap:12px}
+.event-day{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#fff;line-height:1}
+.event-mois{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.event-body{padding:18px}
+.event-body h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:6px;line-height:1.2}
+.event-lieu{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:rgba(244,241,235,.4);text-transform:uppercase;margin-bottom:8px}
+.event-desc{font-size:.82rem;color:rgba(244,241,235,.6);line-height:1.6;margin-bottom:12px}
+.event-footer{display:flex;align-items:center;justify-content:space-between}
+.event-places{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;color:rgba(244,241,235,.35);text-transform:uppercase}
+.event-cta{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;color:var(--or);text-transform:uppercase}
+/* CROP PHOTO */
+.crop-container{position:relative;width:100%;height:200px;overflow:hidden;border-radius:4px;background:var(--gf);cursor:crosshair;user-select:none;border:1px solid rgba(255,255,255,.1)}
+.crop-img{position:absolute;transform-origin:top left}
+.crop-controls{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center}
+.crop-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(244,241,235,.7);padding:5px 12px;border-radius:3px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;transition:all .2s}
+.crop-btn:hover{background:rgba(255,255,255,.15)}
+.crop-btn.active{background:var(--or);color:var(--noir);border-color:var(--or)}
+.crop-hint{font-size:.72rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+@media(max-width:900px){.qui-grid,.adhesion-grid,.depot-grid{grid-template-columns:1fr;gap:40px}.actus-grid,.events-grid{grid-template-columns:1fr 1fr}.annonces-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}.fr{grid-template-columns:1fr}section{padding:60px 5vw}}
+@media(max-width:600px){.actus-grid,.events-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.nav-links a:not(.btn-admin){display:none}}
 
 </style>
 </head>
@@ -226,7 +249,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   <a href="#" class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></a>
   <div class="nav-links">
     <a href="#qui">Notre mouvement</a><a href="#actus">Actualités</a>
-    <a href="#annonces">Annonces</a><a href="#adhesion">Adhérer</a>
+    <a href="#evenements">Événements</a><a href="#annonces">Annonces</a><a href="#adhesion">Adhérer</a>
     <button class="btn-admin" onclick="openLogin()">⚙ Admin</button>
   </div>
 </nav>
@@ -289,6 +312,33 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   <div class="section-tag">Le comité vous informe</div>
   <h2>Actualités <em>& infos</em></h2>
   <div class="actus-grid" id="actus-grid"><div class="spin" style="grid-column:1/-1">⏳ Chargement…</div></div>
+</section>
+<section class="events" id="evenements">
+  <div class="section-tag">Rejoignez-nous</div>
+  <h2>Événements <em>à venir</em></h2>
+  <p style="color:rgba(244,241,235,.6);margin-top:-8px;margin-bottom:10px;font-size:.95rem">Réunions, ateliers, manifestations — cliquez pour vous inscrire.</p>
+  <div class="events-grid" id="events-grid"><div class="spin" style="grid-column:1/-1">⏳ Chargement…</div></div>
+  <div style="margin-top:30px;text-align:center">
+    <button class="btn-secondary" onclick="document.getElementById('proposer-evt').style.display=document.getElementById('proposer-evt').style.display==='none'?'block':'none'" style="margin:0 auto">+ Proposer un événement</button>
+  </div>
+  <div id="proposer-evt" style="display:none;max-width:600px;margin:24px auto 0">
+    <div class="form-card dark">
+      <h3>Proposer un événement</h3>
+      <p style="font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:20px;line-height:1.5">Votre proposition sera examinée par notre équipe avant publication.</p>
+      <div class="fr">
+        <div class="fg"><label>Votre prénom *</label><input type="text" id="pe-prenom" placeholder="Marie"></div>
+        <div class="fg"><label>Votre email *</label><input type="email" id="pe-email" placeholder="marie@exemple.fr"></div>
+      </div>
+      <div class="fg"><label>Titre de l'événement *</label><input type="text" id="pe-titre" placeholder="Ex: Réunion de quartier Mirail"></div>
+      <div class="fr">
+        <div class="fg"><label>Date *</label><input type="datetime-local" id="pe-date"></div>
+        <div class="fg"><label>Lieu *</label><input type="text" id="pe-lieu" placeholder="Salle des fêtes Bellefontaine"></div>
+      </div>
+      <div class="fg"><label>Description *</label><textarea id="pe-desc" rows="3" placeholder="Décrivez l'événement…"></textarea></div>
+      <button class="btn-sub" id="peBtn" onclick="proposerEvt()">📅 Soumettre ma proposition</button>
+      <div class="msg" id="peMsg"></div>
+    </div>
+  </div>
 </section>
 <section class="annonces" id="annonces">
   <div class="section-tag">Entraide citoyenne</div>
@@ -432,6 +482,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <button class="tab-btn active" data-tab="t-adh" onclick="switchTab(this)">👥 Adhérent·es</button>
       <button class="tab-btn" data-tab="t-actus" onclick="switchTab(this)">📰 Actualités</button>
       <button class="tab-btn" data-tab="t-ann" onclick="switchTab(this)">📋 Annonces</button>
+      <button class="tab-btn" data-tab="t-evt" onclick="switchTab(this)">📅 Événements</button>
       <button class="tab-btn" data-tab="t-textes" onclick="switchTab(this)">✏️ Textes & Photos</button>
     </div>
     <div class="admin-content">
@@ -466,35 +517,91 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
         <div class="panel-top"><span class="badge" id="annCount">…</span><button class="btn-export" onclick="exportCSV('ann')">⬇ Export CSV</button></div>
         <div id="annBody"><div class="spin">⏳</div></div>
       </div>
+      <div class="tab-panel" id="t-evt">
+        <div class="panel-top"><span class="badge" id="evtCount">…</span><button class="btn-new" onclick="document.getElementById('evtFormBox').classList.toggle('open')">+ Créer un événement</button></div>
+        <div class="actu-form-box" id="evtFormBox">
+          <h4>📅 Nouvel événement</h4>
+          <div class="fr">
+            <div class="fg"><label>Titre *</label><input type="text" id="evt-titre" placeholder="Réunion mensuelle"></div>
+            <div class="fg"><label>Catégorie</label>
+              <select id="evt-cat">
+                <option value="Réunion">Réunion</option><option value="Atelier">Atelier</option>
+                <option value="Mobilisation">Mobilisation</option><option value="Fête">Fête</option>
+                <option value="Formation">Formation</option>
+              </select>
+            </div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label>Date et heure *</label><input type="datetime-local" id="evt-date"></div>
+            <div class="fg"><label>Lieu *</label><input type="text" id="evt-lieu" placeholder="Salle des fêtes Bellefontaine"></div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label>Places max (0 = illimité)</label><input type="number" id="evt-places" value="0" min="0"></div>
+            <div class="fg"><label>Heure de fin (optionnel)</label><input type="datetime-local" id="evt-fin"></div>
+          </div>
+          <div class="fg"><label>Description *</label><textarea id="evt-desc" rows="4" placeholder="Décrivez l'événement…"></textarea></div>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn-new" onclick="creerEvt()">✅ Publier</button>
+            <button class="btn-cx" onclick="document.getElementById('evtFormBox').classList.remove('open')">Annuler</button>
+          </div>
+          <div class="msg" id="evtMsg"></div>
+        </div>
+        <div id="evtBody"><div class="spin">⏳</div></div>
+      </div>
       <div class="tab-panel" id="t-textes">
         <div class="ce">
-          <!-- PHOTOS -->
+          <!-- PHOTOS avec crop -->
           <div class="cb">
-            <div class="cb-head"><h4>🖼️ Photo d'accueil (Hero)</h4><span>Depuis ton téléphone ou ordi</span></div>
+            <div class="cb-head"><h4>🖼️ Photo d'accueil (Hero)</h4><span>Upload + recadrage</span></div>
             <div class="cb-body">
               <div class="upload-zone" id="upload-hero-zone">
-                <input type="file" id="upload-hero-file" accept="image/*" onchange="uploadPhoto('hero',this)">
+                <input type="file" id="upload-hero-file" accept="image/*" onchange="loadCrop('hero',this)">
                 <span class="icon">📸</span>
-                <p>Clique ou glisse ta photo ici<br><small style="color:rgba(244,241,235,.3)">JPG, PNG, WEBP — max 5MB — fonctionne depuis téléphone</small></p>
+                <p>Clique ou glisse ta photo ici — depuis ton téléphone ou ordi<br><small style="color:rgba(244,241,235,.3)">JPG, PNG, WEBP — max 5MB</small></p>
               </div>
-              <img class="upload-preview" id="preview-hero" alt="Aperçu hero">
+              <div id="crop-hero-wrap" style="display:none">
+                <p style="font-size:.75rem;color:rgba(244,241,235,.4);margin-bottom:8px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">🖱 GLISSE pour repositionner · MOLETTE pour zoomer</p>
+                <div class="crop-container" id="crop-hero"
+                  onmousedown="startDrag(event,'hero')" ontouchstart="startDragT(event,'hero')"
+                  onwheel="zoomCrop(event,'hero')">
+                  <img id="crop-hero-img" class="crop-img" alt="">
+                </div>
+                <div class="crop-controls">
+                  <button class="crop-btn" onclick="zoomCropBy('hero',0.1)">🔍+</button>
+                  <button class="crop-btn" onclick="zoomCropBy('hero',-0.1)">🔍-</button>
+                  <button class="crop-btn" onclick="resetCrop('hero')">↺ Reset</button>
+                  <span class="crop-hint">Ajuste puis clique "Enregistrer"</span>
+                </div>
+              </div>
               <div class="upload-status" id="status-hero"></div>
-              <p style="font-size:.75rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;margin-top:4px">Ou colle une URL directement :</p>
-              <div class="ef"><input type="text" id="ed-photo-hero" placeholder="https://... (optionnel si upload)"></div>
-              <div class="save-row"><button class="save-btn" onclick="savePhotos()">Enregistrer les photos</button><span class="flash" id="flash-photos">✓ Sauvegardé !</span></div>
+              <div class="ef" style="margin-top:8px"><label>Ou colle une URL</label><input type="text" id="ed-photo-hero" placeholder="https://..."></div>
+              <div class="save-row"><button class="save-btn" onclick="savePhotos('hero')">Enregistrer photo hero</button><span class="flash" id="flash-photos">✓ Sauvegardé !</span></div>
             </div>
           </div>
           <div class="cb">
             <div class="cb-head"><h4>🖼️ Photo de l'encart</h4><span>"Ancrés dans la réalité"</span></div>
             <div class="cb-body">
-              <div class="upload-zone" id="upload-encart-zone">
-                <input type="file" id="upload-encart-file" accept="image/*" onchange="uploadPhoto('encart',this)">
+              <div class="upload-zone">
+                <input type="file" id="upload-encart-file" accept="image/*" onchange="loadCrop('encart',this)">
                 <span class="icon">📸</span>
                 <p>Clique ou glisse ta photo ici<br><small style="color:rgba(244,241,235,.3)">Vide = icône 🏘️</small></p>
               </div>
-              <img class="upload-preview" id="preview-encart" alt="Aperçu encart">
+              <div id="crop-encart-wrap" style="display:none">
+                <p style="font-size:.75rem;color:rgba(244,241,235,.4);margin-bottom:8px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">🖱 GLISSE pour repositionner · MOLETTE pour zoomer</p>
+                <div class="crop-container" id="crop-encart"
+                  onmousedown="startDrag(event,'encart')" ontouchstart="startDragT(event,'encart')"
+                  onwheel="zoomCrop(event,'encart')">
+                  <img id="crop-encart-img" class="crop-img" alt="">
+                </div>
+                <div class="crop-controls">
+                  <button class="crop-btn" onclick="zoomCropBy('encart',0.1)">🔍+</button>
+                  <button class="crop-btn" onclick="zoomCropBy('encart',-0.1)">🔍-</button>
+                  <button class="crop-btn" onclick="resetCrop('encart')">↺ Reset</button>
+                </div>
+              </div>
               <div class="upload-status" id="status-encart"></div>
-              <div class="ef" style="margin-top:8px"><input type="text" id="ed-photo-encart" placeholder="https://... (ou laisse vide)"></div>
+              <div class="ef" style="margin-top:8px"><input type="text" id="ed-photo-encart" placeholder="https://... (optionnel)"></div>
+              <div class="save-row"><button class="save-btn" onclick="savePhotos('encart')">Enregistrer photo encart</button><span class="flash" id="flash-photos-encart">✓</span></div>
             </div>
           </div>
           <!-- TEXTES -->
@@ -632,35 +739,103 @@ async function saveN(keys,fid){
   flash(fid);
 }
 
-async function savePhotos(){
-  const hero=document.getElementById('ed-photo-hero').value.trim();
-  const enc=document.getElementById('ed-photo-encart').value.trim();
-  if(hero)await saveConfig('photo-hero',hero);
-  await saveConfig('photo-encart',enc);
-  applyAll();flash('flash-photos');
+async function savePhotos(type){
+  const urlEl=document.getElementById('ed-photo-'+type);
+  let url=urlEl?urlEl.value.trim():'';
+  // Si crop actif, uploader le canvas recadré
+  if(cropState[type]&&cropState[type].file&&!url){
+    url=await uploadCroppedPhoto(type);
+    if(!url)return;
+  }
+  if(url){
+    await saveConfig('photo-'+type,url);
+  } else if(type==='encart'){
+    await saveConfig('photo-encart','');
+  }
+  applyAll();
+  flash(type==='hero'?'flash-photos':'flash-photos-encart');
 }
 
-// Upload photo vers Supabase Storage
-async function uploadPhoto(type,input){
+// ===== CROP SYSTEM =====
+const cropState={};
+function loadCrop(type,input){
   const file=input.files[0];if(!file)return;
+  const url=URL.createObjectURL(file);
+  cropState[type]={file,url,x:0,y:0,scale:1,dragging:false,lastX:0,lastY:0};
+  const img=document.getElementById('crop-'+type+'-img');
+  img.src=url;
+  img.onload=()=>{
+    const c=document.getElementById('crop-'+type);
+    const cw=c.offsetWidth,ch=c.offsetHeight;
+    const iw=img.naturalWidth,ih=img.naturalHeight;
+    const s=Math.max(cw/iw,ch/ih);
+    cropState[type].scale=s;
+    cropState[type].x=(cw-iw*s)/2;
+    cropState[type].y=(ch-ih*s)/2;
+    applyCropTransform(type);
+  };
+  document.getElementById('crop-'+type+'-wrap').style.display='block';
+}
+function applyCropTransform(type){
+  const s=cropState[type];if(!s)return;
+  const img=document.getElementById('crop-'+type+'-img');
+  img.style.transform=`translate(${s.x}px,${s.y}px) scale(${s.scale})`;
+  img.style.transformOrigin='0 0';
+}
+function startDrag(e,type){
+  e.preventDefault();
+  const s=cropState[type];if(!s)return;
+  s.dragging=true;s.lastX=e.clientX;s.lastY=e.clientY;
+  const onMove=ev=>{if(!s.dragging)return;s.x+=ev.clientX-s.lastX;s.y+=ev.clientY-s.lastY;s.lastX=ev.clientX;s.lastY=ev.clientY;applyCropTransform(type);};
+  const onUp=()=>{s.dragging=false;document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);};
+  document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);
+}
+function startDragT(e,type){
+  e.preventDefault();const t=e.touches[0];
+  const s=cropState[type];if(!s)return;
+  s.dragging=true;s.lastX=t.clientX;s.lastY=t.clientY;
+  const onMove=ev=>{const tt=ev.touches[0];s.x+=tt.clientX-s.lastX;s.y+=tt.clientY-s.lastY;s.lastX=tt.clientX;s.lastY=tt.clientY;applyCropTransform(type);};
+  const onUp=()=>{s.dragging=false;document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onUp);};
+  document.addEventListener('touchmove',onMove,{passive:false});document.addEventListener('touchend',onUp);
+}
+function zoomCrop(e,type){
+  e.preventDefault();const s=cropState[type];if(!s)return;
+  const delta=e.deltaY>0?-0.1:0.1;
+  s.scale=Math.max(0.3,Math.min(5,s.scale+delta));
+  applyCropTransform(type);
+}
+function zoomCropBy(type,delta){const s=cropState[type];if(!s)return;s.scale=Math.max(0.3,Math.min(5,s.scale+delta));applyCropTransform(type);}
+function resetCrop(type){
+  const s=cropState[type];if(!s)return;
+  const img=document.getElementById('crop-'+type+'-img');
+  const c=document.getElementById('crop-'+type);
+  const cw=c.offsetWidth,ch=c.offsetHeight,iw=img.naturalWidth,ih=img.naturalHeight;
+  s.scale=Math.max(cw/iw,ch/ih);s.x=(cw-iw*s.scale)/2;s.y=(ch-ih*s.scale)/2;
+  applyCropTransform(type);
+}
+async function uploadCroppedPhoto(type){
+  const s=cropState[type];if(!s)return null;
   const statusEl=document.getElementById('status-'+type);
-  const previewEl=document.getElementById('preview-'+type);
   statusEl.textContent='⏳ Upload en cours…';statusEl.style.display='block';
   try{
-    const ext=file.name.split('.').pop();
-    const filename=`${type}-${Date.now()}.${ext}`;
-    const{data,error}=await sb.storage.from('site-photos').upload(filename,file,{upsert:true,contentType:file.type});
+    // Créer un canvas avec la vue cadrée
+    const cEl=document.getElementById('crop-'+type);
+    const cw=cEl.offsetWidth,ch=cEl.offsetHeight;
+    const canvas=document.createElement('canvas');
+    canvas.width=cw*2;canvas.height=ch*2;
+    const ctx=canvas.getContext('2d');
+    const img=document.getElementById('crop-'+type+'-img');
+    ctx.scale(2,2);
+    ctx.drawImage(img,s.x,s.y,img.naturalWidth*s.scale,img.naturalHeight*s.scale);
+    const blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',0.92));
+    const filename=`${type}-${Date.now()}.jpg`;
+    const{data,error}=await sb.storage.from('site-photos').upload(filename,blob,{upsert:true,contentType:'image/jpeg'});
     if(error)throw error;
     const{data:{publicUrl}}=sb.storage.from('site-photos').getPublicUrl(filename);
-    // Mettre à jour le champ texte et la config
     document.getElementById('ed-photo-'+type).value=publicUrl;
-    await saveConfig('photo-'+type,publicUrl);
-    applyAll();
-    // Aperçu
-    previewEl.src=publicUrl;previewEl.style.display='block';
-    statusEl.textContent='✅ Photo uploadée et appliquée !';statusEl.style.color='#4CAF50';
-    flash('flash-photos');
-  }catch(e){statusEl.textContent='⚠ Erreur : '+e.message;statusEl.style.color='var(--rouge)';}
+    statusEl.textContent='✅ Photo uploadée !';statusEl.style.color='#4CAF50';
+    return publicUrl;
+  }catch(e){statusEl.textContent='⚠ Erreur : '+e.message;statusEl.style.color='var(--rouge)';return null;}
 }
 
 function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
@@ -779,7 +954,8 @@ function switchTab(btn){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');const t=btn.dataset.tab;document.getElementById(t).classList.add('active');
-  if(t==='t-adh')renderAdh();if(t==='t-actus')renderActusAdmin();if(t==='t-ann')renderAnnAdmin();
+  if(t==='t-adh')renderAdh();if(t==='t-actus')renderActusAdmin();
+  if(t==='t-ann')renderAnnAdmin();if(t==='t-evt')renderEvtAdmin();
 }
 
 // Admin adhérents
@@ -832,6 +1008,120 @@ async function renderAnnAdmin(){
 }
 async function valAnn(id,v){await sb.from('annonces').update({validee:v}).eq('id',id);renderAnnAdmin();loadAnnonces();}
 
+// ===== ÉVÉNEMENTS PUBLIC =====
+let eventsPub=[];
+async function loadEvents(){
+  const g=document.getElementById('events-grid');
+  try{
+    const now=new Date().toISOString();
+    const{data,error}=await sb.from('evenements').select('*').eq('visible',true).eq('validee',true).gte('date_debut',now).order('date_debut',{ascending:true}).limit(9);
+    if(error)throw error;eventsPub=data||[];
+    if(!eventsPub.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><span>📅</span>Aucun événement à venir.</div>';return;}
+    g.innerHTML=eventsPub.map(evt=>{
+      const d=new Date(evt.date_debut);
+      return `<div class="event-card" onclick="openDrEvt(${evt.id})">
+        <div class="event-date-band">
+          <div><div class="event-day">${d.getDate()}</div><div class="event-mois">${d.toLocaleDateString('fr-FR',{month:'short',year:'numeric'})}</div></div>
+          <div style="flex:1"><div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;color:rgba(255,255,255,.7);text-transform:uppercase">${esc(evt.categorie)}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff">${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div></div>
+        </div>
+        <div class="event-body">
+          <h3>${esc(evt.titre)}</h3>
+          <div class="event-lieu">📍 ${esc(evt.lieu)}</div>
+          <div class="event-desc">${esc(evt.description).substring(0,100)}${evt.description.length>100?'…':''}</div>
+          <div class="event-footer">
+            <span class="event-places">${evt.places_max>0?'Max '+evt.places_max+' places':'Places illimitées'}</span>
+            <span class="event-cta">S'inscrire →</span>
+          </div>
+        </div></div>`;
+    }).join('');
+  }catch(e){g.innerHTML='<div class="empty" style="grid-column:1/-1">Impossible de charger.</div>';}
+}
+function openDrEvt(id){
+  const evt=eventsPub.find(x=>x.id===id);if(!evt)return;
+  const d=new Date(evt.date_debut);
+  document.getElementById('dr-actu-titre').textContent=evt.titre;
+  document.getElementById('dr-actu-cat').textContent=evt.categorie;
+  document.getElementById('dr-actu-date').textContent='📅 '+d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' · 📍 '+evt.lieu;
+  document.getElementById('dr-actu-content').innerHTML=`<p style="margin-bottom:20px">${esc(evt.description)}</p>
+  <div style="background:rgba(200,16,46,.1);border:1px solid rgba(200,16,46,.3);border-radius:6px;padding:20px;margin-top:16px">
+    <h4 style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:12px">✍️ S'inscrire à cet événement</h4>
+    <div class="fr"><div class="fg"><label>Prénom *</label><input type="text" id="ins-prenom" placeholder="Marie"></div><div class="fg"><label>Nom *</label><input type="text" id="ins-nom" placeholder="Dupont"></div></div>
+    <div class="fg"><label>Email *</label><input type="email" id="ins-email" placeholder="marie@exemple.fr"></div>
+    <div class="fg"><label>Téléphone (optionnel)</label><input type="tel" id="ins-tel" placeholder="06 XX XX XX XX"></div>
+    <div class="fg"><label>Message (optionnel)</label><textarea id="ins-msg" rows="2" placeholder="Questions, besoins particuliers…"></textarea></div>
+    <button class="btn-sub" style="margin-top:8px" onclick="inscrireEvt(${evt.id})">✅ Confirmer mon inscription</button>
+    <div class="msg" id="insMsg"></div>
+  </div>`;
+  openDr('dActu');
+}
+async function inscrireEvt(evtId){
+  const prenom=document.getElementById('ins-prenom').value.trim();
+  const nom=document.getElementById('ins-nom').value.trim();
+  const email=document.getElementById('ins-email').value.trim();
+  const telephone=document.getElementById('ins-tel').value.trim();
+  const message=document.getElementById('ins-msg').value.trim();
+  if(!prenom||!nom||!email){showMsg('insMsg','err','⚠ Prénom, nom et email obligatoires.');return;}
+  try{
+    const{error}=await sb.from('inscriptions_evenements').insert({evenement_id:evtId,prenom,nom,email,telephone,message});
+    if(error){if(error.code==='23505')showMsg('insMsg','err','⚠ Vous êtes déjà inscrit·e à cet événement.');else showMsg('insMsg','err','⚠ Erreur : '+error.message);return;}
+    showMsg('insMsg','ok','🎉 Inscription confirmée ! À très bientôt.');
+  }catch(e){showMsg('insMsg','err','⚠ Erreur réseau.');}
+}
+async function proposerEvt(){
+  const prenom=document.getElementById('pe-prenom').value.trim();
+  const email=document.getElementById('pe-email').value.trim();
+  const titre=document.getElementById('pe-titre').value.trim();
+  const date=document.getElementById('pe-date').value;
+  const lieu=document.getElementById('pe-lieu').value.trim();
+  const desc=document.getElementById('pe-desc').value.trim();
+  if(!prenom||!email||!titre||!date||!lieu||!desc){showMsg('peMsg','err','⚠ Remplis tous les champs.');return;}
+  const btn=document.getElementById('peBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{
+    const{error}=await sb.from('evenements').insert({titre,description:desc,lieu,date_debut:new Date(date).toISOString(),categorie:'Événement',validee:false,propose_par:prenom+' ('+email+')'});
+    if(error)throw error;
+    showMsg('peMsg','ok','✅ Proposition envoyée ! Elle sera examinée par notre équipe.');
+    ['pe-prenom','pe-email','pe-titre','pe-lieu','pe-desc'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('pe-date').value='';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='📅 Soumettre ma proposition';},5000);
+  }catch(e){showMsg('peMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='📅 Soumettre ma proposition';}
+}
+
+// ===== ADMIN ÉVÉNEMENTS =====
+let evtAdmCache=[];
+async function creerEvt(){
+  const titre=document.getElementById('evt-titre').value.trim(),desc=document.getElementById('evt-desc').value.trim();
+  const date=document.getElementById('evt-date').value,lieu=document.getElementById('evt-lieu').value.trim();
+  const categorie=document.getElementById('evt-cat').value,places=parseInt(document.getElementById('evt-places').value)||0;
+  const fin=document.getElementById('evt-fin').value;
+  if(!titre||!desc||!date||!lieu){showMsg('evtMsg','err','⚠ Titre, date, lieu et description obligatoires.');return;}
+  try{
+    const obj={titre,description:desc,lieu,date_debut:new Date(date).toISOString(),categorie,places_max:places,visible:true,validee:true};
+    if(fin)obj.date_fin=new Date(fin).toISOString();
+    const{error}=await sb.from('evenements').insert(obj);
+    if(error)throw error;
+    showMsg('evtMsg','ok','✅ Événement créé !');
+    ['evt-titre','evt-desc','evt-lieu'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('evt-date').value='';document.getElementById('evt-fin').value='';
+    setTimeout(()=>{document.getElementById('evtFormBox').classList.remove('open');renderEvtAdmin();loadEvents();},1500);
+  }catch(e){showMsg('evtMsg','err','⚠ '+e.message);}
+}
+async function renderEvtAdmin(){
+  const b=document.getElementById('evtBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{
+    const{data,error}=await sb.from('evenements').select('*, inscriptions_evenements(count)').order('date_debut',{ascending:false});
+    if(error)throw error;evtAdmCache=data||[];
+    document.getElementById('evtCount').textContent=evtAdmCache.length+' événement'+(evtAdmCache.length>1?'s':'');
+    if(!evtAdmCache.length){b.innerHTML='<div class="empty"><span>📅</span>Aucun événement.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Date</th><th>Lieu</th><th>Cat.</th><th>Inscrits</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${evtAdmCache.map((e,i)=>{
+      const d=new Date(e.date_debut);const nb=e.inscriptions_evenements?.[0]?.count||0;
+      return `<tr><td class="dt">${i+1}</td><td>${esc(e.titre)}</td><td><span class="dt">${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span></td><td>${esc(e.lieu)}</td><td><span class="qb">${esc(e.categorie)}</span></td><td><span class="dt">${nb}${e.places_max>0?' / '+e.places_max:''}</span></td><td>${e.validee?'<span class="s-ok">Validé</span>':'<span class="s-ko">Proposition</span>'}</td><td style="display:flex;gap:5px">${!e.validee?`<button class="btn-ok" onclick="valEvt(${e.id},true)">✅</button>`:''}<button class="btn-${e.visible?'ko':'ok'}" onclick="toggleEvtVis(${e.id},${e.visible})">${e.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('evenements',${e.id},()=>{renderEvtAdmin();loadEvents();})">✕</button></td></tr>`;
+    }).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function valEvt(id,v){await sb.from('evenements').update({validee:v}).eq('id',id);renderEvtAdmin();}
+async function toggleEvtVis(id,cur){await sb.from('evenements').update({visible:!cur}).eq('id',id);renderEvtAdmin();loadEvents();}
+
 async function del(table,id,cb){if(!confirm('Supprimer ?'))return;const{error}=await sb.from(table).delete().eq('id',id);if(!error&&cb)cb();else if(error)alert('Erreur : '+error.message);}
 
 function exportCSV(type){
@@ -857,6 +1147,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');cl
 loadConfig();
 loadActus();
 loadAnnonces();
+loadEvents();
 </script>
 </body>
 </html>
