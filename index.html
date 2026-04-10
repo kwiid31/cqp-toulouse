@@ -18,11 +18,20 @@ nav{position:sticky;top:0;z-index:200;background:rgba(13,13,13,.97);backdrop-fil
 .logo-icon{width:42px;height:42px;background:var(--rouge);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff}
 .logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--blanc);line-height:1.1}
 .logo-text span{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:3px;color:var(--or);text-transform:uppercase}
-.nav-links{display:flex;align-items:center;gap:18px}
-.nav-links a{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:var(--blanc);transition:color .2s}
-.nav-links a:hover{color:var(--or)}
-.btn-admin{background:transparent;border:1px solid rgba(255,255,255,.2);padding:7px 14px;border-radius:3px;font-size:.72rem;color:rgba(255,255,255,.4);cursor:pointer;transition:all .2s;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.nav-center{display:flex;align-items:center;gap:6px}
+.nav-center a{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:rgba(244,241,235,.6);padding:6px 12px;border-radius:3px;transition:all .2s}
+.nav-center a:hover{color:var(--blanc);background:rgba(255,255,255,.07)}
+.nav-center a.ext{color:rgba(244,241,235,.6)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.btn-adhere{background:var(--rouge);color:#fff;border:none;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;text-decoration:none;transition:opacity .2s}
+.btn-adhere:hover{opacity:.85}
+.btn-admin{background:transparent;border:1px solid rgba(255,255,255,.15);padding:7px 12px;border-radius:3px;font-size:.72rem;color:rgba(255,255,255,.35);cursor:pointer;transition:all .2s;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
 .btn-admin:hover{border-color:var(--or);color:var(--or)}
+.burger{display:none;background:none;border:1px solid rgba(255,255,255,.2);color:var(--blanc);width:36px;height:36px;border-radius:4px;cursor:pointer;font-size:1.1rem;align-items:center;justify-content:center}
+.mobile-menu{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(13,13,13,.98);border-bottom:2px solid var(--rouge);padding:16px 5vw;flex-direction:column;gap:4px;z-index:199}
+.mobile-menu.open{display:flex}
+.mobile-menu a,.mobile-menu button{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.9rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:rgba(244,241,235,.7);padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);background:none;border-left:none;border-right:none;border-top:none;cursor:pointer;text-align:left;width:100%;transition:color .2s}
+.mobile-menu a:hover,.mobile-menu button:hover{color:var(--or)}
 
 
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
@@ -260,23 +269,37 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .crop-btn.active{background:var(--or);color:var(--noir);border-color:var(--or)}
 .crop-hint{font-size:.72rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
 @media(max-width:900px){.qui-grid,.adhesion-grid,.depot-grid{grid-template-columns:1fr;gap:40px}.actus-grid,.events-grid{grid-template-columns:1fr 1fr}.annonces-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}.fr{grid-template-columns:1fr}section{padding:60px 5vw}}
-@media(max-width:600px){.actus-grid,.events-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}.nav-links a:not(.btn-admin){display:none}}
+@media(max-width:700px){.nav-center{display:none}.burger{display:flex}.nav-right .btn-adhere{display:none}}
+@media(max-width:600px){.actus-grid,.events-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}}
 
 </style>
 </head>
 <body>
 <nav>
   <a href="#" class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></a>
-  <div class="nav-links">
-    <a href="#qui">Notre mouvement</a><a href="#actus">Actualités</a>
+  <div class="nav-center">
+    <a href="#actus">Actualités</a>
     <a href="#evenements">Événements</a>
-    <a href="annonces.html">Annonces</a>
-    <a href="presse.html">Presse</a>
-    <a href="#adhesion">Adhérer</a>
-    <a href="newsletter.html" style="color:var(--or)">📧 Newsletter</a>
+    <a href="annonces.html" class="ext">Annonces</a>
+    <a href="presse.html" class="ext">Presse locale</a>
+    <a href="newsletter.html" class="ext">Newsletter</a>
+  </div>
+  <div class="nav-right">
+    <a href="#adhesion" class="btn-adhere">✊ Adhérer</a>
     <button class="btn-admin" onclick="openLogin()">⚙ Admin</button>
+    <button class="burger" onclick="toggleMenu()" aria-label="Menu">☰</button>
   </div>
 </nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#qui" onclick="closeMenu()">Notre mouvement</a>
+  <a href="#actus" onclick="closeMenu()">Actualités</a>
+  <a href="#evenements" onclick="closeMenu()">Événements</a>
+  <a href="annonces.html">Annonces</a>
+  <a href="presse.html">Presse locale</a>
+  <a href="newsletter.html">📧 Newsletter</a>
+  <a href="#adhesion" onclick="closeMenu()" style="color:var(--or)">✊ Adhérer</a>
+  <button onclick="closeMenu();openLogin()">⚙ Espace Admin</button>
+</div>
 <section class="hero" id="accueil">
   <div class="hero-bg" id="hero-bg"></div>
   <div class="hero-word">LUTTE</div>
@@ -1296,6 +1319,8 @@ const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.targ
 document.querySelectorAll('.visual-box,.form-card,.adhesion-left,.qui-texte,.depot-left').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity .55s ease,transform .55s ease';obs.observe(el);});
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}});});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');closeDr('dAnn');closeDr('dDepot');closeDr('dAdhesion');closeDr('dInscrits');}});
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
 
 // Init — charger config depuis Supabase (pas localStorage !)
 loadConfig();
