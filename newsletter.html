@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newsletter — CQP Toulouse</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--rouge:#C8102E;--or:#F5A623;--noir:#0D0D0D;--gf:#1A1A1A;--blanc:#F4F1EB}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--noir);color:var(--blanc);font-family:'Barlow',sans-serif;min-height:100vh}
+nav{background:rgba(13,13,13,.97);border-bottom:2px solid var(--rouge);display:flex;justify-content:space-between;align-items:center;padding:0 5vw;height:68px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.logo-icon{width:42px;height:42px;background:var(--rouge);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--blanc);line-height:1.1}
+.logo-text span{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:3px;color:var(--or);text-transform:uppercase}
+.back{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;color:rgba(244,241,235,.5);text-decoration:none;text-transform:uppercase}
+.back:hover{color:var(--or)}
+.hero-nl{padding:80px 8vw 40px;max-width:700px;margin:0 auto;text-align:center}
+.hero-nl .tag{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:14px}
+.hero-nl h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,7vw,5rem);line-height:.95;margin-bottom:16px}
+.hero-nl h1 em{color:var(--rouge);font-style:normal;display:block}
+.hero-nl p{color:rgba(244,241,235,.65);font-size:1rem;line-height:1.8;margin-bottom:40px}
+.form-card{background:var(--gf);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:40px;max-width:500px;margin:0 auto}
+.fg{margin-bottom:16px;text-align:left}
+.fg label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.5);margin-bottom:6px}
+.fg input,.fg select{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:12px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus{border-color:var(--rouge)}
+.fg select option{background:var(--gf)}
+.btn-nl{width:100%;background:var(--rouge);color:#fff;border:2px solid var(--rouge);padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all .25s;margin-top:8px}
+.btn-nl:hover{background:transparent;color:var(--rouge)}
+.btn-nl:disabled{opacity:.5;cursor:not-allowed}
+.msg{display:none;margin-top:14px;padding:14px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:1px;text-align:center}
+.msg.ok{background:rgba(76,175,80,.1);border:1px solid #4CAF50;color:#4CAF50;display:block}
+.msg.err{background:rgba(200,16,46,.1);border:1px solid var(--rouge);color:var(--rouge);display:block}
+.avantages{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:700px;margin:60px auto 0;padding:0 8vw 80px}
+.av{text-align:center;padding:24px}
+.av .icon{font-size:2rem;margin-bottom:12px}
+.av h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:8px;color:var(--or)}
+.av p{font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6}
+.freq-note{font-size:.75rem;color:rgba(244,241,235,.35);text-align:center;margin-top:12px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+@media(max-width:600px){.avantages{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">CQP</div>
+    <div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div>
+  </a>
+  <a href="index.html" class="back">← Retour au site</a>
+</nav>
+<div class="hero-nl">
+  <div class="tag">Restez informé·e</div>
+  <h1>La newsletter<em>du quartier</em></h1>
+  <p>Recevez les actualités du Comité, les événements à venir, les victoires et les mobilisations directement dans votre boite mail. Pas de spam — juste l'essentiel.</p>
+  <div class="form-card">
+    <div class="fg"><label>Prénom</label><input type="text" id="nl-prenom" placeholder="Marie"></div>
+    <div class="fg"><label>Email *</label><input type="email" id="nl-email" placeholder="marie@exemple.fr"></div>
+    <div class="fg"><label>Votre quartier</label>
+      <select id="nl-quartier">
+        <option value="">— Optionnel —</option>
+        <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
+        <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
+        <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
+        <option>Autre quartier</option>
+      </select>
+    </div>
+    <button class="btn-nl" id="nlBtn" onclick="sAbonner()">📧 S'abonner à la newsletter</button>
+    <div class="msg" id="nlMsg"></div>
+    <p class="freq-note">Envoi environ 2 fois par mois · Désabonnement en 1 clic</p>
+  </div>
+</div>
+<div class="avantages">
+  <div class="av"><div class="icon">📣</div><h3>Mobilisations</h3><p>Soyez les premiers informés des actions et rassemblements dans vos quartiers.</p></div>
+  <div class="av"><div class="icon">🏆</div><h3>Victoires</h3><p>Chaque combat gagné mérite d'être célébré. On vous raconte nos avancées.</p></div>
+  <div class="av"><div class="icon">📅</div><h3>Événements</h3><p>Réunions, ateliers, fêtes de quartier — ne ratez plus rien de ce qui se passe près de chez vous.</p></div>
+</div>
+<script>
+const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
+const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+const sb=supabase.createClient(SBU,SBK);
+async function sAbonner(){
+  const email=document.getElementById('nl-email').value.trim();
+  const prenom=document.getElementById('nl-prenom').value.trim();
+  const quartier=document.getElementById('nl-quartier').value;
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    const m=document.getElementById('nlMsg');m.className='msg err';m.textContent='⚠ Adresse email invalide.';return;}
+  const btn=document.getElementById('nlBtn');btn.disabled=true;btn.textContent='⏳ Inscription…';
+  try{
+    const{error}=await sb.from('newsletter_abonnes').insert({email,prenom,quartier});
+    if(error){
+      if(error.code==='23505'){const m=document.getElementById('nlMsg');m.className='msg ok';m.textContent='✅ Vous êtes déjà abonné·e !';btn.disabled=false;btn.textContent='📧 S\'abonner à la newsletter';return;}
+      throw error;
+    }
+    const m=document.getElementById('nlMsg');m.className='msg ok';
+    m.textContent='🎉 Bienvenue ! Vous recevrez bientôt notre prochaine newsletter.';
+    document.getElementById('nl-email').value='';document.getElementById('nl-prenom').value='';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='📧 S\'abonner à la newsletter';},5000);
+  }catch(e){const m=document.getElementById('nlMsg');m.className='msg err';m.textContent='⚠ Erreur : '+e.message;btn.disabled=false;btn.textContent='📧 S\'abonner à la newsletter';}
+}
+document.getElementById('nl-email').addEventListener('keydown',e=>{if(e.key==='Enter')sAbonner();});
+</script>
+</body>
+</html>
