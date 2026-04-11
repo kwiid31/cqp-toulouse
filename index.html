@@ -246,8 +246,11 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .rss-date{font-size:.7rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
 @media(max-width:900px){.rss-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.rss-grid{grid-template-columns:1fr}}
+/* BANDEAU DÉCOUVERTE */
+.band-item{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:rgba(244,241,235,.45);padding:0 40px}
+.band-item::after{content:'·';margin-left:40px;color:rgba(244,241,235,.2)}
 /* ÉTOILES AVIS */
-.star{font-size:2rem;color:rgba(255,255,255,.2);cursor:pointer;transition:color .15s;line-height:1;user-select:none}
+.star{font-size:1.8rem;color:rgba(255,255,255,.2);cursor:pointer;transition:color .15s;line-height:1;user-select:none}
 .star.active,.star.hover{color:var(--or)}
 /* ===== SLIDER PLEIN LARGEUR ===== */
 .slide{transition:none}
@@ -400,6 +403,27 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   </div>
 </section>
 
+<!-- BANDEAU DÉFILANT -->
+<div style="background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);overflow:hidden;padding:14px 0;white-space:nowrap">
+  <div style="display:inline-flex;animation:scrollLeft 28s linear infinite;gap:0">
+    <span class="band-item">📰 Découvrez la presse locale</span>
+    <span class="band-item">📋 Déposez vos annonces</span>
+    <span class="band-item">📅 Créez vos événements</span>
+    <span class="band-item">🤝 Rejoignez le comité</span>
+    <span class="band-item">🗞 Suivez l'actualité des quartiers</span>
+    <span class="band-item">✊ Toulouse s'organise</span>
+    <span class="band-item">📧 Abonnez-vous à la newsletter</span>
+    <span class="band-item">📰 Découvrez la presse locale</span>
+    <span class="band-item">📋 Déposez vos annonces</span>
+    <span class="band-item">📅 Créez vos événements</span>
+    <span class="band-item">🤝 Rejoignez le comité</span>
+    <span class="band-item">🗞 Suivez l'actualité des quartiers</span>
+    <span class="band-item">✊ Toulouse s'organise</span>
+    <span class="band-item">📧 Abonnez-vous à la newsletter</span>
+  </div>
+</div>
+
+
 <!-- SLIDER PLEIN LARGEUR -->
 <div style="background:var(--noir);padding:48px 0 40px;position:relative">
   <!-- Slides -->
@@ -489,39 +513,60 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 </div>
 
 <!-- NEWSLETTER -->
-<section style="background:var(--gf);padding:56px 8vw;border-top:1px solid rgba(255,255,255,.06)">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
+<section style="background:var(--gf);padding:48px 8vw;border-top:1px solid rgba(255,255,255,.06)">
+  <!-- Mini slider : Avis | Newsletter -->
+  <div style="position:relative">
+    <div style="overflow:hidden;width:100%">
+      <div id="sl-avis" style="display:flex;transition:transform .4s cubic-bezier(.4,0,.2,1)">
 
-    <!-- AVIS / RECOMMANDATION -->
-    <div>
-      <div class="section-tag">Votre retour compte</div>
-      <h2>Laissez <em>un avis</em></h2>
-      <p style="color:rgba(244,241,235,.6);font-size:.9rem;line-height:1.7;margin-bottom:24px">Aidez-nous à améliorer le site et le comité. Votre avis est précieux et nous le lisons tous.</p>
-      <!-- Étoiles -->
-      <div style="display:flex;gap:8px;margin-bottom:20px" id="stars-row">
-        <span class="star" data-v="1" onclick="setNote(1)">★</span>
-        <span class="star" data-v="2" onclick="setNote(2)">★</span>
-        <span class="star" data-v="3" onclick="setNote(3)">★</span>
-        <span class="star" data-v="4" onclick="setNote(4)">★</span>
-        <span class="star" data-v="5" onclick="setNote(5)">★</span>
+        <!-- SLIDE AVIS -->
+        <div style="min-width:100%;box-sizing:border-box">
+          <div style="max-width:560px">
+            <div class="section-tag">Votre retour compte</div>
+            <h2 style="margin-bottom:8px">Laissez <em>un avis</em></h2>
+            <p style="color:rgba(244,241,235,.55);font-size:.88rem;line-height:1.7;margin-bottom:20px">Aidez-nous à améliorer le site. Votre retour est lu par l'équipe.</p>
+            <div style="display:flex;gap:10px;margin-bottom:16px" id="stars-row">
+              <span class="star" data-v="1" onclick="setNote(1)">★</span>
+              <span class="star" data-v="2" onclick="setNote(2)">★</span>
+              <span class="star" data-v="3" onclick="setNote(3)">★</span>
+              <span class="star" data-v="4" onclick="setNote(4)">★</span>
+              <span class="star" data-v="5" onclick="setNote(5)">★</span>
+            </div>
+            <div class="fg"><label>Prénom (optionnel)</label><input type="text" id="avis-prenom" placeholder="Marie"></div>
+            <div class="fg" style="margin-top:10px"><label>Votre message *</label><textarea id="avis-msg" rows="3" placeholder="Ce qui vous a plu, ce qui manque…"></textarea></div>
+            <div style="display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap">
+              <button class="btn-sub" id="avisBtn" onclick="envoyerAvis()" style="width:auto;padding:11px 24px">Envoyer mon avis</button>
+              <button onclick="avisSlide(1)" style="background:none;border:none;color:var(--or);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer">Newsletter →</button>
+            </div>
+            <div class="msg" id="avisMsg"></div>
+          </div>
+        </div>
+
+        <!-- SLIDE NEWSLETTER -->
+        <div style="min-width:100%;box-sizing:border-box">
+          <div style="max-width:560px">
+            <div class="section-tag">Restez informé·e</div>
+            <h2 style="margin-bottom:8px">La newsletter <em>du quartier</em></h2>
+            <p style="color:rgba(244,241,235,.55);font-size:.88rem;line-height:1.7;margin-bottom:20px">Actus, événements, victoires — 2 fois par mois dans votre boite mail. Pas de spam.</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <div class="fg" style="flex:1;min-width:220px;margin:0"><input type="email" id="nl-home-email" placeholder="marie@exemple.fr" onkeydown="if(event.key==='Enter')nlHomeSubmit()" style="background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:11px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;width:100%"></div>
+              <button class="btn-sub" id="nlHomeBtn" onclick="nlHomeSubmit()" style="width:auto;padding:11px 24px;flex-shrink:0">📧 S'abonner</button>
+            </div>
+            <div class="msg" id="nlHomeMsg" style="margin-top:10px"></div>
+            <div style="display:flex;align-items:center;gap:14px;margin-top:12px">
+              <button onclick="avisSlide(-1)" style="background:none;border:none;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer">← Laisser un avis</button>
+              <span style="font-size:.72rem;color:rgba(244,241,235,.25);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">Désabonnement en 1 clic</span>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <div class="fg"><label>Votre prénom</label><input type="text" id="avis-prenom" placeholder="Marie"></div>
-      <div class="fg" style="margin-top:10px"><label>Votre message *</label><textarea id="avis-msg" rows="3" placeholder="Ce que vous pensez du site, ce qui manque, ce que vous aimez…"></textarea></div>
-      <button class="btn-sub" id="avisBtn" onclick="envoyerAvis()" style="margin-top:8px">✍️ Envoyer mon avis</button>
-      <div class="msg" id="avisMsg"></div>
     </div>
-
-    <!-- NEWSLETTER SOBRE -->
-    <div style="padding-top:8px">
-      <div class="section-tag">Ne rien rater</div>
-      <h2>La newsletter <em>du quartier</em></h2>
-      <p style="color:rgba(244,241,235,.6);font-size:.9rem;line-height:1.7;margin-bottom:24px">Actus, événements et victoires directement dans votre boite mail. Environ 2 fois par mois, pas de spam.</p>
-      <div class="fg"><label>Votre email</label><input type="email" id="nl-home-email" placeholder="marie@exemple.fr" onkeydown="if(event.key==='Enter')nlHomeSubmit()"></div>
-      <button class="btn-sub" id="nlHomeBtn" onclick="nlHomeSubmit()" style="margin-top:10px">📧 S'abonner gratuitement</button>
-      <div class="msg" id="nlHomeMsg"></div>
-      <p style="font-size:.72rem;color:rgba(244,241,235,.3);margin-top:10px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">Désabonnement en 1 clic · Aucune donnée transmise à des tiers</p>
+    <!-- Points de nav -->
+    <div style="display:flex;gap:8px;margin-top:20px">
+      <button class="dot active" id="av-dot-0" onclick="avisSlide(0,true)"></button>
+      <button class="dot" id="av-dot-1" onclick="avisSlide(1,true)"></button>
     </div>
-
   </div>
 </section>
 
@@ -1193,6 +1238,30 @@ async function renderAvis(){
     </tr>`).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
+// ===== MINI SLIDER AVIS/NEWSLETTER =====
+let avisIdx=0;
+function avisSlide(val, abs=false){
+  avisIdx = abs ? val : Math.max(0,Math.min(1,avisIdx+val));
+  const sl=document.getElementById('sl-avis');
+  if(sl) sl.style.transform=`translateX(-${avisIdx*100}%)`;
+  [0,1].forEach(i=>{
+    const d=document.getElementById('av-dot-'+i);
+    if(d) d.classList.toggle('active',i===avisIdx);
+  });
+}
+// Swipe tactile sur le mini slider
+(function(){
+  const wrap=document.getElementById('sl-avis');
+  if(!wrap)return;
+  let x0=null;
+  wrap.parentElement.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});
+  wrap.parentElement.addEventListener('touchend',e=>{
+    if(x0===null)return;
+    const dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>50)avisSlide(dx<0?1:-1);
+    x0=null;
+  },{passive:true});
+})();
 // ===== AVIS =====
 let noteChoisie=0;
 function setNote(n){
