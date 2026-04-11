@@ -590,6 +590,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <button class="tab-btn" data-tab="t-evt" onclick="switchTab(this)">📅 Événements</button>
       <button class="tab-btn" data-tab="t-textes" onclick="switchTab(this)">✏️ Textes & Photos</button>
       <button class="tab-btn" data-tab="t-nl" onclick="switchTab(this)">📧 Newsletter</button>
+      <button class="tab-btn" data-tab="t-stats" onclick="switchTab(this)">📊 Statistiques</button>
     </div>
     <div class="admin-content">
       <div class="tab-panel active" id="t-adh">
@@ -763,6 +764,40 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
               <div class="save-row"><button class="save-btn" onclick="saveN(['footer-email','footer-tel'],'flash-contact')">Enregistrer</button><span class="flash" id="flash-contact">✓</span></div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="tab-panel" id="t-stats">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px">
+          <div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:20px;text-align:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#4CAF50;line-height:1" id="stat-live">—</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-top:6px">🟢 En ligne maintenant</div>
+          </div>
+          <div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:20px;text-align:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--or);line-height:1" id="stat-24h">—</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-top:6px">Visites dernières 24h</div>
+          </div>
+          <div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:20px;text-align:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--rouge);line-height:1" id="stat-7j">—</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-top:6px">Visites 7 derniers jours</div>
+          </div>
+        </div>
+        <!-- Graphique par heure -->
+        <div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:20px;margin-bottom:20px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:16px">Visites par heure — 24 dernières heures</div>
+          <div id="chart-hours" style="display:flex;align-items:flex-end;gap:3px;height:80px"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;color:rgba(244,241,235,.25);letter-spacing:1px">
+            <span>-24h</span><span>-18h</span><span>-12h</span><span>-6h</span><span>Maintenant</span>
+          </div>
+        </div>
+        <!-- Pages les plus visitées -->
+        <div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:20px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:16px">Pages les plus visitées — 7 jours</div>
+          <div id="chart-pages"></div>
+        </div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;color:rgba(244,241,235,.25);margin-top:12px;text-align:center">
+          Données anonymes · Mise à jour auto toutes les 30 secondes · <button onclick="renderStats()" style="background:none;border:none;color:var(--or);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px">↺ Actualiser</button>
         </div>
       </div>
 
@@ -1143,6 +1178,13 @@ function switchTab(btn){
   if(t==='t-adh')renderAdh();if(t==='t-actus')renderActusAdmin();
   if(t==='t-ann')renderAnnAdmin();if(t==='t-evt')renderEvtAdmin();
   if(t==='t-nl')renderNlAdmin();
+  if(t==='t-stats'){
+    renderStats();
+    if(statsInterval)clearInterval(statsInterval);
+    statsInterval=setInterval(renderStats,30000);
+  } else {
+    if(statsInterval){clearInterval(statsInterval);statsInterval=null;}
+  }
 }
 // ===== ADMIN NEWSLETTER =====
 let nlCache=[];
@@ -1372,13 +1414,85 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');cl
 function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
 function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
 
-// Init — charger config depuis Supabase (pas localStorage !)
+// ===== TRACKING ANONYME =====
+function initTracking(page){
+  // ID de session unique par onglet navigateur
+  let sid=sessionStorage.getItem('cqp_sid');
+  if(!sid){sid=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',sid);}
+  // Enregistrer la visite
+  sb.from('page_views').insert({session_id:sid,page}).catch(()=>{});
+  // Ping "en ligne" toutes les 30s
+  async function ping(){
+    await sb.from('active_sessions').upsert({session_id:sid,page,last_seen:new Date().toISOString()},{onConflict:'session_id'}).catch(()=>{});
+    // Nettoyer les sessions expirées (> 2 min)
+    await sb.from('active_sessions').delete().lt('last_seen',new Date(Date.now()-120000).toISOString()).catch(()=>{});
+  }
+  ping();
+  setInterval(ping,30000);
+  // Supprimer la session à la fermeture
+  window.addEventListener('beforeunload',()=>{sb.from('active_sessions').delete().eq('session_id',sid).catch(()=>{});});
+}
+
+// ===== STATS ADMIN =====
+let statsInterval=null;
+async function renderStats(){
+  try{
+    // 1. En ligne maintenant (sessions actives dans les 2 dernières minutes)
+    const{data:live}=await sb.from('active_sessions').select('session_id',{count:'exact',head:true});
+    const liveCount=live||0;
+    // Requête count correcte
+    const{count:liveN}=await sb.from('active_sessions').select('*',{count:'exact',head:true});
+    document.getElementById('stat-live').textContent=liveN??'0';
+
+    // 2. Visites 24h
+    const depuis24h=new Date(Date.now()-86400000).toISOString();
+    const{count:v24}=await sb.from('page_views').select('*',{count:'exact',head:true}).gte('created_at',depuis24h);
+    document.getElementById('stat-24h').textContent=v24??'0';
+
+    // 3. Visites 7 jours
+    const depuis7j=new Date(Date.now()-7*86400000).toISOString();
+    const{count:v7}=await sb.from('page_views').select('*',{count:'exact',head:true}).gte('created_at',depuis7j);
+    document.getElementById('stat-7j').textContent=v7??'0';
+
+    // 4. Graphique par heure (24h)
+    const{data:views24}=await sb.from('page_views').select('created_at').gte('created_at',depuis24h).order('created_at');
+    const hours=Array(24).fill(0);
+    (views24||[]).forEach(v=>{
+      const h=Math.floor((Date.now()-new Date(v.created_at).getTime())/3600000);
+      if(h>=0&&h<24)hours[23-h]++;
+    });
+    const maxH=Math.max(...hours,1);
+    document.getElementById('chart-hours').innerHTML=hours.map((n,i)=>{
+      const pct=Math.round(n/maxH*100);
+      const isNow=i===23;
+      return `<div title="${n} visite${n>1?'s':''}" style="flex:1;background:${isNow?'var(--rouge)':'rgba(200,16,46,.4)'};height:${Math.max(pct,2)}%;border-radius:2px 2px 0 0;transition:height .3s;cursor:default"></div>`;
+    }).join('');
+
+    // 5. Pages les plus visitées (7j)
+    const{data:pagesRaw}=await sb.from('page_views').select('page').gte('created_at',depuis7j);
+    const pageCounts={};
+    (pagesRaw||[]).forEach(v=>{pageCounts[v.page]=(pageCounts[v.page]||0)+1;});
+    const pagesSorted=Object.entries(pageCounts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const maxP=pagesSorted[0]?.[1]||1;
+    const pageLabels={'/':"Accueil",'actus.html':"Actualités",'evenements.html':"Événements",'annonces.html':"Annonces",'presse.html':"Presse",'newsletter.html':"Newsletter"};
+    document.getElementById('chart-pages').innerHTML=pagesSorted.map(([p,n])=>`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;color:rgba(244,241,235,.6);width:100px;flex-shrink:0">${pageLabels[p]||p}</div>
+        <div style="flex:1;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;height:20px">
+          <div style="background:var(--rouge);height:100%;width:${Math.round(n/maxP*100)}%;border-radius:3px;transition:width .4s"></div>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--or);width:36px;text-align:right">${n}</div>
+      </div>`).join('')||'<div style="color:rgba(244,241,235,.3);font-family:\'Barlow Condensed\',sans-serif;letter-spacing:1px;font-size:.8rem">Aucune donnée pour le moment.</div>';
+
+  }catch(e){console.warn('Stats error:',e);}
+}
+// Init
 loadConfig();
 loadActus();
 loadAnnonces();
 loadEvents();
 loadPresse();
-loadPresse();
+initTracking('/');
 </script>
 </body>
 </html>
