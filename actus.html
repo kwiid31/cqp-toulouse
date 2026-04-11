@@ -59,6 +59,27 @@ footer a{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spaci
 footer a:hover{color:var(--or)}
 @media(max-width:900px){.actus-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.actus-grid{grid-template-columns:1fr}.nav-links a:not(:first-child){display:none}}
+
+/* SOCIAL */
+.card-social{display:flex;align-items:center;gap:14px;padding:8px 16px 12px;border-top:1px solid rgba(255,255,255,.06)}
+.lk-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;padding:0}
+.lk-btn .h{font-size:1.1rem;transition:transform .15s;display:inline-block}
+.lk-btn.liked{color:var(--rouge)}.lk-btn.pop .h{transform:scale(1.5)}
+.cm-btn{background:none;border:none;cursor:pointer;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;padding:0;transition:color .2s}
+.cm-btn:hover{color:rgba(244,241,235,.7)}
+.mini-drw{position:fixed;bottom:0;left:0;right:0;background:var(--gf);border-top:2px solid var(--rouge);border-radius:16px 16px 0 0;z-index:600;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);max-height:72vh;display:flex;flex-direction:column}
+.mini-drw.open{transform:translateY(0)}
+.mini-head{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mini-head h4{font-family:'Bebas Neue',sans-serif;font-size:1.2rem}
+.mini-body{overflow-y:auto;padding:14px 20px;flex:1}
+.mini-foot{padding:12px 20px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+.mini-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:599}
+.mini-ov.open{display:block}
+.ci{display:flex;gap:10px;margin-bottom:12px}
+.ca{width:30px;height:30px;min-width:30px;background:var(--rouge);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:#fff}
+.cb2{background:rgba(255,255,255,.06);border-radius:0 8px 8px 8px;padding:8px 12px;flex:1}
+.cn{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-bottom:3px}
+.ct{font-size:.82rem;color:rgba(244,241,235,.8);line-height:1.5}
 </style>
 </head>
 <body>
@@ -109,7 +130,12 @@ async function load(){
       <div class="actu-body"><h3>${esc(a.titre)}</h3>
         <p>${esc(a.contenu).substring(0,160)}${a.contenu.length>160?'…':''}</p>
         <div class="actu-date">${new Date(a.date_publication).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'})}</div>
+      </div>
+      <div class="card-social" onclick="event.stopPropagation()">
+        <button class="lk-btn" id="lk-${a.id}" onclick="doLike('actu',${a.id})"><span class="h">🤍</span> <span id="lc-${a.id}">0</span></button>
+        <button class="cm-btn" onclick="openMini('actu',${a.id},'${esc(a.titre).substring(0,30)}')">💬 <span id="cc-${a.id}">0</span></button>
       </div></div>`).join('');
+    cache.forEach(a=>loadCounts('actu',a.id));
   }catch(e){g.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
 function open(id){
@@ -142,5 +168,71 @@ load();
   ping("view");
   setInterval(()=>ping("ping"),30000);
 })();
+</script>
+<div class="mini-ov" id="mini-ov" onclick="closeMini()"></div>
+<div class="mini-drw" id="mini-drw">
+  <div class="mini-head"><h4 id="mini-titre">Commentaires</h4><button onclick="closeMini()" style="background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);width:30px;height:30px;border-radius:4px;cursor:pointer">✕</button></div>
+  <div class="mini-body" id="mini-cmts"></div>
+  <div class="mini-foot">
+    <input id="mini-prenom" placeholder="Votre prénom" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:8px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.84rem;outline:none;width:100%">
+    <div style="display:flex;gap:8px">
+      <input id="mini-msg" placeholder="Votre commentaire…" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:9px 16px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.84rem;outline:none" onkeydown="if(event.key==='Enter')sendCmt()">
+      <button onclick="sendCmt()" style="background:var(--rouge);border:none;color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;flex-shrink:0">➤</button>
+    </div>
+  </div>
+</div>
+<script>
+let miniType=null,miniItemId=null;
+function getSid(){let s=sessionStorage.getItem('cqp_sid');if(!s){s=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',s);}return s;}
+async function loadCounts(type,id){
+  const sid=getSid();
+  try{
+    const[{count:nl},{data:ml},{count:nc}]=await Promise.all([
+      sb.from('likes').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id),
+      sb.from('likes').select('id').eq('item_type',type).eq('item_id',id).eq('session_id',sid),
+      sb.from('commentaires').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id).eq('visible',true)
+    ]);
+    const liked=(ml||[]).length>0;
+    const btn=document.getElementById('lk-'+id);
+    if(btn){if(liked)btn.classList.add('liked');btn.querySelector('.h').textContent=liked?'❤️':'🤍';}
+    const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=nl||0;
+    const cc=document.getElementById('cc-'+id);if(cc)cc.textContent=nc||0;
+  }catch(e){}
+}
+async function doLike(type,id){
+  const sid=getSid();const btn=document.getElementById('lk-'+id);if(!btn)return;
+  const liked=btn.classList.contains('liked');
+  btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),300);
+  if(liked){await sb.from('likes').delete().eq('item_type',type).eq('item_id',id).eq('session_id',sid);btn.classList.remove('liked');btn.querySelector('.h').textContent='🤍';}
+  else{await sb.from('likes').insert({item_type:type,item_id:id,session_id:sid}).catch(()=>{});btn.classList.add('liked');btn.querySelector('.h').textContent='❤️';}
+  const{count}=await sb.from('likes').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id);
+  const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=count||0;
+}
+async function openMini(type,id,titre){
+  miniType=type;miniItemId=id;
+  document.getElementById('mini-titre').textContent='💬 '+titre;
+  document.getElementById('mini-ov').classList.add('open');
+  document.getElementById('mini-drw').classList.add('open');
+  document.body.style.overflow='hidden';
+  await refreshCmts();
+}
+function closeMini(){document.getElementById('mini-ov').classList.remove('open');document.getElementById('mini-drw').classList.remove('open');document.body.style.overflow='';miniType=null;miniItemId=null;}
+async function refreshCmts(){
+  if(!miniType||!miniItemId)return;
+  const{data:cmts}=await sb.from('commentaires').select('*').eq('item_type',miniType).eq('item_id',miniItemId).eq('visible',true).order('created_at',{ascending:true});
+  const list=cmts||[];
+  const cc=document.getElementById('cc-'+miniItemId);if(cc)cc.textContent=list.length;
+  const box=document.getElementById('mini-cmts');if(!box)return;
+  box.innerHTML=list.length?list.map(cm=>'<div class="ci"><div class="ca">'+esc(cm.prenom[0].toUpperCase())+'</div><div class="cb2"><div class="cn">'+esc(cm.prenom)+'</div><div class="ct">'+esc(cm.message)+'</div></div></div>').join(''):'<div style="color:rgba(244,241,235,.3);font-size:.82rem;text-align:center;padding:20px">Soyez le premier !</div>';
+  box.scrollTop=box.scrollHeight;
+}
+async function sendCmt(){
+  const msg=document.getElementById('mini-msg')?.value.trim();
+  const prenom=document.getElementById('mini-prenom')?.value.trim()||'Anonyme';
+  if(!msg||!miniType||!miniItemId)return;
+  document.getElementById('mini-msg').value='';
+  await sb.from('commentaires').insert({item_type:miniType,item_id:miniItemId,prenom,message:msg});
+  await refreshCmts();
+}
 </script>
 </body></html>
