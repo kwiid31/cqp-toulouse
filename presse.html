@@ -1,54 +1,47 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Presse locale — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--rouge:#C8102E;--or:#F5A623;--noir:#0D0D0D;--gf:#1A1A1A;--gris:#2D2D2D;--blanc:#F4F1EB}
-*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
-body{background:var(--noir);color:var(--blanc);font-family:'Barlow',sans-serif}
+:root{--rouge:#C8102E;--or:#F5A623;--noir:#0D0D0D;--gf:#1A1A1A;--blanc:#F4F1EB}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--noir);color:var(--blanc);font-family:"Barlow",sans-serif}
 nav{position:sticky;top:0;z-index:200;background:rgba(13,13,13,.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--rouge);display:flex;justify-content:space-between;align-items:center;padding:0 5vw;height:68px;gap:16px}
 .logo{display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0}
-.logo-icon{width:42px;height:42px;background:var(--rouge);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff}
-.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--blanc);line-height:1.1}
-.logo-text span{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:3px;color:var(--or);text-transform:uppercase}
+.logo-icon{width:42px;height:42px;background:var(--rouge);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:"Bebas Neue",sans-serif;font-size:1.2rem;color:#fff}
+.logo-text{font-family:"Bebas Neue",sans-serif;font-size:1.2rem;color:var(--blanc);line-height:1.1}
+.logo-text span{display:block;font-family:"Barlow Condensed",sans-serif;font-size:.6rem;letter-spacing:3px;color:var(--or);text-transform:uppercase}
 .nav-links{display:flex;align-items:center;gap:16px}
-.nav-links a{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:var(--blanc);transition:color .2s}
+.nav-links a{font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:rgba(244,241,235,.6);transition:color .2s}
 .nav-links a:hover,.nav-links a.active{color:var(--or)}
 .page-hero{padding:60px 8vw 40px;border-bottom:1px solid rgba(255,255,255,.06)}
-.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px}
-.section-tag::before{content:'';width:28px;height:2px;background:var(--or)}
-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,6vw,5rem);line-height:.95;margin-bottom:12px}
+.stag{font-family:"Barlow Condensed",sans-serif;font-size:.72rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.stag::before{content:"";width:28px;height:2px;background:var(--or)}
+h1{font-family:"Bebas Neue",sans-serif;font-size:clamp(2.5rem,6vw,5rem);line-height:.95;margin-bottom:12px}
 h1 em{color:var(--rouge);font-style:normal}
 .page-hero p{color:rgba(244,241,235,.6);font-size:.95rem;line-height:1.7;max-width:580px}
-.sources-bar{display:flex;gap:10px;flex-wrap:wrap;padding:20px 8vw;border-bottom:1px solid rgba(255,255,255,.06);align-items:center}
-.source-tag{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(244,241,235,.5);padding:5px 12px;border-radius:3px}
+.week-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(200,16,46,.12);border:1px solid rgba(200,16,46,.3);color:rgba(244,241,235,.7);font-family:"Barlow Condensed",sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:20px;margin-top:14px}
 .content{padding:40px 8vw 80px}
-.articles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.article-card{background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden;text-decoration:none;display:block;transition:all .25s}
-.article-card:hover{border-color:var(--rouge);transform:translateY(-4px);box-shadow:0 10px 30px rgba(200,16,46,.12)}
-.article-img{height:160px;background:linear-gradient(135deg,#2D0A11,#1A1A1A);overflow:hidden}
-.article-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
-.article-card:hover .article-img img{transform:scale(1.05)}
-.article-body{padding:18px}
-.article-source{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--src-color, var(--or));margin-bottom:6px;display:flex;align-items:center;gap:4px}
-.article-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;color:var(--blanc);line-height:1.3;margin-bottom:8px}
-.article-desc{font-size:.78rem;color:rgba(244,241,235,.5);line-height:1.5;margin-bottom:12px}
-.article-date{font-size:.68rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
-.spin{text-align:center;padding:80px;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;grid-column:1/-1}
-.empty{text-align:center;padding:80px;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;grid-column:1/-1}
-.empty span{display:block;font-size:3.5rem;margin-bottom:14px}
-.suggest-box{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:6px;padding:24px;margin-top:40px}
-.suggest-box h3{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;margin-bottom:8px;color:var(--or)}
-.suggest-box p{font-size:.85rem;color:rgba(244,241,235,.55);line-height:1.6;margin-bottom:14px}
-.suggest-links{display:flex;gap:12px;flex-wrap:wrap}
-.suggest-link{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);text-decoration:none;border:1px solid rgba(245,166,35,.3);padding:6px 14px;border-radius:3px;transition:all .2s}
-.suggest-link:hover{background:rgba(245,166,35,.1)}
-footer{background:var(--gf);border-top:1px solid rgba(255,255,255,.07);padding:40px 8vw 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.articles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.article-card{background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:20px;text-decoration:none;display:block;transition:all .25s}
+.article-card:hover{border-color:var(--rouge);transform:translateY(-3px);box-shadow:0 8px 24px rgba(200,16,46,.12)}
+.article-source{font-family:"Barlow Condensed",sans-serif;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.article-title{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:.95rem;color:var(--blanc);line-height:1.4;margin-bottom:8px}
+.article-date{font-size:.68rem;color:rgba(244,241,235,.3);font-family:"Barlow Condensed",sans-serif;letter-spacing:1px;text-transform:uppercase}
+.badge-q{background:var(--rouge);color:#fff;font-size:.55rem;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:2px;font-family:"Barlow Condensed",sans-serif}
+.spin{text-align:center;padding:80px;color:rgba(244,241,235,.4);font-family:"Barlow Condensed",sans-serif;letter-spacing:2px;grid-column:1/-1}
+.empty{text-align:center;padding:80px;color:rgba(244,241,235,.3);font-family:"Barlow Condensed",sans-serif;grid-column:1/-1}
+.empty span{display:block;font-size:3rem;margin-bottom:12px}
+.links-box{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.15);border-radius:6px;padding:24px;margin-top:40px}
+.links-box h3{font-family:"Bebas Neue",sans-serif;font-size:1.3rem;margin-bottom:10px;color:var(--or)}
+.links-box p{font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:14px}
+.links-row{display:flex;gap:10px;flex-wrap:wrap}
+.ext-link{font-family:"Barlow Condensed",sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);text-decoration:none;border:1px solid rgba(245,166,35,.3);padding:6px 14px;border-radius:3px;transition:all .2s}
+.ext-link:hover{background:rgba(245,166,35,.1)}
+footer{background:var(--gf);border-top:1px solid rgba(255,255,255,.07);padding:28px 8vw;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
 footer p{font-size:.78rem;color:rgba(244,241,235,.3)}
-footer a{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:rgba(244,241,235,.4);text-decoration:none;text-transform:uppercase}
+footer a{font-family:"Barlow Condensed",sans-serif;font-size:.75rem;letter-spacing:1px;color:rgba(244,241,235,.4);text-decoration:none;text-transform:uppercase}
 footer a:hover{color:var(--or)}
 @media(max-width:900px){.articles-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.articles-grid{grid-template-columns:1fr}.nav-links a:not(:first-child){display:none}}
@@ -57,256 +50,52 @@ footer a:hover{color:var(--or)}
 <body>
 <nav>
   <a href="index.html" class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></a>
-  <div class="nav-links">
-    <a href="index.html">← Accueil</a>
-    <a href="annonces.html">Annonces</a>
-    <a href="presse.html" class="active">Presse locale</a>
-    <a href="newsletter.html">Newsletter</a>
-  </div>
+  <div class="nav-links"><a href="index.html">← Accueil</a><a href="actus.html">Actualités</a><a href="presse.html" class="active">Presse locale</a><a href="annonces.html">Annonces</a></div>
 </nav>
 <div class="page-hero">
-  <div class="section-tag">Médias & presse</div>
+  <div class="stag">Médias & presse</div>
   <h1>Presse <em>locale</em></h1>
-  <p>Articles récents sur Toulouse, les quartiers populaires et les enjeux sociaux locaux. Sources : La Dépêche du Midi, France Bleu Toulouse, Médiacités.</p>
-</div>
-<div class="sources-bar">
-  <span style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;color:rgba(244,241,235,.4);text-transform:uppercase">Sources :</span>
-  <span class="source-tag">La Dépêche du Midi</span>
-  <span class="source-tag">France Bleu Toulouse</span>
-  <span class="source-tag">Actu.fr Toulouse</span>
-  <span style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;color:rgba(244,241,235,.25);margin-left:auto">Mis à jour automatiquement</span>
+  <p>Articles de la semaine sur Toulouse et les quartiers populaires, issus de Google Actualités. Renouvelé automatiquement chaque jour.</p>
+  <div class="week-badge" id="week-label">🗓 Articles de la semaine…</div>
 </div>
 <div class="content">
   <div class="articles-grid" id="articles-grid"><div class="spin">⏳ Chargement des articles…</div></div>
-  <div class="suggest-box">
+  <div class="links-box">
     <h3>📰 Lire directement sur les sites</h3>
-    <p>Pour un accès complet aux articles et aux dernières nouvelles de votre quartier :</p>
-    <div class="suggest-links">
-      <a class="suggest-link" href="https://www.ladepeche.fr/toulouse/" target="_blank" rel="noopener">La Dépêche — Toulouse</a>
-      <a class="suggest-link" href="https://www.francebleu.fr/infos/toulouse-et-region" target="_blank" rel="noopener">France Bleu Toulouse</a>
-      <a class="suggest-link" href="https://actu.fr/occitanie/toulouse_31555/" target="_blank" rel="noopener">Actu.fr Toulouse</a>
-      <a class="suggest-link" href="https://www.mediacites.fr/toulouse/" target="_blank" rel="noopener">Médiacités Toulouse</a>
+    <p>Pour un accès complet aux archives et à toute l'actualité locale :</p>
+    <div class="links-row">
+      <a class="ext-link" href="https://www.ladepeche.fr/toulouse/" target="_blank" rel="noopener">La Dépêche Toulouse</a>
+      <a class="ext-link" href="https://www.francebleu.fr/infos/toulouse-et-region" target="_blank" rel="noopener">France Bleu Toulouse</a>
+      <a class="ext-link" href="https://actu.fr/occitanie/toulouse_31555/" target="_blank" rel="noopener">Actu.fr Toulouse</a>
+      <a class="ext-link" href="https://www.mediacites.fr/toulouse/" target="_blank" rel="noopener">Médiacités Toulouse</a>
     </div>
   </div>
 </div>
-<footer>
-  <p>© 2026 Comité des Quartiers Populaires de Toulouse</p>
-  <a href="index.html">← Retour au site principal</a>
-</footer>
+<footer><p>© 2026 Comité des Quartiers Populaires de Toulouse</p><a href="index.html">← Retour au site principal</a></footer>
 <script>
-const EDGE_URL = 'https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/rss-proxy';
-
-async function loadArticles() {
-  const grid = document.getElementById('articles-grid');
-  try {
-    const res = await fetch(EDGE_URL);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    const items = data.items || [];
-
-    if (!items.length) {
-      grid.innerHTML = `<div class="empty"><span>📰</span>Aucun article disponible pour le moment.<br><small style="font-size:.8rem;color:rgba(244,241,235,.3)">Consultez directement les sites ci-dessous.</small></div>`;
+const EDGE = "https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/rss-proxy";
+async function loadArticles(){
+  const grid=document.getElementById("articles-grid");
+  try{
+    const res=await fetch(EDGE);
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const data=await res.json();
+    const items=data.items||[];
+    // Afficher la période couverte
+    if(data.week)document.getElementById("week-label").textContent="🗓 "+data.week;
+    if(!items.length){
+      grid.innerHTML='<div class="empty"><span>📰</span>Aucun article cette semaine.<br><small style="color:rgba(244,241,235,.3)">Consultez les liens ci-dessous.</small></div>';
       return;
     }
-
-    grid.innerHTML = items.map(a => {
-      const d = a.date ? new Date(a.date).toLocaleDateString('fr-FR', {day:'2-digit', month:'long'}) : '';
-      const isLocal = a.score > 0;
-      return `<a class="article-card" href="${a.link}" target="_blank" rel="noopener">
-        <div class="article-body">
-          <div class="article-source">
-            ${a.source.substring(0,25)}
-            ${isLocal ? `<span style="background:var(--rouge);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:2px">Quartiers</span>` : ''}
-          </div>
-          <div class="article-title">${a.title}</div>
-          <div class="article-date">${d}</div>
-        </div>
-      </a>`;
-    }).join('');
-  } catch(e) {
-    grid.innerHTML = `<div class="empty"><span>⚠️</span>Chargement impossible : ${e.message}<br><small style="font-size:.8rem;color:rgba(244,241,235,.3)">Consultez directement les liens ci-dessous.</small></div>`;
+    grid.innerHTML=items.map(a=>{
+      const d=a.date?new Date(a.date).toLocaleDateString("fr-FR",{day:"2-digit",month:"long"}):"";
+      return '<a class="article-card" href="'+a.link+'" target="_blank" rel="noopener"><div class="article-source">'+a.source.substring(0,28)+(a.score>0?'&nbsp;<span class="badge-q">Quartiers</span>':'')+"</div>"
+        +'<div class="article-title">'+a.title+'</div><div class="article-date">'+d+"</div></a>";
+    }).join("");
+  }catch(e){
+    grid.innerHTML='<div class="empty"><span>⚠️</span>Chargement impossible pour le moment.<br><small style="color:rgba(244,241,235,.3)">Consultez les liens ci-dessous.</small></div>';
   }
 }
-
-loadArticles();
-</script>
-</body>
-</html>
-
-const FEEDS = [
-  {
-    url: 'https://www.ladepeche.fr/rss/toulouse/',
-    source: 'La Dépêche du Midi',
-    color: '#E63946'
-  },
-  {
-    url: 'https://www.francebleu.fr/toulouse/articles.rss',
-    source: 'France Bleu Toulouse',
-    color: '#0077B6'
-  },
-  {
-    url: 'https://actu.fr/occitanie/toulouse_31555/rss.xml',
-    source: 'Actu.fr Toulouse',
-    color: '#2A9D8F'
-  }
-];
-
-const KEYWORDS = ['mirail','bellefontaine','izards','reynerie','quartier','populaire','logement','social','solidarité','association','banlieue','cité','habitat','expulsion','discrimination'];
-
-async function loadArticles() {
-  const grid = document.getElementById('articles-grid');
-  const allArticles = [];
-
-  await Promise.allSettled(FEEDS.map(async feed => {
-    try {
-      const res = await fetch(`${RSS2JSON}${encodeURIComponent(feed.url)}&count=20`);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
-      if (data.status !== 'ok' || !data.items) return;
-      data.items.forEach(item => {
-        const txt = ((item.title||'') + ' ' + (item.description||'')).toLowerCase();
-        const score = KEYWORDS.filter(k => txt.includes(k)).length;
-        allArticles.push({
-          title: item.title || '',
-          link: item.link || item.url || '',
-          description: (item.description || '').replace(/<[^>]+>/g, '').trim(),
-          date: item.pubDate || '',
-          image: item.thumbnail || item.enclosure?.link || '',
-          source: feed.source,
-          color: feed.color,
-          score
-        });
-      });
-    } catch(e) {
-      console.warn(feed.source, ':', e.message);
-    }
-  }));
-
-  if (!allArticles.length) {
-    grid.innerHTML = `<div class="empty">
-      <span>📰</span>
-      Les flux RSS sont temporairement indisponibles.<br>
-      <small style="font-size:.8rem;color:rgba(244,241,235,.3);line-height:2">
-        Consultez directement les sites ci-dessous.
-      </small>
-    </div>`;
-    return;
-  }
-
-  // Trier : articles pertinents (score > 0) d'abord, puis par date
-  allArticles.sort((a, b) => {
-    if (b.score !== a.score) return b.score - a.score;
-    return new Date(b.date) - new Date(a.date);
-  });
-
-  grid.innerHTML = allArticles.slice(0, 18).map(a => {
-    const d = a.date ? new Date(a.date).toLocaleDateString('fr-FR', {day:'2-digit', month:'long'}) : '';
-    const desc = a.description.substring(0, 110) + (a.description.length > 110 ? '…' : '');
-    const badge = a.score > 0 ? `<span style="background:${a.color};color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-left:6px">Quartiers</span>` : '';
-    return `<a class="article-card" href="${a.link}" target="_blank" rel="noopener">
-      ${a.image ? `<div class="article-img"><img src="${a.image}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>` : ''}
-      <div class="article-body">
-        <div class="article-source" style="--src-color:${a.color}">${a.source}${badge}</div>
-        <div class="article-title">${a.title.substring(0, 85)}${a.title.length > 85 ? '…' : ''}</div>
-        ${desc ? `<div class="article-desc">${desc}</div>` : ''}
-        <div class="article-date">${d}</div>
-      </div>
-    </a>`;
-  }).join('');
-}
-
-loadArticles();
-</script>
-</body>
-</html>
-
-// Flux RSS — URLs encodées
-const FEEDS = [
-  {
-    url: 'https://www.ladepeche.fr/rss/toulouse/',
-    source: 'La Dépêche',
-    kw: ['mirail','bellefontaine','izards','reynerie','quartier','social','logement','toulouse','habitat','banlieue','cité']
-  },
-  {
-    url: 'https://www.francebleu.fr/toulouse/articles.rss',
-    source: 'France Bleu Toulouse',
-    kw: ['mirail','quartier','social','logement','toulouse','solidarité','association','habitants']
-  },
-  {
-    url: 'https://actu.fr/occitanie/toulouse_31555/rss.xml',
-    source: 'Actu.fr Toulouse',
-    kw: ['mirail','bellefontaine','izards','quartier','social','logement','solidarité']
-  }
-];
-
-function parseRSS(xmlStr) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xmlStr, 'text/xml');
-  const items = doc.querySelectorAll('item');
-  return Array.from(items).map(item => ({
-    title: item.querySelector('title')?.textContent || '',
-    link: item.querySelector('link')?.textContent || '',
-    description: item.querySelector('description')?.textContent?.replace(/<[^>]+>/g,'') || '',
-    pubDate: item.querySelector('pubDate')?.textContent || '',
-    image: item.querySelector('enclosure[type^="image"]')?.getAttribute('url') ||
-           item.querySelector('media\\:content,content')?.getAttribute('url') || ''
-  }));
-}
-
-async function loadArticles() {
-  const grid = document.getElementById('articles-grid');
-  const allArticles = [];
-  let loaded = 0;
-
-  for (const feed of FEEDS) {
-    try {
-      const res = await fetch(PROXY + encodeURIComponent(feed.url));
-      const json = await res.json();
-      const items = parseRSS(json.contents || '');
-      items.forEach(item => {
-        const txt = (item.title + ' ' + item.description).toLowerCase();
-        const relevant = feed.kw.some(k => txt.includes(k));
-        allArticles.push({ ...item, source: feed.source, relevant });
-      });
-      loaded++;
-    } catch(e) {
-      console.warn('Flux indisponible:', feed.source, e.message);
-    }
-  }
-
-  // Trier : articles pertinents en premier, puis par date
-  allArticles.sort((a, b) => {
-    if (a.relevant && !b.relevant) return -1;
-    if (!a.relevant && b.relevant) return 1;
-    return new Date(b.pubDate) - new Date(a.pubDate);
-  });
-
-  const top = allArticles.slice(0, 18);
-
-  if (!top.length) {
-    grid.innerHTML = `<div class="empty">
-      <span>📰</span>
-      Les flux RSS sont temporairement indisponibles.<br>
-      <small style="font-size:.8rem;color:rgba(244,241,235,.3)">Consultez directement les sites ci-dessous.</small>
-    </div>`;
-    return;
-  }
-
-  grid.innerHTML = top.map(a => {
-    const date = a.pubDate ? new Date(a.pubDate).toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'}) : '';
-    const desc = a.description.substring(0, 120) + (a.description.length > 120 ? '…' : '');
-    return `<a class="article-card" href="${a.link}" target="_blank" rel="noopener">
-      ${a.image ? `<div class="article-img"><img src="${a.image}" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>` : ''}
-      <div class="article-body">
-        <div class="article-source">${a.source}</div>
-        <div class="article-title">${a.title.substring(0, 80)}${a.title.length > 80 ? '…' : ''}</div>
-        ${desc ? `<div class="article-desc">${desc}</div>` : ''}
-        <div class="article-date">${date}</div>
-      </div>
-    </a>`;
-  }).join('');
-}
-
 loadArticles();
 </script>
 </body>
