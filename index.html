@@ -247,7 +247,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 @media(max-width:900px){.rss-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.rss-grid{grid-template-columns:1fr}}
 /* BANDEAU DÉCOUVERTE */
-.band-item{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:rgba(244,241,235,.45);padding:0 40px}
+.band-item{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:#fff;padding:0 40px}
 .band-item::after{content:'·';margin-left:40px;color:rgba(244,241,235,.2)}
 /* ÉTOILES AVIS */
 .star{font-size:1.8rem;color:rgba(255,255,255,.2);cursor:pointer;transition:color .15s;line-height:1;user-select:none}
@@ -404,21 +404,19 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 </section>
 
 <!-- BANDEAU DÉFILANT -->
-<div style="background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);overflow:hidden;padding:14px 0;white-space:nowrap">
+<div style="background:var(--rouge);overflow:hidden;padding:14px 0;white-space:nowrap">
   <div style="display:inline-flex;animation:scrollLeft 28s linear infinite;gap:0">
     <span class="band-item">📰 Découvrez la presse locale</span>
     <span class="band-item">📋 Déposez vos annonces</span>
     <span class="band-item">📅 Créez vos événements</span>
     <span class="band-item">🤝 Rejoignez le comité</span>
     <span class="band-item">🗞 Suivez l'actualité des quartiers</span>
-    <span class="band-item">✊ Toulouse s'organise</span>
     <span class="band-item">📧 Abonnez-vous à la newsletter</span>
     <span class="band-item">📰 Découvrez la presse locale</span>
     <span class="band-item">📋 Déposez vos annonces</span>
     <span class="band-item">📅 Créez vos événements</span>
     <span class="band-item">🤝 Rejoignez le comité</span>
     <span class="band-item">🗞 Suivez l'actualité des quartiers</span>
-    <span class="band-item">✊ Toulouse s'organise</span>
     <span class="band-item">📧 Abonnez-vous à la newsletter</span>
   </div>
 </div>
@@ -562,10 +560,12 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 
       </div>
     </div>
-    <!-- Points de nav -->
-    <div style="display:flex;gap:8px;margin-top:20px">
+    <!-- Flèches + Points de nav -->
+    <div style="display:flex;align-items:center;gap:10px;margin-top:20px">
+      <button onclick="avisSlide(-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:34px;height:34px;border-radius:4px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.12)'">←</button>
       <button class="dot active" id="av-dot-0" onclick="avisSlide(0,true)"></button>
       <button class="dot" id="av-dot-1" onclick="avisSlide(1,true)"></button>
+      <button onclick="avisSlide(1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:34px;height:34px;border-radius:4px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.12)'">→</button>
     </div>
   </div>
 </section>
