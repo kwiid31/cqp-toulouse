@@ -6,6 +6,7 @@
 <title>Annonces — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root{--rouge:#C8102E;--or:#F5A623;--noir:#0D0D0D;--gf:#1A1A1A;--gris:#2D2D2D;--blanc:#F4F1EB}
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
@@ -57,8 +58,37 @@ footer{background:var(--gf);border-top:1px solid rgba(255,255,255,.07);padding:4
 footer p{font-size:.78rem;color:rgba(244,241,235,.3)}
 footer a{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:rgba(244,241,235,.4);text-decoration:none;text-transform:uppercase}
 footer a:hover{color:var(--or)}
-</style>
-<style>
+
+/* ===== SOCIAL : LIKES + COMMENTAIRES + PHOTO ===== */
+.post-photo{width:100%;max-height:320px;object-fit:cover;border-radius:6px;margin-bottom:16px;display:block}
+.social-bar{display:flex;align-items:center;gap:16px;padding:12px 0;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08);margin:16px 0}
+.like-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;color:rgba(244,241,235,.5);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:1px;text-transform:uppercase;transition:all .2s;padding:0}
+.like-btn .heart{font-size:1.4rem;transition:transform .15s,color .15s;display:inline-block}
+.like-btn.liked{color:var(--rouge)}
+.like-btn.liked .heart{color:var(--rouge)}
+.like-btn.pop .heart{transform:scale(1.5)}
+.comment-count{color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:1px;text-transform:uppercase}
+.comments-section{margin-top:4px}
+.comment-item{display:flex;gap:10px;margin-bottom:14px;align-items:flex-start}
+.comment-avatar{width:32px;height:32px;min-width:32px;background:var(--rouge);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:#fff}
+.comment-bubble{background:rgba(255,255,255,.06);border-radius:0 8px 8px 8px;padding:8px 12px;flex:1}
+.comment-name{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-bottom:3px}
+.comment-text{font-size:.84rem;color:rgba(244,241,235,.8);line-height:1.5}
+.comment-date{font-size:.65rem;color:rgba(244,241,235,.25);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;margin-top:4px}
+.add-comment{display:flex;gap:8px;margin-top:14px;align-items:flex-end}
+.add-comment input{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:9px 16px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.84rem;outline:none;transition:border-color .2s}
+.add-comment input:focus{border-color:var(--rouge)}
+.send-btn{background:var(--rouge);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .2s}
+.send-btn:hover{opacity:.85}
+.upload-photo-zone{border:2px dashed rgba(255,255,255,.15);border-radius:6px;padding:18px;text-align:center;cursor:pointer;position:relative;transition:all .2s;margin-bottom:14px}
+.upload-photo-zone:hover{border-color:var(--or);background:rgba(245,166,35,.05)}
+.upload-photo-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-photo-zone p{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;color:rgba(244,241,235,.4)}
+.upload-photo-zone .icon{font-size:1.6rem;margin-bottom:6px;display:block}
+.photo-preview{width:100%;height:160px;object-fit:cover;border-radius:4px;margin-top:10px;display:none}
+.upload-progress{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;color:var(--or);margin-top:6px;display:none}
+
+
 .drawer-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.65);backdrop-filter:blur(4px)}
 .drawer-overlay.open{display:flex;justify-content:flex-end}
 .drawer{width:min(560px,96vw);height:100vh;background:var(--gf);border-left:2px solid var(--rouge);overflow-y:auto;display:flex;flex-direction:column;animation:slideIn .3s ease}
@@ -144,7 +174,9 @@ footer a:hover{color:var(--or)}
     <div class="drawer-head"><h3 id="dr-ann-titre"></h3><button class="drawer-close" onclick="closeDr('dAnn')">✕</button></div>
     <div class="drawer-body">
       <div class="drawer-meta"><span class="ann-cat" id="dr-ann-cat"></span><span style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1px;color:rgba(244,241,235,.35)" id="dr-ann-meta"></span></div>
+      <img id="dr-ann-photo" style="display:none;width:100%;max-height:280px;object-fit:cover;border-radius:6px;margin-bottom:14px" alt="">
       <div class="drawer-content" id="dr-ann-content"></div>
+      <div id="social-ann"></div>
       <div class="share-btns" id="dr-ann-share"></div>
       <div class="contact-direct">
         <h4>📞 Contacter directement</h4>
@@ -182,7 +214,14 @@ footer a:hover{color:var(--or)}
           </select>
         </div>
       </div>
-      <div class="fg"><label>Titre *</label><input type="text" id="a-titre" placeholder="Ex: Cherche T2 urgence familiale"></div>
+      <div class="upload-photo-zone" id="ann-photo-zone">
+      <input type="file" accept="image/*" onchange="handleAnnPhoto(this)">
+      <span class="icon">📸</span>
+      <p>Ajouter une photo (optionnel)<br><small>Depuis ta galerie · JPG, PNG · Max 10MB</small></p>
+    </div>
+    <img class="photo-preview" id="ann-photo-preview" alt="">
+    <div class="upload-progress" id="ann-photo-status"></div>
+    <div class="fg"><label>Titre *</label><input type="text" id="a-titre" placeholder="Ex: Cherche T2 urgence familiale"></div>
       <div class="fg"><label>Description *</label><textarea id="a-desc" rows="4" placeholder="Décrivez votre besoin…"></textarea></div>
       <div class="rgpd"><input type="checkbox" id="a-rgpd"><label for="a-rgpd">J'accepte que ces informations soient publiées sur le site après validation.</label></div>
       <button class="btn-sub" id="depotBtn" onclick="deposerAnnonce()">📋 Soumettre mon annonce</button>
@@ -290,4 +329,147 @@ loadAnnonces();
   setInterval(()=>ping("ping"),30000);
 })();
 </script>
+
+// ===== SOCIAL FUNCTIONS =====
+const SBU2='https://vzfwtyczqfbhbjzotjft.supabase.co';
+const SBK2='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+const sbS=supabase.createClient(SBU2,SBK2);
+const esc2=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function getSid(){let s=sessionStorage.getItem('cqp_sid');if(!s){s=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',s);}return s;}
+
+async function loadSocial(type,id,containerId){
+  const sid=getSid();
+  // Compter likes + savoir si liké
+  const [{count:nlikes},{data:myLike},{data:comments}] = await Promise.all([
+    sbS.from('likes').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id),
+    sbS.from('likes').select('id').eq('item_type',type).eq('item_id',id).eq('session_id',sid),
+    sbS.from('commentaires').select('*').eq('item_type',type).eq('item_id',id).order('created_at',{ascending:true})
+  ]);
+  const liked=(myLike||[]).length>0;
+  const commentList=(comments||[]);
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  el.innerHTML=`
+  <div class="social-bar">
+    <button class="like-btn${liked?' liked':''}" onclick="toggleLike('${type}',${id},'${containerId}')">
+      <span class="heart">${liked?'❤️':'🤍'}</span>
+      <span id="lc-${containerId}">${nlikes||0}</span>
+    </button>
+    <span class="comment-count">💬 ${commentList.length} commentaire${commentList.length>1?'s':''}</span>
+  </div>
+  <div class="comments-section">
+    ${commentList.map(c=>`<div class="comment-item">
+      <div class="comment-avatar">${esc2(c.prenom.charAt(0).toUpperCase())}</div>
+      <div class="comment-bubble">
+        <div class="comment-name">${esc2(c.prenom)}</div>
+        <div class="comment-text">${esc2(c.message)}</div>
+        <div class="comment-date">${new Date(c.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',hour:'2-digit',minute:'2-digit'})}</div>
+      </div>
+    </div>`).join('')}
+    <div class="add-comment">
+      <input type="text" id="cp-${containerId}" placeholder="Ajouter un commentaire…" onkeydown="if(event.key==='Enter')sendComment('${type}',${id},'${containerId}')">
+      <button class="send-btn" onclick="sendComment('${type}',${id},'${containerId}')">➤</button>
+    </div>
+    <input type="text" id="cn-${containerId}" placeholder="Votre prénom" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.8rem;outline:none;width:100%;margin-top:8px;transition:border-color .2s" onfocus="this.style.borderColor='var(--rouge)'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+  </div>`;
+}
+
+async function toggleLike(type,id,containerId){
+  const sid=getSid();
+  const btn=document.querySelector(`#${containerId} .like-btn`);
+  if(!btn)return;
+  const liked=btn.classList.contains('liked');
+  btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),300);
+  if(liked){
+    await sbS.from('likes').delete().eq('item_type',type).eq('item_id',id).eq('session_id',sid);
+    btn.classList.remove('liked');
+    btn.querySelector('.heart').textContent='🤍';
+  } else {
+    await sbS.from('likes').insert({item_type:type,item_id:id,session_id:sid}).catch(()=>{});
+    btn.classList.add('liked');
+    btn.querySelector('.heart').textContent='❤️';
+  }
+  const {count}=await sbS.from('likes').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id);
+  const lc=document.getElementById('lc-'+containerId);if(lc)lc.textContent=count||0;
+}
+
+async function sendComment(type,id,containerId){
+  const msgEl=document.getElementById('cp-'+containerId);
+  const nameEl=document.getElementById('cn-'+containerId);
+  const msg=(msgEl?.value||'').trim();
+  const prenom=(nameEl?.value||'Anonyme').trim()||'Anonyme';
+  if(!msg)return;
+  await sbS.from('commentaires').insert({item_type:type,item_id:id,prenom,message:msg});
+  msgEl.value='';
+  loadSocial(type,id,containerId);
+}
+
+async function uploadPostPhoto(file,type){
+  const ext=file.name.split('.').pop();
+  const fname=type+'-'+Date.now()+'.'+ext;
+  const{data,error}=await sbS.storage.from('posts-photos').upload(fname,file,{upsert:true,contentType:file.type});
+  if(error)throw error;
+  const{data:{publicUrl}}=sbS.storage.from('posts-photos').getPublicUrl(fname);
+  return publicUrl;
+}
+let annPhotoUrl='';
+function handleAnnPhoto(input){
+  const file=input.files[0];if(!file)return;
+  const prev=document.getElementById('ann-photo-preview');
+  prev.src=URL.createObjectURL(file);prev.style.display='block';
+  document.getElementById('ann-photo-status').textContent='Photo prête • sera uploadée à l\'envoi';
+  document.getElementById('ann-photo-status').style.display='block';
+  document.getElementById('ann-photo-zone').querySelector('p').textContent='Photo sélectionnée ✓';
+  // Stocker le file pour upload à l'envoi
+  window._annPhotoFile=file;
+}
+// Patcher openDrAnn pour charger photo + social
+const _origOpenDrAnn=openDrAnn;
+async function openDrAnn(id){
+  _origOpenDrAnn(id);
+  const a=annPub.find(x=>x.id===id);if(!a)return;
+  // Photo
+  const photoEl=document.getElementById('dr-ann-photo');
+  if(a.photo_url){photoEl.src=a.photo_url;photoEl.style.display='block';}
+  else photoEl.style.display='none';
+  // Social
+  await loadSocial('annonce',id,'social-ann');
+}
+// Patcher deposerAnnonce pour uploader photo
+const _origDeposer=deposerAnnonce;
+async function deposerAnnonce(){
+  if(window._annPhotoFile){
+    try{
+      const st=document.getElementById('ann-photo-status');
+      st.textContent='⏳ Upload photo…';st.style.display='block';
+      annPhotoUrl=await uploadPostPhoto(window._annPhotoFile,'ann');
+      st.textContent='✅ Photo uploadée !';
+    }catch(e){console.warn('Photo upload failed:',e);}
+  }
+  // Patch temporaire : on insère avec photo_url
+  const prenom=document.getElementById('a-prenom').value.trim();
+  const nom=document.getElementById('a-nom').value.trim();
+  const email=document.getElementById('a-email').value.trim();
+  const telephone=document.getElementById('a-tel').value.trim();
+  const categorie=document.getElementById('a-cat').value;
+  const quartier=document.getElementById('a-quartier').value;
+  const titre=document.getElementById('a-titre').value.trim();
+  const description=document.getElementById('a-desc').value.trim();
+  const rgpd=document.getElementById('a-rgpd').checked;
+  if(!prenom||!nom||!email||!categorie||!quartier||!titre||!description){showMsg('depotMsg','err','⚠ Remplis tous les champs.');return;}
+  if(!rgpd){showMsg('depotMsg','err','⚠ Accepte les conditions.');return;}
+  const btn=document.getElementById('depotBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{
+    const{error}=await sbS.from('annonces').insert({prenom,nom,email,telephone,quartier,categorie,titre,description,contact:email,photo_url:annPhotoUrl});
+    if(error)throw error;
+    showMsg('depotMsg','ok','✅ Annonce soumise ! Publiée après validation (24–48h).');
+    ['a-prenom','a-nom','a-email','a-tel','a-titre','a-desc'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('a-cat').value='';document.getElementById('a-quartier').value='';document.getElementById('a-rgpd').checked=false;
+    document.getElementById('ann-photo-preview').style.display='none';
+    document.getElementById('ann-photo-zone').querySelector('p').innerHTML='Ajouter une photo (optionnel)<br><small>Depuis ta galerie · JPG, PNG · Max 10MB</small>';
+    annPhotoUrl='';window._annPhotoFile=null;
+    setTimeout(()=>{btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';},8000);
+  }catch(e){showMsg('depotMsg','err','⚠ '+e.message);btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';}
+}
 </body></html>
