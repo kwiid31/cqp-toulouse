@@ -1437,11 +1437,9 @@ function initTracking(page){
 let statsInterval=null;
 async function renderStats(){
   try{
-    // 1. En ligne maintenant (sessions actives dans les 2 dernières minutes)
-    const{data:live}=await sb.from('active_sessions').select('session_id',{count:'exact',head:true});
-    const liveCount=live||0;
-    // Requête count correcte
-    const{count:liveN}=await sb.from('active_sessions').select('*',{count:'exact',head:true});
+    // 1. En ligne maintenant — sessions actives dans les 90 dernières secondes
+    const cutoff90s = new Date(Date.now()-90000).toISOString();
+    const{count:liveN}=await sb.from('active_sessions').select('*',{count:'exact',head:true}).gte('last_seen',cutoff90s);
     document.getElementById('stat-live').textContent=liveN??'0';
 
     // 2. Visites 24h
