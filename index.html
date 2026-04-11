@@ -310,6 +310,39 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 @media(max-width:700px){.nav-center{display:none}.burger{display:flex}.nav-right .btn-adhere{display:none}}
 @media(max-width:600px){.actus-grid,.events-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}}
 
+/* QUI-TEXTE : 2 slides sur mobile uniquement */
+.qui-slides{display:contents} /* desktop : contenu normal visible */
+.qui-slide{display:contents}
+.qui-dots{display:none}
+@media(max-width:700px){
+  .qui-slides{
+    display:flex;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    gap:0;
+  }
+  .qui-slides::-webkit-scrollbar{display:none}
+  .qui-slide{
+    display:block;
+    min-width:100%;
+    scroll-snap-align:start;
+    box-sizing:border-box;
+    padding-right:4vw;
+  }
+  .qui-dots{
+    display:flex;
+    gap:8px;
+    margin-top:16px;
+  }
+  .qui-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:rgba(255,255,255,.2);border:none;cursor:pointer;padding:0;transition:all .3s;
+  }
+  .qui-dot.active{background:var(--rouge);width:22px;border-radius:4px;}
+}
+
 </style>
 </head>
 <body>
@@ -370,13 +403,25 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     <div class="qui-texte">
       <div class="section-tag">Notre histoire</div>
       <h2>Un mouvement <em>né du bas</em></h2>
-      <p id="site-hist-p1"></p>
-      <div class="quote-block" id="site-hist-cit"></div>
-      <p id="site-hist-p2"></p>
-      <div class="valeurs">
-        <span class="valeur-tag">Autonomie populaire</span><span class="valeur-tag">Solidarité</span>
-        <span class="valeur-tag">Féminisme</span><span class="valeur-tag">Antiracisme</span>
-        <span class="valeur-tag">Écologie sociale</span><span class="valeur-tag">Non-violence</span>
+      <!-- Wrapper swipe mobile : 2 slides -->
+      <div class="qui-slides">
+        <div class="qui-slide">
+          <p id="site-hist-p1"></p>
+          <div class="quote-block" id="site-hist-cit"></div>
+          <p id="site-hist-p2"></p>
+        </div>
+        <div class="qui-slide">
+          <div class="valeurs">
+            <span class="valeur-tag">Autonomie populaire</span><span class="valeur-tag">Solidarité</span>
+            <span class="valeur-tag">Féminisme</span><span class="valeur-tag">Antiracisme</span>
+            <span class="valeur-tag">Écologie sociale</span><span class="valeur-tag">Non-violence</span>
+          </div>
+        </div>
+      </div>
+      <!-- Points nav (mobile uniquement) -->
+      <div class="qui-dots">
+        <button class="qui-dot active" onclick="quiSlide(0)"></button>
+        <button class="qui-dot" onclick="quiSlide(1)"></button>
       </div>
     </div>
     <div class="visual-box">
@@ -1679,6 +1724,22 @@ async function renderStats(){
 }
 // Init
 sliderGoTo(0);
+// Swipe texte "né du bas" sur mobile
+function quiSlide(idx){
+  const track=document.querySelector('.qui-slides');
+  if(!track)return;
+  track.scrollTo({left:idx*track.offsetWidth,behavior:'smooth'});
+  document.querySelectorAll('.qui-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+}
+// Sync points au scroll
+document.addEventListener('DOMContentLoaded',()=>{
+  const track=document.querySelector('.qui-slides');
+  if(!track)return;
+  track.addEventListener('scroll',()=>{
+    const idx=Math.round(track.scrollLeft/track.offsetWidth);
+    document.querySelectorAll('.qui-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  },{passive:true});
+});
 loadConfig();
 loadActus();
 loadAnnonces();
