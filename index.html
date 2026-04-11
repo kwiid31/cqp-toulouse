@@ -400,7 +400,8 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 <!-- SLIDER PLEIN LARGEUR -->
 <div style="background:var(--noir);padding:48px 0 40px;position:relative">
   <!-- Slides -->
-  <div id="slider" style="display:flex;overflow:hidden;width:100%">
+  <div style="overflow:hidden;width:100%">
+    <div id="slider" style="display:flex;width:100%;will-change:transform">
 
     <!-- SLIDE 1 : ACTUALITÉS -->
     <div class="slide" style="min-width:100%;padding:0 8vw;box-sizing:border-box">
@@ -469,6 +470,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     </div>
 
   </div><!-- fin slider -->
+  </div><!-- fin wrapper overflow -->
 
   <!-- Flèches -->
   <button class="slider-arrow left" id="arr-left" onclick="sliderGo(-1)">&#8592;</button>
@@ -1149,7 +1151,7 @@ function sliderGo(dir){sliderGoTo(sliderIdx+dir);}
 // Swipe tactile
 (function(){
   let x0=null;
-  const sl=document.getElementById('slider');
+  const sl=document.getElementById('slider').parentElement;
   sl.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});
   sl.addEventListener('touchend',e=>{
     if(x0===null)return;
