@@ -246,18 +246,27 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .rss-date{font-size:.7rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
 @media(max-width:900px){.rss-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.rss-grid{grid-template-columns:1fr}}
-/* CARROUSELS */
-.carousel{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:8px;scrollbar-width:none}
-.carousel::-webkit-scrollbar{display:none}
-.carousel .actu-card,.carousel .event-card{scroll-snap-align:start;flex-shrink:0;width:min(300px,78vw)}
-.carousel-nav{display:flex;gap:8px;margin-top:16px;align-items:center}
-.c-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(244,241,235,.7);width:36px;height:36px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
-.c-btn:hover{background:rgba(255,255,255,.15);border-color:var(--or);color:var(--or)}
-.card-s{scroll-snap-align:start;flex-shrink:0;width:min(300px,78vw);background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:18px;text-decoration:none;display:block;transition:all .25s}
-.card-s:hover{border-color:var(--rouge);transform:translateY(-2px)}
-.card-s .src{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:6px}
-.card-s .ttl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;color:var(--blanc);line-height:1.4;margin-bottom:6px}
-.card-s .dt{font-size:.68rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+/* BI-CARROUSELS */
+.bicarousel-section{background:var(--noir);padding:56px 8vw}
+.bicarousel-section.alt{background:var(--gf)}
+.bic-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:14px}
+.bic-tabs{display:flex;gap:6px;flex-shrink:0}
+.bic-tab{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.5);padding:7px 16px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.bic-tab.active{background:var(--rouge);border-color:var(--rouge);color:#fff}
+.bic-carousel{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none;scroll-behavior:smooth}
+.bic-carousel::-webkit-scrollbar{display:none}
+.bic-nav{display:flex;align-items:center;gap:8px;margin-top:16px}
+.bic-more{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none;margin-left:8px;transition:opacity .2s}
+.bic-more:hover{opacity:.75}
+/* CARTES CARROUSEL */
+.bic-carousel .actu-card{scroll-snap-align:start;flex-shrink:0;width:280px}
+.bic-carousel .event-card{scroll-snap-align:start;flex-shrink:0;width:280px}
+.bic-carousel .annonce-card{scroll-snap-align:start;flex-shrink:0;width:280px;background:var(--noir)}
+.bicarousel-section.alt .bic-carousel .annonce-card{background:var(--gris)}
+.bic-carousel .card-s{scroll-snap-align:start;flex-shrink:0;width:280px}
+/* Bouton proposer sur événement */
+.evt-propose-btn{display:flex;align-items:center;gap:6px;background:rgba(200,16,46,.12);border:1px solid rgba(200,16,46,.3);color:var(--rouge);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:7px 14px;border-radius:3px;cursor:pointer;transition:all .2s;text-decoration:none}
+.evt-propose-btn:hover{background:rgba(200,16,46,.25)}
 /* ÉVÉNEMENTS */.events{background:var(--noir)}
 .events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
 .event-card{background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative}
@@ -368,64 +377,78 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 </section>
 
 <!-- ADHÉSION — juste après "né du bas" -->
-<section id="adhesion" style="background:var(--gf);padding:64px 8vw;border-top:1px solid rgba(255,255,255,.06)">
-  <div style="max-width:720px">
+<section id="adhesion" style="background:var(--gf);padding:56px 8vw;border-top:1px solid rgba(255,255,255,.06)">
+  <div style="max-width:680px">
     <div class="section-tag">Passer à l'action</div>
     <h2>Rejoins <em>le mouvement</em></h2>
-    <p id="site-adh-p1" style="color:rgba(244,241,235,.65);font-size:1rem;line-height:1.8;margin:16px 0 28px;max-width:520px"></p>
-    <button class="btn-primary" onclick="openDr('dAdhesion')" style="font-size:.95rem">✊ Rejoindre — c'est gratuit</button>
+    <p id="site-adh-p1" style="color:rgba(244,241,235,.65);font-size:1rem;line-height:1.8;margin:14px 0 24px;max-width:500px"></p>
+    <button class="btn-primary" onclick="openDr('dAdhesion')">✊ Rejoindre — c'est gratuit</button>
   </div>
 </section>
-<section style="background:var(--noir);padding:60px 8vw">
-  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:32px;flex-wrap:wrap;gap:12px">
-    <div><div class="section-tag">Le comité vous informe</div><h2>Dernières <em>actualités</em></h2></div>
-    <a href="actus.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none">Toutes les actus →</a>
-  </div>
-  <div class="carousel" id="actus-grid"><div class="spin" style="min-width:100%;text-align:center;padding:60px">⏳ Chargement…</div></div>
-  <div class="carousel-nav">
-    <button class="c-btn" onclick="scroll('actus-grid',-1)">←</button>
-    <button class="c-btn" onclick="scroll('actus-grid',1)">→</button>
-  </div>
-</section>
-<section style="background:var(--gf);padding:60px 8vw">
-  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:32px;flex-wrap:wrap;gap:12px">
-    <div><div class="section-tag">Rejoignez-nous</div><h2>Prochains <em>événements</em></h2></div>
-    <a href="evenements.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none">Tous les événements →</a>
-  </div>
-  <div class="carousel" id="events-grid"><div class="spin" style="min-width:100%;text-align:center;padding:60px">⏳ Chargement…</div></div>
-  <div class="carousel-nav">
-    <button class="c-btn" onclick="scroll('events-grid',-1)">←</button>
-    <button class="c-btn" onclick="scroll('events-grid',1)">→</button>
-    <a href="evenements.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none;margin-left:8px">Tous les événements →</a>
-  </div>
-</section>
-<section style="background:var(--noir);padding:50px 8vw">
-  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-    <div><div class="section-tag">Presse de la semaine</div><h2>Articles <em>locaux</em></h2></div>
-    <a href="presse.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none">Tous les articles →</a>
-  </div>
-  <div class="carousel" id="presse-grid"><div class="spin" style="min-width:100%;text-align:center;padding:60px">⏳ Chargement…</div></div>
-  <div class="carousel-nav">
-    <button class="c-btn" onclick="scroll('presse-grid',-1)">←</button>
-    <button class="c-btn" onclick="scroll('presse-grid',1)">→</button>
+
+<!-- CARROUSEL 1 : ACTUS + PRESSE -->
+<section class="bicarousel-section" id="actus">
+  <div class="bic-left">
+    <div class="bic-header">
+      <div>
+        <div class="section-tag">Le comité vous informe</div>
+        <h2>Actualités <em>& Presse</em></h2>
+      </div>
+      <div class="bic-tabs" id="tabs-ap">
+        <button class="bic-tab active" onclick="switchBic('ap','actus')">📰 Actus</button>
+        <button class="bic-tab" onclick="switchBic('ap','presse')">🗞 Presse</button>
+      </div>
+    </div>
+    <div class="bic-carousel" id="bic-actus">
+      <div class="spin" style="min-width:260px;padding:60px 20px;text-align:center">⏳</div>
+    </div>
+    <div class="bic-carousel" id="bic-presse" style="display:none">
+      <div class="spin" style="min-width:260px;padding:60px 20px;text-align:center">⏳</div>
+    </div>
+    <div class="bic-nav">
+      <button class="c-btn" onclick="scrollBic('ap',-1)">←</button>
+      <button class="c-btn" onclick="scrollBic('ap',1)">→</button>
+      <a href="actus.html" class="bic-more" id="bic-ap-link">Toutes les actus →</a>
+    </div>
   </div>
 </section>
-<section style="background:var(--gf);padding:40px 8vw">
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-    <a href="annonces.html" style="text-decoration:none;background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:20px;display:flex;align-items:center;gap:14px;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
-      <span style="font-size:1.8rem;flex-shrink:0">📋</span>
-      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--blanc)">Annonces</div><div style="font-size:.78rem;color:rgba(244,241,235,.45);line-height:1.5">Entraide entre habitants</div></div>
-    </a>
-    <a href="newsletter.html" style="text-decoration:none;background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:20px;display:flex;align-items:center;gap:14px;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
-      <span style="font-size:1.8rem;flex-shrink:0">📧</span>
-      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--blanc)">Newsletter</div><div style="font-size:.78rem;color:rgba(244,241,235,.45);line-height:1.5">S'abonner aux infos</div></div>
-    </a>
-    <a href="evenements.html" style="text-decoration:none;background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:20px;display:flex;align-items:center;gap:14px;transition:all .25s" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
-      <span style="font-size:1.8rem;flex-shrink:0">📅</span>
-      <div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--blanc)">Proposer un événement</div><div style="font-size:.78rem;color:rgba(244,241,235,.45);line-height:1.5">Soumettre votre idée</div></div>
-    </a>
+
+<!-- CARROUSEL 2 : ÉVÉNEMENTS + ANNONCES -->
+<section class="bicarousel-section alt" id="evenements">
+  <div class="bic-left">
+    <div class="bic-header">
+      <div>
+        <div class="section-tag">Rejoignez-nous & Entraidons-nous</div>
+        <h2>Événements <em>& Annonces</em></h2>
+      </div>
+      <div class="bic-tabs" id="tabs-ea">
+        <button class="bic-tab active" onclick="switchBic('ea','events')">📅 Événements</button>
+        <button class="bic-tab" onclick="switchBic('ea','annonces')">📋 Annonces</button>
+      </div>
+    </div>
+    <div class="bic-carousel" id="bic-events">
+      <div class="spin" style="min-width:260px;padding:60px 20px;text-align:center">⏳</div>
+    </div>
+    <div class="bic-carousel" id="bic-annonces" style="display:none">
+      <div class="spin" style="min-width:260px;padding:60px 20px;text-align:center">⏳</div>
+    </div>
+    <div class="bic-nav">
+      <button class="c-btn" onclick="scrollBic('ea',-1)">←</button>
+      <button class="c-btn" onclick="scrollBic('ea',1)">→</button>
+      <a href="evenements.html" class="bic-more" id="bic-ea-link">Tous les événements →</a>
+      <button class="c-btn" style="margin-left:auto;background:rgba(200,16,46,.2);border-color:var(--rouge);color:var(--rouge)" id="bic-ea-cta" onclick="openDr('dDepot')">+ Déposer une annonce</button>
+    </div>
   </div>
 </section>
+
+<!-- NEWSLETTER SEULE -->
+<section style="background:var(--noir);padding:60px 8vw;text-align:center">
+  <div class="section-tag" style="justify-content:center">Restez informé·e</div>
+  <h2 style="margin-bottom:12px">La newsletter <em>du quartier</em></h2>
+  <p style="color:rgba(244,241,235,.55);max-width:460px;margin:0 auto 28px;font-size:.92rem;line-height:1.7">Actus, événements, victoires — directement dans votre boite mail. Environ 2 fois par mois.</p>
+  <a href="newsletter.html" class="btn-primary">📧 S'abonner gratuitement</a>
+</section>
+
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
@@ -943,7 +966,7 @@ function flash(id){const el=document.getElementById(id);if(!el)return;el.classLi
 let actusPub=[];
 const CATS={Logement:'cat-Logement',Emploi:'cat-Emploi',Service:'cat-Service','Solidarité':'cat-Solidarité',Autre:'cat-Autre'};
 async function loadActus(){
-  const g=document.getElementById('actus-grid');
+  const g=document.getElementById('bic-actus');
   try{
     const{data,error}=await sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).limit(6);
     if(error)throw error;actusPub=data||[];
@@ -959,7 +982,7 @@ async function loadActus(){
 
 let annPub=[];
 async function loadAnnonces(){
-  const g=document.getElementById('annonces-grid');
+  const g=document.getElementById('bic-annonces');
   try{
     const{data,error}=await sb.from('annonces').select('*').eq('validee',true).order('date_depot',{ascending:false}).limit(8);
     if(error)throw error;annPub=data||[];
@@ -1030,10 +1053,36 @@ function copyLink(btn,url){
 
 // ===== FLUX RSS PRESSE LOCALE =====
 
-// ===== CARROUSELS =====
-function scroll(id,dir){const el=document.getElementById(id);if(!el)return;el.scrollBy({left:dir*320,behavior:"smooth"});}
+// ===== BI-CARROUSELS =====
+const bicState={ap:'actus',ea:'events'};
+function switchBic(bic,panel){
+  bicState[bic]=panel;
+  const tabs=document.getElementById('tabs-'+bic);
+  tabs.querySelectorAll('.bic-tab').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if(bic==='ap'){
+    document.getElementById('bic-actus').style.display=panel==='actus'?'flex':'none';
+    document.getElementById('bic-presse').style.display=panel==='presse'?'flex':'none';
+    document.getElementById('bic-ap-link').href=panel==='actus'?'actus.html':'presse.html';
+    document.getElementById('bic-ap-link').textContent=panel==='actus'?'Toutes les actus →':'Tous les articles →';
+  } else {
+    document.getElementById('bic-events').style.display=panel==='events'?'flex':'none';
+    document.getElementById('bic-annonces').style.display=panel==='annonces'?'flex':'none';
+    document.getElementById('bic-ea-link').href=panel==='events'?'evenements.html':'annonces.html';
+    document.getElementById('bic-ea-link').textContent=panel==='events'?'Tous les événements →':'Toutes les annonces →';
+    document.getElementById('bic-ea-cta').style.display=panel==='annonces'?'flex':'none';
+  }
+}
+function scrollBic(bic,dir){
+  const panel=bicState[bic];
+  const map={ap:{actus:'bic-actus',presse:'bic-presse'},ea:{events:'bic-events',annonces:'bic-annonces'}};
+  const id=map[bic]?.[panel];
+  if(!id)return;
+  document.getElementById(id).scrollBy({left:dir*300,behavior:'smooth'});
+}
+function scroll(id,dir){const el=document.getElementById(id);if(!el)return;el.scrollBy({left:dir*300,behavior:'smooth'});}
 async function loadPresse(){
-  const g=document.getElementById("presse-grid");if(!g)return;
+  const g=document.getElementById("bic-presse");if(!g)return;
   try{
     const res=await fetch("https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/rss-proxy");
     if(!res.ok)throw new Error();
@@ -1166,7 +1215,7 @@ async function valAnn(id,v){await sb.from('annonces').update({validee:v}).eq('id
 // ===== ÉVÉNEMENTS PUBLIC =====
 let eventsPub=[];
 async function loadEvents(){
-  const g=document.getElementById('events-grid');
+  const g=document.getElementById('bic-events');
   try{
     const now=new Date().toISOString();
     const{data,error}=await sb.from('evenements').select('*').eq('visible',true).eq('validee',true).gte('date_debut',now).order('date_debut',{ascending:true}).limit(9);
@@ -1326,6 +1375,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 // Init — charger config depuis Supabase (pas localStorage !)
 loadConfig();
 loadActus();
+loadAnnonces();
 loadEvents();
 loadPresse();
 loadPresse();
