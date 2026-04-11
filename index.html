@@ -1414,23 +1414,16 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');cl
 function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
 function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
 
-// ===== TRACKING ANONYME =====
+// ===== TRACKING VIA EDGE FUNCTION =====
 function initTracking(page){
-  // ID de session unique par onglet navigateur
+  const TRACK='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/track';
   let sid=sessionStorage.getItem('cqp_sid');
   if(!sid){sid=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',sid);}
-  // Enregistrer la visite
-  sb.from('page_views').insert({session_id:sid,page}).catch(()=>{});
-  // Ping "en ligne" toutes les 30s
-  async function ping(){
-    await sb.from('active_sessions').upsert({session_id:sid,page,last_seen:new Date().toISOString()},{onConflict:'session_id'}).catch(()=>{});
-    // Nettoyer les sessions expirées (> 2 min)
-    await sb.from('active_sessions').delete().lt('last_seen',new Date(Date.now()-120000).toISOString()).catch(()=>{});
+  function ping(type){
+    fetch(TRACK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid,page,type})}).catch(()=>{});
   }
-  ping();
-  setInterval(ping,30000);
-  // Supprimer la session à la fermeture
-  window.addEventListener('beforeunload',()=>{sb.from('active_sessions').delete().eq('session_id',sid).catch(()=>{});});
+  ping('view');
+  setInterval(()=>ping('ping'),30000);
 }
 
 // ===== STATS ADMIN =====
