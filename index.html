@@ -246,6 +246,9 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .rss-date{font-size:.7rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
 @media(max-width:900px){.rss-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.rss-grid{grid-template-columns:1fr}}
+/* ÉTOILES AVIS */
+.star{font-size:2rem;color:rgba(255,255,255,.2);cursor:pointer;transition:color .15s;line-height:1;user-select:none}
+.star.active,.star.hover{color:var(--or)}
 /* ===== SLIDER PLEIN LARGEUR ===== */
 .slide{transition:none}
 .slide-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:14px}
@@ -486,12 +489,39 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 </div>
 
 <!-- NEWSLETTER -->
-<section style="background:var(--rouge);padding:56px 8vw;text-align:center">
-  <div style="max-width:520px;margin:0 auto">
-    <div class="section-tag" style="justify-content:center;color:rgba(255,255,255,.8)">Restez informé·e</div>
-    <h2 style="color:#fff;margin-bottom:12px">La newsletter <em style="color:rgba(255,255,255,.7);font-style:normal">du quartier</em></h2>
-    <p style="color:rgba(255,255,255,.75);font-size:.95rem;line-height:1.7;margin-bottom:28px">Actus, événements, victoires — directement dans votre boite mail. Pas de spam.</p>
-    <a href="newsletter.html" style="display:inline-block;background:#fff;color:var(--rouge);padding:14px 32px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:3px;transition:opacity .2s">📧 S'abonner gratuitement</a>
+<section style="background:var(--gf);padding:56px 8vw;border-top:1px solid rgba(255,255,255,.06)">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
+
+    <!-- AVIS / RECOMMANDATION -->
+    <div>
+      <div class="section-tag">Votre retour compte</div>
+      <h2>Laissez <em>un avis</em></h2>
+      <p style="color:rgba(244,241,235,.6);font-size:.9rem;line-height:1.7;margin-bottom:24px">Aidez-nous à améliorer le site et le comité. Votre avis est précieux et nous le lisons tous.</p>
+      <!-- Étoiles -->
+      <div style="display:flex;gap:8px;margin-bottom:20px" id="stars-row">
+        <span class="star" data-v="1" onclick="setNote(1)">★</span>
+        <span class="star" data-v="2" onclick="setNote(2)">★</span>
+        <span class="star" data-v="3" onclick="setNote(3)">★</span>
+        <span class="star" data-v="4" onclick="setNote(4)">★</span>
+        <span class="star" data-v="5" onclick="setNote(5)">★</span>
+      </div>
+      <div class="fg"><label>Votre prénom</label><input type="text" id="avis-prenom" placeholder="Marie"></div>
+      <div class="fg" style="margin-top:10px"><label>Votre message *</label><textarea id="avis-msg" rows="3" placeholder="Ce que vous pensez du site, ce qui manque, ce que vous aimez…"></textarea></div>
+      <button class="btn-sub" id="avisBtn" onclick="envoyerAvis()" style="margin-top:8px">✍️ Envoyer mon avis</button>
+      <div class="msg" id="avisMsg"></div>
+    </div>
+
+    <!-- NEWSLETTER SOBRE -->
+    <div style="padding-top:8px">
+      <div class="section-tag">Ne rien rater</div>
+      <h2>La newsletter <em>du quartier</em></h2>
+      <p style="color:rgba(244,241,235,.6);font-size:.9rem;line-height:1.7;margin-bottom:24px">Actus, événements et victoires directement dans votre boite mail. Environ 2 fois par mois, pas de spam.</p>
+      <div class="fg"><label>Votre email</label><input type="email" id="nl-home-email" placeholder="marie@exemple.fr" onkeydown="if(event.key==='Enter')nlHomeSubmit()"></div>
+      <button class="btn-sub" id="nlHomeBtn" onclick="nlHomeSubmit()" style="margin-top:10px">📧 S'abonner gratuitement</button>
+      <div class="msg" id="nlHomeMsg"></div>
+      <p style="font-size:.72rem;color:rgba(244,241,235,.3);margin-top:10px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">Désabonnement en 1 clic · Aucune donnée transmise à des tiers</p>
+    </div>
+
   </div>
 </section>
 
@@ -637,6 +667,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <button class="tab-btn" data-tab="t-textes" onclick="switchTab(this)">✏️ Textes & Photos</button>
       <button class="tab-btn" data-tab="t-nl" onclick="switchTab(this)">📧 Newsletter</button>
       <button class="tab-btn" data-tab="t-stats" onclick="switchTab(this)">📊 Statistiques</button>
+      <button class="tab-btn" data-tab="t-avis" onclick="switchTab(this)">⭐ Avis</button>
     </div>
     <div class="admin-content">
       <div class="tab-panel active" id="t-adh">
@@ -811,6 +842,12 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- AVIS -->
+      <div class="tab-panel" id="t-avis">
+        <div class="panel-top"><span class="badge" id="avisCount">…</span><button class="btn-export" onclick="exportCSV('avis')">⬇ Export CSV</button></div>
+        <div id="avisBody"><div class="spin">⏳</div></div>
       </div>
 
       <!-- STATS -->
@@ -1086,8 +1123,8 @@ function openDrActu(id){
   document.getElementById('dr-actu-cat').textContent=a.categorie;
   document.getElementById('dr-actu-date').textContent=new Date(a.date_publication).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   document.getElementById('dr-actu-content').textContent=a.contenu;
-  const pageUrl=encodeURIComponent(location.href);
-  const txt=encodeURIComponent('📰 '+a.titre+' — CQP Toulouse');
+  const pageUrl=location.href;
+  const txt='📰 '+a.titre+' — CQP Toulouse';
   document.getElementById('dr-actu-share').innerHTML=buildShareBtns(pageUrl,txt,'dr-actu-copy');
   openDr('dActu');
 }
@@ -1099,8 +1136,8 @@ function openDrAnn(id){
   document.getElementById('dr-ann-cat').className='ann-cat '+(CATS[a.categorie]||'cat-Autre');
   document.getElementById('dr-ann-meta').textContent='📍 '+a.quartier+' · 👤 '+a.prenom+' · '+new Date(a.date_depot).toLocaleDateString('fr-FR');
   document.getElementById('dr-ann-content').textContent=a.description;
-  const pageUrl=encodeURIComponent(location.href+'#annonces');
-  const txt=encodeURIComponent('📋 Annonce: '+a.titre+' ('+a.quartier+') — CQP Toulouse');
+  const pageUrl=location.href+'#annonces';
+  const txt='📋 Annonce: '+a.titre+' ('+a.quartier+') — CQP Toulouse';
   document.getElementById('dr-ann-share').innerHTML=buildShareBtns(pageUrl,txt,'dr-ann-copy');
   // Coordonnées directes
   let html='';
@@ -1115,15 +1152,13 @@ function openDr(id){document.getElementById(id).classList.add('open');document.b
 function closeDr(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
 
 // ===== BOUTONS PARTAGE =====
-function buildShareBtns(url,text,copyId){
-  return `<a class="share-btn share-wa" href="https://wa.me/?text=${text}%20${url}" target="_blank" rel="noopener">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.93 1.395 5.6L0 24l6.545-1.371A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.792 9.792 0 01-5.017-1.378l-.36-.214-3.733.978.997-3.648-.234-.374A9.771 9.771 0 012.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"/></svg>
-    WhatsApp</a>
-  <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${url}" target="_blank" rel="noopener">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-    Facebook</a>
-  <a class="share-btn share-x" href="https://twitter.com/intent/tweet?text=${text}&url=${url}" target="_blank" rel="noopener">𝕏 Twitter</a>
-  <button class="share-btn share-copy" id="${copyId}" onclick="copyLink(this,'${decodeURIComponent(url)}')">🔗 Copier le lien</button>`;
+function buildShareBtns(rawUrl,text,copyId){
+  const url=encodeURIComponent(rawUrl);
+  const txt=encodeURIComponent(text);
+  return `<a class="share-btn share-wa" href="https://api.whatsapp.com/send?text=${txt}%20${url}" target="_blank" rel="noopener">WhatsApp</a>
+  <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${txt}" target="_blank" rel="noopener">Facebook</a>
+  <a class="share-btn share-x" href="https://twitter.com/intent/tweet?text=${txt}&url=${url}" target="_blank" rel="noopener">𝕏</a>
+  <button class="share-btn share-copy" id="${copyId}" onclick="copyLink(this,'${rawUrl.replace(/'/g,"\\'")}')">🔗 Copier</button>`;
 }
 function copyLink(btn,url){
   navigator.clipboard.writeText(url).then(()=>{
@@ -1134,6 +1169,68 @@ function copyLink(btn,url){
 
 // ===== FLUX RSS PRESSE LOCALE =====
 
+// ===== ADMIN AVIS =====
+let avisCache=[];
+async function renderAvis(){
+  const b=document.getElementById('avisBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{
+    const{data,error}=await sb.from('avis').select('*').order('created_at',{ascending:false});
+    if(error)throw error;avisCache=data||[];
+    document.getElementById('avisCount').textContent=avisCache.length+' avis';
+    if(!avisCache.length){b.innerHTML='<div class="empty"><span>⭐</span>Aucun avis pour le moment.</div>';return;}
+    const moy=(avisCache.reduce((s,a)=>s+a.note,0)/avisCache.length).toFixed(1);
+    b.innerHTML=`<div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px">
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--or)">${moy}</span>
+      <div><div style="color:var(--or);font-size:1.2rem">${'★'.repeat(Math.round(moy))}${'☆'.repeat(5-Math.round(moy))}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;color:rgba(244,241,235,.4);text-transform:uppercase">Moyenne sur ${avisCache.length} avis</div></div>
+    </div>
+    <table><thead><tr><th>#</th><th>Prénom</th><th>Note</th><th>Message</th><th>Date</th><th></th></tr></thead><tbody>${avisCache.map((a,i)=>`<tr>
+      <td class="dt">${i+1}</td><td>${esc(a.prenom)}</td>
+      <td><span style="color:var(--or)">${'★'.repeat(a.note)}</span></td>
+      <td style="max-width:300px">${esc(a.message)}</td>
+      <td><span class="dt">${new Date(a.created_at).toLocaleDateString('fr-FR')}</span></td>
+      <td><button class="btn-del" onclick="del('avis',${a.id},renderAvis)">✕</button></td>
+    </tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+// ===== AVIS =====
+let noteChoisie=0;
+function setNote(n){
+  noteChoisie=n;
+  document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('active',i<n));
+}
+document.querySelectorAll('.star').forEach(s=>{
+  s.addEventListener('mouseover',()=>document.querySelectorAll('.star').forEach((x,i)=>x.classList.toggle('hover',i<parseInt(s.dataset.v))));
+  s.addEventListener('mouseout',()=>document.querySelectorAll('.star').forEach(x=>x.classList.remove('hover')));
+});
+async function envoyerAvis(){
+  const msg=document.getElementById('avis-msg').value.trim();
+  const prenom=document.getElementById('avis-prenom').value.trim()||'Anonyme';
+  if(!noteChoisie){showMsg('avisMsg','err','⚠ Choisissez une note (1 à 5 étoiles).');return;}
+  if(!msg){showMsg('avisMsg','err','⚠ Écrivez votre message.');return;}
+  const btn=document.getElementById('avisBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{
+    const{error}=await sb.from('avis').insert({prenom,note:noteChoisie,message:msg});
+    if(error)throw error;
+    showMsg('avisMsg','ok','🙏 Merci pour votre retour ! Nous le lirons avec attention.');
+    document.getElementById('avis-msg').value='';document.getElementById('avis-prenom').value='';
+    noteChoisie=0;document.querySelectorAll('.star').forEach(s=>s.classList.remove('active'));
+    setTimeout(()=>{btn.disabled=false;btn.textContent='✍️ Envoyer mon avis';},5000);
+  }catch(e){showMsg('avisMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='✍️ Envoyer mon avis';}
+}
+// ===== NEWSLETTER INLINE =====
+async function nlHomeSubmit(){
+  const email=document.getElementById('nl-home-email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('nlHomeMsg','err','⚠ Email invalide.');return;}
+  const btn=document.getElementById('nlHomeBtn');btn.disabled=true;btn.textContent='⏳…';
+  try{
+    const{error}=await sb.from('newsletter_abonnes').insert({email});
+    if(error){if(error.code==='23505')showMsg('nlHomeMsg','ok','✅ Vous êtes déjà abonné·e !');else throw error;}
+    else showMsg('nlHomeMsg','ok','🎉 Bienvenue ! Vous recevrez notre prochaine newsletter.');
+    document.getElementById('nl-home-email').value='';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='📧 S\'abonner gratuitement';},5000);
+  }catch(e){showMsg('nlHomeMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='📧 S\'abonner gratuitement';}
+}
 // ===== SLIDER =====
 let sliderIdx=0;
 const SLIDER_COUNT=4;
@@ -1214,6 +1311,7 @@ function switchTab(btn){
   if(t==='t-adh')renderAdh();if(t==='t-actus')renderActusAdmin();
   if(t==='t-ann')renderAnnAdmin();if(t==='t-evt')renderEvtAdmin();
   if(t==='t-nl')renderNlAdmin();
+  if(t==='t-avis')renderAvis();
   if(t==='t-stats'){
     renderStats();
     if(statsInterval)clearInterval(statsInterval);
@@ -1432,7 +1530,8 @@ function exportCSV(type){
   const maps={
     adh:{c:()=>adhCache,h:['#','Prénom','Nom','Email','Quartier','Date'],r:(a,i)=>[i+1,a.prenom,a.nom,a.email,a.quartier,new Date(a.date_inscription).toLocaleDateString('fr-FR')]},
     ann:{c:()=>annAdmCache,h:['#','Titre','Cat','Quartier','Prénom','Nom','Email','Téléphone','Description','Date','Validée'],r:(a,i)=>[i+1,a.titre,a.categorie,a.quartier,a.prenom,a.nom,a.email,a.telephone||'',a.description,new Date(a.date_depot).toLocaleDateString('fr-FR'),a.validee?'Oui':'Non']},
-    nl:{c:()=>nlCache,h:['#','Prénom','Email','Quartier','Date','Actif'],r:(n,i)=>[i+1,n.prenom||'',n.email,n.quartier||'',new Date(n.date_inscription).toLocaleDateString('fr-FR'),n.actif?'Oui':'Non']}
+    nl:{c:()=>nlCache,h:['#','Prénom','Email','Quartier','Date','Actif'],r:(n,i)=>[i+1,n.prenom||'',n.email,n.quartier||'',new Date(n.date_inscription).toLocaleDateString('fr-FR'),n.actif?'Oui':'Non']},
+    avis:{c:()=>avisCache,h:['#','Prénom','Note','Message','Date'],r:(a,i)=>[i+1,a.prenom,a.note+'★',a.message,new Date(a.created_at).toLocaleDateString('fr-FR')]}
   };
   const m=maps[type];if(!m)return;const d=m.c();if(!d.length){alert('Aucune donnée.');return;}
   const rows=[m.h,...d.map(m.r)];
