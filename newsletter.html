@@ -102,5 +102,28 @@ async function sAbonner(){
 }
 document.getElementById('nl-email').addEventListener('keydown',e=>{if(e.key==='Enter')sAbonner();});
 </script>
+<script>
+(function(){
+  const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
+  const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+  const page=location.pathname.split('/').pop()||'/';
+  let sid=sessionStorage.getItem('cqp_sid');
+  if(!sid){sid=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',sid);}
+  async function api(method,table,body){
+    const url=SBU+'/rest/v1/'+table;
+    const opts={method,headers:{'apikey':SBK,'Authorization':'Bearer '+SBK,'Content-Type':'application/json','Prefer':method==='POST'?'return=minimal':'return=representation'}};
+    if(body)opts.body=JSON.stringify(body);
+    return fetch(url,opts).catch(()=>{});
+  }
+  // Enregistrer visite
+  api('POST','page_views',[{session_id:sid,page}]);
+  // Ping actif
+  function ping(){api('POST','active_sessions',[{session_id:sid,page,last_seen:new Date().toISOString()}]);}
+  ping();setInterval(ping,30000);
+  window.addEventListener('beforeunload',()=>{
+    navigator.sendBeacon(SBU+'/rest/v1/active_sessions?session_id=eq.'+sid,null);
+  });
+})();
+</script>
 </body>
 </html>
