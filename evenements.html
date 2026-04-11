@@ -34,6 +34,22 @@ h1 em{color:var(--rouge);font-style:normal}
 .event-lieu{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:rgba(244,241,235,.4);text-transform:uppercase;margin-bottom:8px}
 .event-desc{font-size:.82rem;color:rgba(244,241,235,.6);line-height:1.6;margin-bottom:12px}
 .event-footer{display:flex;align-items:center;justify-content:space-between}
+.card-social{display:flex;align-items:center;gap:12px;padding:10px 18px 14px;border-top:1px solid rgba(255,255,255,.06)}
+.card-like-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;color:rgba(244,241,235,.45);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;padding:0;transition:all .2s}
+.card-like-btn .h{font-size:1.1rem;transition:transform .15s;display:inline-block}
+.card-like-btn.liked{color:var(--rouge)}
+.card-like-btn.pop .h{transform:scale(1.4)}
+.card-comment-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;color:rgba(244,241,235,.35);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;padding:0;transition:color .2s}
+.card-comment-btn:hover{color:rgba(244,241,235,.7)}
+/* MINI DRAWER COMMENTAIRES */
+.mini-drawer{position:fixed;bottom:0;left:0;right:0;background:var(--gf);border-top:2px solid var(--rouge);border-radius:16px 16px 0 0;z-index:600;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);max-height:75vh;display:flex;flex-direction:column}
+.mini-drawer.open{transform:translateY(0)}
+.mini-drawer-head{padding:16px 20px 12px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mini-drawer-head h4{font-family:'Bebas Neue',sans-serif;font-size:1.3rem}
+.mini-drawer-body{overflow-y:auto;padding:16px 20px;flex:1}
+.mini-drawer-input{padding:12px 20px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.mini-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:599;backdrop-filter:blur(2px)}
+.mini-overlay.open{display:block}
 .event-places{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1px;color:rgba(244,241,235,.35);text-transform:uppercase}
 .event-cta{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;color:var(--or);text-transform:uppercase}
 .spin{text-align:center;padding:80px;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;grid-column:1/-1}
@@ -179,6 +195,101 @@ function getSid(){let s=sessionStorage.getItem('cqp_sid');if(!s){s=Math.random()
 let cache=[];
 let curId=null;
 
+
+// ===== SOCIAL SUR LES CARTES =====
+async function loadCardSocial(id){
+  const sid=getSid();
+  try{
+    const[{count:nl},{data:ml},{count:nc}]=await Promise.all([
+      sb.from('likes').select('*',{count:'exact',head:true}).eq('item_type','evenement').eq('item_id',id),
+      sb.from('likes').select('id').eq('item_type','evenement').eq('item_id',id).eq('session_id',sid),
+      sb.from('commentaires').select('*',{count:'exact',head:true}).eq('item_type','evenement').eq('item_id',id).eq('visible',true)
+    ]);
+    const liked=(ml||[]).length>0;
+    const btn=document.getElementById('cl-'+id);
+    const lc=document.getElementById('lc-'+id);
+    const cc=document.getElementById('cc-'+id);
+    if(btn){btn.querySelector('.h').textContent=liked?'❤️':'🤍';if(liked)btn.classList.add('liked');}
+    if(lc)lc.textContent=nl||0;
+    if(cc)cc.textContent=nc||0;
+  }catch(e){}
+}
+
+async function cardLike(type,id){
+  const sid=getSid();
+  const btn=document.getElementById('cl-'+id);
+  if(!btn)return;
+  const liked=btn.classList.contains('liked');
+  btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),300);
+  if(liked){
+    await sb.from('likes').delete().eq('item_type',type).eq('item_id',id).eq('session_id',sid);
+    btn.classList.remove('liked');btn.querySelector('.h').textContent='🤍';
+  }else{
+    await sb.from('likes').insert({item_type:type,item_id:id,session_id:sid}).catch(()=>{});
+    btn.classList.add('liked');btn.querySelector('.h').textContent='❤️';
+  }
+  const{count}=await sb.from('likes').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id);
+  const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=count||0;
+}
+
+// ===== MINI DRAWER COMMENTAIRES =====
+let miniId=null;
+async function openMiniDrawer(id){
+  miniId=id;
+  const evt=cache.find(x=>x.id===id);
+  const t=document.getElementById('md-titre');
+  if(t)t.textContent='💬 '+(evt?evt.titre.substring(0,30)+'…':'Commentaires');
+  document.getElementById('mini-overlay').classList.add('open');
+  document.getElementById('mini-drawer').classList.add('open');
+  document.body.style.overflow='hidden';
+  await refreshMiniComments();
+}
+function closeMiniDrawer(){
+  document.getElementById('mini-overlay').classList.remove('open');
+  document.getElementById('mini-drawer').classList.remove('open');
+  document.body.style.overflow='';
+  miniId=null;
+}
+async function refreshMiniComments(){
+  if(!miniId)return;
+  const{data:comments}=await sb.from('commentaires').select('*').eq('item_type','evenement').eq('item_id',miniId).eq('visible',true).order('created_at',{ascending:true});
+  const list=comments||[];
+  const box=document.getElementById('md-comments');
+  if(!box)return;
+  // Mettre à jour compteur sur la carte
+  const cc=document.getElementById('cc-'+miniId);if(cc)cc.textContent=list.length;
+  box.innerHTML=list.length?list.map(cm=>`<div class="comment-item">
+    <div class="comment-avatar">${esc(cm.prenom.charAt(0).toUpperCase())}</div>
+    <div class="comment-bubble">
+      <div class="comment-name">${esc(cm.prenom)}</div>
+      <div class="comment-text">${esc(cm.message)}</div>
+      <div class="comment-date">${new Date(cm.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'long'})}</div>
+    </div>
+  </div>`).join(''):'<div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;font-size:.8rem;text-align:center;padding:20px 0">Aucun commentaire pour le moment.<br>Soyez le premier !</div>';
+  box.scrollTop=box.scrollHeight;
+}
+async function sendMiniComment(){
+  const msg=document.getElementById('md-msg')?.value.trim();
+  const prenom=document.getElementById('md-prenom')?.value.trim()||'Anonyme';
+  if(!msg||!miniId)return;
+  document.getElementById('md-msg').value='';
+  await sb.from('commentaires').insert({item_type:'evenement',item_id:miniId,prenom,message:msg});
+  await refreshMiniComments();
+}
+
+// ===== INSCRIRE SIMPLIFIÉ =====
+async function inscrire(){
+  const prenom=document.getElementById('ins-prenom').value.trim();
+  const email=document.getElementById('ins-email').value.trim();
+  if(!prenom||!email){showMsg('insMsg','err','⚠ Prénom et email requis.');return;}
+  try{
+    const{error}=await sb.from('inscriptions_evenements').insert({evenement_id:curId,prenom,nom:'',email,telephone:'',message:''});
+    if(error){if(error.code==='23505')showMsg('insMsg','err','⚠ Déjà inscrit·e !');else showMsg('insMsg','err','⚠ '+error.message);return;}
+    showMsg('insMsg','ok','🎉 Inscription confirmée !');
+    document.getElementById('ins-prenom').value='';document.getElementById('ins-email').value='';
+  }catch(e){showMsg('insMsg','err','⚠ Erreur réseau.');}
+}
+
 async function load(){
   const g=document.getElementById('events-grid');
   try{
@@ -201,10 +312,21 @@ async function load(){
           <div class="event-desc">${esc(evt.description).substring(0,100)}${evt.description.length>100?'…':''}</div>
           <div class="event-footer">
             <span class="event-places">${evt.places_max>0?'Max '+evt.places_max+' places':'Places libres'}</span>
-            <span class="event-cta">S'inscrire →</span>
+            <span class="event-cta" onclick="event.stopPropagation();openEvt(${evt.id})">Voir →</span>
           </div>
-        </div></div>`;
+        </div>
+        <div class="card-social" id="cs-${evt.id}">
+          <button class="card-like-btn" id="cl-${evt.id}" onclick="event.stopPropagation();cardLike('evenement',${evt.id})">
+            <span class="h">🤍</span><span id="lc-${evt.id}">0</span>
+          </button>
+          <button class="card-comment-btn" onclick="event.stopPropagation();openMiniDrawer(${evt.id})">
+            💬 <span id="cc-${evt.id}">0</span>
+          </button>
+        </div>
+        </div>`;
     }).join('');
+    // Charger likes+commentaires pour chaque carte
+    cache.forEach(evt=>loadCardSocial(evt.id));
   }catch(e){g.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
 
@@ -376,5 +498,27 @@ async function sendComment(type,id,containerId){
 
 load();
 </script>
+
+<!-- OVERLAY MINI DRAWER -->
+<div class="mini-overlay" id="mini-overlay" onclick="closeMiniDrawer()"></div>
+
+<!-- MINI DRAWER COMMENTAIRES -->
+<div class="mini-drawer" id="mini-drawer">
+  <div class="mini-drawer-head">
+    <h4 id="md-titre">Commentaires</h4>
+    <button onclick="closeMiniDrawer()" style="background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);width:32px;height:32px;border-radius:4px;cursor:pointer">✕</button>
+  </div>
+  <div class="mini-drawer-body" id="md-comments"></div>
+  <div class="mini-drawer-input">
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <input type="text" id="md-prenom" placeholder="Votre prénom" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:8px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.84rem;outline:none">
+    </div>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="md-msg" placeholder="Ajouter un commentaire…" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:9px 16px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.84rem;outline:none" onkeydown="if(event.key==='Enter')sendMiniComment()">
+      <button onclick="sendMiniComment()" style="background:var(--rouge);border:none;color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">➤</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
