@@ -127,27 +127,26 @@ function closeDr(){document.getElementById('dActu').classList.remove('open');doc
 function copy(btn,url){navigator.clipboard.writeText(url).then(()=>{btn.textContent='✓ Copié!';btn.classList.add('copied');setTimeout(()=>{btn.textContent='🔗 Copier';btn.classList.remove('copied');},2000);});}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDr();});
 load();
-</script><script>
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
 (function(){
   const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
   const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
-  const page=location.pathname.split('/').pop()||'/';
+  const sb2=supabase.createClient(SBU,SBK);
+  const page=location.pathname.split('/').pop()||'index.html';
   let sid=sessionStorage.getItem('cqp_sid');
   if(!sid){sid=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',sid);}
-  async function api(method,table,body){
-    const url=SBU+'/rest/v1/'+table;
-    const opts={method,headers:{'apikey':SBK,'Authorization':'Bearer '+SBK,'Content-Type':'application/json','Prefer':method==='POST'?'return=minimal':'return=representation'}};
-    if(body)opts.body=JSON.stringify(body);
-    return fetch(url,opts).catch(()=>{});
+  // Enregistrer la visite
+  sb2.from('page_views').insert({session_id:sid,page}).catch(()=>{});
+  // Ping "en ligne" toutes les 30s
+  async function ping(){
+    await sb2.from('active_sessions').upsert({session_id:sid,page,last_seen:new Date().toISOString()},{onConflict:'session_id'}).catch(()=>{});
+    // Nettoyer sessions expirées > 2 minutes
+    await sb2.from('active_sessions').delete().lt('last_seen',new Date(Date.now()-120000).toISOString()).catch(()=>{});
   }
-  // Enregistrer visite
-  api('POST','page_views',[{session_id:sid,page}]);
-  // Ping actif
-  function ping(){api('POST','active_sessions',[{session_id:sid,page,last_seen:new Date().toISOString()}]);}
-  ping();setInterval(ping,30000);
-  window.addEventListener('beforeunload',()=>{
-    navigator.sendBeacon(SBU+'/rest/v1/active_sessions?session_id=eq.'+sid,null);
-  });
+  ping();
+  setInterval(ping,30000);
 })();
 </script>
 </body></html>
