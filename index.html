@@ -310,33 +310,83 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 @media(max-width:700px){.nav-center{display:none}.burger{display:flex}.nav-right .btn-adhere{display:none}}
 @media(max-width:600px){.actus-grid,.events-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}}
 
+
+/* ===== SECTIONS SWIPE ===== */
+.swipe-section{padding:52px 8vw;border-top:1px solid rgba(255,255,255,.06)}
+.swipe-section.dark{background:var(--noir)}
+.swipe-section.mid{background:var(--gf)}
+.swipe-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.swipe-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--blanc);letter-spacing:.5px}
+.swipe-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(244,241,235,.35);margin-bottom:4px}
+.swipe-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.swipe-link{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none;transition:opacity .2s}
+.swipe-link:hover{opacity:.7}
+.swipe-cta{background:none;border:1px solid rgba(200,16,46,.4);color:var(--rouge);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:3px;cursor:pointer;text-decoration:none;transition:all .2s}
+.swipe-cta:hover{background:rgba(200,16,46,.15)}
+.swipe-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
+.swipe-track::-webkit-scrollbar{display:none}
+.swipe-nav{display:flex;align-items:center;gap:8px;margin-top:14px}
+.sw-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:.9rem;transition:all .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sw-btn:hover{background:rgba(255,255,255,.14);border-color:var(--or);color:var(--or)}
+/* Cartes dans les swipe */
+.swipe-track .actu-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,28vw,300px)}
+.swipe-track .event-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,28vw,300px)}
+.swipe-track .annonce-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,28vw,300px);background:var(--noir)}
+.swipe-presse{scroll-snap-align:start;flex-shrink:0;width:clamp(220px,26vw,280px);background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:16px;text-decoration:none;display:block;transition:all .2s}
+.swipe-presse:hover{border-color:var(--rouge);transform:translateY(-2px)}
+.swipe-presse .sp-src{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:6px}
+.swipe-presse .sp-ttl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;color:var(--blanc);line-height:1.4;margin-bottom:6px}
+.swipe-presse .sp-dt{font-size:.64rem;color:rgba(244,241,235,.28);font-family:'Barlow Condensed',sans-serif}
+/* Likes sur les cartes swipe */
+.card-social{display:flex;align-items:center;gap:12px;padding:8px 16px 12px;border-top:1px solid rgba(255,255,255,.06)}
+.card-like-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;color:rgba(244,241,235,.45);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;padding:0;transition:all .2s}
+.card-like-btn .h{font-size:1.05rem;transition:transform .15s;display:inline-block}
+.card-like-btn.liked{color:var(--rouge)}
+.card-like-btn.pop .h{transform:scale(1.5)}
+.card-comment-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;padding:0;transition:color .2s}
+.card-comment-btn:hover{color:rgba(244,241,235,.7)}
+/* Rejoindre intégré dans QUI */
+.qui-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+.join-form{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:24px}
+.join-form h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;margin-bottom:6px}
+.join-form p{font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:18px;line-height:1.5}
+/* Mini drawer commentaires */
+.mini-drawer{position:fixed;bottom:0;left:0;right:0;background:var(--gf);border-top:2px solid var(--rouge);border-radius:16px 16px 0 0;z-index:600;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);max-height:75vh;display:flex;flex-direction:column}
+.mini-drawer.open{transform:translateY(0)}
+.mini-drawer-head{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mini-drawer-head h4{font-family:'Bebas Neue',sans-serif;font-size:1.2rem}
+.mini-drawer-body{overflow-y:auto;padding:14px 20px;flex:1}
+.mini-drawer-input{padding:12px 20px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+.mini-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:599}
+.mini-overlay.open{display:block}
+.comment-item{display:flex;gap:10px;margin-bottom:12px}
+.comment-avatar{width:30px;height:30px;min-width:30px;background:var(--rouge);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:#fff}
+.comment-bubble{background:rgba(255,255,255,.06);border-radius:0 8px 8px 8px;padding:8px 12px;flex:1}
+.comment-name{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-bottom:3px}
+.comment-text{font-size:.82rem;color:rgba(244,241,235,.8);line-height:1.5}
+/* Étoiles avis */
+.star{font-size:1.8rem;color:rgba(255,255,255,.2);cursor:pointer;transition:color .15s;user-select:none}
+.star.active,.star.hover{color:var(--or)}
+@media(max-width:900px){.qui-grid{grid-template-columns:1fr;gap:32px}}
+@media(max-width:600px){.swipe-track .actu-card,.swipe-track .event-card,.swipe-track .annonce-card,.swipe-presse{width:82vw}}
+
 </style>
-</head>
-<body>
 <nav>
-  <a href="#" class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></a>
-  <div class="nav-center">
-    <a href="actus.html">Actualités</a>
-    <a href="evenements.html">Événements</a>
-    <a href="annonces.html" class="ext">Annonces</a>
-    <a href="presse.html" class="ext">Presse locale</a>
-    <a href="newsletter.html" class="ext">Newsletter</a>
+  <div class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></div>
+  <div class="nav-links">
+    <a href="#actus">Actualités</a>
+    <a href="#evenements">Événements</a>
+    <a href="#annonces">Annonces</a>
+    <a href="presse.html">Presse</a>
+    <button class="btn-adhere" onclick="document.getElementById('f-email').focus()">✊ Rejoindre</button>
   </div>
-  <div class="nav-right">
-    <a href="#adhesion" class="btn-adhere">✊ Adhérer</a>
-    <button class="btn-admin" onclick="openLogin()">⚙ Admin</button>
-    <button class="burger" onclick="toggleMenu()" aria-label="Menu">☰</button>
-  </div>
+  <button class="burger" onclick="toggleMenu()">☰</button>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#qui" onclick="closeMenu()">Notre mouvement</a>
-  <a href="actus.html">Actualités</a>
-  <a href="evenements.html">Événements</a>
-  <a href="annonces.html">Annonces</a>
-  <a href="presse.html">Presse locale</a>
-  <a href="newsletter.html">📧 Newsletter</a>
-  <a href="#adhesion" onclick="closeMenu()" style="color:var(--or)">✊ Adhérer</a>
-  <button onclick="closeMenu();openLogin()">⚙ Espace Admin</button>
+  <a href="#actus" onclick="closeMenu()">Actualités</a>
+  <a href="#evenements" onclick="closeMenu()">Événements</a>
+  <a href="#annonces" onclick="closeMenu()">Annonces</a>
+  <a href="presse.html" onclick="closeMenu()">Presse locale</a>
 </div>
 <section class="hero" id="accueil">
   <div class="hero-bg" id="hero-bg"></div>
@@ -351,20 +401,6 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     </div>
   </div>
 </section>
-<div class="banderole"><div class="banderole-track">
-  <span class="banderole-item">Logement digne pour tou·tes</span>
-  <span class="banderole-item">Services publics dans nos quartiers</span>
-  <span class="banderole-item">Dignité et respect</span>
-  <span class="banderole-item">Éducation pour tous les enfants</span>
-  <span class="banderole-item">Toulouse aux Toulousain·es</span>
-  <span class="banderole-item">Contre les discriminations</span>
-  <span class="banderole-item">Logement digne pour tou·tes</span>
-  <span class="banderole-item">Services publics dans nos quartiers</span>
-  <span class="banderole-item">Dignité et respect</span>
-  <span class="banderole-item">Éducation pour tous les enfants</span>
-  <span class="banderole-item">Toulouse aux Toulousain·es</span>
-  <span class="banderole-item">Contre les discriminations</span>
-</div></div>
 <section class="qui" id="qui">
   <div class="qui-grid">
     <div class="qui-texte">
@@ -379,32 +415,43 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
         <span class="valeur-tag">Écologie sociale</span><span class="valeur-tag">Non-violence</span>
       </div>
     </div>
-    <div class="visual-box">
-      <div class="visual-img" id="encart-img"><span id="encart-emoji">🏘️</span></div>
-      <div class="visual-body">
-        <h3 id="site-enc-titre"></h3><p id="site-enc-texte"></p>
-        <div class="stats-row">
-          <div class="stat"><span class="stat-num" id="site-s1n"></span><span class="stat-lbl" id="site-s1l"></span></div>
-          <div class="stat"><span class="stat-num" id="site-s2n"></span><span class="stat-lbl" id="site-s2l"></span></div>
-          <div class="stat"><span class="stat-num" id="site-s3n"></span><span class="stat-lbl" id="site-s3l"></span></div>
+    <div>
+      <div class="visual-box" style="margin-bottom:20px">
+        <div class="visual-img" id="encart-img"><span id="encart-emoji">🏘️</span></div>
+        <div class="visual-body">
+          <h3 id="site-enc-titre"></h3><p id="site-enc-texte"></p>
+          <div class="stats-row">
+            <div class="stat"><span class="stat-num" id="site-s1n"></span><span class="stat-lbl" id="site-s1l"></span></div>
+            <div class="stat"><span class="stat-num" id="site-s2n"></span><span class="stat-lbl" id="site-s2l"></span></div>
+            <div class="stat"><span class="stat-num" id="site-s3n"></span><span class="stat-lbl" id="site-s3l"></span></div>
+          </div>
         </div>
+      </div>
+      <div class="join-form" id="adhesion">
+        <h3>✊ Rejoindre le mouvement</h3>
+        <p id="site-adh-p1">Gratuit · Sans engagement · Tu décides de ton niveau d'implication.</p>
+        <div class="fg"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"></div>
+        <div class="fg"><label>Email *</label><input type="email" id="f-email" placeholder="marie@exemple.fr"></div>
+        <div class="fg"><label>Quartier *</label>
+          <select id="f-quartier">
+            <option value="">— Choisissez —</option>
+            <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
+            <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
+            <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
+            <option>Autre quartier de Toulouse</option>
+          </select>
+        </div>
+        <div class="rgpd">
+          <input type="checkbox" id="f-rgpd">
+          <label for="f-rgpd">J'accepte que mes données soient utilisées par le CQP Toulouse.</label>
+        </div>
+        <button class="btn-sub" id="submitBtn" onclick="soumettre()">✊ Je rejoins le mouvement</button>
+        <div class="msg" id="formMsg"></div>
       </div>
     </div>
   </div>
 </section>
-
-<!-- ADHÉSION — juste après "né du bas" -->
-<section id="adhesion" style="background:var(--gf);padding:56px 8vw;border-top:1px solid rgba(255,255,255,.06)">
-  <div style="max-width:680px">
-    <div class="section-tag">Passer à l'action</div>
-    <h2>Rejoins <em>le mouvement</em></h2>
-    <p id="site-adh-p1" style="color:rgba(244,241,235,.65);font-size:1rem;line-height:1.8;margin:14px 0 24px;max-width:500px"></p>
-    <button class="btn-primary" onclick="openDr('dAdhesion')">✊ Rejoindre — c'est gratuit</button>
-  </div>
-</section>
-
-<!-- BANDEAU DÉFILANT -->
-<div style="background:var(--rouge);overflow:hidden;padding:14px 0;white-space:nowrap">
+<div style="background:var(--rouge);overflow:hidden;padding:13px 0;white-space:nowrap">
   <div style="display:inline-flex;animation:scrollLeft 28s linear infinite;gap:0">
     <span class="band-item">📰 Découvrez la presse locale</span>
     <span class="band-item">📋 Déposez vos annonces</span>
@@ -421,154 +468,121 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   </div>
 </div>
 
-
-<!-- SLIDER PLEIN LARGEUR -->
-<div style="background:var(--noir);padding:48px 0 40px;position:relative">
-  <!-- Slides -->
-  <div style="overflow:hidden;width:100%">
-    <div id="slider" style="display:flex;width:100%;will-change:transform">
-
-    <!-- SLIDE 1 : ACTUALITÉS -->
-    <div class="slide" style="min-width:100%;padding:0 8vw;box-sizing:border-box">
-      <div class="slide-head">
-        <div>
-          <div class="slide-label">Le comité vous informe</div>
-          <div class="slide-title">📰 Actualités</div>
-          <div class="slide-sub">Les dernières publications du comité</div>
-        </div>
-        <a href="actus.html" class="slide-more">Tout voir →</a>
-      </div>
-      <div class="slide-track" id="car-actus">
-        <div class="slide-spin">⏳</div>
-      </div>
-    </div>
-
-    <!-- SLIDE 2 : PRESSE -->
-    <div class="slide" style="min-width:100%;padding:0 8vw;box-sizing:border-box">
-      <div class="slide-head">
-        <div>
-          <div class="slide-label">Articles de la semaine</div>
-          <div class="slide-title">🗞 Presse locale</div>
-          <div class="slide-sub">Toulouse et les quartiers populaires dans les médias</div>
-        </div>
-        <a href="presse.html" class="slide-more">Tout voir →</a>
-      </div>
-      <div class="slide-track" id="car-presse">
-        <div class="slide-spin">⏳</div>
-      </div>
-    </div>
-
-    <!-- SLIDE 3 : ÉVÉNEMENTS -->
-    <div class="slide" style="min-width:100%;padding:0 8vw;box-sizing:border-box">
-      <div class="slide-head">
-        <div>
-          <div class="slide-label">Réunions · Ateliers · Mobilisations</div>
-          <div class="slide-title">📅 Événements</div>
-          <div class="slide-sub">Inscrivez-vous ou proposez votre propre événement</div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <a href="evenements.html" class="slide-more">Tout voir →</a>
-          <a href="evenements.html" class="slide-cta">+ Proposer un événement</a>
-        </div>
-      </div>
-      <div class="slide-track" id="car-events">
-        <div class="slide-spin">⏳</div>
-      </div>
-    </div>
-
-    <!-- SLIDE 4 : ANNONCES -->
-    <div class="slide" style="min-width:100%;padding:0 8vw;box-sizing:border-box">
-      <div class="slide-head">
-        <div>
-          <div class="slide-label">Logement · Emploi · Solidarité</div>
-          <div class="slide-title">📋 Annonces des habitants</div>
-          <div class="slide-sub">Les habitants s'entraident directement</div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <a href="annonces.html" class="slide-more">Tout voir →</a>
-          <button onclick="openDr('dDepot')" class="slide-cta">+ Déposer une annonce</button>
-        </div>
-      </div>
-      <div class="slide-track" id="car-annonces">
-        <div class="slide-spin">⏳</div>
-      </div>
-    </div>
-
-  </div><!-- fin slider -->
-  </div><!-- fin wrapper overflow -->
-
-  <!-- Flèches -->
-  <button class="slider-arrow left" id="arr-left" onclick="sliderGo(-1)">&#8592;</button>
-  <button class="slider-arrow right" id="arr-right" onclick="sliderGo(1)">&#8594;</button>
-
-  <!-- Points de navigation -->
-  <div class="slider-dots">
-    <button class="dot active" onclick="sliderGoTo(0)" title="Actualités"></button>
-    <button class="dot" onclick="sliderGoTo(1)" title="Presse locale"></button>
-    <button class="dot" onclick="sliderGoTo(2)" title="Événements"></button>
-    <button class="dot" onclick="sliderGoTo(3)" title="Annonces"></button>
+<!-- ACTUALITÉS -->
+<section class="swipe-section dark" id="actus">
+  <div class="swipe-head">
+    <div><div class="swipe-label">Le comité vous informe</div><div class="swipe-title">📰 Actualités</div></div>
+    <div class="swipe-right"><a href="actus.html" class="swipe-link">Tout voir →</a></div>
   </div>
-</div>
-
-<!-- NEWSLETTER -->
-<section style="background:var(--gf);padding:48px 8vw;border-top:1px solid rgba(255,255,255,.06)">
-  <!-- Mini slider : Avis | Newsletter -->
-  <div style="position:relative">
-    <div style="overflow:hidden;width:100%">
-      <div id="sl-avis" style="display:flex;transition:transform .4s cubic-bezier(.4,0,.2,1)">
-
-        <!-- SLIDE AVIS -->
-        <div style="min-width:100%;box-sizing:border-box">
-          <div style="max-width:560px">
-            <div class="section-tag">Votre retour compte</div>
-            <h2 style="margin-bottom:8px">Laissez <em>un avis</em></h2>
-            <p style="color:rgba(244,241,235,.55);font-size:.88rem;line-height:1.7;margin-bottom:20px">Aidez-nous à améliorer le site. Votre retour est lu par l'équipe.</p>
-            <div style="display:flex;gap:10px;margin-bottom:16px" id="stars-row">
-              <span class="star" data-v="1" onclick="setNote(1)">★</span>
-              <span class="star" data-v="2" onclick="setNote(2)">★</span>
-              <span class="star" data-v="3" onclick="setNote(3)">★</span>
-              <span class="star" data-v="4" onclick="setNote(4)">★</span>
-              <span class="star" data-v="5" onclick="setNote(5)">★</span>
-            </div>
-            <div class="fg"><label>Prénom (optionnel)</label><input type="text" id="avis-prenom" placeholder="Marie"></div>
-            <div class="fg" style="margin-top:10px"><label>Votre message *</label><textarea id="avis-msg" rows="3" placeholder="Ce qui vous a plu, ce qui manque…"></textarea></div>
-            <div style="display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap">
-              <button class="btn-sub" id="avisBtn" onclick="envoyerAvis()" style="width:auto;padding:11px 24px">Envoyer mon avis</button>
-              <button onclick="avisSlide(1)" style="background:none;border:none;color:var(--or);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer">Newsletter →</button>
-            </div>
-            <div class="msg" id="avisMsg"></div>
-          </div>
-        </div>
-
-        <!-- SLIDE NEWSLETTER -->
-        <div style="min-width:100%;box-sizing:border-box">
-          <div style="max-width:560px">
-            <div class="section-tag">Restez informé·e</div>
-            <h2 style="margin-bottom:8px">La newsletter <em>du quartier</em></h2>
-            <p style="color:rgba(244,241,235,.55);font-size:.88rem;line-height:1.7;margin-bottom:20px">Actus, événements, victoires — 2 fois par mois dans votre boite mail. Pas de spam.</p>
-            <div style="display:flex;gap:10px;flex-wrap:wrap">
-              <div class="fg" style="flex:1;min-width:220px;margin:0"><input type="email" id="nl-home-email" placeholder="marie@exemple.fr" onkeydown="if(event.key==='Enter')nlHomeSubmit()" style="background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:11px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;width:100%"></div>
-              <button class="btn-sub" id="nlHomeBtn" onclick="nlHomeSubmit()" style="width:auto;padding:11px 24px;flex-shrink:0">📧 S'abonner</button>
-            </div>
-            <div class="msg" id="nlHomeMsg" style="margin-top:10px"></div>
-            <div style="display:flex;align-items:center;gap:14px;margin-top:12px">
-              <button onclick="avisSlide(-1)" style="background:none;border:none;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer">← Laisser un avis</button>
-              <span style="font-size:.72rem;color:rgba(244,241,235,.25);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">Désabonnement en 1 clic</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-    <!-- Flèches + Points de nav -->
-    <div style="display:flex;align-items:center;gap:10px;margin-top:20px">
-      <button onclick="avisSlide(-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:34px;height:34px;border-radius:4px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.12)'">←</button>
-      <button class="dot active" id="av-dot-0" onclick="avisSlide(0,true)"></button>
-      <button class="dot" id="av-dot-1" onclick="avisSlide(1,true)"></button>
-      <button onclick="avisSlide(1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:34px;height:34px;border-radius:4px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.12)'">→</button>
-    </div>
+  <div class="swipe-track" id="sw-actus"><div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:40px 0;font-size:.8rem">⏳ Chargement…</div></div>
+  <div class="swipe-nav">
+    <button class="sw-btn" onclick="swScroll('sw-actus',-1)">←</button>
+    <button class="sw-btn" onclick="swScroll('sw-actus',1)">→</button>
   </div>
 </section>
+
+<!-- ÉVÉNEMENTS -->
+<section class="swipe-section mid" id="evenements">
+  <div class="swipe-head">
+    <div><div class="swipe-label">Réunions · Ateliers · Mobilisations</div><div class="swipe-title">📅 Événements</div></div>
+    <div class="swipe-right">
+      <a href="evenements.html" class="swipe-cta">+ Proposer un événement</a>
+      <a href="evenements.html" class="swipe-link">Tout voir →</a>
+    </div>
+  </div>
+  <div class="swipe-track" id="sw-events"><div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:40px 0;font-size:.8rem">⏳ Chargement…</div></div>
+  <div class="swipe-nav">
+    <button class="sw-btn" onclick="swScroll('sw-events',-1)">←</button>
+    <button class="sw-btn" onclick="swScroll('sw-events',1)">→</button>
+  </div>
+</section>
+
+<!-- ANNONCES -->
+<section class="swipe-section dark" id="annonces">
+  <div class="swipe-head">
+    <div><div class="swipe-label">Logement · Emploi · Solidarité</div><div class="swipe-title">📋 Annonces des habitants</div></div>
+    <div class="swipe-right">
+      <button onclick="openDr('dDepot')" class="swipe-cta">+ Déposer une annonce</button>
+      <a href="annonces.html" class="swipe-link">Tout voir →</a>
+    </div>
+  </div>
+  <div class="swipe-track" id="sw-annonces"><div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:40px 0;font-size:.8rem">⏳ Chargement…</div></div>
+  <div class="swipe-nav">
+    <button class="sw-btn" onclick="swScroll('sw-annonces',-1)">←</button>
+    <button class="sw-btn" onclick="swScroll('sw-annonces',1)">→</button>
+  </div>
+</section>
+
+<!-- PRESSE -->
+<section class="swipe-section mid">
+  <div class="swipe-head">
+    <div><div class="swipe-label">Articles de la semaine</div><div class="swipe-title">🗞 Presse locale</div></div>
+    <div class="swipe-right"><a href="presse.html" class="swipe-link">Tout voir →</a></div>
+  </div>
+  <div class="swipe-track" id="sw-presse"><div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:40px 0;font-size:.8rem">⏳ Chargement…</div></div>
+  <div class="swipe-nav">
+    <button class="sw-btn" onclick="swScroll('sw-presse',-1)">←</button>
+    <button class="sw-btn" onclick="swScroll('sw-presse',1)">→</button>
+  </div>
+</section>
+
+<!-- AVIS + NEWSLETTER slider -->
+<section class="swipe-section dark" style="border-top:1px solid rgba(255,255,255,.06)">
+  <div style="overflow:hidden"><div id="sl-avis" style="display:flex;transition:transform .4s cubic-bezier(.4,0,.2,1)">
+    <!-- AVIS -->
+    <div style="min-width:100%;box-sizing:border-box;max-width:580px">
+      <div class="section-tag">Votre retour compte</div>
+      <h2 style="margin-bottom:8px">Laissez <em>un avis</em></h2>
+      <p style="color:rgba(244,241,235,.55);font-size:.88rem;line-height:1.7;margin-bottom:18px">Aidez-nous à améliorer le site et le comité.</p>
+      <div style="display:flex;gap:8px;margin-bottom:16px" id="stars-row">
+        <span class="star" data-v="1" onclick="setNote(1)">★</span><span class="star" data-v="2" onclick="setNote(2)">★</span>
+        <span class="star" data-v="3" onclick="setNote(3)">★</span><span class="star" data-v="4" onclick="setNote(4)">★</span>
+        <span class="star" data-v="5" onclick="setNote(5)">★</span>
+      </div>
+      <div class="fg"><label>Prénom (optionnel)</label><input type="text" id="avis-prenom" placeholder="Marie"></div>
+      <div class="fg" style="margin-top:10px"><label>Message *</label><textarea id="avis-msg" rows="3" placeholder="Ce qui vous a plu, ce qui manque…"></textarea></div>
+      <div style="display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn-sub" id="avisBtn" onclick="envoyerAvis()" style="width:auto;padding:10px 22px">Envoyer</button>
+        <button onclick="avisSlide(1)" style="background:none;border:none;color:var(--or);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer">Newsletter →</button>
+      </div>
+      <div class="msg" id="avisMsg"></div>
+    </div>
+    <!-- NEWSLETTER -->
+    <div style="min-width:100%;box-sizing:border-box;max-width:580px">
+      <div class="section-tag">Restez informé·e</div>
+      <h2 style="margin-bottom:8px">La newsletter <em>du quartier</em></h2>
+      <p style="color:rgba(244,241,235,.55);font-size:.88rem;line-height:1.7;margin-bottom:18px">Actus et événements — 2 fois par mois, pas de spam.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+        <input type="email" id="nl-home-email" placeholder="marie@exemple.fr" style="flex:1;min-width:200px;background:var(--gf);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:11px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.88rem;outline:none" onkeydown="if(event.key==='Enter')nlHomeSubmit()">
+        <button class="btn-sub" id="nlHomeBtn" onclick="nlHomeSubmit()" style="width:auto;padding:11px 22px">📧 S'abonner</button>
+      </div>
+      <div class="msg" id="nlHomeMsg" style="margin-top:10px"></div>
+      <button onclick="avisSlide(-1)" style="background:none;border:none;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:14px">← Laisser un avis</button>
+    </div>
+  </div></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:20px">
+    <button onclick="avisSlide(-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:.9rem">←</button>
+    <button class="dot active" id="av-dot-0" onclick="avisSlide(0,true)"></button>
+    <button class="dot" id="av-dot-1" onclick="avisSlide(1,true)"></button>
+    <button onclick="avisSlide(1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:.9rem">→</button>
+  </div>
+</section>
+
+<div class="mini-overlay" id="mini-overlay" onclick="closeMiniDrawer()"></div>
+<div class="mini-drawer" id="mini-drawer">
+  <div class="mini-drawer-head">
+    <h4 id="md-titre">Commentaires</h4>
+    <button onclick="closeMiniDrawer()" style="background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);width:30px;height:30px;border-radius:4px;cursor:pointer">✕</button>
+  </div>
+  <div class="mini-drawer-body" id="md-comments"></div>
+  <div class="mini-drawer-input">
+    <input type="text" id="md-prenom" placeholder="Votre prénom" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:8px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.84rem;outline:none;width:100%">
+    <div style="display:flex;gap:8px">
+      <input type="text" id="md-msg" placeholder="Ajouter un commentaire…" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:9px 16px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.84rem;outline:none" onkeydown="if(event.key==='Enter')sendMiniComment()">
+      <button onclick="sendMiniComment()" style="background:var(--rouge);border:none;color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;flex-shrink:0;font-size:.9rem">➤</button>
+    </div>
+  </div>
+</div>
 
 <footer>
   <div class="footer-grid">
@@ -942,6 +956,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   </div><!-- fin admin-modal -->
 </div><!-- fin adminModal -->
 <script>
+
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const PWD='toulouse2026';
@@ -1123,13 +1138,14 @@ async function uploadCroppedPhoto(type){
 }
 
 function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
-</script>
-<script>
+
+
+
 // Actus public
 let actusPub=[];
 const CATS={Logement:'cat-Logement',Emploi:'cat-Emploi',Service:'cat-Service','Solidarité':'cat-Solidarité',Autre:'cat-Autre'};
 async function loadActus(){
-  const g=document.getElementById('car-actus');
+  const g=document.getElementById('sw-actus');
   try{
     const{data,error}=await sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).limit(6);
     if(error)throw error;actusPub=data||[];
@@ -1145,7 +1161,7 @@ async function loadActus(){
 
 let annPub=[];
 async function loadAnnonces(){
-  const g=document.getElementById('car-annonces');
+  const g=document.getElementById('sw-annonces');
   try{
     const{data,error}=await sb.from('annonces').select('*').eq('validee',true).order('date_depot',{ascending:false}).limit(8);
     if(error)throw error;annPub=data||[];
@@ -1327,11 +1343,13 @@ function sliderGo(dir){sliderGoTo(sliderIdx+dir);}
   },{passive:true});
 })();
 
-// ===== CARROUSELS =====
+// ===== SWIPE SECTIONS =====
+function swScroll(id,dir){const el=document.getElementById(id);if(el)el.scrollBy({left:dir*300,behavior:"smooth"});}
+
 function carScroll(id,dir){const el=document.getElementById(id);if(el)el.scrollBy({left:dir*280,behavior:'smooth'});}
 
 async function loadPresse(){
-  const g=document.getElementById('car-presse');if(!g)return;
+  const g=document.getElementById('sw-presse');if(!g)return;
   g.innerHTML='<div class="slide-spin">⏳ Chargement…</div>';
   try{
     const res=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/rss-proxy');
@@ -1366,8 +1384,10 @@ async function soumettre(){
   }catch(e){showMsg('formMsg','err','⚠ Erreur réseau.');btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';}
 }
 function showMsg(id,type,txt){const m=document.getElementById(id);m.className='msg '+type;m.textContent=txt;m.style.display='block';}
-</script>
-<script>
+
+
+// === ADMIN + EVENTS ===
+
 // Login
 function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
 function checkPwd(){if(document.getElementById('pwdInput').value===PWD){closeM('loginModal');loadEditors();renderAdh();document.getElementById('adminModal').classList.add('open');}else{document.getElementById('loginErr').style.display='block';document.getElementById('pwdInput').value='';}}
@@ -1430,7 +1450,6 @@ async function publierActu(){
     if(error)throw error;
     showMsg('actuMsg','ok','✅ Publié !');
     document.getElementById('actu-titre').value='';document.getElementById('actu-contenu').value='';
-    setTimeout(()=>{document.getElementById('actuFormBox').classList.remove('open');renderActusAdmin();loadActus();},1500);
   }catch(e){showMsg('actuMsg','err','⚠ '+e.message);}
 }
 async function renderActusAdmin(){
@@ -1439,10 +1458,8 @@ async function renderActusAdmin(){
     if(error)throw error;actusAdmCache=data||[];
     document.getElementById('actusCount').textContent=actusAdmCache.length+' actu'+(actusAdmCache.length>1?'s':'');
     if(!actusAdmCache.length){b.innerHTML='<div class="empty"><span>📰</span>Aucune.</div>';return;}
-    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Date</th><th>Visible</th><th>Actions</th></tr></thead><tbody>${actusAdmCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td><span class="dt">${new Date(a.date_publication).toLocaleDateString('fr-FR')}</span></td><td>${a.visible?'<span class="s-ok">Oui</span>':'<span class="s-ko">Non</span>'}</td><td style="display:flex;gap:6px"><button class="btn-ok" onclick="toggleVis(${a.id},${a.visible})">${a.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('actus',${a.id},()=>{renderActusAdmin();loadActus();})">✕</button></td></tr>`).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
-async function toggleVis(id,cur){await sb.from('actus').update({visible:!cur}).eq('id',id);renderActusAdmin();loadActus();}
 
 // Admin annonces
 let annAdmCache=[];
@@ -1452,15 +1469,13 @@ async function renderAnnAdmin(){
     if(error)throw error;annAdmCache=data||[];
     document.getElementById('annCount').textContent=annAdmCache.length+' annonce'+(annAdmCache.length>1?'s':'');
     if(!annAdmCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucune.</div>';return;}
-    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Quartier</th><th>Email</th><th>Tél</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${annAdmCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td title="${esc(a.description)}">${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td>${esc(a.quartier)}</td><td><span class="dt">${esc(a.email)}</span></td><td><span class="dt">${esc(a.telephone||'—')}</span></td><td>${a.validee?'<span class="s-ok">Validée</span>':'<span class="s-ko">En attente</span>'}</td><td style="display:flex;gap:5px">${!a.validee?`<button class="btn-ok" onclick="valAnn(${a.id},true)">✅</button>`:`<button class="btn-ko" onclick="valAnn(${a.id},false)">↩</button>`}<button class="btn-del" onclick="del('annonces',${a.id},()=>{renderAnnAdmin();loadAnnonces();})">✕</button></td></tr>`).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
-async function valAnn(id,v){await sb.from('annonces').update({validee:v}).eq('id',id);renderAnnAdmin();loadAnnonces();}
 
 // ===== ÉVÉNEMENTS PUBLIC =====
 let eventsPub=[];
 async function loadEvents(){
-  const g=document.getElementById('car-events');
+  const g=document.getElementById('sw-events');
   try{
     const now=new Date().toISOString();
     const{data,error}=await sb.from('evenements').select('*').eq('visible',true).eq('validee',true).gte('date_debut',now).order('date_debut',{ascending:true}).limit(9);
@@ -1552,7 +1567,6 @@ async function creerEvt(){
     showMsg('evtMsg','ok','✅ Événement créé !');
     ['evt-titre','evt-desc','evt-lieu'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('evt-date').value='';document.getElementById('evt-fin').value='';
-    setTimeout(()=>{document.getElementById('evtFormBox').classList.remove('open');renderEvtAdmin();loadEvents();},1500);
   }catch(e){showMsg('evtMsg','err','⚠ '+e.message);}
 }
 async function renderEvtAdmin(){
@@ -1570,12 +1584,10 @@ async function renderEvtAdmin(){
       const d=new Date(e.date_debut);const nb=counts[e.id]||0;
       const plMax=e.places_max>0?` / ${e.places_max}`:'';
       const couleur=e.places_max>0&&nb>=e.places_max?'color:#ff6b6b':'color:#4CAF50';
-      return `<tr><td class="dt">${i+1}</td><td>${esc(e.titre)}</td><td><span class="dt">${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span></td><td>${esc(e.lieu)}</td><td><span class="qb">${esc(e.categorie)}</span></td><td><button class="btn-ok" style="background:none;border:1px solid rgba(255,255,255,.2)" onclick="voirInscrits(${e.id},'${esc(e.titre).replace(/'/g,"\\'")}')"><span style="${couleur}">👥 ${nb}${plMax}</span></button></td><td>${e.validee?'<span class="s-ok">Validé</span>':'<span class="s-ko">Proposition</span>'}</td><td style="display:flex;gap:5px;flex-wrap:wrap">${!e.validee?`<button class="btn-ok" onclick="valEvt(${e.id},true)">✅</button>`:''}<button class="btn-${e.visible?'ko':'ok'}" onclick="toggleEvtVis(${e.id},${e.visible})">${e.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('evenements',${e.id},()=>{renderEvtAdmin();loadEvents();})">✕</button></td></tr>`;
     }).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
 async function valEvt(id,v){await sb.from('evenements').update({validee:v}).eq('id',id);renderEvtAdmin();}
-async function toggleEvtVis(id,cur){await sb.from('evenements').update({visible:!cur}).eq('id',id);renderEvtAdmin();loadEvents();}
 
 async function voirInscrits(evtId,titre){
   const b=document.getElementById('inscrits-body');
@@ -1619,7 +1631,6 @@ function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('op
 function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
 
 // ===== TRACKING VIA EDGE FUNCTION =====
-function initTracking(page){
   const TRACK='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/track';
   let sid=sessionStorage.getItem('cqp_sid');
   if(!sid){sid=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',sid);}
@@ -1682,13 +1693,7 @@ async function renderStats(){
   }catch(e){console.warn('Stats error:',e);}
 }
 // Init
-sliderGoTo(0);
-loadConfig();
-loadActus();
-loadAnnonces();
-loadEvents();
-loadPresse();
-initTracking('/');
+
 </script>
 </body>
 </html>
