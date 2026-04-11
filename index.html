@@ -246,44 +246,27 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .rss-date{font-size:.7rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
 @media(max-width:900px){.rss-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.rss-grid{grid-template-columns:1fr}}
-/* BANDEAU DÉCOUVERTE */
-.band-item{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:#fff;padding:0 40px}
-.band-item::after{content:'·';margin-left:40px;color:rgba(244,241,235,.2)}
-/* ÉTOILES AVIS */
-.star{font-size:1.8rem;color:rgba(255,255,255,.2);cursor:pointer;transition:color .15s;line-height:1;user-select:none}
-.star.active,.star.hover{color:var(--or)}
-/* ===== SLIDER PLEIN LARGEUR ===== */
-.slide{transition:none}
-.slide-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:14px}
-.slide-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-bottom:4px}
-.slide-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);color:var(--blanc);letter-spacing:.5px;line-height:1}
-.slide-sub{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;color:rgba(244,241,235,.4);margin-top:6px}
-.slide-more{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none;flex-shrink:0;padding-top:6px;transition:opacity .2s}
-.slide-more:hover{opacity:.7}
-.slide-cta{background:rgba(200,16,46,.15);border:1px solid rgba(200,16,46,.4);color:var(--rouge);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:7px 16px;border-radius:3px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;transition:all .2s;flex-shrink:0}
-.slide-cta:hover{background:rgba(200,16,46,.3)}
-.slide-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:8px}
-.slide-track::-webkit-scrollbar{display:none}
-.slide-spin{color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;padding:40px 0;font-size:.8rem}
-/* Cartes dans le slider */
-.slide-track .actu-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,30vw,300px)}
-.slide-track .event-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,30vw,300px)}
-.slide-track .annonce-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,30vw,300px);background:var(--gf)}
-.slide-presse-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,30vw,300px);background:var(--gf);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:18px;text-decoration:none;display:block;transition:all .2s}
-.slide-presse-card:hover{border-color:var(--rouge);transform:translateY(-2px)}
-.slide-presse-card .ps{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:7px}
-.slide-presse-card .pt{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;color:var(--blanc);line-height:1.4;margin-bottom:8px}
-.slide-presse-card .pd{font-size:.65rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
-/* Flèches slider */
-.slider-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);width:44px;height:44px;border-radius:50%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:10;backdrop-filter:blur(4px)}
-.slider-arrow:hover{background:rgba(200,16,46,.6);border-color:var(--rouge);color:#fff}
-.slider-arrow.left{left:2vw}
-.slider-arrow.right{right:2vw}
-/* Points de navigation */
-.slider-dots{display:flex;justify-content:center;gap:10px;margin-top:24px}
-.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.2);border:none;cursor:pointer;transition:all .3s;padding:0}
-.dot.active{background:var(--rouge);width:24px;border-radius:4px}
-@media(max-width:600px){.slider-arrow{width:36px;height:36px;font-size:1rem}.slide-track .actu-card,.slide-track .event-card,.slide-track .annonce-card,.slide-presse-card{width:80vw}}
+/* BI-CARROUSELS */
+.bicarousel-section{background:var(--noir);padding:56px 8vw}
+.bicarousel-section.alt{background:var(--gf)}
+.bic-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px;flex-wrap:wrap;gap:14px}
+.bic-tabs{display:flex;gap:6px;flex-shrink:0}
+.bic-tab{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.5);padding:7px 16px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.bic-tab.active{background:var(--rouge);border-color:var(--rouge);color:#fff}
+.bic-carousel{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none;scroll-behavior:smooth}
+.bic-carousel::-webkit-scrollbar{display:none}
+.bic-nav{display:flex;align-items:center;gap:8px;margin-top:16px}
+.bic-more{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none;margin-left:8px;transition:opacity .2s}
+.bic-more:hover{opacity:.75}
+/* CARTES CARROUSEL */
+.bic-carousel .actu-card{scroll-snap-align:start;flex-shrink:0;width:280px}
+.bic-carousel .event-card{scroll-snap-align:start;flex-shrink:0;width:280px}
+.bic-carousel .annonce-card{scroll-snap-align:start;flex-shrink:0;width:280px;background:var(--noir)}
+.bicarousel-section.alt .bic-carousel .annonce-card{background:var(--gris)}
+.bic-carousel .card-s{scroll-snap-align:start;flex-shrink:0;width:280px}
+/* Bouton proposer sur événement */
+.evt-propose-btn{display:flex;align-items:center;gap:6px;background:rgba(200,16,46,.12);border:1px solid rgba(200,16,46,.3);color:var(--rouge);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:7px 14px;border-radius:3px;cursor:pointer;transition:all .2s;text-decoration:none}
+.evt-propose-btn:hover{background:rgba(200,16,46,.25)}
 /* ÉVÉNEMENTS */.events{background:var(--noir)}
 .events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
 .event-card{background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative}
@@ -310,83 +293,33 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 @media(max-width:700px){.nav-center{display:none}.burger{display:flex}.nav-right .btn-adhere{display:none}}
 @media(max-width:600px){.actus-grid,.events-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}}
 
-
-/* ===== SECTIONS SWIPE ===== */
-.swipe-section{padding:52px 8vw;border-top:1px solid rgba(255,255,255,.06)}
-.swipe-section.dark{background:var(--noir)}
-.swipe-section.mid{background:var(--gf)}
-.swipe-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
-.swipe-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.6rem,3vw,2.2rem);color:var(--blanc);letter-spacing:.5px}
-.swipe-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(244,241,235,.35);margin-bottom:4px}
-.swipe-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.swipe-link{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none;transition:opacity .2s}
-.swipe-link:hover{opacity:.7}
-.swipe-cta{background:none;border:1px solid rgba(200,16,46,.4);color:var(--rouge);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:3px;cursor:pointer;text-decoration:none;transition:all .2s}
-.swipe-cta:hover{background:rgba(200,16,46,.15)}
-.swipe-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
-.swipe-track::-webkit-scrollbar{display:none}
-.swipe-nav{display:flex;align-items:center;gap:8px;margin-top:14px}
-.sw-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:.9rem;transition:all .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-.sw-btn:hover{background:rgba(255,255,255,.14);border-color:var(--or);color:var(--or)}
-/* Cartes dans les swipe */
-.swipe-track .actu-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,28vw,300px)}
-.swipe-track .event-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,28vw,300px)}
-.swipe-track .annonce-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,28vw,300px);background:var(--noir)}
-.swipe-presse{scroll-snap-align:start;flex-shrink:0;width:clamp(220px,26vw,280px);background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:16px;text-decoration:none;display:block;transition:all .2s}
-.swipe-presse:hover{border-color:var(--rouge);transform:translateY(-2px)}
-.swipe-presse .sp-src{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:6px}
-.swipe-presse .sp-ttl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.88rem;color:var(--blanc);line-height:1.4;margin-bottom:6px}
-.swipe-presse .sp-dt{font-size:.64rem;color:rgba(244,241,235,.28);font-family:'Barlow Condensed',sans-serif}
-/* Likes sur les cartes swipe */
-.card-social{display:flex;align-items:center;gap:12px;padding:8px 16px 12px;border-top:1px solid rgba(255,255,255,.06)}
-.card-like-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;color:rgba(244,241,235,.45);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;padding:0;transition:all .2s}
-.card-like-btn .h{font-size:1.05rem;transition:transform .15s;display:inline-block}
-.card-like-btn.liked{color:var(--rouge)}
-.card-like-btn.pop .h{transform:scale(1.5)}
-.card-comment-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;padding:0;transition:color .2s}
-.card-comment-btn:hover{color:rgba(244,241,235,.7)}
-/* Rejoindre intégré dans QUI */
-.qui-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
-.join-form{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:24px}
-.join-form h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;margin-bottom:6px}
-.join-form p{font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:18px;line-height:1.5}
-/* Mini drawer commentaires */
-.mini-drawer{position:fixed;bottom:0;left:0;right:0;background:var(--gf);border-top:2px solid var(--rouge);border-radius:16px 16px 0 0;z-index:600;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);max-height:75vh;display:flex;flex-direction:column}
-.mini-drawer.open{transform:translateY(0)}
-.mini-drawer-head{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.mini-drawer-head h4{font-family:'Bebas Neue',sans-serif;font-size:1.2rem}
-.mini-drawer-body{overflow-y:auto;padding:14px 20px;flex:1}
-.mini-drawer-input{padding:12px 20px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;display:flex;flex-direction:column;gap:8px}
-.mini-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:599}
-.mini-overlay.open{display:block}
-.comment-item{display:flex;gap:10px;margin-bottom:12px}
-.comment-avatar{width:30px;height:30px;min-width:30px;background:var(--rouge);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:#fff}
-.comment-bubble{background:rgba(255,255,255,.06);border-radius:0 8px 8px 8px;padding:8px 12px;flex:1}
-.comment-name{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-bottom:3px}
-.comment-text{font-size:.82rem;color:rgba(244,241,235,.8);line-height:1.5}
-/* Étoiles avis */
-.star{font-size:1.8rem;color:rgba(255,255,255,.2);cursor:pointer;transition:color .15s;user-select:none}
-.star.active,.star.hover{color:var(--or)}
-@media(max-width:900px){.qui-grid{grid-template-columns:1fr;gap:32px}}
-@media(max-width:600px){.swipe-track .actu-card,.swipe-track .event-card,.swipe-track .annonce-card,.swipe-presse{width:82vw}}
-
 </style>
+</head>
+<body>
 <nav>
-  <div class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></div>
-  <div class="nav-links">
-    <a href="#actus">Actualités</a>
-    <a href="#evenements">Événements</a>
-    <a href="#annonces">Annonces</a>
-    <a href="presse.html">Presse</a>
-    <button class="btn-adhere" onclick="document.getElementById('f-email').focus()">✊ Rejoindre</button>
+  <a href="#" class="logo"><div class="logo-icon">CQP</div><div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div></a>
+  <div class="nav-center">
+    <a href="actus.html">Actualités</a>
+    <a href="evenements.html">Événements</a>
+    <a href="annonces.html" class="ext">Annonces</a>
+    <a href="presse.html" class="ext">Presse locale</a>
+    <a href="newsletter.html" class="ext">Newsletter</a>
   </div>
-  <button class="burger" onclick="toggleMenu()">☰</button>
+  <div class="nav-right">
+    <a href="#adhesion" class="btn-adhere">✊ Adhérer</a>
+    <button class="btn-admin" onclick="openLogin()">⚙ Admin</button>
+    <button class="burger" onclick="toggleMenu()" aria-label="Menu">☰</button>
+  </div>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#actus" onclick="closeMenu()">Actualités</a>
-  <a href="#evenements" onclick="closeMenu()">Événements</a>
-  <a href="#annonces" onclick="closeMenu()">Annonces</a>
-  <a href="presse.html" onclick="closeMenu()">Presse locale</a>
+  <a href="#qui" onclick="closeMenu()">Notre mouvement</a>
+  <a href="actus.html">Actualités</a>
+  <a href="evenements.html">Événements</a>
+  <a href="annonces.html">Annonces</a>
+  <a href="presse.html">Presse locale</a>
+  <a href="newsletter.html">📧 Newsletter</a>
+  <a href="#adhesion" onclick="closeMenu()" style="color:var(--or)">✊ Adhérer</a>
+  <button onclick="closeMenu();openLogin()">⚙ Espace Admin</button>
 </div>
 <section class="hero" id="accueil">
   <div class="hero-bg" id="hero-bg"></div>
@@ -401,6 +334,20 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     </div>
   </div>
 </section>
+<div class="banderole"><div class="banderole-track">
+  <span class="banderole-item">Logement digne pour tou·tes</span>
+  <span class="banderole-item">Services publics dans nos quartiers</span>
+  <span class="banderole-item">Dignité et respect</span>
+  <span class="banderole-item">Éducation pour tous les enfants</span>
+  <span class="banderole-item">Toulouse aux Toulousain·es</span>
+  <span class="banderole-item">Contre les discriminations</span>
+  <span class="banderole-item">Logement digne pour tou·tes</span>
+  <span class="banderole-item">Services publics dans nos quartiers</span>
+  <span class="banderole-item">Dignité et respect</span>
+  <span class="banderole-item">Éducation pour tous les enfants</span>
+  <span class="banderole-item">Toulouse aux Toulousain·es</span>
+  <span class="banderole-item">Contre les discriminations</span>
+</div></div>
 <section class="qui" id="qui">
   <div class="qui-grid">
     <div class="qui-texte">
@@ -427,10 +374,15 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
           </div>
         </div>
       </div>
-      <div class="join-form" id="adhesion">
-        <h3>✊ Rejoindre le mouvement</h3>
-        <p id="site-adh-p1">Gratuit · Sans engagement · Tu décides de ton niveau d'implication.</p>
-        <div class="fg"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"></div>
+      <!-- REJOINDRE intégré -->
+      <div id="adhesion" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:24px">
+        <div class="section-tag">Passer à l'action</div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;margin-bottom:6px">Rejoins <em>le mouvement</em></h3>
+        <p id="site-adh-p1" style="font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:16px;line-height:1.5">Gratuit · Sans engagement</p>
+        <div class="fr">
+          <div class="fg"><label>Prénom *</label><input type="text" id="f-prenom" placeholder="Marie"></div>
+          <div class="fg"><label>Nom *</label><input type="text" id="f-nom" placeholder="Dupont"></div>
+        </div>
         <div class="fg"><label>Email *</label><input type="email" id="f-email" placeholder="marie@exemple.fr"></div>
         <div class="fg"><label>Quartier *</label>
           <select id="f-quartier">
@@ -443,7 +395,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
         </div>
         <div class="rgpd">
           <input type="checkbox" id="f-rgpd">
-          <label for="f-rgpd">J'accepte que mes données soient utilisées par le CQP Toulouse.</label>
+          <label for="f-rgpd">J'accepte que mes données soient utilisées par le CQP Toulouse pour me contacter.</label>
         </div>
         <button class="btn-sub" id="submitBtn" onclick="soumettre()">✊ Je rejoins le mouvement</button>
         <div class="msg" id="formMsg"></div>
@@ -451,138 +403,144 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     </div>
   </div>
 </section>
+
+<!-- BANDEAU DÉFILANT -->
 <div style="background:var(--rouge);overflow:hidden;padding:13px 0;white-space:nowrap">
   <div style="display:inline-flex;animation:scrollLeft 28s linear infinite;gap:0">
-    <span class="band-item">📰 Découvrez la presse locale</span>
-    <span class="band-item">📋 Déposez vos annonces</span>
-    <span class="band-item">📅 Créez vos événements</span>
-    <span class="band-item">🤝 Rejoignez le comité</span>
-    <span class="band-item">🗞 Suivez l'actualité des quartiers</span>
-    <span class="band-item">📧 Abonnez-vous à la newsletter</span>
-    <span class="band-item">📰 Découvrez la presse locale</span>
-    <span class="band-item">📋 Déposez vos annonces</span>
-    <span class="band-item">📅 Créez vos événements</span>
-    <span class="band-item">🤝 Rejoignez le comité</span>
-    <span class="band-item">🗞 Suivez l'actualité des quartiers</span>
-    <span class="band-item">📧 Abonnez-vous à la newsletter</span>
+    <span class="banderole-item">📰 Découvrez la presse locale</span>
+    <span class="banderole-item">📋 Déposez vos annonces</span>
+    <span class="banderole-item">📅 Créez vos événements</span>
+    <span class="banderole-item">🤝 Rejoignez le comité</span>
+    <span class="banderole-item">🗞 Suivez l'actualité des quartiers</span>
+    <span class="banderole-item">📧 Abonnez-vous à la newsletter</span>
+    <span class="banderole-item">📰 Découvrez la presse locale</span>
+    <span class="banderole-item">📋 Déposez vos annonces</span>
+    <span class="banderole-item">📅 Créez vos événements</span>
+    <span class="banderole-item">🤝 Rejoignez le comité</span>
+    <span class="banderole-item">🗞 Suivez l'actualité des quartiers</span>
+    <span class="banderole-item">📧 Abonnez-vous à la newsletter</span>
   </div>
 </div>
 
-<!-- ACTUALITÉS -->
-<section class="swipe-section dark" id="actus">
-  <div class="swipe-head">
-    <div><div class="swipe-label">Le comité vous informe</div><div class="swipe-title">📰 Actualités</div></div>
-    <div class="swipe-right"><a href="actus.html" class="swipe-link">Tout voir →</a></div>
+<!-- 📰 ACTUALITÉS -->
+<section style="background:var(--noir);padding:48px 8vw" id="actus">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div class="section-tag">Le comité vous informe</div>
+      <h2>Actualités</h2>
+    </div>
+    <a href="actus.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none">Tout voir →</a>
   </div>
-  <div class="swipe-track" id="sw-actus"><div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:40px 0;font-size:.8rem">⏳ Chargement…</div></div>
-  <div class="swipe-nav">
-    <button class="sw-btn" onclick="swScroll('sw-actus',-1)">←</button>
-    <button class="sw-btn" onclick="swScroll('sw-actus',1)">→</button>
+  <div id="sw-actus" style="display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px">
+    <div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;padding:40px 0;font-size:.8rem">⏳ Chargement…</div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:14px">
+    <button onclick="swScroll('sw-actus',-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer">←</button>
+    <button onclick="swScroll('sw-actus',1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer">→</button>
   </div>
 </section>
 
-<!-- ÉVÉNEMENTS -->
-<section class="swipe-section mid" id="evenements">
-  <div class="swipe-head">
-    <div><div class="swipe-label">Réunions · Ateliers · Mobilisations</div><div class="swipe-title">📅 Événements</div></div>
-    <div class="swipe-right">
-      <a href="evenements.html" class="swipe-cta">+ Proposer un événement</a>
-      <a href="evenements.html" class="swipe-link">Tout voir →</a>
+<!-- 📅 ÉVÉNEMENTS -->
+<section style="background:var(--gf);padding:48px 8vw" id="evenements">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div class="section-tag">Réunions · Ateliers · Mobilisations</div>
+      <h2>Événements</h2>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <a href="evenements.html" style="background:none;border:1px solid rgba(200,16,46,.4);color:var(--rouge);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:3px;text-decoration:none">+ Proposer un événement</a>
+      <a href="evenements.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none">Tout voir →</a>
     </div>
   </div>
-  <div class="swipe-track" id="sw-events"><div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:40px 0;font-size:.8rem">⏳ Chargement…</div></div>
-  <div class="swipe-nav">
-    <button class="sw-btn" onclick="swScroll('sw-events',-1)">←</button>
-    <button class="sw-btn" onclick="swScroll('sw-events',1)">→</button>
+  <div id="sw-events" style="display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px">
+    <div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;padding:40px 0;font-size:.8rem">⏳ Chargement…</div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:14px">
+    <button onclick="swScroll('sw-events',-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer">←</button>
+    <button onclick="swScroll('sw-events',1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer">→</button>
   </div>
 </section>
 
-<!-- ANNONCES -->
-<section class="swipe-section dark" id="annonces">
-  <div class="swipe-head">
-    <div><div class="swipe-label">Logement · Emploi · Solidarité</div><div class="swipe-title">📋 Annonces des habitants</div></div>
-    <div class="swipe-right">
-      <button onclick="openDr('dDepot')" class="swipe-cta">+ Déposer une annonce</button>
-      <a href="annonces.html" class="swipe-link">Tout voir →</a>
+<!-- 📋 ANNONCES -->
+<section style="background:var(--noir);padding:48px 8vw" id="annonces-section">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div class="section-tag">Logement · Emploi · Solidarité</div>
+      <h2>Annonces des habitants</h2>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button onclick="openDr('dDepot')" style="background:none;border:1px solid rgba(200,16,46,.4);color:var(--rouge);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:3px;cursor:pointer">+ Déposer une annonce</button>
+      <a href="annonces.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none">Tout voir →</a>
     </div>
   </div>
-  <div class="swipe-track" id="sw-annonces"><div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:40px 0;font-size:.8rem">⏳ Chargement…</div></div>
-  <div class="swipe-nav">
-    <button class="sw-btn" onclick="swScroll('sw-annonces',-1)">←</button>
-    <button class="sw-btn" onclick="swScroll('sw-annonces',1)">→</button>
+  <div id="sw-annonces" style="display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px">
+    <div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;padding:40px 0;font-size:.8rem">⏳ Chargement…</div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:14px">
+    <button onclick="swScroll('sw-annonces',-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer">←</button>
+    <button onclick="swScroll('sw-annonces',1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer">→</button>
   </div>
 </section>
 
-<!-- PRESSE -->
-<section class="swipe-section mid">
-  <div class="swipe-head">
-    <div><div class="swipe-label">Articles de la semaine</div><div class="swipe-title">🗞 Presse locale</div></div>
-    <div class="swipe-right"><a href="presse.html" class="swipe-link">Tout voir →</a></div>
+<!-- 🗞 PRESSE -->
+<section style="background:var(--gf);padding:48px 8vw">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div class="section-tag">Articles de la semaine</div>
+      <h2>Presse locale</h2>
+    </div>
+    <a href="presse.html" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none">Tout voir →</a>
   </div>
-  <div class="swipe-track" id="sw-presse"><div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:40px 0;font-size:.8rem">⏳ Chargement…</div></div>
-  <div class="swipe-nav">
-    <button class="sw-btn" onclick="swScroll('sw-presse',-1)">←</button>
-    <button class="sw-btn" onclick="swScroll('sw-presse',1)">→</button>
+  <div id="sw-presse" style="display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px">
+    <div style="color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;padding:40px 0;font-size:.8rem">⏳ Chargement…</div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:14px">
+    <button onclick="swScroll('sw-presse',-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer">←</button>
+    <button onclick="swScroll('sw-presse',1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer">→</button>
   </div>
 </section>
 
-<!-- AVIS + NEWSLETTER slider -->
-<section class="swipe-section dark" style="border-top:1px solid rgba(255,255,255,.06)">
-  <div style="overflow:hidden"><div id="sl-avis" style="display:flex;transition:transform .4s cubic-bezier(.4,0,.2,1)">
-    <!-- AVIS -->
-    <div style="min-width:100%;box-sizing:border-box;max-width:580px">
-      <div class="section-tag">Votre retour compte</div>
-      <h2 style="margin-bottom:8px">Laissez <em>un avis</em></h2>
-      <p style="color:rgba(244,241,235,.55);font-size:.88rem;line-height:1.7;margin-bottom:18px">Aidez-nous à améliorer le site et le comité.</p>
-      <div style="display:flex;gap:8px;margin-bottom:16px" id="stars-row">
-        <span class="star" data-v="1" onclick="setNote(1)">★</span><span class="star" data-v="2" onclick="setNote(2)">★</span>
-        <span class="star" data-v="3" onclick="setNote(3)">★</span><span class="star" data-v="4" onclick="setNote(4)">★</span>
-        <span class="star" data-v="5" onclick="setNote(5)">★</span>
+<!-- AVIS + NEWSLETTER -->
+<section style="background:var(--noir);padding:48px 8vw;border-top:1px solid rgba(255,255,255,.06)">
+  <div style="overflow:hidden;max-width:600px">
+    <div id="sl-avis" style="display:flex;transition:transform .4s cubic-bezier(.4,0,.2,1)">
+      <div style="min-width:100%;box-sizing:border-box">
+        <div class="section-tag">Votre retour compte</div>
+        <h2 style="margin-bottom:8px">Laissez <em>un avis</em></h2>
+        <p style="color:rgba(244,241,235,.55);font-size:.88rem;line-height:1.7;margin-bottom:18px">Aidez-nous à améliorer le site et le comité.</p>
+        <div style="display:flex;gap:8px;margin-bottom:16px" id="stars-row">
+          <span class="star" data-v="1" onclick="setNote(1)">★</span><span class="star" data-v="2" onclick="setNote(2)">★</span>
+          <span class="star" data-v="3" onclick="setNote(3)">★</span><span class="star" data-v="4" onclick="setNote(4)">★</span>
+          <span class="star" data-v="5" onclick="setNote(5)">★</span>
+        </div>
+        <div class="fg"><label>Prénom (optionnel)</label><input type="text" id="avis-prenom" placeholder="Marie"></div>
+        <div class="fg" style="margin-top:10px"><label>Message *</label><textarea id="avis-msg" rows="3" placeholder="Ce qui vous a plu, ce qui manque…"></textarea></div>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn-sub" id="avisBtn" onclick="envoyerAvis()" style="width:auto;padding:10px 22px">Envoyer</button>
+          <button onclick="avisSlide(1)" style="background:none;border:none;color:var(--or);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer">Newsletter →</button>
+        </div>
+        <div class="msg" id="avisMsg"></div>
       </div>
-      <div class="fg"><label>Prénom (optionnel)</label><input type="text" id="avis-prenom" placeholder="Marie"></div>
-      <div class="fg" style="margin-top:10px"><label>Message *</label><textarea id="avis-msg" rows="3" placeholder="Ce qui vous a plu, ce qui manque…"></textarea></div>
-      <div style="display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap">
-        <button class="btn-sub" id="avisBtn" onclick="envoyerAvis()" style="width:auto;padding:10px 22px">Envoyer</button>
-        <button onclick="avisSlide(1)" style="background:none;border:none;color:var(--or);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer">Newsletter →</button>
+      <div style="min-width:100%;box-sizing:border-box">
+        <div class="section-tag">Restez informé·e</div>
+        <h2 style="margin-bottom:8px">La newsletter <em>du quartier</em></h2>
+        <p style="color:rgba(244,241,235,.55);font-size:.88rem;line-height:1.7;margin-bottom:18px">Actus et événements — 2 fois par mois, pas de spam.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+          <input type="email" id="nl-home-email" placeholder="marie@exemple.fr" style="flex:1;min-width:200px;background:var(--gf);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:11px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.88rem;outline:none" onkeydown="if(event.key==='Enter')nlHomeSubmit()">
+          <button class="btn-sub" id="nlHomeBtn" onclick="nlHomeSubmit()" style="width:auto;padding:11px 22px">📧 S'abonner</button>
+        </div>
+        <div class="msg" id="nlHomeMsg" style="margin-top:10px"></div>
+        <button onclick="avisSlide(-1)" style="background:none;border:none;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:14px">← Laisser un avis</button>
       </div>
-      <div class="msg" id="avisMsg"></div>
     </div>
-    <!-- NEWSLETTER -->
-    <div style="min-width:100%;box-sizing:border-box;max-width:580px">
-      <div class="section-tag">Restez informé·e</div>
-      <h2 style="margin-bottom:8px">La newsletter <em>du quartier</em></h2>
-      <p style="color:rgba(244,241,235,.55);font-size:.88rem;line-height:1.7;margin-bottom:18px">Actus et événements — 2 fois par mois, pas de spam.</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
-        <input type="email" id="nl-home-email" placeholder="marie@exemple.fr" style="flex:1;min-width:200px;background:var(--gf);border:1px solid rgba(255,255,255,.12);border-radius:3px;padding:11px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.88rem;outline:none" onkeydown="if(event.key==='Enter')nlHomeSubmit()">
-        <button class="btn-sub" id="nlHomeBtn" onclick="nlHomeSubmit()" style="width:auto;padding:11px 22px">📧 S'abonner</button>
-      </div>
-      <div class="msg" id="nlHomeMsg" style="margin-top:10px"></div>
-      <button onclick="avisSlide(-1)" style="background:none;border:none;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:14px">← Laisser un avis</button>
-    </div>
-  </div></div>
+  </div>
   <div style="display:flex;align-items:center;gap:10px;margin-top:20px">
-    <button onclick="avisSlide(-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:.9rem">←</button>
+    <button onclick="avisSlide(-1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer">←</button>
     <button class="dot active" id="av-dot-0" onclick="avisSlide(0,true)"></button>
     <button class="dot" id="av-dot-1" onclick="avisSlide(1,true)"></button>
-    <button onclick="avisSlide(1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:.9rem">→</button>
+    <button onclick="avisSlide(1)" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:32px;height:32px;border-radius:4px;cursor:pointer">→</button>
   </div>
 </section>
-
-<div class="mini-overlay" id="mini-overlay" onclick="closeMiniDrawer()"></div>
-<div class="mini-drawer" id="mini-drawer">
-  <div class="mini-drawer-head">
-    <h4 id="md-titre">Commentaires</h4>
-    <button onclick="closeMiniDrawer()" style="background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);width:30px;height:30px;border-radius:4px;cursor:pointer">✕</button>
-  </div>
-  <div class="mini-drawer-body" id="md-comments"></div>
-  <div class="mini-drawer-input">
-    <input type="text" id="md-prenom" placeholder="Votre prénom" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:8px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.84rem;outline:none;width:100%">
-    <div style="display:flex;gap:8px">
-      <input type="text" id="md-msg" placeholder="Ajouter un commentaire…" style="flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:9px 16px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.84rem;outline:none" onkeydown="if(event.key==='Enter')sendMiniComment()">
-      <button onclick="sendMiniComment()" style="background:var(--rouge);border:none;color:#fff;width:38px;height:38px;border-radius:50%;cursor:pointer;flex-shrink:0;font-size:.9rem">➤</button>
-    </div>
-  </div>
-</div>
 
 <footer>
   <div class="footer-grid">
@@ -726,7 +684,6 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <button class="tab-btn" data-tab="t-textes" onclick="switchTab(this)">✏️ Textes & Photos</button>
       <button class="tab-btn" data-tab="t-nl" onclick="switchTab(this)">📧 Newsletter</button>
       <button class="tab-btn" data-tab="t-stats" onclick="switchTab(this)">📊 Statistiques</button>
-      <button class="tab-btn" data-tab="t-avis" onclick="switchTab(this)">⭐ Avis</button>
     </div>
     <div class="admin-content">
       <div class="tab-panel active" id="t-adh">
@@ -903,12 +860,6 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
         </div>
       </div>
 
-      <!-- AVIS -->
-      <div class="tab-panel" id="t-avis">
-        <div class="panel-top"><span class="badge" id="avisCount">…</span><button class="btn-export" onclick="exportCSV('avis')">⬇ Export CSV</button></div>
-        <div id="avisBody"><div class="spin">⏳</div></div>
-      </div>
-
       <!-- STATS -->
       <div class="tab-panel" id="t-stats">
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px">
@@ -956,11 +907,11 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   </div><!-- fin admin-modal -->
 </div><!-- fin adminModal -->
 <script>
-
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const PWD='toulouse2026';
-const sb=supabase.createClient(SBU,SBK);
+const sb=supabase.createClient
+function swScroll(id,dir){const el=document.getElementById(id);if(el)el.scrollBy({left:dir*300,behavior:"smooth"});}(SBU,SBK);
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 // Clés de config Supabase → DOM
@@ -1138,9 +1089,8 @@ async function uploadCroppedPhoto(type){
 }
 
 function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
-
-
-
+</script>
+<script>
 // Actus public
 let actusPub=[];
 const CATS={Logement:'cat-Logement',Emploi:'cat-Emploi',Service:'cat-Service','Solidarité':'cat-Solidarité',Autre:'cat-Autre'};
@@ -1184,8 +1134,8 @@ function openDrActu(id){
   document.getElementById('dr-actu-cat').textContent=a.categorie;
   document.getElementById('dr-actu-date').textContent=new Date(a.date_publication).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
   document.getElementById('dr-actu-content').textContent=a.contenu;
-  const pageUrl=location.href;
-  const txt='📰 '+a.titre+' — CQP Toulouse';
+  const pageUrl=encodeURIComponent(location.href);
+  const txt=encodeURIComponent('📰 '+a.titre+' — CQP Toulouse');
   document.getElementById('dr-actu-share').innerHTML=buildShareBtns(pageUrl,txt,'dr-actu-copy');
   openDr('dActu');
 }
@@ -1197,8 +1147,8 @@ function openDrAnn(id){
   document.getElementById('dr-ann-cat').className='ann-cat '+(CATS[a.categorie]||'cat-Autre');
   document.getElementById('dr-ann-meta').textContent='📍 '+a.quartier+' · 👤 '+a.prenom+' · '+new Date(a.date_depot).toLocaleDateString('fr-FR');
   document.getElementById('dr-ann-content').textContent=a.description;
-  const pageUrl=location.href+'#annonces';
-  const txt='📋 Annonce: '+a.titre+' ('+a.quartier+') — CQP Toulouse';
+  const pageUrl=encodeURIComponent(location.href+'#annonces');
+  const txt=encodeURIComponent('📋 Annonce: '+a.titre+' ('+a.quartier+') — CQP Toulouse');
   document.getElementById('dr-ann-share').innerHTML=buildShareBtns(pageUrl,txt,'dr-ann-copy');
   // Coordonnées directes
   let html='';
@@ -1213,13 +1163,15 @@ function openDr(id){document.getElementById(id).classList.add('open');document.b
 function closeDr(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
 
 // ===== BOUTONS PARTAGE =====
-function buildShareBtns(rawUrl,text,copyId){
-  const url=encodeURIComponent(rawUrl);
-  const txt=encodeURIComponent(text);
-  return `<a class="share-btn share-wa" href="https://api.whatsapp.com/send?text=${txt}%20${url}" target="_blank" rel="noopener">WhatsApp</a>
-  <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${txt}" target="_blank" rel="noopener">Facebook</a>
-  <a class="share-btn share-x" href="https://twitter.com/intent/tweet?text=${txt}&url=${url}" target="_blank" rel="noopener">𝕏</a>
-  <button class="share-btn share-copy" id="${copyId}" onclick="copyLink(this,'${rawUrl.replace(/'/g,"\\'")}')">🔗 Copier</button>`;
+function buildShareBtns(url,text,copyId){
+  return `<a class="share-btn share-wa" href="https://wa.me/?text=${text}%20${url}" target="_blank" rel="noopener">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.93 1.395 5.6L0 24l6.545-1.371A11.94 11.94 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.792 9.792 0 01-5.017-1.378l-.36-.214-3.733.978.997-3.648-.234-.374A9.771 9.771 0 012.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"/></svg>
+    WhatsApp</a>
+  <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${url}" target="_blank" rel="noopener">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    Facebook</a>
+  <a class="share-btn share-x" href="https://twitter.com/intent/tweet?text=${text}&url=${url}" target="_blank" rel="noopener">𝕏 Twitter</a>
+  <button class="share-btn share-copy" id="${copyId}" onclick="copyLink(this,'${decodeURIComponent(url)}')">🔗 Copier le lien</button>`;
 }
 function copyLink(btn,url){
   navigator.clipboard.writeText(url).then(()=>{
@@ -1230,141 +1182,63 @@ function copyLink(btn,url){
 
 // ===== FLUX RSS PRESSE LOCALE =====
 
-// ===== ADMIN AVIS =====
-let avisCache=[];
-async function renderAvis(){
-  const b=document.getElementById('avisBody');b.innerHTML='<div class="spin">⏳</div>';
-  try{
-    const{data,error}=await sb.from('avis').select('*').order('created_at',{ascending:false});
-    if(error)throw error;avisCache=data||[];
-    document.getElementById('avisCount').textContent=avisCache.length+' avis';
-    if(!avisCache.length){b.innerHTML='<div class="empty"><span>⭐</span>Aucun avis pour le moment.</div>';return;}
-    const moy=(avisCache.reduce((s,a)=>s+a.note,0)/avisCache.length).toFixed(1);
-    b.innerHTML=`<div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px">
-      <span style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--or)">${moy}</span>
-      <div><div style="color:var(--or);font-size:1.2rem">${'★'.repeat(Math.round(moy))}${'☆'.repeat(5-Math.round(moy))}</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;color:rgba(244,241,235,.4);text-transform:uppercase">Moyenne sur ${avisCache.length} avis</div></div>
-    </div>
-    <table><thead><tr><th>#</th><th>Prénom</th><th>Note</th><th>Message</th><th>Date</th><th></th></tr></thead><tbody>${avisCache.map((a,i)=>`<tr>
-      <td class="dt">${i+1}</td><td>${esc(a.prenom)}</td>
-      <td><span style="color:var(--or)">${'★'.repeat(a.note)}</span></td>
-      <td style="max-width:300px">${esc(a.message)}</td>
-      <td><span class="dt">${new Date(a.created_at).toLocaleDateString('fr-FR')}</span></td>
-      <td><button class="btn-del" onclick="del('avis',${a.id},renderAvis)">✕</button></td>
-    </tr>`).join('')}</tbody></table>`;
-  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+// ===== BI-CARROUSELS =====
+const bicState={ap:'actus',ea:'events'};
+function switchBic(bic,panel){
+  bicState[bic]=panel;
+  const tabs=document.getElementById('tabs-'+bic);
+  tabs.querySelectorAll('.bic-tab').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if(bic==='ap'){
+    document.getElementById('sw-actus').style.display=panel==='actus'?'flex':'none';
+    document.getElementById('sw-presse').style.display=panel==='presse'?'flex':'none';
+    document.getElementById('bic-ap-link').href=panel==='actus'?'actus.html':'presse.html';
+    document.getElementById('bic-ap-link').textContent=panel==='actus'?'Toutes les actus →':'Tous les articles →';
+  } else {
+    document.getElementById('sw-events').style.display=panel==='events'?'flex':'none';
+    document.getElementById('sw-annonces').style.display=panel==='annonces'?'flex':'none';
+    document.getElementById('bic-ea-link').href=panel==='events'?'evenements.html':'annonces.html';
+    document.getElementById('bic-ea-link').textContent=panel==='events'?'Tous les événements →':'Toutes les annonces →';
+    document.getElementById('bic-ea-cta').style.display=panel==='annonces'?'flex':'none';
+  }
 }
-// ===== MINI SLIDER AVIS/NEWSLETTER =====
-let avisIdx=0;
-function avisSlide(val, abs=false){
-  avisIdx = abs ? val : Math.max(0,Math.min(1,avisIdx+val));
-  const sl=document.getElementById('sl-avis');
-  if(sl) sl.style.transform=`translateX(-${avisIdx*100}%)`;
-  [0,1].forEach(i=>{
-    const d=document.getElementById('av-dot-'+i);
-    if(d) d.classList.toggle('active',i===avisIdx);
-  });
+function scrollBic(bic,dir){
+  const panel=bicState[bic];
+  const map={ap:{actus:'bic-actus',presse:'bic-presse'},ea:{events:'bic-events',annonces:'bic-annonces'}};
+  const id=map[bic]?.[panel];
+  if(!id)return;
+  document.getElementById(id).scrollBy({left:dir*300,behavior:'smooth'});
 }
-// Swipe tactile sur le mini slider
-(function(){
-  const wrap=document.getElementById('sl-avis');
-  if(!wrap)return;
-  let x0=null;
-  wrap.parentElement.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});
-  wrap.parentElement.addEventListener('touchend',e=>{
-    if(x0===null)return;
-    const dx=e.changedTouches[0].clientX-x0;
-    if(Math.abs(dx)>50)avisSlide(dx<0?1:-1);
-    x0=null;
-  },{passive:true});
-})();
-// ===== AVIS =====
-let noteChoisie=0;
-function setNote(n){
-  noteChoisie=n;
-  document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('active',i<n));
-}
-document.querySelectorAll('.star').forEach(s=>{
-  s.addEventListener('mouseover',()=>document.querySelectorAll('.star').forEach((x,i)=>x.classList.toggle('hover',i<parseInt(s.dataset.v))));
-  s.addEventListener('mouseout',()=>document.querySelectorAll('.star').forEach(x=>x.classList.remove('hover')));
-});
-async function envoyerAvis(){
-  const msg=document.getElementById('avis-msg').value.trim();
-  const prenom=document.getElementById('avis-prenom').value.trim()||'Anonyme';
-  if(!noteChoisie){showMsg('avisMsg','err','⚠ Choisissez une note (1 à 5 étoiles).');return;}
-  if(!msg){showMsg('avisMsg','err','⚠ Écrivez votre message.');return;}
-  const btn=document.getElementById('avisBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
-  try{
-    const{error}=await sb.from('avis').insert({prenom,note:noteChoisie,message:msg});
-    if(error)throw error;
-    showMsg('avisMsg','ok','🙏 Merci pour votre retour ! Nous le lirons avec attention.');
-    document.getElementById('avis-msg').value='';document.getElementById('avis-prenom').value='';
-    noteChoisie=0;document.querySelectorAll('.star').forEach(s=>s.classList.remove('active'));
-    setTimeout(()=>{btn.disabled=false;btn.textContent='✍️ Envoyer mon avis';},5000);
-  }catch(e){showMsg('avisMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='✍️ Envoyer mon avis';}
-}
-// ===== NEWSLETTER INLINE =====
-async function nlHomeSubmit(){
-  const email=document.getElementById('nl-home-email').value.trim();
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('nlHomeMsg','err','⚠ Email invalide.');return;}
-  const btn=document.getElementById('nlHomeBtn');btn.disabled=true;btn.textContent='⏳…';
-  try{
-    const{error}=await sb.from('newsletter_abonnes').insert({email});
-    if(error){if(error.code==='23505')showMsg('nlHomeMsg','ok','✅ Vous êtes déjà abonné·e !');else throw error;}
-    else showMsg('nlHomeMsg','ok','🎉 Bienvenue ! Vous recevrez notre prochaine newsletter.');
-    document.getElementById('nl-home-email').value='';
-    setTimeout(()=>{btn.disabled=false;btn.textContent='📧 S\'abonner gratuitement';},5000);
-  }catch(e){showMsg('nlHomeMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='📧 S\'abonner gratuitement';}
-}
-// ===== SLIDER =====
-let sliderIdx=0;
-const SLIDER_COUNT=4;
-
-function sliderGoTo(idx){
-  sliderIdx=Math.max(0,Math.min(SLIDER_COUNT-1,idx));
-  document.getElementById('slider').style.transform=`translateX(-${sliderIdx*100}%)`;
-  document.getElementById('slider').style.transition='transform .4s cubic-bezier(.4,0,.2,1)';
-  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===sliderIdx));
-  document.getElementById('arr-left').style.opacity=sliderIdx===0?'0.3':'1';
-  document.getElementById('arr-right').style.opacity=sliderIdx===SLIDER_COUNT-1?'0.3':'1';
-}
-function sliderGo(dir){sliderGoTo(sliderIdx+dir);}
-
-// Swipe tactile
-(function(){
-  let x0=null;
-  const sl=document.getElementById('slider').parentElement;
-  sl.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});
-  sl.addEventListener('touchend',e=>{
-    if(x0===null)return;
-    const dx=e.changedTouches[0].clientX-x0;
-    if(Math.abs(dx)>50)sliderGo(dx<0?1:-1);
-    x0=null;
-  },{passive:true});
-})();
-
-// ===== SWIPE SECTIONS =====
-function swScroll(id,dir){const el=document.getElementById(id);if(el)el.scrollBy({left:dir*300,behavior:"smooth"});}
-
-function carScroll(id,dir){const el=document.getElementById(id);if(el)el.scrollBy({left:dir*280,behavior:'smooth'});}
-
+function scroll(id,dir){const el=document.getElementById(id);if(!el)return;el.scrollBy({left:dir*300,behavior:'smooth'});}
 async function loadPresse(){
-  const g=document.getElementById('sw-presse');if(!g)return;
-  g.innerHTML='<div class="slide-spin">⏳ Chargement…</div>';
+  const g=document.getElementById("bic-presse");if(!g)return;
   try{
-    const res=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/rss-proxy');
+    const res=await fetch("https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/rss-proxy");
     if(!res.ok)throw new Error();
-    const data=await res.json();
-    const items=(data.items||[]).slice(0,8);
-    if(!items.length){g.innerHTML='<div class="slide-spin"><a href="presse.html" style="color:var(--or)">Voir la presse →</a></div>';return;}
-    g.innerHTML=items.map(a=>`<a class="slide-presse-card" href="${a.link}" target="_blank" rel="noopener">
-      <div class="ps">${esc(a.source.substring(0,22))}</div>
-      <div class="pt">${esc(a.title.substring(0,70))}${a.title.length>70?'…':''}</div>
-      <div class="pd">${a.date?new Date(a.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}):''}</div>
-    </a>`).join('');
-  }catch(e){g.innerHTML='<div class="slide-spin"><a href="presse.html" style="color:var(--or)">Voir la presse →</a></div>';}
+    const data=await res.json();const items=(data.items||[]).slice(0,8);
+    if(!items.length){g.innerHTML='<div style="min-width:100%;text-align:center;padding:40px"><a href="presse.html" style="color:var(--or);text-decoration:none">Voir la presse \u2192</a></div>';return;}
+    g.innerHTML=items.map(a=>`<a class="card-s" href="${a.link}" target="_blank" rel="noopener"><div class="src">${esc(a.source.substring(0,22))}</div><div class="ttl">${esc(a.title)}</div><div class="dt">${a.date?new Date(a.date).toLocaleDateString("fr-FR",{day:"2-digit",month:"long"}):""}</div></a>`).join("");
+  }catch(e){g.innerHTML='<div style="min-width:100%;padding:40px;text-align:center"><a href="presse.html" style="color:var(--or);text-decoration:none">Voir la presse \u2192</a></div>';}
 }
 
+async function deposerAnnonce(){
+  const prenom=document.getElementById('a-prenom').value.trim(),nom=document.getElementById('a-nom').value.trim();
+  const email=document.getElementById('a-email').value.trim(),telephone=document.getElementById('a-tel').value.trim();
+  const categorie=document.getElementById('a-cat').value,quartier=document.getElementById('a-quartier').value;
+  const titre=document.getElementById('a-titre').value.trim(),description=document.getElementById('a-desc').value.trim();
+  const rgpd=document.getElementById('a-rgpd').checked;
+  if(!prenom||!nom||!email||!categorie||!quartier||!titre||!description){showMsg('depotMsg','err','⚠ Remplis tous les champs obligatoires.');return;}
+  if(!rgpd){showMsg('depotMsg','err','⚠ Accepte les conditions.');return;}
+  const btn=document.getElementById('depotBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{
+    const{error}=await sb.from('annonces').insert({prenom,nom,email,telephone,quartier,categorie,titre,description,contact:email});
+    if(error)throw error;
+    showMsg('depotMsg','ok','✅ Annonce soumise ! Elle sera publiée après validation (24–48h).');
+    ['a-prenom','a-nom','a-email','a-tel','a-titre','a-desc'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('a-cat').value='';document.getElementById('a-quartier').value='';document.getElementById('a-rgpd').checked=false;
+    setTimeout(()=>{btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';},8000);
+  }catch(e){showMsg('depotMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';}
+}
 
 async function soumettre(){
   const prenom=document.getElementById('f-prenom').value.trim(),nom=document.getElementById('f-nom').value.trim();
@@ -1384,10 +1258,8 @@ async function soumettre(){
   }catch(e){showMsg('formMsg','err','⚠ Erreur réseau.');btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';}
 }
 function showMsg(id,type,txt){const m=document.getElementById(id);m.className='msg '+type;m.textContent=txt;m.style.display='block';}
-
-
-// === ADMIN + EVENTS ===
-
+</script>
+<script>
 // Login
 function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
 function checkPwd(){if(document.getElementById('pwdInput').value===PWD){closeM('loginModal');loadEditors();renderAdh();document.getElementById('adminModal').classList.add('open');}else{document.getElementById('loginErr').style.display='block';document.getElementById('pwdInput').value='';}}
@@ -1400,7 +1272,6 @@ function switchTab(btn){
   if(t==='t-adh')renderAdh();if(t==='t-actus')renderActusAdmin();
   if(t==='t-ann')renderAnnAdmin();if(t==='t-evt')renderEvtAdmin();
   if(t==='t-nl')renderNlAdmin();
-  if(t==='t-avis')renderAvis();
   if(t==='t-stats'){
     renderStats();
     if(statsInterval)clearInterval(statsInterval);
@@ -1450,6 +1321,7 @@ async function publierActu(){
     if(error)throw error;
     showMsg('actuMsg','ok','✅ Publié !');
     document.getElementById('actu-titre').value='';document.getElementById('actu-contenu').value='';
+    setTimeout(()=>{document.getElementById('actuFormBox').classList.remove('open');renderActusAdmin();loadActus();},1500);
   }catch(e){showMsg('actuMsg','err','⚠ '+e.message);}
 }
 async function renderActusAdmin(){
@@ -1458,8 +1330,10 @@ async function renderActusAdmin(){
     if(error)throw error;actusAdmCache=data||[];
     document.getElementById('actusCount').textContent=actusAdmCache.length+' actu'+(actusAdmCache.length>1?'s':'');
     if(!actusAdmCache.length){b.innerHTML='<div class="empty"><span>📰</span>Aucune.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Date</th><th>Visible</th><th>Actions</th></tr></thead><tbody>${actusAdmCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td><span class="dt">${new Date(a.date_publication).toLocaleDateString('fr-FR')}</span></td><td>${a.visible?'<span class="s-ok">Oui</span>':'<span class="s-ko">Non</span>'}</td><td style="display:flex;gap:6px"><button class="btn-ok" onclick="toggleVis(${a.id},${a.visible})">${a.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('actus',${a.id},()=>{renderActusAdmin();loadActus();})">✕</button></td></tr>`).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
+async function toggleVis(id,cur){await sb.from('actus').update({visible:!cur}).eq('id',id);renderActusAdmin();loadActus();}
 
 // Admin annonces
 let annAdmCache=[];
@@ -1469,8 +1343,10 @@ async function renderAnnAdmin(){
     if(error)throw error;annAdmCache=data||[];
     document.getElementById('annCount').textContent=annAdmCache.length+' annonce'+(annAdmCache.length>1?'s':'');
     if(!annAdmCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucune.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Quartier</th><th>Email</th><th>Tél</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${annAdmCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td title="${esc(a.description)}">${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td>${esc(a.quartier)}</td><td><span class="dt">${esc(a.email)}</span></td><td><span class="dt">${esc(a.telephone||'—')}</span></td><td>${a.validee?'<span class="s-ok">Validée</span>':'<span class="s-ko">En attente</span>'}</td><td style="display:flex;gap:5px">${!a.validee?`<button class="btn-ok" onclick="valAnn(${a.id},true)">✅</button>`:`<button class="btn-ko" onclick="valAnn(${a.id},false)">↩</button>`}<button class="btn-del" onclick="del('annonces',${a.id},()=>{renderAnnAdmin();loadAnnonces();})">✕</button></td></tr>`).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
+async function valAnn(id,v){await sb.from('annonces').update({validee:v}).eq('id',id);renderAnnAdmin();loadAnnonces();}
 
 // ===== ÉVÉNEMENTS PUBLIC =====
 let eventsPub=[];
@@ -1567,6 +1443,7 @@ async function creerEvt(){
     showMsg('evtMsg','ok','✅ Événement créé !');
     ['evt-titre','evt-desc','evt-lieu'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('evt-date').value='';document.getElementById('evt-fin').value='';
+    setTimeout(()=>{document.getElementById('evtFormBox').classList.remove('open');renderEvtAdmin();loadEvents();},1500);
   }catch(e){showMsg('evtMsg','err','⚠ '+e.message);}
 }
 async function renderEvtAdmin(){
@@ -1584,10 +1461,12 @@ async function renderEvtAdmin(){
       const d=new Date(e.date_debut);const nb=counts[e.id]||0;
       const plMax=e.places_max>0?` / ${e.places_max}`:'';
       const couleur=e.places_max>0&&nb>=e.places_max?'color:#ff6b6b':'color:#4CAF50';
+      return `<tr><td class="dt">${i+1}</td><td>${esc(e.titre)}</td><td><span class="dt">${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span></td><td>${esc(e.lieu)}</td><td><span class="qb">${esc(e.categorie)}</span></td><td><button class="btn-ok" style="background:none;border:1px solid rgba(255,255,255,.2)" onclick="voirInscrits(${e.id},'${esc(e.titre).replace(/'/g,"\\'")}')"><span style="${couleur}">👥 ${nb}${plMax}</span></button></td><td>${e.validee?'<span class="s-ok">Validé</span>':'<span class="s-ko">Proposition</span>'}</td><td style="display:flex;gap:5px;flex-wrap:wrap">${!e.validee?`<button class="btn-ok" onclick="valEvt(${e.id},true)">✅</button>`:''}<button class="btn-${e.visible?'ko':'ok'}" onclick="toggleEvtVis(${e.id},${e.visible})">${e.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('evenements',${e.id},()=>{renderEvtAdmin();loadEvents();})">✕</button></td></tr>`;
     }).join('')}</tbody></table>`;
   }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
 async function valEvt(id,v){await sb.from('evenements').update({validee:v}).eq('id',id);renderEvtAdmin();}
+async function toggleEvtVis(id,cur){await sb.from('evenements').update({visible:!cur}).eq('id',id);renderEvtAdmin();loadEvents();}
 
 async function voirInscrits(evtId,titre){
   const b=document.getElementById('inscrits-body');
@@ -1611,8 +1490,7 @@ function exportCSV(type){
   const maps={
     adh:{c:()=>adhCache,h:['#','Prénom','Nom','Email','Quartier','Date'],r:(a,i)=>[i+1,a.prenom,a.nom,a.email,a.quartier,new Date(a.date_inscription).toLocaleDateString('fr-FR')]},
     ann:{c:()=>annAdmCache,h:['#','Titre','Cat','Quartier','Prénom','Nom','Email','Téléphone','Description','Date','Validée'],r:(a,i)=>[i+1,a.titre,a.categorie,a.quartier,a.prenom,a.nom,a.email,a.telephone||'',a.description,new Date(a.date_depot).toLocaleDateString('fr-FR'),a.validee?'Oui':'Non']},
-    nl:{c:()=>nlCache,h:['#','Prénom','Email','Quartier','Date','Actif'],r:(n,i)=>[i+1,n.prenom||'',n.email,n.quartier||'',new Date(n.date_inscription).toLocaleDateString('fr-FR'),n.actif?'Oui':'Non']},
-    avis:{c:()=>avisCache,h:['#','Prénom','Note','Message','Date'],r:(a,i)=>[i+1,a.prenom,a.note+'★',a.message,new Date(a.created_at).toLocaleDateString('fr-FR')]}
+    nl:{c:()=>nlCache,h:['#','Prénom','Email','Quartier','Date','Actif'],r:(n,i)=>[i+1,n.prenom||'',n.email,n.quartier||'',new Date(n.date_inscription).toLocaleDateString('fr-FR'),n.actif?'Oui':'Non']}
   };
   const m=maps[type];if(!m)return;const d=m.c();if(!d.length){alert('Aucune donnée.');return;}
   const rows=[m.h,...d.map(m.r)];
@@ -1630,24 +1508,34 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');cl
 function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
 function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
 
-// ===== TRACKING VIA EDGE FUNCTION =====
-  const TRACK='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/track';
+// ===== TRACKING ANONYME =====
+function initTracking(page){
+  // ID de session unique par onglet navigateur
   let sid=sessionStorage.getItem('cqp_sid');
   if(!sid){sid=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',sid);}
-  function ping(type){
-    fetch(TRACK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid,page,type})}).catch(()=>{});
+  // Enregistrer la visite
+  sb.from('page_views').insert({session_id:sid,page}).catch(()=>{});
+  // Ping "en ligne" toutes les 30s
+  async function ping(){
+    await sb.from('active_sessions').upsert({session_id:sid,page,last_seen:new Date().toISOString()},{onConflict:'session_id'}).catch(()=>{});
+    // Nettoyer les sessions expirées (> 2 min)
+    await sb.from('active_sessions').delete().lt('last_seen',new Date(Date.now()-120000).toISOString()).catch(()=>{});
   }
-  ping('view');
-  setInterval(()=>ping('ping'),30000);
+  ping();
+  setInterval(ping,30000);
+  // Supprimer la session à la fermeture
+  window.addEventListener('beforeunload',()=>{sb.from('active_sessions').delete().eq('session_id',sid).catch(()=>{});});
 }
 
 // ===== STATS ADMIN =====
 let statsInterval=null;
 async function renderStats(){
   try{
-    // 1. En ligne maintenant — sessions actives dans les 90 dernières secondes
-    const cutoff90s = new Date(Date.now()-90000).toISOString();
-    const{count:liveN}=await sb.from('active_sessions').select('*',{count:'exact',head:true}).gte('last_seen',cutoff90s);
+    // 1. En ligne maintenant (sessions actives dans les 2 dernières minutes)
+    const{data:live}=await sb.from('active_sessions').select('session_id',{count:'exact',head:true});
+    const liveCount=live||0;
+    // Requête count correcte
+    const{count:liveN}=await sb.from('active_sessions').select('*',{count:'exact',head:true});
     document.getElementById('stat-live').textContent=liveN??'0';
 
     // 2. Visites 24h
@@ -1693,7 +1581,12 @@ async function renderStats(){
   }catch(e){console.warn('Stats error:',e);}
 }
 // Init
-
+loadConfig();
+loadActus();
+loadAnnonces();
+loadEvents();
+loadPresse();
+initTracking('/');
 </script>
 </body>
 </html>
