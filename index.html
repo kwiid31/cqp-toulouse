@@ -317,7 +317,54 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 @media(max-width:700px){.nav-center{display:none}.burger{display:flex}.nav-right .btn-adhere{display:none}}
 @media(max-width:600px){.actus-grid,.events-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr}}
 
-/* QUI-TEXTE : 2 slides sur mobile uniquement */
+/* ===== OPTIMISATIONS MOBILE ===== */
+@media(max-width:700px){
+  /* Hero réduit */
+  .hero{min-height:70vh}
+  .hero-content h1{font-size:clamp(2.8rem,14vw,5rem)}
+  .hero-sub{font-size:.8rem}
+
+  /* Sections slider : titre + séparateur visible */
+  .slide{border-top:3px solid var(--rouge);position:relative}
+  .slide-label{font-size:.58rem;letter-spacing:3px}
+  .slide-title{font-size:1.6rem}
+
+  /* Navigation mobile sticky en bas (style app) */
+  .mobile-bottom-nav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;
+    background:rgba(13,13,13,.97);border-top:2px solid var(--rouge);
+    z-index:300;padding:8px 0 max(8px,env(safe-area-inset-bottom));
+  }
+  .mobile-bottom-nav a{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+    text-decoration:none;color:rgba(244,241,235,.5);
+    font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:1px;text-transform:uppercase;
+    transition:color .2s;padding:4px 0;
+  }
+  .mobile-bottom-nav a.active,.mobile-bottom-nav a:hover{color:var(--rouge)}
+  .mobile-bottom-nav .nav-icon{font-size:1.3rem;line-height:1}
+  /* Espace pour la nav du bas */
+  body{padding-bottom:72px}
+
+  /* Slider : dots plus visibles */
+  .slider-dots{gap:8px;padding:4px 0}
+  .dot{width:10px;height:10px}
+  .dot.active{width:28px}
+
+  /* Sections bien délimitées */
+  .slide-head{flex-direction:column;gap:10px;align-items:flex-start}
+
+  /* Flèches slider plus grandes sur mobile */
+  .slider-arrow{width:40px;height:40px;font-size:1.1rem}
+
+  /* Banderole police plus petite */
+  .banderole-item{font-size:.7rem;padding:0 24px}
+
+  /* Cards dans slider pleine largeur presque */
+  .slide-track .actu-card,
+  .slide-track .event-card,
+  .slide-track .annonce-card{width:82vw}
+}
 .qui-slides{display:contents} /* desktop : contenu normal visible */
 .qui-slide{display:contents}
 .qui-dots{display:none}
@@ -618,6 +665,24 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     </div>
   </div>
 </section>
+
+<nav class="mobile-bottom-nav" id="bottom-nav">
+  <a href="#actus" onclick="sliderGoTo(0)">
+    <span class="nav-icon">📰</span>Actus
+  </a>
+  <a href="#evenements" onclick="sliderGoTo(2)">
+    <span class="nav-icon">📅</span>Événements
+  </a>
+  <a href="#annonces-section" onclick="sliderGoTo(3)">
+    <span class="nav-icon">📋</span>Annonces
+  </a>
+  <a href="presse.html">
+    <span class="nav-icon">🗞</span>Presse
+  </a>
+  <a href="#adhesion">
+    <span class="nav-icon">✊</span>Rejoindre
+  </a>
+</nav>
 
 <footer>
   <div class="footer-grid">
@@ -949,7 +1014,14 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <div class="tab-panel" id="t-wa">
         <div style="max-width:680px">
           <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;margin-bottom:6px">📲 WhatsApp → Site</h3>
-          <p style="font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:20px;line-height:1.5">Colle un message WhatsApp ci-dessous. L'IA analyse le texte et génère automatiquement une actu ou un événement prêt à publier.</p>
+          <p style="font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:20px;line-height:1.5">Colle un message WhatsApp ou uploade directement une photo de tract/affiche. L'IA analyse et génère automatiquement une actu ou un événement.</p>
+          <!-- Upload image -->
+          <div style="border:2px dashed rgba(255,255,255,.15);border-radius:6px;padding:16px;text-align:center;cursor:pointer;position:relative;margin-bottom:14px;transition:all .2s" id="wa-upload-zone" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.15)'">
+            <input type="file" accept="image/*" onchange="handleWAImage(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+            <span style="font-size:1.6rem;display:block;margin-bottom:4px">📸</span>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:rgba(244,241,235,.4)" id="wa-img-label">Uploader un tract ou une affiche (optionnel)</span>
+          </div>
+          <img id="wa-img-preview" style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:4px;margin-bottom:14px" alt="Aperçu">
           <div class="fg">
             <label>Texte du message WhatsApp</label>
             <textarea id="wa-texte" rows="6" placeholder="Ex: Salut ! On organise une réunion samedi 19 avril à 14h salle des fêtes du Mirail pour parler des expulsions..."></textarea>
@@ -1345,41 +1417,56 @@ function avisSlide(val, abs=false){
   },{passive:true});
 })();
 // ===== WHATSAPP IA =====
-let waResult = null;
+let waResult=null;
+let waImageBase64=null;
+let waImageType=null;
+
+function handleWAImage(input){
+  const file=input.files[0];if(!file)return;
+  waImageType=file.type||'image/jpeg';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const b64=e.target.result.split(',')[1];
+    waImageBase64=b64;
+    document.getElementById('wa-img-preview').src=e.target.result;
+    document.getElementById('wa-img-preview').style.display='block';
+    document.getElementById('wa-img-label').textContent='Image sélectionnée ✓ — '+file.name;
+    document.getElementById('wa-upload-zone').style.borderColor='var(--or)';
+  };
+  reader.readAsDataURL(file);
+}
+
 async function analyseWA(){
-  const texte = document.getElementById('wa-texte').value.trim();
-  if(!texte){showMsg('wa-msg','err','⚠ Colle un texte WhatsApp.');return;}
-  if(texte.length < 20){showMsg('wa-msg','err','⚠ Texte trop court.');return;}
-  const btn = document.getElementById('wa-btn');
+  const texte=document.getElementById('wa-texte').value.trim();
+  if(!texte&&!waImageBase64){showMsg('wa-msg','err','⚠ Colle un texte ou uploade une image.');return;}
+  const btn=document.getElementById('wa-btn');
   btn.disabled=true;btn.textContent='⏳ Analyse en cours…';
   document.getElementById('wa-msg').className='msg';document.getElementById('wa-msg').style.display='none';
   try{
-    const res = await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/whatsapp-ia',{
-      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texte})
+    const body={texte:texte||''};
+    if(waImageBase64){body.image_base64=waImageBase64;body.image_type=waImageType;}
+    const res=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/whatsapp-ia',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
     });
-    const data = await res.json();
+    const data=await res.json();
     if(!data.ok)throw new Error(data.error||'Erreur IA');
-    waResult = data.result;
-    const r = waResult;
-    // Remplir le formulaire
-    document.getElementById('wa-type-badge').textContent = r.type==='evenement'?'📅 Événement':'📰 Actualité';
-    document.getElementById('wa-resume').textContent = r.resume||'';
-    document.getElementById('wa-titre').value = r.titre||'';
-    document.getElementById('wa-categorie').value = r.categorie||'';
+    waResult=data.result;
+    const r=waResult;
+    document.getElementById('wa-type-badge').textContent=r.type==='evenement'?'📅 Événement':'📰 Actualité';
+    document.getElementById('wa-resume').textContent=r.resume||'';
+    document.getElementById('wa-titre').value=r.titre||'';
+    document.getElementById('wa-categorie').value=r.categorie||'';
     if(r.type==='evenement'){
       document.getElementById('wa-contenu-wrap').style.display='none';
       document.getElementById('wa-lieu-wrap').style.display='block';
       document.getElementById('wa-date-wrap').style.display='block';
-      document.getElementById('wa-lieu').value = r.lieu||'';
-      if(r.date_debut){
-        const d = new Date(r.date_debut);
-        document.getElementById('wa-date').value = d.toISOString().slice(0,16);
-      }
-    } else {
+      document.getElementById('wa-lieu').value=r.lieu||'';
+      if(r.date_debut){try{const d=new Date(r.date_debut);document.getElementById('wa-date').value=d.toISOString().slice(0,16);}catch{}}
+    }else{
       document.getElementById('wa-contenu-wrap').style.display='block';
       document.getElementById('wa-lieu-wrap').style.display='none';
       document.getElementById('wa-date-wrap').style.display='none';
-      document.getElementById('wa-contenu').value = r.contenu||'';
+      document.getElementById('wa-contenu').value=(r.contenu||'').replace(/\\n/g,'\n');
     }
     document.getElementById('wa-result').style.display='block';
   }catch(e){showMsg('wa-msg','err','⚠ '+e.message);}
