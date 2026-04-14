@@ -2,7 +2,14 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="../manifest.json">
+  <meta name="theme-color" content="#C8102E">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CQP Toulouse">
+  <link rel="apple-touch-icon" href="../icons/icon-192.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Annonces — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -380,6 +387,15 @@ async function sendCmt(){
   document.getElementById('mini-msg').value='';
   await sb.from('commentaires').insert({item_type:miniType,item_id:miniItemId,prenom,message:msg});
   await refreshCmts();
+}
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/cqp-toulouse/sw.js')
+      .then(()=>console.log('SW enregistré'))
+      .catch(e=>console.warn('SW erreur:',e));
+  });
 }
 </script>
 </body></html>
