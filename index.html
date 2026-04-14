@@ -41,7 +41,7 @@ nav{position:sticky;top:0;z-index:200;background:rgba(13,13,13,.97);backdrop-fil
 .mobile-menu a:hover,.mobile-menu button:hover{color:var(--or)}
 
 
-.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+.hero{min-height:75vh;display:flex;align-items:center;position:relative;overflow:hidden}
 .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
 .hero-word{position:absolute;right:-2%;bottom:-5%;font-family:'Bebas Neue',sans-serif;font-size:22vw;color:rgba(200,16,46,.06);line-height:1;pointer-events:none;user-select:none}
 .hero-content{position:relative;z-index:1;padding:0 8vw;max-width:880px}
@@ -330,14 +330,29 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .hs-nav{display:flex;align-items:center;gap:8px;margin-top:14px}
 .hs-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(244,241,235,.6);width:34px;height:34px;border-radius:4px;cursor:pointer;font-size:.9rem;transition:all .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .hs-btn:hover{background:rgba(255,255,255,.14);border-color:var(--or);color:var(--or)}
-.hs-more{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none;margin-left:6px}
-.hs-cta{margin-left:auto;background:none;border:1px solid rgba(200,16,46,.4);color:var(--rouge);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:3px;cursor:pointer;text-decoration:none;transition:all .2s}
-.hs-cta:hover{background:rgba(200,16,46,.15)}
+.hs-more{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none;border:1px solid rgba(245,166,35,.3);padding:6px 14px;border-radius:3px;transition:all .2s}
+.hs-more:hover{background:rgba(245,166,35,.1)}
+.hs-cta{background:var(--rouge);border:none;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;padding:7px 16px;border-radius:3px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:opacity .2s}
+.hs-cta:hover{opacity:.85}
+/* Barre fixe mobile Publier */
+.mob-pub-bar{display:none}
+@media(max-width:700px){
+  .mob-pub-bar{display:flex;align-items:center;justify-content:space-around;position:fixed;bottom:0;left:0;right:0;background:rgba(13,13,13,.97);border-top:1px solid rgba(255,255,255,.08);padding:8px 16px max(8px,env(safe-area-inset-bottom));z-index:300}
+  .mob-pub-link{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:rgba(244,241,235,.45);font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:1px;text-transform:uppercase;flex:1;padding:2px 0}
+  .mob-pub-link .mpi{font-size:1.25rem;line-height:1}
+  .mob-pub-center{background:var(--rouge);color:#fff;border:none;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;cursor:pointer;flex-shrink:0;box-shadow:0 4px 16px rgba(200,16,46,.5);transition:transform .2s}
+  .mob-pub-center:active{transform:scale(.92)}
+  body{padding-bottom:76px}
+  .mob-pub-menu{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--gf);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:6px;z-index:400;min-width:190px;opacity:0;pointer-events:none;transition:all .2s;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+  .mob-pub-menu.open{opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0)}
+  .mob-pub-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:8px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:1px;text-transform:uppercase;color:var(--blanc);text-decoration:none;transition:background .2s}
+  .mob-pub-item:hover,.mob-pub-item:active{background:rgba(255,255,255,.06)}
+}
 /* Cartes dans les sections */
 .hs-track .actu-card,.hs-track .event-card,.hs-track .annonce-card{scroll-snap-align:start;flex-shrink:0;width:clamp(260px,30vw,320px)}
 .hs-track .slide-presse-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,28vw,300px)}
 /* Cartes visuelles style encart */
-.hs-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,72vw,300px);background:var(--gf);border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .25s}
+.hs-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,72vw,300px);background:var(--gf);border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:visible;cursor:pointer;transition:all .25s}
 .home-section.dark .hs-card{background:var(--gris,#111)}
 .hs-card:hover{border-color:var(--rouge);transform:translateY(-3px);box-shadow:0 8px 24px rgba(200,16,46,.15)}
 .hs-card-img{width:100%;height:140px;object-fit:cover;display:block;background:linear-gradient(135deg,rgba(200,16,46,.2),rgba(13,13,13,.8));position:relative}
@@ -682,6 +697,31 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 #mini-drw2.open{transform:translateY(0)!important}
 #mini-ov2.open{display:block!important}
 </style>
+<!-- BARRE FIXE MOBILE -->
+<div class="mob-pub-bar">
+  <a href="#actus" class="mob-pub-link"><span class="mpi">📰</span>Actus</a>
+  <a href="#evenements" class="mob-pub-link"><span class="mpi">📅</span>Événements</a>
+  <button class="mob-pub-center" onclick="togglePubMenu()" aria-label="Publier">＋</button>
+  <a href="#annonces-section" class="mob-pub-link"><span class="mpi">📋</span>Annonces</a>
+  <a href="presse.html" class="mob-pub-link"><span class="mpi">🗞</span>Presse</a>
+</div>
+<!-- Menu publier -->
+<div class="mob-pub-menu" id="mob-pub-menu" onclick="togglePubMenu()">
+  <a href="evenements.html" class="mob-pub-item"><span style="font-size:1.4rem">📅</span>Proposer un événement</a>
+  <button onclick="openDr('dDepot')" class="mob-pub-item" style="width:100%;border:none;text-align:left;background:none"><span style="font-size:1.4rem">📋</span>Déposer une annonce</button>
+</div>
+<script>
+function togglePubMenu(){
+  const m=document.getElementById('mob-pub-menu');
+  m.classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  const m=document.getElementById('mob-pub-menu');
+  if(m&&m.classList.contains('open')&&!m.contains(e.target)&&!e.target.classList.contains('mob-pub-center')){
+    m.classList.remove('open');
+  }
+});
+</script>
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
@@ -1959,7 +1999,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   },{passive:true});
 });
 // ===== SOCIAL CARTES HOME =====
-function getSid(){let s=sessionStorage.getItem('cqp_sid');if(!s){s=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',s);}return s;}
+function getSid(){
+  try{
+    let s=sessionStorage.getItem('cqp_sid');
+    if(!s){s=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',s);}
+    return s;
+  }catch{return Math.random().toString(36).slice(2);}
+}
 async function loadCardCounts(type,id){
   const sid=getSid();
   try{
