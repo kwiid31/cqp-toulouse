@@ -1,0 +1,44 @@
+{
+  "name": "CQP Toulouse — Quartiers Populaires",
+  "short_name": "CQP Toulouse",
+  "description": "Comité des Quartiers Populaires de Toulouse — Actus, événements, annonces",
+  "start_url": "/cqp-toulouse/",
+  "scope": "/cqp-toulouse/",
+  "display": "standalone",
+  "background_color": "#0D0D0D",
+  "theme_color": "#C8102E",
+  "lang": "fr",
+  "orientation": "portrait-primary",
+  "categories": ["news", "social"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Actualités",
+      "url": "/cqp-toulouse/actus.html",
+      "icons": [{"src": "icons/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Événements",
+      "url": "/cqp-toulouse/evenements.html",
+      "icons": [{"src": "icons/icon-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Annonces",
+      "url": "/cqp-toulouse/annonces.html",
+      "icons": [{"src": "icons/icon-192.png", "sizes": "192x192"}]
+    }
+  ]
+}
