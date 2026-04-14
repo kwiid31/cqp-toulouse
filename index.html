@@ -762,6 +762,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <button class="tab-btn" data-tab="t-nl" onclick="switchTab(this)">📧 Newsletter</button>
       <button class="tab-btn" data-tab="t-stats" onclick="switchTab(this)">📊 Statistiques</button>
       <button class="tab-btn" data-tab="t-avis" onclick="switchTab(this)">⭐ Avis</button>
+      <button class="tab-btn" data-tab="t-wa" onclick="switchTab(this)">📲 WhatsApp → IA</button>
     </div>
     <div class="admin-content">
       <div class="tab-panel active" id="t-adh">
@@ -942,6 +943,38 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <div class="tab-panel" id="t-avis">
         <div class="panel-top"><span class="badge" id="avisCount">…</span><button class="btn-export" onclick="exportCSV('avis')">⬇ Export CSV</button></div>
         <div id="avisBody"><div class="spin">⏳</div></div>
+      </div>
+
+      <!-- WHATSAPP IA -->
+      <div class="tab-panel" id="t-wa">
+        <div style="max-width:680px">
+          <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;margin-bottom:6px">📲 WhatsApp → Site</h3>
+          <p style="font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:20px;line-height:1.5">Colle un message WhatsApp ci-dessous. L'IA analyse le texte et génère automatiquement une actu ou un événement prêt à publier.</p>
+          <div class="fg">
+            <label>Texte du message WhatsApp</label>
+            <textarea id="wa-texte" rows="6" placeholder="Ex: Salut ! On organise une réunion samedi 19 avril à 14h salle des fêtes du Mirail pour parler des expulsions..."></textarea>
+          </div>
+          <button class="btn-sub" id="wa-btn" onclick="analyseWA()" style="margin-bottom:16px">🤖 Analyser avec l'IA</button>
+          <div class="msg" id="wa-msg"></div>
+
+          <!-- Résultat IA -->
+          <div id="wa-result" style="display:none;background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:20px;margin-top:16px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+              <span id="wa-type-badge" style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;background:var(--rouge);color:#fff;padding:4px 10px;border-radius:2px"></span>
+              <span style="font-size:.78rem;color:rgba(244,241,235,.4)" id="wa-resume"></span>
+            </div>
+            <div class="fg"><label>Titre</label><input type="text" id="wa-titre"></div>
+            <div class="fg" id="wa-contenu-wrap"><label>Contenu</label><textarea id="wa-contenu" rows="4"></textarea></div>
+            <div class="fg" id="wa-lieu-wrap" style="display:none"><label>Lieu</label><input type="text" id="wa-lieu"></div>
+            <div class="fg" id="wa-date-wrap" style="display:none"><label>Date</label><input type="datetime-local" id="wa-date"></div>
+            <div class="fg"><label>Catégorie</label><input type="text" id="wa-categorie"></div>
+            <div style="display:flex;gap:10px;margin-top:8px">
+              <button class="btn-sub" onclick="publierWA()" style="flex:1">✅ Publier sur le site</button>
+              <button onclick="document.getElementById('wa-result').style.display='none'" style="background:none;border:1px solid rgba(255,255,255,.2);color:rgba(244,241,235,.6);padding:10px 16px;border-radius:3px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase">Annuler</button>
+            </div>
+            <div class="msg" id="wa-pub-msg"></div>
+          </div>
+        </div>
       </div>
 
       <!-- STATS -->
@@ -1311,6 +1344,81 @@ function avisSlide(val, abs=false){
     x0=null;
   },{passive:true});
 })();
+// ===== WHATSAPP IA =====
+let waResult = null;
+async function analyseWA(){
+  const texte = document.getElementById('wa-texte').value.trim();
+  if(!texte){showMsg('wa-msg','err','⚠ Colle un texte WhatsApp.');return;}
+  if(texte.length < 20){showMsg('wa-msg','err','⚠ Texte trop court.');return;}
+  const btn = document.getElementById('wa-btn');
+  btn.disabled=true;btn.textContent='⏳ Analyse en cours…';
+  document.getElementById('wa-msg').className='msg';document.getElementById('wa-msg').style.display='none';
+  try{
+    const res = await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/whatsapp-ia',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texte})
+    });
+    const data = await res.json();
+    if(!data.ok)throw new Error(data.error||'Erreur IA');
+    waResult = data.result;
+    const r = waResult;
+    // Remplir le formulaire
+    document.getElementById('wa-type-badge').textContent = r.type==='evenement'?'📅 Événement':'📰 Actualité';
+    document.getElementById('wa-resume').textContent = r.resume||'';
+    document.getElementById('wa-titre').value = r.titre||'';
+    document.getElementById('wa-categorie').value = r.categorie||'';
+    if(r.type==='evenement'){
+      document.getElementById('wa-contenu-wrap').style.display='none';
+      document.getElementById('wa-lieu-wrap').style.display='block';
+      document.getElementById('wa-date-wrap').style.display='block';
+      document.getElementById('wa-lieu').value = r.lieu||'';
+      if(r.date_debut){
+        const d = new Date(r.date_debut);
+        document.getElementById('wa-date').value = d.toISOString().slice(0,16);
+      }
+    } else {
+      document.getElementById('wa-contenu-wrap').style.display='block';
+      document.getElementById('wa-lieu-wrap').style.display='none';
+      document.getElementById('wa-date-wrap').style.display='none';
+      document.getElementById('wa-contenu').value = r.contenu||'';
+    }
+    document.getElementById('wa-result').style.display='block';
+  }catch(e){showMsg('wa-msg','err','⚠ '+e.message);}
+  btn.disabled=false;btn.textContent='🤖 Analyser avec l\'IA';
+}
+async function publierWA(){
+  if(!waResult)return;
+  const titre = document.getElementById('wa-titre').value.trim();
+  const categorie = document.getElementById('wa-categorie').value.trim()||'Divers';
+  if(!titre){showMsg('wa-pub-msg','err','⚠ Titre requis.');return;}
+  try{
+    if(waResult.type==='evenement'){
+      const lieu = document.getElementById('wa-lieu').value.trim();
+      const date = document.getElementById('wa-date').value;
+      const desc = document.getElementById('wa-contenu').value.trim()||waResult.description||'';
+      const{error}=await sb.from('evenements').insert({
+        titre,description:desc,lieu,categorie,
+        date_debut:date?new Date(date).toISOString():new Date().toISOString(),
+        validee:true,visible:true,propose_par:'Admin IA'
+      });
+      if(error)throw error;
+      showMsg('wa-pub-msg','ok','✅ Événement publié !');
+    } else {
+      const contenu = document.getElementById('wa-contenu').value.trim();
+      const{error}=await sb.from('actus').insert({
+        titre,contenu,categorie,visible:true,
+        date_publication:new Date().toISOString()
+      });
+      if(error)throw error;
+      showMsg('wa-pub-msg','ok','✅ Actualité publiée !');
+    }
+    setTimeout(()=>{
+      document.getElementById('wa-result').style.display='none';
+      document.getElementById('wa-texte').value='';
+      waResult=null;
+      loadActus();loadEvents();
+    },2000);
+  }catch(e){showMsg('wa-pub-msg','err','⚠ '+e.message);}
+}
 // ===== AVIS =====
 let noteChoisie=0;
 function setNote(n){
@@ -1430,6 +1538,7 @@ function switchTab(btn){
   if(t==='t-ann')renderAnnAdmin();if(t==='t-evt')renderEvtAdmin();
   if(t==='t-nl')renderNlAdmin();
   if(t==='t-avis')renderAvis();
+  if(t==='t-wa'){document.getElementById('wa-texte').focus();}
   if(t==='t-stats'){
     renderStats();
     if(statsInterval)clearInterval(statsInterval);
