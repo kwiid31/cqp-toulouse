@@ -115,7 +115,12 @@ footer a:hover{color:var(--or)}
 </div>
 <div class="content">
   <div class="events-grid" id="events-grid"><div class="spin">⏳ Chargement…</div></div>
-  <div class="proposer-box">
+  <div style="text-align:center;margin:40px 0">
+    <button id="btn-proposer" onclick="document.getElementById('proposer-box').style.display='block';this.style.display='none';document.getElementById('proposer-box').scrollIntoView({behavior:'smooth'})" style="background:var(--rouge);color:#fff;border:none;padding:16px 36px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;font-weight:700">
+      📅 Proposer un événement
+    </button>
+  </div>
+  <div class="proposer-box" id="proposer-box" style="display:none">
     <h2>📅 Proposer un événement</h2>
     <p>Votre proposition sera examinée par notre équipe avant publication. Délai : 24–48h.</p>
     <div class="fr">
