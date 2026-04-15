@@ -11,6 +11,14 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Comité des Quartiers Populaires — Toulouse</title>
+<meta name="description" content="Le CQP Toulouse rassemble et organise les habitant·es des quartiers populaires. Actus, événements, annonces — rejoignez le mouvement.">
+<meta property="og:title" content="CQP Toulouse — Quartiers Populaires en lutte">
+<meta property="og:description" content="Le comité des quartiers populaires de Toulouse. Actualités, événements, annonces des habitants.">
+<meta property="og:image" content="https://kwiid31.github.io/cqp-toulouse/icons/icon-512.png">
+<meta property="og:url" content="https://kwiid31.github.io/cqp-toulouse/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Analytics Plausible — RGPD friendly, sans cookies -->
@@ -323,7 +331,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .home-section.mid{background:var(--gf)}
 .hs-head{margin-bottom:20px}
 .hs-tag{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(244,241,235,.35);margin-bottom:6px}
-.hs-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);color:var(--blanc);line-height:1;border-left:4px solid var(--rouge);padding-left:14px}
+.hs-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);color:var(--blanc);line-height:1;border-left:4px solid var(--rouge);padding-left:14px;display:flex;align-items:center;gap:12px}.sec-ico{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:2px;background:var(--rouge);color:#fff;padding:4px 8px;border-radius:3px;line-height:1;flex-shrink:0}
 .hs-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
 .hs-track::-webkit-scrollbar{display:none}
 .hs-spin{color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;padding:40px 0;font-size:.8rem;letter-spacing:1px}
@@ -371,6 +379,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .hs-lk.liked{color:var(--rouge)}.hs-lk.pop .h{transform:scale(1.4)}
 .hs-cm{background:none;border:none;cursor:pointer;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;padding:0}
 @media(max-width:700px){
+  .hero{min-height:50vh}
   .home-section{padding:28px 5vw 24px}
   .hs-title{font-size:1.6rem;border-left-width:3px;padding-left:10px}
   .hs-track .actu-card,.hs-track .event-card,.hs-track .annonce-card,.hs-card{width:82vw}
@@ -486,8 +495,8 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       </div>
       <!-- Points nav (mobile uniquement) -->
       <div class="qui-dots">
-        <button class="qui-dot active" onclick="quiSlide(0)"></button>
-        <button class="qui-dot" onclick="quiSlide(1)"></button>
+        <button class="qui-dot active" onclick="quiSlide(0)" aria-label="Slide 1"></button>
+        <button class="qui-dot" onclick="quiSlide(1)" aria-label="Slide 2"></button>
       </div>
       <!-- Valeurs toujours visibles -->
       <div class="valeurs" style="margin-top:20px">
@@ -528,7 +537,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 <section class="home-section dark" id="actus">
   <div class="hs-head">
     <div class="hs-tag">Le comité vous informe</div>
-    <h2 class="hs-title">📰 Actualités</h2>
+    <h2 class="hs-title"><span class="sec-ico">ACT</span> Actualités</h2>
   </div>
   <div class="hs-track" id="car-actus">
     <div class="hs-spin">⏳ Chargement…</div>
@@ -544,7 +553,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 <section class="home-section mid" id="evenements">
   <div class="hs-head">
     <div class="hs-tag">Réunions · Ateliers · Mobilisations</div>
-    <h2 class="hs-title">📅 Événements</h2>
+    <h2 class="hs-title"><span class="sec-ico">ÉVT</span> Événements</h2>
   </div>
   <div class="hs-track" id="car-events">
     <div class="hs-spin">⏳ Chargement…</div>
@@ -561,7 +570,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 <section class="home-section dark" id="annonces-section">
   <div class="hs-head">
     <div class="hs-tag">Logement · Emploi · Solidarité</div>
-    <h2 class="hs-title">📋 Annonces des habitants</h2>
+    <h2 class="hs-title"><span class="sec-ico">ANN</span> Annonces des habitants</h2>
   </div>
   <div class="hs-track" id="car-annonces">
     <div class="hs-spin">⏳ Chargement…</div>
@@ -578,7 +587,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 <section class="home-section mid">
   <div class="hs-head">
     <div class="hs-tag">Articles de la semaine</div>
-    <h2 class="hs-title">🗞 Presse locale</h2>
+    <h2 class="hs-title"><span class="sec-ico">PRS</span> Presse locale</h2>
   </div>
   <div class="hs-track" id="car-presse">
     <div class="hs-spin">⏳ Chargement…</div>
@@ -946,7 +955,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
                 <div class="crop-container" id="crop-hero"
                   onmousedown="startDrag(event,'hero')" ontouchstart="startDragT(event,'hero')"
                   onwheel="zoomCrop(event,'hero')">
-                  <img id="crop-hero-img" class="crop-img" alt="">
+                  <img id="crop-hero-img" class="crop-img" alt="Photo hero du site">
                 </div>
                 <div class="crop-controls">
                   <button class="crop-btn" onclick="zoomCropBy('hero',0.1)">🔍+</button>
@@ -973,7 +982,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
                 <div class="crop-container" id="crop-encart"
                   onmousedown="startDrag(event,'encart')" ontouchstart="startDragT(event,'encart')"
                   onwheel="zoomCrop(event,'encart')">
-                  <img id="crop-encart-img" class="crop-img" alt="">
+                  <img id="crop-encart-img" class="crop-img" alt="Photo encart accueil">
                 </div>
                 <div class="crop-controls">
                   <button class="crop-btn" onclick="zoomCropBy('encart',0.1)">🔍+</button>
@@ -1365,7 +1374,7 @@ async function loadAnnonces(){
     if(error)throw error;annPub=data||[];
     if(!annPub.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><span>📋</span>Aucune annonce pour l\'instant.</div>';return;}
     g.innerHTML=annPub.map(a=>`<div class="hs-card" onclick="openDrAnn(${a.id})">
-      ${a.photo_url?`<img class="hs-card-img" src="${a.photo_url}" alt="" loading="lazy">`:'<div class="hs-card-img-placeholder">📋</div>'}
+      ${a.photo_url?`<img class="hs-card-img" src="${a.photo_url}" alt="${esc(a.titre)}" loading="lazy">`:'<div class="hs-card-img-placeholder">📋</div>'}
       <div class="hs-card-body">
         <span class="hs-card-cat">${esc(a.categorie)}</span>
         <div class="hs-card-title">${esc(a.titre)}</div>
@@ -1782,7 +1791,7 @@ async function loadEvents(){
       const dateStr=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
       const heureStr=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
       return `<div class="hs-card" onclick="openDrEvt(${evt.id})">
-        ${evt.photo_url?`<img class="hs-card-img" src="${evt.photo_url}" alt="" loading="lazy">`:`<div class="hs-card-img-placeholder" style="background:linear-gradient(135deg,rgba(200,16,46,.3),rgba(13,13,13,.9))"><span style="font-size:1.5rem">📅</span><span style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;margin-left:8px">${d.getDate()} ${d.toLocaleDateString('fr-FR',{month:'short'}).toUpperCase()}</span></div>`}
+        ${evt.photo_url?`<img class="hs-card-img" src="${evt.photo_url}" alt="${esc(evt.titre)}" loading="lazy">`:`<div class="hs-card-img-placeholder" style="background:linear-gradient(135deg,rgba(200,16,46,.3),rgba(13,13,13,.9))"><span style="font-size:1.5rem">📅</span><span style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;margin-left:8px">${d.getDate()} ${d.toLocaleDateString('fr-FR',{month:'short'}).toUpperCase()}</span></div>`}
         <div class="hs-card-body">
           <span class="hs-card-cat">${esc(evt.categorie)} · ${heureStr}</span>
           <div class="hs-card-title">${esc(evt.titre)}</div>
@@ -2011,28 +2020,44 @@ document.addEventListener('DOMContentLoaded',()=>{
     document.querySelectorAll('.qui-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
   },{passive:true});
 });
-// ===== SOCIAL CARTES HOME =====
+// ===== SOCIAL CARTES HOME — optimisé: 1 requête groupée par type =====
 function getSid(){
   try{
     let s=sessionStorage.getItem('cqp_sid');
     if(!s){s=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',s);}
     return s;
-  }catch{return Math.random().toString(36).slice(2);}
+  }catch{return 'anon_'+Math.random().toString(36).slice(2);}
 }
-async function loadCardCounts(type,id){
+async function loadAllCounts(type,ids){
+  if(!ids||!ids.length)return;
   const sid=getSid();
   try{
-    const[{count:nl},{data:ml},{count:nc}]=await Promise.all([
-      sb.from('likes').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id),
-      sb.from('likes').select('id').eq('item_type',type).eq('item_id',id).eq('session_id',sid),
-      sb.from('commentaires').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id).eq('visible',true)
+    const[{data:allLikes},{data:myLikes},{data:allCmts}]=await Promise.all([
+      sb.from('likes').select('item_id').eq('item_type',type).in('item_id',ids),
+      sb.from('likes').select('item_id').eq('item_type',type).eq('session_id',sid).in('item_id',ids),
+      sb.from('commentaires').select('item_id').eq('item_type',type).eq('visible',true).in('item_id',ids)
     ]);
-    const liked=(ml||[]).length>0;
-    const btn=document.getElementById('lk-'+id);
-    if(btn){if(liked)btn.classList.add('liked');btn.querySelector('.h').textContent=liked?'❤️':'🤍';}
-    const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=nl||0;
-    const cc=document.getElementById('cc-'+id);if(cc)cc.textContent=nc||0;
-  }catch(e){}
+    const likeMap={},myMap={},cmtMap={};
+    (allLikes||[]).forEach(r=>{likeMap[r.item_id]=(likeMap[r.item_id]||0)+1;});
+    (myLikes||[]).forEach(r=>{myMap[r.item_id]=true;});
+    (allCmts||[]).forEach(r=>{cmtMap[r.item_id]=(cmtMap[r.item_id]||0)+1;});
+    ids.forEach(id=>{
+      const liked=!!myMap[id];
+      const btn=document.getElementById('lk-'+id);
+      if(btn){if(liked)btn.classList.add('liked');btn.querySelector('.h').textContent=liked?'❤️':'🤍';}
+      const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=likeMap[id]||0;
+      const cc=document.getElementById('cc-'+id);if(cc)cc.textContent=cmtMap[id]||0;
+    });
+  }catch(e){console.warn('loadAllCounts',e);}
+}
+const _pending={};
+function loadCardCounts(type,id){
+  if(!_pending[type])_pending[type]=[];
+  _pending[type].push(id);
+  clearTimeout(loadCardCounts._t);
+  loadCardCounts._t=setTimeout(()=>{
+    Object.entries(_pending).forEach(([t,ids])=>{loadAllCounts(t,[...new Set(ids)]);delete _pending[t];});
+  },50);
 }
 async function cardLike(type,id){
   const sid=getSid();const btn=document.getElementById('lk-'+id);if(!btn)return;
@@ -2071,10 +2096,8 @@ async function sendMini2(){
   await refreshMini2();
 }
 loadConfig();
-loadActus();
-loadAnnonces();
-loadEvents();
-loadPresse();
+// Lancement parallèle — tous les chargements en même temps
+Promise.all([loadActus(), loadAnnonces(), loadEvents(), loadPresse()]);
 initTracking('/');
 </script>
 <script>
