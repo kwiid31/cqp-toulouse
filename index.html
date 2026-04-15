@@ -721,18 +721,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   <a href="evenements.html" class="mob-pub-item"><span style="font-size:1.4rem">📅</span>Proposer un événement</a>
   <button onclick="openDr('dDepot')" class="mob-pub-item" style="width:100%;border:none;text-align:left;background:none"><span style="font-size:1.4rem">📋</span>Déposer une annonce</button>
 </div>
-<script>
-function togglePubMenu(){
-  const m=document.getElementById('mob-pub-menu');
-  m.classList.toggle('open');
-}
-document.addEventListener('click',e=>{
-  const m=document.getElementById('mob-pub-menu');
-  if(m&&m.classList.contains('open')&&!m.contains(e.target)&&!e.target.classList.contains('mob-pub-center')){
-    m.classList.remove('open');
-  }
-});
-</script>
+
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
@@ -1331,6 +1320,17 @@ function flash(id){const el=document.getElementById(id);if(!el)return;el.classLi
 // Actus public
 let actusPub=[];
 const CATS={Logement:'cat-Logement',Emploi:'cat-Emploi',Service:'cat-Service','Solidarité':'cat-Solidarité',Autre:'cat-Autre'};
+function togglePubMenu(){
+  const m=document.getElementById('mob-pub-menu');
+  m.classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  const m=document.getElementById('mob-pub-menu');
+  if(m&&m.classList.contains('open')&&!m.contains(e.target)&&!e.target.classList.contains('mob-pub-center')){
+    m.classList.remove('open');
+  }
+});
+
 async function loadActus(){
   const g=document.getElementById('car-actus');
   try{
