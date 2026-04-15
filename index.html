@@ -172,6 +172,8 @@ footer{background:var(--gf);border-top:1px solid rgba(255,255,255,.07);padding:5
 .modal-overlay.open{display:flex}
 @keyframes popIn{from{opacity:0;transform:scale(.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tickerPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes bannerSlideDown{from{max-height:0;opacity:0}to{max-height:50px;opacity:1}}
 .login-box{background:var(--gf);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:92%;max-width:380px;padding:40px;animation:popIn .3s ease}
 .login-box h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:8px}
 .login-box p{font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:24px}
@@ -524,12 +526,21 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     <a href="presse.html" class="ext">Presse locale</a>
     <a href="newsletter.html" class="ext">Newsletter</a>
   </div>
-  <div class="nav-right">
+  <div class="nav-right" style="display:flex;align-items:center;gap:10px">
+    <div id="live-ticker" style="display:none;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;color:rgba(244,241,235,.3);white-space:nowrap">
+      <span style="width:6px;height:6px;border-radius:50%;background:#4CAF50;flex-shrink:0;animation:tickerPulse 2s infinite"></span>
+      <span id="ticker-txt"></span>
+    </div>
     <a href="#adhesion" class="btn-adhere">✊ Adhérer</a>
     <button class="btn-admin" onclick="openLogin()">⚙ Admin</button>
     <button class="burger" onclick="toggleMenu()" aria-label="Menu">☰</button>
   </div>
 </nav>
+<!-- BANNIÈRE NOUVEAU CONTENU -->
+<div id="new-banner" style="display:none;background:linear-gradient(90deg,#a00020,var(--rouge));padding:9px 40px 9px 20px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:#fff;cursor:pointer;position:relative;overflow:hidden">
+  <span id="new-banner-txt"></span>
+  <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.55;font-size:.85rem" onclick="document.getElementById('new-banner').style.display='none'">✕</span>
+</div>
 <div class="mobile-menu" id="mobileMenu">
   <a href="#qui" onclick="closeMenu()">Notre mouvement</a>
   <a href="actus.html">Actualités</a>
@@ -806,12 +817,12 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 <!-- BARRE FIXE MOBILE -->
 <div class="mob-pub-bar">
   <a href="#actus" class="mob-pub-link"><span class="mpi">📰</span>Actus</a>
-  <a href="#evenements" class="mob-pub-link"><span class="mpi">📅</span>Événements</a>
+  <a href="#evenements" class="mob-pub-link" style="position:relative"><span class="mpi">📅</span>Événements<span data-dot-evt style="display:none;position:absolute;top:0;right:4px;width:7px;height:7px;background:var(--rouge);border-radius:50%;border:2px solid rgba(13,13,13,.98)"></span></a>
   <button class="mob-pub-center" onclick="togglePubMenu(event)" aria-label="Publier">
     <span class="pub-icon">＋</span>
     <span class="pub-txt">Publier</span>
   </button>
-  <a href="#annonces-section" class="mob-pub-link"><span class="mpi">📋</span>Annonces</a>
+  <a href="#annonces-section" class="mob-pub-link" style="position:relative"><span class="mpi">📋</span>Annonces<span data-dot-ann style="display:none;position:absolute;top:0;right:4px;width:7px;height:7px;background:var(--rouge);border-radius:50%;border:2px solid rgba(13,13,13,.98)"></span></a>
   <a href="presse.html" class="mob-pub-link"><span class="mpi">🗞</span>Presse</a>
 </div>
 <!-- Menu publier -->
@@ -2196,6 +2207,65 @@ loadConfig();
 // Lancement parallèle — tous les chargements en même temps
 Promise.all([loadActus(), loadAnnonces(), loadEvents(), loadPresse()]);
 initTracking('/');
+
+// ===== TICKER ACTIFS EN DIRECT =====
+async function updateTicker(){
+  try{
+    const fiveMin=new Date(Date.now()-5*60*1000).toISOString();
+    const{count}=await sb.from('active_sessions').select('*',{count:'exact',head:true}).gte('last_seen',fiveMin).catch(()=>({count:0}));
+    const n=count||0;
+    const el=document.getElementById('live-ticker');
+    const txt=document.getElementById('ticker-txt');
+    if(el&&txt&&n>0){
+      txt.textContent=n+' actif'+(n>1?'s':'')+' maintenant';
+      el.style.display='flex';
+    }
+  }catch(e){}
+}
+updateTicker();
+setInterval(updateTicker,30000);
+
+// ===== BANNIÈRE NOUVEAU CONTENU =====
+(function(){
+  try{
+    const last=parseInt(localStorage.getItem('cqp_actus_last')||'0');
+    if(!last){localStorage.setItem('cqp_actus_last',Date.now().toString());return;}
+    sb.from('actus').select('date_publication').eq('visible',true).order('date_publication',{ascending:false}).limit(5)
+      .then(({data})=>{
+        if(!data)return;
+        const newer=data.filter(a=>new Date(a.date_publication).getTime()>last);
+        if(newer.length>0){
+          const b=document.getElementById('new-banner');
+          const t=document.getElementById('new-banner-txt');
+          if(b&&t){
+            t.textContent='🔴 '+newer.length+' nouvelle'+(newer.length>1?'s':'')+' actu'+(newer.length>1?'s':'')+' depuis ta dernière visite';
+            b.style.display='block';
+            setTimeout(()=>{if(b)b.style.display='none';},8000);
+          }
+        }
+        localStorage.setItem('cqp_actus_last',Date.now().toString());
+      }).catch(()=>{});
+  }catch(e){}
+})();
+
+// ===== DOTS NOTIFICATION NAV MOBILE =====
+(async function(){
+  try{
+    const evtLast=parseInt(localStorage.getItem('cqp_evt_last')||'0');
+    const annLast=parseInt(localStorage.getItem('cqp_ann_last')||'0');
+    const[{data:evts},{data:anns}]=await Promise.all([
+      sb.from('evenements').select('date_debut').eq('visible',true).eq('validee',true).order('date_debut',{ascending:false}).limit(1),
+      sb.from('annonces').select('date_depot').eq('validee',true).order('date_depot',{ascending:false}).limit(1)
+    ]);
+    // Dots sur la barre mobile
+    if(evts?.[0]&&evtLast&&new Date(evts[0].date_debut).getTime()>evtLast){
+      document.querySelectorAll('[data-dot-evt]').forEach(el=>el.style.display='block');
+    }
+    if(anns?.[0]&&annLast&&new Date(anns[0].date_depot).getTime()>annLast){
+      document.querySelectorAll('[data-dot-ann]').forEach(el=>el.style.display='block');
+    }
+  }catch(e){}
+})();
 </script>
 <script>
 if('serviceWorker' in navigator){
@@ -2208,3 +2278,4 @@ if('serviceWorker' in navigator){
 </script>
 </body>
 </html>
+
