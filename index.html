@@ -709,7 +709,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 <div class="mob-pub-bar">
   <a href="#actus" class="mob-pub-link"><span class="mpi">📰</span>Actus</a>
   <a href="#evenements" class="mob-pub-link"><span class="mpi">📅</span>Événements</a>
-  <button class="mob-pub-center" onclick="togglePubMenu()" aria-label="Publier">
+  <button class="mob-pub-center" onclick="togglePubMenu(event)" aria-label="Publier">
     <span class="pub-icon">＋</span>
     <span class="pub-txt">Publier</span>
   </button>
@@ -1320,13 +1320,15 @@ function flash(id){const el=document.getElementById(id);if(!el)return;el.classLi
 // Actus public
 let actusPub=[];
 const CATS={Logement:'cat-Logement',Emploi:'cat-Emploi',Service:'cat-Service','Solidarité':'cat-Solidarité',Autre:'cat-Autre'};
-function togglePubMenu(){
+function togglePubMenu(e){
+  if(e)e.stopPropagation();
   const m=document.getElementById('mob-pub-menu');
   m.classList.toggle('open');
 }
 document.addEventListener('click',e=>{
   const m=document.getElementById('mob-pub-menu');
-  if(m&&m.classList.contains('open')&&!m.contains(e.target)&&!e.target.classList.contains('mob-pub-center')){
+  const btn=document.querySelector('.mob-pub-center');
+  if(m&&m.classList.contains('open')&&!m.contains(e.target)&&e.target!==btn&&!btn?.contains(e.target)){
     m.classList.remove('open');
   }
 });
