@@ -1,4 +1,4 @@
-const CACHE = 'cqp-toulouse-v1';
+const CACHE = 'cqp-toulouse-v2';
 const OFFLINE_URLS = [
   '/cqp-toulouse/',
   '/cqp-toulouse/index.html',
@@ -10,7 +10,6 @@ const OFFLINE_URLS = [
   '/cqp-toulouse/manifest.json',
 ];
 
-// Installation : mise en cache des pages principales
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE).then(cache => cache.addAll(OFFLINE_URLS))
@@ -18,7 +17,6 @@ self.addEventListener('install', e => {
   self.skipWaiting();
 });
 
-// Activation : nettoyage des anciens caches
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -28,9 +26,7 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// Interception des requêtes : réseau en priorité, cache en fallback
 self.addEventListener('fetch', e => {
-  // Ignorer les requêtes non-GET et les API externes
   if (e.request.method !== 'GET') return;
   if (e.request.url.includes('supabase.co')) return;
   if (e.request.url.includes('googleapis.com')) return;
@@ -38,7 +34,6 @@ self.addEventListener('fetch', e => {
   e.respondWith(
     fetch(e.request)
       .then(res => {
-        // Mettre en cache la réponse fraîche
         const clone = res.clone();
         caches.open(CACHE).then(cache => cache.put(e.request, clone));
         return res;
