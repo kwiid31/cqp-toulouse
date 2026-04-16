@@ -299,7 +299,7 @@ async function toggleLike(id){
   const sid=getSid();const btn=document.getElementById('lk-'+id);if(!btn)return;
   const liked=btn.classList.contains('liked');btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),300);
   if(liked){await sb.from('likes').delete().eq('item_type','evenement').eq('item_id',id).eq('session_id',sid);btn.classList.remove('liked');btn.querySelector('.h').textContent='🤍';}
-  else{(()=>{try{sb.from(\'likes\').insert({item_type:'evenement',item_id:id,session_id:sid});}catch{}})();btn.classList.add('liked');btn.querySelector('.h').textContent='❤️';}
+  else{await sb.from('likes').insert({item_type:'evenement',item_id:id,session_id:sid}).catch(()=>{});btn.classList.add('liked');btn.querySelector('.h').textContent='❤️';}
   const{data:l}=await sb.from('likes').select('item_id').eq('item_type','evenement').eq('item_id',id);
   const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=(l||[]).length;
 }
