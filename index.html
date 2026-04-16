@@ -25,9 +25,9 @@
 <script defer data-domain="kwiid31.github.io/cqp-toulouse" src="https://plausible.io/js/script.js"></script>
 <style>
 
-:root{--rouge:#C8102E;--or:#F5A623;--noir:#0D0D0D;--gf:#1A1A1A;--gris:#2D2D2D;--blanc:#F4F1EB;--beige:#E8DCC8}
+:root{--rouge:#C8102E;--or:#E8940F;--noir:#FFFFFF;--gf:#F5F5F5;--gris:#EEEEEE;--blanc:#1A1A1A;--beige:#F9F6F2;--rouge-light:#FFF0F2}
 *{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
-body{background:var(--noir);color:var(--blanc);font-family:'Barlow',sans-serif;overflow-x:hidden}
+body{background:#FFFFFF;color:#1A1A1A;font-family:'Barlow',sans-serif;overflow-x:hidden}
 nav{position:sticky;top:0;z-index:200;background:rgba(13,13,13,.97);backdrop-filter:blur(12px);border-bottom:2px solid var(--rouge);display:flex;justify-content:space-between;align-items:center;padding:0 5vw;height:68px}
 .logo{display:flex;align-items:center;gap:12px;text-decoration:none}
 .logo-icon{width:42px;height:42px;background:var(--rouge);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff}
@@ -329,11 +329,11 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 
 /* ===== SECTIONS INDEPENDANTES ===== */
 .home-section{padding:40px 8vw 32px}
-.home-section.dark{background:var(--noir)}
-.home-section.mid{background:var(--gf)}
+.home-section.dark{background:#FFFFFF}
+.home-section.mid{background:#F7F8FA}
 .hs-head{margin-bottom:20px}
-.hs-tag{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(244,241,235,.35);margin-bottom:6px}
-.hs-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);color:var(--blanc);line-height:1;border-left:4px solid var(--rouge);padding-left:14px;display:flex;align-items:center;gap:12px}.sec-ico{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:2px;background:var(--rouge);color:#fff;padding:4px 8px;border-radius:3px;line-height:1;flex-shrink:0}
+.hs-tag{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:#999;margin-bottom:6px}
+.hs-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.6rem);color:#1A1A1A;line-height:1;border-left:4px solid var(--rouge);padding-left:14px;display:flex;align-items:center;gap:12px}.sec-ico{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:2px;background:var(--rouge);color:#fff;padding:4px 8px;border-radius:3px;line-height:1;flex-shrink:0}
 .hs-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px}
 .hs-track::-webkit-scrollbar{display:none}
 .hs-spin{color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;padding:40px 0;font-size:.8rem;letter-spacing:1px}
@@ -382,8 +382,8 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   .mob-pub-bar{
     display:flex;align-items:center;justify-content:space-around;
     position:fixed;bottom:0;left:0;right:0;z-index:300;
-    background:rgba(13,13,13,.98);
-    border-top:1px solid rgba(255,255,255,.09);
+    background:#FFFFFF;
+    border-top:1px solid #EEEEEE;
     padding:8px 12px max(10px,env(safe-area-inset-bottom));
     backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   }
@@ -393,7 +393,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
     font-family:'Barlow Condensed',sans-serif;font-size:.52rem;letter-spacing:.5px;text-transform:uppercase;
     flex:1;padding:2px 0;transition:color .15s;
   }
-  .mob-pub-link:active{color:var(--or)}
+  .mob-pub-link:active{color:var(--rouge)}
   .mob-pub-link .mpi{font-size:1.4rem;line-height:1}
   .mob-pub-center{
     background:var(--rouge);color:#fff;border:none;
@@ -413,8 +413,8 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   .mob-pub-menu{
     position:fixed;bottom:90px;left:50%;
     transform:translateX(-50%) translateY(16px);
-    background:rgba(26,26,26,.98);
-    border:1px solid rgba(255,255,255,.12);
+    background:#FFFFFF;
+    border:1px solid #EEEEEE;
     border-radius:16px;padding:8px;z-index:400;
     min-width:220px;
     opacity:0;pointer-events:none;
@@ -439,8 +439,8 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   footer{display:none}
 
   /* Sections alternées avec séparation visuelle forte */
-  .home-section.dark{background:#0D0D0D}
-  .home-section.mid{background:#141414}
+  .home-section.dark{background:#FFFFFF}
+  .home-section.mid{background:#F7F8FA}
 
   /* Section qui / encart */
   .qui-grid{grid-template-columns:1fr;gap:20px}
@@ -449,9 +449,9 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .hs-track .actu-card,.hs-track .event-card,.hs-track .annonce-card{scroll-snap-align:start;flex-shrink:0;width:clamp(260px,30vw,320px)}
 .hs-track .slide-presse-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,28vw,300px)}
 /* Cartes visuelles style encart */
-.hs-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,72vw,300px);background:var(--gf);border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:visible;cursor:pointer;transition:all .25s}
+.hs-card{scroll-snap-align:start;flex-shrink:0;width:clamp(240px,72vw,300px);background:#FFFFFF;border:none;border-radius:12px;overflow:visible;cursor:pointer;transition:all .25s;box-shadow:0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06)}
 .home-section.dark .hs-card{background:var(--gris,#111)}
-.hs-card:hover{border-color:var(--rouge);transform:translateY(-3px);box-shadow:0 8px 24px rgba(200,16,46,.15)}
+.hs-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(200,16,46,.12)}
 .hs-card-img{width:100%;height:140px;object-fit:cover;display:block;background:linear-gradient(135deg,rgba(200,16,46,.2),rgba(13,13,13,.8));position:relative}
 .hs-card-cover{width:100%;height:140px;display:flex;flex-direction:column;justify-content:flex-end;padding:12px 14px;position:relative;overflow:hidden}
 .hs-card-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 60%)}
@@ -460,10 +460,10 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 .hs-card-cover-date{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:rgba(255,255,255,.9);line-height:1;position:relative;z-index:1;margin-bottom:2px}
 .hs-card-body{padding:14px}
 .hs-card-cat{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;background:var(--rouge);color:#fff;padding:3px 8px;border-radius:2px;display:inline-block;margin-bottom:8px}
-.hs-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;line-height:1.2;margin-bottom:6px;color:var(--blanc)}
-.hs-card-sub{font-size:.75rem;color:rgba(244,241,235,.5);line-height:1.5;margin-bottom:8px}
-.hs-card-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,.06);padding-top:8px;margin-top:4px}
-.hs-card-date{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;color:rgba(244,241,235,.3);text-transform:uppercase}
+.hs-card-title{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;line-height:1.2;margin-bottom:6px;color:#1A1A1A}
+.hs-card-sub{font-size:.75rem;color:#888;line-height:1.5;margin-bottom:8px}
+.hs-card-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #EEEEEE;padding-top:8px;margin-top:4px}
+.hs-card-date{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;color:#AAA;text-transform:uppercase}
 .hs-card-social{display:flex;gap:10px}
 .hs-lk{background:none;border:none;cursor:pointer;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;padding:0;display:flex;align-items:center;gap:3px}
 .hs-lk .h{font-size:1rem;transition:transform .15s;display:inline-block}
@@ -796,7 +796,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 </nav>
 
 <div style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:599" id="mini-ov2" onclick="closeMini2()"></div>
-<div style="position:fixed;bottom:0;left:0;right:0;background:var(--gf);border-top:2px solid var(--rouge);border-radius:16px 16px 0 0;z-index:600;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);max-height:72vh;display:flex;flex-direction:column" id="mini-drw2">
+<div style="position:fixed;bottom:0;left:0;right:0;background:#FFFFFF;border-top:2px solid var(--rouge);border-radius:16px 16px 0 0;z-index:600;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);max-height:72vh;display:flex;flex-direction:column" id="mini-drw2">
   <div style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
     <span style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem" id="mini-titre2">Commentaires</span>
     <button onclick="closeMini2()" style="background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);width:30px;height:30px;border-radius:4px;cursor:pointer">✕</button>
@@ -816,14 +816,14 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 </style>
 <!-- BARRE FIXE MOBILE -->
 <div class="mob-pub-bar">
-  <a href="#actus" class="mob-pub-link"><span class="mpi">📰</span>Actus</a>
-  <a href="#evenements" class="mob-pub-link" style="position:relative"><span class="mpi">📅</span>Événements<span data-dot-evt style="display:none;position:absolute;top:0;right:4px;width:7px;height:7px;background:var(--rouge);border-radius:50%;border:2px solid rgba(13,13,13,.98)"></span></a>
+  <a href="#actus" class="mob-pub-link"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2z"/><path d="M16 2v4"/><path d="M8 2v4"/><line x1="4" y1="10" x2="20" y2="10"/></svg>Actus</a>
+  <a href="#evenements" class="mob-pub-link" style="position:relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Événements<span data-dot-evt style="display:none;position:absolute;top:0;right:4px;width:7px;height:7px;background:var(--rouge);border-radius:50%;border:2px solid rgba(13,13,13,.98)"></span></a>
   <button class="mob-pub-center" onclick="togglePubMenu(event)" aria-label="Publier">
     <span class="pub-icon">＋</span>
     <span class="pub-txt">Publier</span>
   </button>
-  <a href="#annonces-section" class="mob-pub-link" style="position:relative"><span class="mpi">📋</span>Annonces<span data-dot-ann style="display:none;position:absolute;top:0;right:4px;width:7px;height:7px;background:var(--rouge);border-radius:50%;border:2px solid rgba(13,13,13,.98)"></span></a>
-  <a href="presse.html" class="mob-pub-link"><span class="mpi">🗞</span>Presse</a>
+  <a href="#annonces-section" class="mob-pub-link" style="position:relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Annonces<span data-dot-ann style="display:none;position:absolute;top:0;right:4px;width:7px;height:7px;background:var(--rouge);border-radius:50%;border:2px solid rgba(13,13,13,.98)"></span></a>
+  <a href="presse.html" class="mob-pub-link"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l6 6v8a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Presse</a>
 </div>
 <!-- Menu publier -->
 <div class="mob-pub-menu" id="mob-pub-menu" onclick="togglePubMenu()">
