@@ -105,7 +105,7 @@ body{background:#0d0d0d;color:#f4f1eb}
 </style>
 
 <!-- LOGIN -->
-<div class="modal-overlay" id="loginModal" onclick="if(event.target.id==='loginModal')closeM('loginModal')">
+<div class="modal-overlay" id="loginModal" onclick="if(event.target.id==='loginModal')closeM('loginModal')" style="display:flex">
   <div class="login-box">
     <h3>🔐 Espace Admin</h3>
     <p>Entrez le mot de passe pour accéder au panneau d'administration.</p>
@@ -411,7 +411,7 @@ const sb=supabase.createClient(SBU,SBK);
 
 
 
-function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
+function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').style.display='flex';setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
 function checkPwd(){if(document.getElementById('pwdInput').value===PWD){closeM('loginModal');loadEditors();renderAdh();document.getElementById('adminModal').classList.add('open');}else{document.getElementById('loginErr').style.display='block';document.getElementById('pwdInput').value='';}}
 function closeM(id){document.getElementById(id).classList.remove('open');}
 
