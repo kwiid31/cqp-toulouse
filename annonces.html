@@ -2,359 +2,625 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#C8102E">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0D0D0D">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CQP Toulouse">
-<meta name="description" content="Annonces des habitants des quartiers populaires de Toulouse.">
-<meta property="og:title" content="Annonces — CQP Toulouse">
-<meta property="og:image" content="https://kwiid31.github.io/cqp-toulouse/icons/icon-512.png">
-<link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
 <title>Annonces — CQP Toulouse</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+:root{--rouge:#C8102E;--or:#F5A623;--noir:#0D0D0D;--gf:#1A1A1A;--blanc:#F4F1EB}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--noir);color:var(--blanc);font-family:'Barlow',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{
-  --rouge:#C8102E;--rouge-light:#fff0f2;--or:#E8940F;
-  --txt:#1A1A1A;--txt2:#555;--txt3:#999;
-  --bg:#FFFFFF;--bg2:#F7F8FA;--bg3:#F0F2F5;
-  --border:#E4E6EA;--radius:12px;--nav-h:60px;--bar-h:64px;
-}
-html{font-size:16px}
-body{background:var(--bg2);color:var(--txt);font-family:'Barlow',sans-serif;
-  padding-bottom:calc(var(--bar-h) + env(safe-area-inset-bottom) + 8px)}
-a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:inherit}
+/* NAV */
+nav.top-nav{position:sticky;top:0;z-index:200;background:rgba(10,10,10,.98);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;padding:0 5vw;height:60px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-icon{width:36px;height:36px;background:var(--rouge);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;color:#fff;box-shadow:0 2px 12px rgba(200,16,46,.4)}
+.logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--blanc);line-height:1.1}
+.logo-text span{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.52rem;letter-spacing:3px;color:var(--or);text-transform:uppercase}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-links a{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;color:rgba(244,241,235,.45);padding:6px 10px;border-radius:4px;transition:all .2s}
+.nav-links a:hover{color:var(--blanc);background:rgba(255,255,255,.06)}
+.nav-links a.active{color:var(--or)}
+@keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.35}}
 
-/* TOPBAR */
-.topbar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid var(--border);
-  height:var(--nav-h);display:flex;align-items:center;gap:12px;padding:0 16px;
-  box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.back-btn{width:36px;height:36px;border:none;background:var(--bg2);border-radius:50%;
-  display:flex;align-items:center;justify-content:center}
-.back-btn svg{width:20px;height:20px;stroke:var(--txt2);fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round}
-.topbar h1{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.5px;flex:1}
-.topbar-pill{background:var(--rouge);color:#fff;font-family:'Barlow Condensed',sans-serif;
-  font-size:.65rem;letter-spacing:2px;padding:4px 10px;border-radius:20px}
+/* PAGE HEADER */
+.page-hero{padding:22px 5vw 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.section-tag{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;color:var(--or);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.section-tag::before{content:'';width:20px;height:2px;background:var(--or)}
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,7vw,3.5rem);line-height:.95;color:var(--blanc)}
+h1 em{color:var(--rouge);font-style:normal}
+.page-hero p{color:rgba(244,241,235,.45);font-size:.83rem;line-height:1.6;max-width:560px;margin-top:6px}
 
-/* PAGE HERO */
-.page-hero{background:linear-gradient(135deg,#0d0d0d,var(--rouge));
-  padding:32px 16px 24px;color:#fff}
-.page-hero-tag{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:4px;
-  text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
-.page-hero h2{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;line-height:1}
-.page-hero p{font-size:.85rem;color:rgba(255,255,255,.6);margin-top:6px}
+/* FILTRES */
+.filters{display:flex;gap:8px;flex-wrap:wrap;padding:14px 5vw;border-bottom:1px solid rgba(255,255,255,.05);align-items:center;background:rgba(10,10,10,.6);position:sticky;top:60px;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.filter-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(244,241,235,.45);padding:6px 14px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .18s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.filter-btn:hover{border-color:rgba(245,166,35,.4);color:var(--or)}
+.filter-btn.active{background:var(--rouge);border-color:var(--rouge);color:#fff}
+.btn-deposer-inline{background:var(--rouge);border:none;color:#fff;padding:7px 16px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-left:auto;transition:opacity .2s;white-space:nowrap;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.btn-deposer-inline:active{opacity:.8}
 
 /* GRID */
-.content{max-width:900px;margin:0 auto;padding:16px}
-.actus-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.content{padding:0 0 32px}
+.annonces-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:22px 5vw}
 
-/* CARD */
-.actu-card{background:#fff;border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.05);
-  overflow:hidden;cursor:pointer;transition:box-shadow .2s;display:flex;flex-direction:column}
-.actu-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.12)}
-.actu-cover{height:160px;display:flex;flex-direction:column;justify-content:flex-end;
-  padding:14px;position:relative;overflow:hidden}
-.actu-cover::before{content:'';position:absolute;inset:0;opacity:.9}
-.actu-cover-bg1::before{background:linear-gradient(160deg,#1a0508,#5a0b18 50%,var(--rouge))}
-.actu-cover-bg2::before{background:linear-gradient(160deg,#0a1520,#0a3a6a 50%,#1a5acc)}
-.actu-cover-bg3::before{background:linear-gradient(160deg,#0a1a0e,#1a4a24 50%,#2a7a3a)}
-.actu-cover-bg4::before{background:linear-gradient(160deg,#1a0a1a,#4a0a6a 50%,#8a2acc)}
-.actu-cover-cat{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:3px;
-  text-transform:uppercase;color:rgba(255,255,255,.6);position:relative;z-index:1;margin-bottom:4px}
-.actu-cover-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:#fff;
-  line-height:1.15;position:relative;z-index:1;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.actu-body{padding:12px 14px 8px;flex:1}
-.actu-excerpt{font-size:.85rem;color:var(--txt2);line-height:1.6;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.actu-footer{display:flex;align-items:center;justify-content:space-between;
-  padding:8px 14px 12px;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;
-  letter-spacing:.5px;color:var(--txt3)}
+/* CARTES */
+.annonce-card{background:var(--gf);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:0;cursor:pointer;transition:border-color .2s,transform .2s,box-shadow .2s;display:flex;flex-direction:column;overflow:hidden;opacity:0;transform:translateY(18px)}
+.annonce-card.visible{opacity:1;transform:translateY(0);transition:opacity .4s ease,transform .4s ease,border-color .2s,box-shadow .2s}
+.annonce-card:hover{border-color:rgba(245,166,35,.28);transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.45)}
+
+/* BANDE DE COULEUR GAUCHE selon catégorie */
+.annonce-card{border-left:3px solid transparent}
+.annonce-card[data-cat="Logement"]{border-left-color:#4FA3E0}
+.annonce-card[data-cat="Emploi"]{border-left-color:#6CBF7A}
+.annonce-card[data-cat="Service"]{border-left-color:#F0A050}
+.annonce-card[data-cat="Solidarité"]{border-left-color:#E07090}
+.annonce-card[data-cat="Autre"]{border-left-color:rgba(244,241,235,.2)}
+
+.ann-inner{padding:16px 16px 10px;flex:1}
+.ann-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:8px}
+.ann-badges{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ann-cat{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;padding:3px 9px;border-radius:3px;border:1px solid}
+.cat-Logement{color:#64B5F6;border-color:rgba(100,181,246,.35)}
+.cat-Emploi{color:#81C784;border-color:rgba(129,199,132,.35)}
+.cat-Service{color:#FFB74D;border-color:rgba(255,183,77,.35)}
+.cat-Solidarité{color:#F06292;border-color:rgba(240,98,146,.35)}
+.cat-Autre{color:rgba(244,241,235,.45);border-color:rgba(244,241,235,.15)}
+
+/* BADGE FRAÎCHEUR */
+.fresh-badge{font-family:'Barlow Condensed',sans-serif;font-size:.56rem;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:10px}
+.fresh-new{background:rgba(76,175,80,.1);border:1px solid rgba(76,175,80,.35);color:#6fcf6f}
+.fresh-recent{background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.3);color:var(--or)}
+.fresh-week{background:rgba(255,152,0,.07);border:1px solid rgba(255,152,0,.25);color:#FFA726}
+
+.ann-date{font-family:'Barlow Condensed',sans-serif;font-size:.58rem;letter-spacing:1px;color:rgba(244,241,235,.22);text-transform:uppercase;margin-left:auto;flex-shrink:0}
+.ann-titre{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;text-transform:uppercase;margin-bottom:7px;line-height:1.25;letter-spacing:.3px}
+.ann-desc{font-size:.82rem;color:rgba(244,241,235,.5);line-height:1.6;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ann-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding-bottom:4px}
+.ann-meta span{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:1px;color:rgba(244,241,235,.3);text-transform:uppercase}
+
+/* CTA CONTACT visible directement */
+.ann-cta-row{padding:10px 16px 0;border-top:1px solid rgba(255,255,255,.05)}
+.btn-contact-card{background:rgba(200,16,46,.08);border:1px solid rgba(200,16,46,.25);color:rgba(200,16,46,.8);font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;padding:6px 14px;border-radius:4px;cursor:pointer;transition:all .18s;width:100%;text-align:center;-webkit-tap-highlight-color:transparent}
+.btn-contact-card:active,.btn-contact-card:hover{background:var(--rouge);border-color:var(--rouge);color:#fff}
 
 /* SOCIAL */
-.card-actions{display:flex;padding:4px 8px;border-top:1px solid var(--bg2);gap:2px}
-.action-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
-  padding:8px 4px;border:none;background:none;border-radius:8px;
-  font-family:'Barlow Condensed',sans-serif;font-size:.8rem;color:var(--txt2);
-  transition:background .15s}
-.action-btn:hover{background:var(--bg2)}
-.action-btn.liked{color:var(--rouge)}
-.action-btn .h{font-size:1rem;transition:transform .15s;display:inline-block}
-.action-btn.pop .h{transform:scale(1.5)}
-.action-sep{width:1px;height:26px;background:var(--border);flex-shrink:0;align-self:center}
+.card-social{display:flex;align-items:center;gap:10px;padding:9px 16px 12px}
+.lk-btn{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;color:rgba(244,241,235,.35);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;padding:6px 5px;-webkit-tap-highlight-color:transparent;transition:color .15s;position:relative;overflow:hidden;border-radius:4px}
+.lk-btn .h{font-size:1.05rem;transition:transform .15s;display:inline-block}
+.lk-btn.liked{color:var(--rouge)}
+.lk-btn.pop .h{transform:scale(1.5)}
+.cm-btn{background:none;border:none;cursor:pointer;color:rgba(244,241,235,.28);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;padding:6px 5px;transition:color .2s;-webkit-tap-highlight-color:transparent;border-radius:4px}
+.cm-btn:hover{color:rgba(244,241,235,.6)}
+.spin,.empty{text-align:center;padding:60px 20px;color:rgba(244,241,235,.28);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:.78rem;grid-column:1/-1}
+.empty span{display:block;font-size:2.8rem;margin-bottom:12px}
 
-/* MINI DRAWER */
-.mini-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:600}
-.mini-overlay.open{display:block}
-.mini-drawer{position:fixed;bottom:0;left:0;right:0;background:#fff;
-  border-top:3px solid var(--rouge);border-radius:20px 20px 0 0;z-index:601;
-  max-height:75vh;display:flex;flex-direction:column;
-  transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1)}
-.mini-drawer.open{transform:none}
-.mini-drag{width:40px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 6px}
-.mini-head{padding:0 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bg2);flex-shrink:0}
-.mini-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.5px}
-.mini-body{overflow-y:auto;padding:12px 16px;flex:1}
-.mini-foot{padding:12px 16px;border-top:1px solid var(--bg2);display:flex;flex-direction:column;gap:8px;flex-shrink:0;padding-bottom:max(12px,env(safe-area-inset-bottom))}
-.cmt-item{display:flex;gap:10px;margin-bottom:12px}
-.cmt-av{width:32px;height:32px;min-width:32px;border-radius:50%;background:var(--rouge);
-  display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:#fff}
-.cmt-bubble{background:var(--bg2);border-radius:0 10px 10px 10px;padding:8px 12px;flex:1}
-.cmt-name{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1px;
-  text-transform:uppercase;color:var(--rouge);margin-bottom:3px;font-weight:700}
-.cmt-text{font-size:.85rem;color:var(--txt);line-height:1.5}
-input.cmt-input{background:var(--bg2);border:1px solid var(--border);border-radius:24px;
-  padding:10px 16px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.9rem;
-  outline:none;width:100%;transition:border .15s}
-input.cmt-input:focus{border-color:var(--rouge)}
-.cmt-send-row{display:flex;gap:8px}
-.cmt-send-btn{background:var(--rouge);border:none;color:#fff;width:42px;height:42px;
-  border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.cmt-send-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;
-  stroke-linecap:round;stroke-linejoin:round}
+/* SECTION DÉPÔT */
+.depot-section{background:var(--gf);border-top:1px solid rgba(255,255,255,.06);padding:40px 5vw 60px;text-align:center}
+.depot-section h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,3rem);margin-bottom:8px}
+.depot-section h2 em{color:var(--rouge);font-style:normal}
+.depot-section p{color:rgba(244,241,235,.42);max-width:480px;margin:0 auto 24px;font-size:.85rem;line-height:1.6}
+.btn-primary{display:inline-block;background:var(--rouge);color:#fff;padding:14px 28px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:6px;border:none;cursor:pointer;transition:opacity .2s;-webkit-tap-highlight-color:transparent}
+.btn-primary:active{opacity:.82}
 
-/* DRAWER ACTU */
-.drawer-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5)}
+/* DRAWER ANNONCE */
+.drawer-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.78);backdrop-filter:blur(5px)}
 .drawer-overlay.open{display:flex;justify-content:flex-end}
-.drawer{width:min(560px,100vw);height:100vh;background:#fff;overflow-y:auto;
-  display:flex;flex-direction:column;animation:drawerIn .3s cubic-bezier(.4,0,.2,1)}
-@keyframes drawerIn{from{transform:translateX(100%)}to{transform:none}}
-.drawer-head{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);
-  padding:16px;display:flex;align-items:flex-start;gap:12px;z-index:1;flex-shrink:0}
-.drawer-head h3{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;flex:1;line-height:1.2}
-.drawer-close-btn{width:32px;height:32px;border:1px solid var(--border);background:none;
-  border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
-.drawer-body{padding:16px;flex:1}
-.drawer-text{font-size:.92rem;color:var(--txt2);line-height:1.9;white-space:pre-wrap}
+.drawer{width:min(560px,96vw);height:100vh;background:#111;border-left:2px solid var(--rouge);overflow-y:auto;display:flex;flex-direction:column;animation:slideIn .3s cubic-bezier(.4,0,.2,1)}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.drawer-head{padding:20px 22px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-shrink:0;background:var(--noir);position:sticky;top:0;z-index:1}
+.drawer-head h3{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;line-height:1.15;color:var(--blanc);flex:1}
+.drawer-close{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.drawer-close:hover{border-color:var(--rouge);color:var(--rouge)}
+.drawer-body{padding:22px;flex:1}
+.drawer-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.drawer-content{font-size:.9rem;color:rgba(244,241,235,.75);line-height:1.95;white-space:pre-wrap;margin-bottom:22px}
+.contact-direct{background:var(--noir);border:1px solid rgba(245,166,35,.22);border-radius:8px;padding:20px;margin-top:4px}
+.contact-direct h4{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;margin-bottom:12px;color:var(--or)}
+.contact-info{display:flex;flex-direction:column;gap:9px}
+.contact-info a{display:flex;align-items:center;gap:10px;color:var(--blanc);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:1px;padding:11px 14px;background:rgba(255,255,255,.04);border-radius:6px;border:1px solid rgba(255,255,255,.08);transition:all .18s}
+.contact-info a:hover,.contact-info a:active{border-color:var(--or);background:rgba(245,166,35,.07)}
+.share-btns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.share-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;text-decoration:none;transition:opacity .18s;font-weight:700}
+.share-btn:hover{opacity:.85}
+.share-wa{background:#25D366;color:#fff}.share-fb{background:#1877F2;color:#fff}
+.share-x{background:#111;color:#fff;border:1px solid rgba(255,255,255,.18)}
+.share-copy{background:rgba(255,255,255,.08);color:var(--blanc);border:1px solid rgba(255,255,255,.15)}
+.share-copy.copied{background:rgba(76,175,80,.15);border-color:#4CAF50;color:#6fcf6f}
 
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;background:#fff;
-  border-top:1px solid var(--border);box-shadow:0 -2px 12px rgba(0,0,0,.06);
-  display:flex;align-items:stretch;height:var(--bar-h);
-  padding-bottom:env(safe-area-inset-bottom)}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;border:none;background:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;
-  font-size:.52rem;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;padding:8px 0}
-.nav-item.active{color:var(--rouge)}
-.nav-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round}
-.nav-publish{width:52px;height:52px;border-radius:50%;background:var(--rouge);color:#fff;border:none;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  box-shadow:0 4px 16px rgba(200,16,46,.45);margin-top:-14px;flex-shrink:0;gap:1px;
-  font-family:'Barlow Condensed',sans-serif}
-.nav-publish-icon{font-size:1.4rem;line-height:1}
-.nav-publish-lbl{font-size:.42rem;letter-spacing:1.5px;text-transform:uppercase}
-.nav-middle{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:6px;flex-shrink:0}
+/* DRAWER DÉPÔT */
+.fg{margin-bottom:13px}
+.fg label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,.09);border-radius:6px;padding:11px 14px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;resize:vertical}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--rouge)}
+.fg select option{background:var(--gf)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rgpd{display:flex;align-items:flex-start;gap:9px;font-size:.76rem;color:rgba(244,241,235,.4);line-height:1.5;margin:14px 0}
+.rgpd input[type=checkbox]{width:15px;height:15px;min-width:15px;margin-top:2px;accent-color:var(--rouge)}
+.btn-sub{width:100%;background:var(--rouge);color:#fff;border:none;padding:14px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;border-radius:6px;cursor:pointer;transition:opacity .2s;-webkit-tap-highlight-color:transparent}
+.btn-sub:active{opacity:.8}
+.btn-sub:disabled{opacity:.4;cursor:not-allowed}
+.msg{display:none;margin-top:12px;padding:12px 16px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1px}
+.msg.ok{background:rgba(76,175,80,.08);border:1px solid rgba(76,175,80,.35);color:#6fcf6f;display:block}
+.msg.err{background:rgba(200,16,46,.08);border:1px solid rgba(200,16,46,.35);color:#e06060;display:block}
 
-/* SPINNER / EMPTY */
-.spinner{text-align:center;padding:48px;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px}
-.empty-state{text-align:center;padding:48px 20px;color:var(--txt3)}
+/* MINI DRAWER COMMENTAIRES */
+.mini-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:599}
+.mini-ov.open{display:block}
+.mini-drw{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:2px solid var(--rouge);border-radius:18px 18px 0 0;z-index:600;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);max-height:75vh;display:flex;flex-direction:column}
+.mini-drw.open{transform:translateY(0)}
+.drag-pill{width:34px;height:4px;background:rgba(255,255,255,.14);border-radius:2px;margin:10px auto 0;flex-shrink:0}
+.mini-head{padding:12px 20px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.mini-head h4{font-family:'Bebas Neue',sans-serif;font-size:1.2rem}
+.mini-body{overflow-y:auto;padding:14px 20px;flex:1;-webkit-overflow-scrolling:touch}
+.mini-foot{padding:10px 20px calc(10px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;display:flex;flex-direction:column;gap:8px;background:#111}
+.ci{display:flex;gap:10px;margin-bottom:12px}
+.ca{width:32px;height:32px;min-width:32px;background:var(--rouge);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:#fff}
+.cb2{background:rgba(255,255,255,.05);border-radius:0 10px 10px 10px;padding:9px 12px;flex:1}
+.cn{font-family:'Barlow Condensed',sans-serif;font-size:.64rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-bottom:3px}
+.ct{font-size:.85rem;color:rgba(244,241,235,.8);line-height:1.55}
 
-/* REVEAL */
-.reveal-card{opacity:0;transform:translateY(12px);transition:opacity .3s ease,transform .3s ease}
-.reveal-card.revealed{opacity:1;transform:none}
-@keyframes ripple{to{transform:scale(2.5);opacity:0}}
+/* BOTTOM NAV APP */
+.app-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:rgba(8,8,8,.98);border-top:1px solid rgba(255,255,255,.08);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.app-nav-inner{display:flex;justify-content:space-around;align-items:flex-end;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+.app-nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:rgba(244,241,235,.32);font-family:'Barlow Condensed',sans-serif;font-size:.48rem;letter-spacing:.8px;text-transform:uppercase;padding:3px 10px;border-radius:10px;transition:color .15s;position:relative;min-width:52px;-webkit-tap-highlight-color:transparent}
+.app-nav-item .ani{font-size:1.35rem;line-height:1;transition:transform .15s}
+.app-nav-item:active .ani{transform:scale(.86)}
+.app-nav-item.active{color:var(--rouge)}
+.app-nav-item.active .ani{filter:drop-shadow(0 0 5px rgba(200,16,46,.55))}
+.app-nav-item .ndot{position:absolute;top:2px;right:6px;width:7px;height:7px;background:var(--rouge);border-radius:50%;border:2px solid rgba(8,8,8,.98);display:none}
+.app-nav-item[data-new] .ndot{display:block;animation:dotPulse 2s infinite}
+.app-nav-pub{width:50px;height:50px;background:var(--rouge);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:-14px;box-shadow:0 4px 18px rgba(200,16,46,.55);transition:transform .15s,box-shadow .15s;color:#fff;font-size:1.5rem;-webkit-tap-highlight-color:transparent;flex-shrink:0}
+.app-nav-pub:active{transform:scale(.88);box-shadow:0 2px 8px rgba(200,16,46,.35)}
+.pub-menu{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(12px);background:rgba(18,18,18,.97);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:8px;z-index:400;min-width:220px;opacity:0;pointer-events:none;transition:all .22s cubic-bezier(.4,0,.2,1);box-shadow:0 20px 50px rgba(0,0,0,.85);backdrop-filter:blur(20px)}
+.pub-menu.open{opacity:1;pointer-events:all;transform:translateX(-50%) translateY(0)}
+.pub-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:10px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:1px;text-transform:uppercase;color:var(--blanc);text-decoration:none;transition:background .15s;border:none;width:100%;text-align:left;background:none}
+.pub-item:active{background:rgba(255,255,255,.07)}
+.pub-item .pi{font-size:1.2rem}
 
-@media(min-width:701px){.bottom-nav{display:none}body{padding-bottom:0}}
+footer{background:var(--gf);border-top:1px solid rgba(255,255,255,.06);padding:24px 5vw;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+footer p{font-size:.76rem;color:rgba(244,241,235,.22)}
+footer a{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;color:rgba(244,241,235,.32);text-decoration:none;text-transform:uppercase}
+footer a:hover{color:var(--or)}
+@keyframes ripple-anim{to{transform:scale(2.8);opacity:0}}
 
-.filters{display:flex;gap:8px;overflow-x:auto;padding:12px 0;scrollbar-width:none}
-.filters::-webkit-scrollbar{display:none}
-.filter-btn{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;color:var(--txt2);white-space:nowrap;cursor:pointer;transition:all .15s;flex-shrink:0}
-.filter-btn.active{background:var(--rouge);color:#fff;border-color:var(--rouge)}
-.ann-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.ann-card{background:#fff;border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.05);padding:16px;cursor:pointer;transition:box-shadow .2s}
-.ann-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.12)}
-.ann-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px}
-.ann-cat{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;background:var(--bg2);color:var(--txt2);padding:3px 8px;border-radius:20px;border:1px solid var(--border);white-space:nowrap}
-.ann-fresh{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:1px;padding:3px 8px;border-radius:20px}
-.fresh-new{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
-.fresh-recent{background:#fefce8;color:#ca8a04;border:1px solid #fde68a}
-.ann-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--txt);line-height:1.3;margin-bottom:5px}
-.ann-desc{font-size:.83rem;color:var(--txt2);line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:8px}
-.ann-meta{display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;color:var(--txt3);flex-wrap:wrap}
-.ann-contact-btn{margin-left:auto;background:var(--rouge-light);color:var(--rouge);border:1px solid rgba(200,16,46,.2);padding:5px 12px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;flex-shrink:0}
-.ann-contact-btn:hover{background:var(--rouge);color:#fff}
-/* Drawer annonce */
-.drawer-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5)}
-.drawer-overlay.open{display:flex;justify-content:flex-end}
-.drawer{width:min(560px,100vw);height:100vh;background:#fff;overflow-y:auto;display:flex;flex-direction:column;animation:drawerIn .3s cubic-bezier(.4,0,.2,1)}
-@keyframes drawerIn{from{transform:translateX(100%)}to{transform:none}}
-.drawer-head{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);padding:16px;display:flex;align-items:flex-start;gap:12px;z-index:1;flex-shrink:0}
-.drawer-head h3{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;flex:1;line-height:1.2}
-.drawer-close-btn{width:32px;height:32px;border:1px solid var(--border);background:none;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
-.drawer-body{padding:16px;flex:1}
-.contact-box{background:var(--bg2);border-radius:10px;padding:16px;margin-top:16px}
-.contact-box h4{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;margin-bottom:12px}
-.contact-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-radius:8px;border:1px solid var(--border);text-decoration:none;color:var(--txt);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:.5px;margin-bottom:8px;transition:all .15s}
-.contact-item:hover{border-color:var(--rouge);background:var(--rouge-light)}
-/* Formulaire déposer */
-.form-group{margin-bottom:12px}
-.form-group label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt2);margin-bottom:4px}
-.form-group input,.form-group textarea,.form-group select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Barlow',sans-serif;font-size:.9rem;color:var(--txt);outline:none;transition:border .15s}
-.form-group input:focus,.form-group textarea:focus{border-color:var(--rouge)}
-.form-group textarea{resize:vertical;min-height:80px}
-.btn-submit{width:100%;background:var(--rouge);color:#fff;border:none;border-radius:8px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
-.form-msg{text-align:center;padding:8px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;border-radius:6px;display:none}
-.form-msg.ok{background:#f0fdf4;color:#16a34a;display:block}
-.form-msg.err{background:var(--rouge-light);color:var(--rouge);display:block}
+@media(min-width:901px){.annonces-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:601px) and (max-width:900px){.annonces-grid{grid-template-columns:repeat(2,1fr)}.fr{grid-template-columns:1fr}}
+
+@media(max-width:600px){
+  nav.top-nav{height:56px;padding:0 14px}
+  .logo-text{display:none}
+  .nav-links{display:none}
+  .filters{top:56px;padding:10px 14px;gap:6px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .page-hero{padding:16px 16px 12px}
+  h1{font-size:1.85rem}
+  /* Feed vertical */
+  .annonces-grid{display:flex;flex-direction:column;gap:0;padding:0}
+  .annonce-card{border-radius:0;border-bottom:1px solid rgba(255,255,255,.055);border-top:none;border-right:none;background:#0A0A0A}
+  .annonce-card:first-child{border-top:1px solid rgba(255,255,255,.055)}
+  .annonce-card:hover{transform:none;box-shadow:none;background:#0F0F0F}
+  /* Bande gauche catégorie plus visible sur mobile */
+  .annonce-card{border-left-width:4px}
+  .content{padding:0 0 24px}
+  .app-nav{display:block}
+  body{padding-bottom:68px}
+  footer{display:none}
+  .depot-section{padding:28px 16px 40px}
+  .drawer{width:100vw;border-left:none;border-top:2px solid var(--rouge)}
+  .fr{grid-template-columns:1fr}
+}
 </style>
+<meta name="description" content="Annonces des habitants des quartiers populaires de Toulouse.">
+<meta property="og:title" content="CQP Toulouse — Annonces">
+<meta property="og:image" content="https://kwiid31.github.io/cqp-toulouse/icons/icon-512.png">
+<meta property="og:url" content="https://kwiid31.github.io/cqp-toulouse/annonces.html">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
-<header class="topbar">
-  <a href="index.html" class="back-btn"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:var(--txt2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="15 18 9 12 15 6"/></svg></a>
-  <h1>Annonces</h1>
-  <span class="topbar-pill" id="count-pill">…</span>
-</header>
-<div class="page-hero" style="background:linear-gradient(135deg,#0a1a0e,#2E7D32)">
-  <div class="page-hero-tag">Logement · Emploi · Solidarité</div>
-  <h2>Annonces des habitants</h2>
-  <p>Les habitants des quartiers s'entraident directement.</p>
-</div>
-<div class="content">
-  <button style="width:100%;padding:12px;background:var(--rouge);color:#fff;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:14px" onclick="document.getElementById('form-depot').style.display=document.getElementById('form-depot').style.display==='none'?'block':'none'">
-    📋 Déposer une annonce
-  </button>
-  <div id="form-depot" style="display:none;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px">
-    <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:12px">Déposer une annonce</h3>
-    <div class="form-group"><label>Titre *</label><input type="text" id="dep-titre" placeholder="Ex: Cherche coloc Mirail"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="form-group"><label>Catégorie</label><select id="dep-cat"><option>Logement</option><option>Emploi</option><option>Solidarité</option><option>Service</option><option>Autre</option></select></div>
-      <div class="form-group"><label>Quartier *</label><input type="text" id="dep-quartier" placeholder="Mirail…"></div>
-    </div>
-    <div class="form-group"><label>Description *</label><textarea id="dep-desc" rows="3" placeholder="Décrivez votre annonce…"></textarea></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="form-group"><label>Prénom *</label><input type="text" id="dep-prenom"></div>
-      <div class="form-group"><label>Email *</label><input type="email" id="dep-email"></div>
-    </div>
-    <div class="form-group"><label>Téléphone</label><input type="tel" id="dep-tel" placeholder="06 xx xx xx xx"></div>
-    <button class="btn-submit" onclick="submitDepot()">Envoyer l'annonce</button>
-    <div class="form-msg" id="dep-msg"></div>
+
+<nav class="top-nav">
+  <a href="index.html" class="logo">
+    <div class="logo-icon">CQP</div>
+    <div class="logo-text">Quartiers Populaires<span>Toulouse — En lutte</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">← Accueil</a>
+    <a href="actus.html">Actualités</a>
+    <a href="evenements.html">Événements</a>
+    <a href="annonces.html" class="active">Annonces</a>
   </div>
-  <div class="filters" id="filters">
-    <button class="filter-btn active" data-cat="Tous" onclick="filterBy('Tous',this)">Tous</button>
-    <button class="filter-btn" data-cat="Logement" onclick="filterBy('Logement',this)">🏠 Logement</button>
-    <button class="filter-btn" data-cat="Emploi" onclick="filterBy('Emploi',this)">💼 Emploi</button>
-    <button class="filter-btn" data-cat="Solidarité" onclick="filterBy('Solidarité',this)">🤝 Solidarité</button>
-    <button class="filter-btn" data-cat="Service" onclick="filterBy('Service',this)">🔧 Service</button>
-    <button class="filter-btn" data-cat="Autre" onclick="filterBy('Autre',this)">📌 Autre</button>
-  </div>
-  <div class="ann-grid" id="ann-grid"><div class="spinner">Chargement…</div></div>
-</div>
-<nav class="bottom-nav">
-  <a href="index.html" class="nav-item"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Accueil</span></a>
-  <a href="actus.html" class="nav-item"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg><span>Actus</span></a>
-  <div class="nav-middle"><button class="nav-publish" onclick="window.location='index.html'"><span class="nav-publish-icon">+</span><span class="nav-publish-lbl">Publier</span></button></div>
-  <a href="evenements.html" class="nav-item"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Évts</span></a>
-  <a href="annonces.html" class="nav-item active"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Annonces</span></a>
 </nav>
-<!-- Drawer détail annonce -->
-<div class="drawer-overlay" id="dr-ann" onclick="if(event.target===this)closeDrAnn()">
+
+<div class="page-hero">
+  <div class="section-tag">Entraide citoyenne</div>
+  <h1>Annonces <em>des habitants</em></h1>
+  <p>Logement, emploi, services, solidarité — les habitants s'entraident directement.</p>
+</div>
+
+<div class="filters" id="filters">
+  <button class="filter-btn active" data-cat="">Toutes</button>
+  <button class="filter-btn" data-cat="Logement">🏠 Logement</button>
+  <button class="filter-btn" data-cat="Emploi">💼 Emploi</button>
+  <button class="filter-btn" data-cat="Service">🔧 Service</button>
+  <button class="filter-btn" data-cat="Solidarité">🤝 Solidarité</button>
+  <button class="filter-btn" data-cat="Autre">📌 Autre</button>
+  <button class="btn-deposer-inline" onclick="openDr('dDepot')">+ Déposer</button>
+</div>
+
+<div class="content">
+  <div class="annonces-grid" id="annonces-grid"><div class="spin">⏳ Chargement…</div></div>
+</div>
+
+<div class="depot-section">
+  <div class="section-tag" style="justify-content:center">Tu as quelque chose à proposer ?</div>
+  <h2>Dépose <em>ton annonce</em></h2>
+  <p>Gratuit, solidaire, local — publiée après validation par notre équipe (24–48h).</p>
+  <button class="btn-primary" onclick="openDr('dDepot')">📋 Déposer une annonce</button>
+</div>
+
+<footer>
+  <p>© 2026 Comité des Quartiers Populaires de Toulouse</p>
+  <a href="index.html">← Retour au site principal</a>
+</footer>
+
+<!-- DRAWER ANNONCE DÉTAIL -->
+<div class="drawer-overlay" id="dAnn" onclick="if(event.target.id==='dAnn')closeDr('dAnn')">
   <div class="drawer">
-    <div class="drawer-head"><div style="flex:1"><div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px" id="dr-ann-cat"></div><h3 id="dr-ann-titre"></h3><div style="font-size:.78rem;color:var(--txt3);margin-top:4px" id="dr-ann-meta"></div></div><button class="drawer-close-btn" onclick="closeDrAnn()">✕</button></div>
+    <div class="drawer-head"><h3 id="dr-ann-titre"></h3><button class="drawer-close" onclick="closeDr('dAnn')">✕</button></div>
     <div class="drawer-body">
-      <p style="font-size:.9rem;color:var(--txt2);line-height:1.8;margin-bottom:16px" id="dr-ann-desc"></p>
-      <div class="contact-box">
-        <h4>Contacter</h4>
-        <a id="dr-ann-email" href="#" class="contact-item">📧 <span id="dr-ann-email-txt"></span></a>
-        <a id="dr-ann-tel" href="#" class="contact-item" style="display:none">📞 <span id="dr-ann-tel-txt"></span></a>
+      <div class="drawer-meta"><span class="ann-cat" id="dr-ann-cat"></span><span style="font-family:'Barlow Condensed',sans-serif;font-size:.66rem;letter-spacing:1px;color:rgba(244,241,235,.3)" id="dr-ann-meta"></span></div>
+      <div class="drawer-content" id="dr-ann-content"></div>
+      <div class="share-btns" id="dr-ann-share"></div>
+      <div class="contact-direct">
+        <h4>📞 Contacter directement</h4>
+        <div class="contact-info" id="dr-contact-info"></div>
       </div>
     </div>
   </div>
 </div>
-<!-- Mini drawer commentaires -->
-<div class="mini-overlay" id="mini-ov" onclick="closeMini()"></div>
-<div class="mini-drawer" id="mini-drawer">
-  <div class="mini-drag"></div>
-  <div class="mini-head"><h4 id="mini-title">Commentaires</h4><button style="border:none;background:none;color:var(--txt3);font-size:1.1rem;cursor:pointer" onclick="closeMini()">✕</button></div>
-  <div class="mini-body" id="mini-body"></div>
-  <div class="mini-foot"><input class="cmt-input" id="mini-prenom" placeholder="Votre prénom"><div style="display:flex;gap:8px"><input class="cmt-input" id="mini-msg" placeholder="Votre commentaire…" onkeydown="if(event.key==='Enter')sendCmt()" style="flex:1"><button class="cmt-send-btn" onclick="sendCmt()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div></div>
+
+<!-- DRAWER DÉPÔT -->
+<div class="drawer-overlay" id="dDepot" onclick="if(event.target.id==='dDepot')closeDr('dDepot')">
+  <div class="drawer">
+    <div class="drawer-head"><h3>📋 Déposer une annonce</h3><button class="drawer-close" onclick="closeDr('dDepot')">✕</button></div>
+    <div class="drawer-body" id="depot-body">
+      <p style="font-size:.8rem;color:rgba(244,241,235,.4);margin-bottom:18px;line-height:1.55">Ton annonce sera publiée après validation (24–48h). Tes coordonnées seront visibles des personnes intéressées.</p>
+      <div class="fr">
+        <div class="fg"><label>Prénom *</label><input type="text" id="a-prenom" placeholder="Marie"></div>
+        <div class="fg"><label>Nom *</label><input type="text" id="a-nom" placeholder="Dupont"></div>
+      </div>
+      <div class="fg"><label>Email * (visible)</label><input type="email" id="a-email" placeholder="marie@exemple.fr"></div>
+      <div class="fg"><label>Téléphone (optionnel)</label><input type="tel" id="a-tel" placeholder="06 XX XX XX XX"></div>
+      <div class="fr">
+        <div class="fg"><label>Catégorie *</label>
+          <select id="a-cat">
+            <option value="">— Choisir —</option>
+            <option value="Logement">🏠 Logement</option>
+            <option value="Emploi">💼 Emploi</option>
+            <option value="Service">🔧 Service</option>
+            <option value="Solidarité">🤝 Solidarité</option>
+            <option value="Autre">📌 Autre</option>
+          </select>
+        </div>
+        <div class="fg"><label>Quartier *</label>
+          <select id="a-quartier">
+            <option value="">— Choisir —</option>
+            <option>Le Mirail</option><option>Bellefontaine</option><option>Les Izards</option>
+            <option>La Reynerie</option><option>Saint-Cyprien</option><option>Bagatelle</option>
+            <option>Arnaud Bernard</option><option>Sept Deniers</option><option>Empalot</option>
+            <option>Autre quartier</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Titre *</label><input type="text" id="a-titre" placeholder="Ex: Cherche T2 urgence familiale"></div>
+      <div class="fg"><label>Description *</label><textarea id="a-desc" rows="4" placeholder="Décris ton besoin…"></textarea></div>
+      <div class="rgpd"><input type="checkbox" id="a-rgpd"><label for="a-rgpd">J'accepte que ces informations soient publiées sur le site après validation.</label></div>
+      <button class="btn-sub" id="depotBtn" onclick="deposerAnnonce()">📋 Soumettre mon annonce</button>
+      <div class="msg" id="depotMsg"></div>
+    </div>
+  </div>
 </div>
+
+<!-- MINI DRAWER COMMENTAIRES -->
+<div class="mini-ov" id="mini-ov" onclick="closeMini()"></div>
+<div class="mini-drw" id="mini-drw">
+  <div class="drag-pill"></div>
+  <div class="mini-head">
+    <h4 id="mini-titre">Commentaires</h4>
+    <button onclick="closeMini()" style="background:none;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.4);width:30px;height:30px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+  </div>
+  <div class="mini-body" id="mini-cmts"></div>
+  <div class="mini-foot">
+    <input id="mini-prenom" placeholder="Ton prénom" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:9px 16px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;width:100%">
+    <div style="display:flex;gap:8px">
+      <input id="mini-msg" placeholder="Ton commentaire…" style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:9px 16px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none" onkeydown="if(event.key==='Enter')sendCmt()">
+      <button onclick="sendCmt()" style="background:var(--rouge);border:none;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV APP -->
+<nav class="app-nav" id="appNav">
+  <div class="app-nav-inner">
+    <a href="index.html" class="app-nav-item">
+      <span class="ani">🏠</span>Accueil
+      <span class="ndot"></span>
+    </a>
+    <a href="actus.html" class="app-nav-item" id="nav-actu">
+      <span class="ani">📰</span>Actus
+      <span class="ndot"></span>
+    </a>
+    <button class="app-nav-pub" onclick="togglePubMenu(event)" aria-label="Déposer">+</button>
+    <a href="evenements.html" class="app-nav-item" id="nav-evt">
+      <span class="ani">📅</span>Évènements
+      <span class="ndot"></span>
+    </a>
+    <a href="annonces.html" class="app-nav-item active">
+      <span class="ani">📋</span>Annonces
+      <span class="ndot"></span>
+    </a>
+  </div>
+</nav>
+
+<div class="pub-menu" id="pubMenu">
+  <button class="pub-item" onclick="openDr('dDepot');document.getElementById('pubMenu').classList.remove('open')"><span class="pi">📋</span>Déposer une annonce</button>
+  <a href="evenements.html" class="pub-item"><span class="pi">📅</span>Proposer un événement</a>
+</div>
+
 <script>
-const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co',SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
+const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
-function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function getSid(){try{let s=sessionStorage.getItem('sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);sessionStorage.setItem('sid',s);}return s;}catch{return 'x'+Math.random().toString(36).slice(2);}}
-function savePrenomLocal(v){try{if(v.trim())localStorage.setItem('cqp_prenom',v.trim());}catch{}}
-function timeAgo(d){const diff=(Date.now()-new Date(d))/1000;if(diff<60)return'À l\'instant';if(diff<3600)return`Il y a ${Math.floor(diff/60)} min`;if(diff<86400)return`Il y a ${Math.floor(diff/3600)} h`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});}
-function freshnessLabel(d){const h=(Date.now()-new Date(d))/3600000;if(h<24)return'<span class="ann-fresh fresh-new">🟢 Nouvelle</span>';if(h<72)return'<span class="ann-fresh fresh-recent">🟡 Récente</span>';return'';}
-let allAnn=[],currentCat='Tous';
-async function load(){
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function getSid(){try{let s=sessionStorage.getItem('cqp_sid');if(!s){s=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',s);}return s;}catch{return 'anon';}}
+
+const CATS={Logement:'cat-Logement',Emploi:'cat-Emploi',Service:'cat-Service','Solidarité':'cat-Solidarité',Autre:'cat-Autre'};
+let annPub=[];let currentCat='';
+
+// Fraîcheur
+function freshnessInfo(dateStr){
+  const diff=(Date.now()-new Date(dateStr))/3600000;
+  if(diff<24)return{txt:'🟢 Nouvelle',cls:'fresh-new'};
+  if(diff<72)return{txt:'🟡 Récente',cls:'fresh-recent'};
+  if(diff<168)return{txt:'🟠 Cette semaine',cls:'fresh-week'};
+  return null;
+}
+
+async function loadAnnonces(){
+  const g=document.getElementById('annonces-grid');
   try{
     const{data,error}=await sb.from('annonces').select('*').eq('validee',true).order('date_depot',{ascending:false});
-    if(error)throw error;allAnn=data||[];
-    document.getElementById('count-pill').textContent=allAnn.length+' annonce'+(allAnn.length>1?'s':'');
-    render();
-  }catch(e){document.getElementById('ann-grid').innerHTML=`<div class="empty-state">Erreur: ${e.message}</div>`;}
+    if(error)throw error;
+    annPub=data||[];
+    renderAnnonces();
+    localStorage.setItem('cqp_ann_last',Date.now().toString());
+  }catch(e){
+    document.getElementById('annonces-grid').innerHTML=`<div class="empty" style="grid-column:1/-1"><span>⚠️</span>Impossible de charger les annonces.</div>`;
+  }
 }
-function filterBy(cat,btn){currentCat=cat;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
-function render(){
-  const g=document.getElementById('ann-grid');
-  const filtered=currentCat==='Tous'?allAnn:allAnn.filter(a=>a.categorie===currentCat);
-  if(!filtered.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1">Aucune annonce dans cette catégorie.</div>';return;}
-  g.innerHTML=filtered.map(a=>`<article class="ann-card reveal-card" id="card-${a.id}" onclick="openAnn(${a.id})">
-    <div class="ann-header"><span class="ann-cat">${esc(a.categorie)}</span>${freshnessLabel(a.date_depot)}</div>
-    <div class="ann-title">${esc(a.titre)}</div>
-    <div class="ann-desc">${esc(a.description).substring(0,140)}${a.description.length>140?'…':''}</div>
-    <div class="ann-meta">
-      <span>📍 ${esc(a.quartier)}</span><span>👤 ${esc(a.prenom)}</span><span>${timeAgo(a.date_depot)}</span>
-      <button class="ann-contact-btn" onclick="event.stopPropagation();openAnn(${a.id})">Contacter →</button>
+
+function renderAnnonces(){
+  const g=document.getElementById('annonces-grid');
+  const filtered=currentCat?annPub.filter(a=>a.categorie===currentCat):annPub;
+  if(!filtered.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><span>📋</span>Aucune annonce dans cette catégorie pour le moment.</div>';return;}
+  g.innerHTML=filtered.map(a=>{
+    const fresh=freshnessInfo(a.date_depot);
+    return `<div class="annonce-card" id="card-${a.id}" data-cat="${esc(a.categorie)}" onclick="openDrAnn(${a.id})">
+  <div class="ann-inner">
+    <div class="ann-head">
+      <div class="ann-badges">
+        <span class="ann-cat ${CATS[a.categorie]||'cat-Autre'}">${esc(a.categorie)}</span>
+        ${fresh?`<span class="fresh-badge ${fresh.cls}">${fresh.txt}</span>`:''}
+      </div>
+      <span class="ann-date">${new Date(a.date_depot).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}</span>
     </div>
-    <div class="card-actions" onclick="event.stopPropagation()">
-      <button class="action-btn" id="lk-${a.id}" onclick="toggleLike(${a.id})"><span class="h">🤍</span><span id="lc-${a.id}">0</span> J'aime</button>
-      <div class="action-sep"></div>
-      <button class="action-btn" onclick="openMini(${a.id},'${esc(a.titre).substring(0,28).replace(/'/g,"\\'")}')">💬 <span id="cc-${a.id}">0</span> Commenter</button>
-    </div>
-  </article>`).join('');
-  loadAllCounts(filtered.map(a=>a.id));
-  const obs=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting){e.target.classList.add('revealed');obs.unobserve(e.target);}})},{threshold:.05});
-  document.querySelectorAll('.reveal-card').forEach(el=>obs.observe(el));
+    <div class="ann-titre">${esc(a.titre)}</div>
+    <div class="ann-desc">${esc(a.description).substring(0,120)}${a.description.length>120?'…':''}</div>
+    <div class="ann-meta"><span>📍 ${esc(a.quartier)}</span><span>👤 ${esc(a.prenom)}</span></div>
+  </div>
+  <div class="ann-cta-row" onclick="event.stopPropagation()">
+    <button class="btn-contact-card" onclick="event.stopPropagation();openDrAnn(${a.id})">📞 Voir le contact</button>
+  </div>
+  <div class="card-social" onclick="event.stopPropagation()">
+    <button class="lk-btn" id="lk-${a.id}" onclick="doLike('annonce',${a.id},this)"><span class="h">🤍</span>&nbsp;<span id="lc-${a.id}">0</span></button>
+    <button class="cm-btn" onclick="openMini('annonce',${a.id},'${esc(a.titre).substring(0,28).replace(/'/g,"\\'")}')">💬&nbsp;<span id="cc-${a.id}">0</span></button>
+  </div>
+</div>`;
+  }).join('');
+  initScrollReveal();
+  filtered.forEach(a=>{addSwipeToLike(a.id);loadCounts('annonce',a.id);});
 }
-function openAnn(id){
-  const a=allAnn.find(x=>x.id===id);if(!a)return;
-  document.getElementById('dr-ann-cat').textContent=a.categorie;
-  document.getElementById('dr-ann-titre').textContent=a.titre;
-  document.getElementById('dr-ann-meta').textContent='📍 '+a.quartier+' · 👤 '+a.prenom;
-  document.getElementById('dr-ann-desc').textContent=a.description;
-  document.getElementById('dr-ann-email-txt').textContent=a.email;
-  document.getElementById('dr-ann-email').href='mailto:'+a.email;
-  const telEl=document.getElementById('dr-ann-tel');
-  if(a.telephone){telEl.style.display='flex';document.getElementById('dr-ann-tel-txt').textContent=a.telephone;telEl.href='tel:'+a.telephone;}
-  else{telEl.style.display='none';}
-  document.getElementById('dr-ann').classList.add('open');document.body.style.overflow='hidden';
+
+function initScrollReveal(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach((e,i)=>{
+      if(e.isIntersecting){
+        setTimeout(()=>e.target.classList.add('visible'),i*40);
+        obs.unobserve(e.target);
+      }
+    });
+  },{threshold:0.05,rootMargin:'0px 0px -15px 0px'});
+  document.querySelectorAll('.annonce-card').forEach(c=>obs.observe(c));
 }
-function closeDrAnn(){document.getElementById('dr-ann').classList.remove('open');document.body.style.overflow='';}
-async function loadAllCounts(ids){
+
+async function loadCounts(type,id){
   const sid=getSid();
   try{
-    const[{data:lk},{data:my},{data:cm}]=await Promise.all([sb.from('likes').select('item_id').eq('item_type','annonce').in('item_id',ids),sb.from('likes').select('item_id').eq('item_type','annonce').eq('session_id',sid).in('item_id',ids),sb.from('commentaires').select('item_id').eq('item_type','annonce').eq('visible',true).in('item_id',ids)]);
-    const lm={},mm={},cm2={};(lk||[]).forEach(r=>{lm[r.item_id]=(lm[r.item_id]||0)+1;});(my||[]).forEach(r=>{mm[r.item_id]=true;});(cm||[]).forEach(r=>{cm2[r.item_id]=(cm2[r.item_id]||0)+1;});
-    ids.forEach(id=>{const liked=!!mm[id];const btn=document.getElementById('lk-'+id);if(btn){btn.classList.toggle('liked',liked);btn.querySelector('.h').textContent=liked?'❤️':'🤍';}const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=lm[id]||0;const cc=document.getElementById('cc-'+id);if(cc)cc.textContent=cm2[id]||0;});
-  }catch{}
+    const[{count:nl},{data:ml},{count:nc}]=await Promise.all([
+      sb.from('likes').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id),
+      sb.from('likes').select('id').eq('item_type',type).eq('item_id',id).eq('session_id',sid),
+      sb.from('commentaires').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id).eq('visible',true)
+    ]);
+    const liked=(ml||[]).length>0;
+    const btn=document.getElementById('lk-'+id);
+    if(btn){if(liked)btn.classList.add('liked');btn.querySelector('.h').textContent=liked?'❤️':'🤍';}
+    const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=nl||0;
+    const cc=document.getElementById('cc-'+id);if(cc)cc.textContent=nc||0;
+  }catch(e){}
 }
-async function toggleLike(id){
-  const sid=getSid();const btn=document.getElementById('lk-'+id);if(!btn)return;const liked=btn.classList.contains('liked');btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),300);
-  if(liked){await sb.from('likes').delete().eq('item_type','annonce').eq('item_id',id).eq('session_id',sid);btn.classList.remove('liked');btn.querySelector('.h').textContent='🤍';}
-  else{await sb.from('likes').insert({item_type:'annonce',item_id:id,session_id:sid}).catch(()=>{});btn.classList.add('liked');btn.querySelector('.h').textContent='❤️';}
-  const{data:l}=await sb.from('likes').select('item_id').eq('item_type','annonce').eq('item_id',id);
-  const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=(l||[]).length;
+
+async function doLike(type,id,btn){
+  if(!btn)btn=document.getElementById('lk-'+id);if(!btn)return;
+  const sid=getSid();const liked=btn.classList.contains('liked');
+  btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),300);
+  if(!liked)heartBurst(btn);
+  if(liked){await sb.from('likes').delete().eq('item_type',type).eq('item_id',id).eq('session_id',sid);btn.classList.remove('liked');btn.querySelector('.h').textContent='🤍';}
+  else{await sb.from('likes').insert({item_type:type,item_id:id,session_id:sid}).catch(()=>{});btn.classList.add('liked');btn.querySelector('.h').textContent='❤️';}
+  const{count}=await sb.from('likes').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id);
+  const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=count||0;
 }
-let miniId=null;
-function openMini(id,titre){miniId=id;document.getElementById('mini-title').textContent='💬 '+titre;document.getElementById('mini-ov').classList.add('open');document.getElementById('mini-drawer').classList.add('open');document.body.style.overflow='hidden';try{const p=localStorage.getItem('cqp_prenom');if(p)document.getElementById('mini-prenom').value=p;}catch{}refreshCmts();}
-function closeMini(){document.getElementById('mini-ov').classList.remove('open');document.getElementById('mini-drawer').classList.remove('open');document.body.style.overflow='';miniId=null;}
-async function refreshCmts(){if(!miniId)return;const{data}=await sb.from('commentaires').select('*').eq('item_type','annonce').eq('item_id',miniId).eq('visible',true).order('created_at',{ascending:true});const list=data||[];const cc=document.getElementById('cc-'+miniId);if(cc)cc.textContent=list.length;const box=document.getElementById('mini-body');if(!box)return;box.innerHTML=list.length?list.map(c=>`<div class="cmt-item"><div class="cmt-av">${esc(c.prenom[0]).toUpperCase()}</div><div class="cmt-bubble"><div class="cmt-name">${esc(c.prenom)}</div><div class="cmt-text">${esc(c.message)}</div></div></div>`).join(''):'<p style="color:var(--txt3);text-align:center;padding:24px">Soyez le premier !</p>';box.scrollTop=box.scrollHeight;}
-async function sendCmt(){const msg=document.getElementById('mini-msg')?.value.trim();const prenom=document.getElementById('mini-prenom')?.value.trim()||'Anonyme';if(!msg||!miniId)return;savePrenomLocal(prenom);document.getElementById('mini-msg').value='';await sb.from('commentaires').insert({item_type:'annonce',item_id:miniId,prenom,message:msg});refreshCmts();}
-async function submitDepot(){
-  const titre=document.getElementById('dep-titre')?.value.trim();const cat=document.getElementById('dep-cat')?.value;const quartier=document.getElementById('dep-quartier')?.value.trim();const desc=document.getElementById('dep-desc')?.value.trim();const prenom=document.getElementById('dep-prenom')?.value.trim();const email=document.getElementById('dep-email')?.value.trim();const tel=document.getElementById('dep-tel')?.value.trim();const msg=document.getElementById('dep-msg');
-  if(!titre||!quartier||!desc||!prenom||!email){if(msg){msg.textContent='⚠ Champs obligatoires manquants.';msg.className='form-msg err';}return;}
-  const{error}=await sb.from('annonces').insert({titre,categorie:cat,quartier,description:desc,prenom,email,telephone:tel||null,validee:false});
-  if(error){if(msg){msg.textContent='⚠ '+error.message;msg.className='form-msg err';}}
-  else{if(msg){msg.textContent='✅ Annonce envoyée ! Publication sous 24–48h.';msg.className='form-msg ok';}setTimeout(()=>{document.getElementById('form-depot').style.display='none';['dep-titre','dep-quartier','dep-desc','dep-prenom','dep-email','dep-tel'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';})},3000);}
+
+function heartBurst(btn){
+  const rect=btn.getBoundingClientRect();
+  for(let i=0;i<6;i++){
+    const p=document.createElement('span');
+    p.textContent=['❤️','🧡','💛','🤍'][i%4];
+    const s=.7+Math.random()*.9;
+    p.style.cssText=`position:fixed;left:${rect.left+rect.width/2}px;top:${rect.top+4}px;font-size:${s}rem;pointer-events:none;z-index:9999;transition:all .8s ease-out;opacity:1;user-select:none`;
+    document.body.appendChild(p);
+    requestAnimationFrame(()=>{p.style.transform=`translate(${(Math.random()-.5)*80}px,-${38+Math.random()*45}px)`;p.style.opacity='0';});
+    setTimeout(()=>p.remove(),850);
+  }
 }
-load();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('/cqp-toulouse/sw.js').catch(()=>{});
+
+function addSwipeToLike(id){
+  const card=document.getElementById('card-'+id);if(!card)return;
+  let sx=0,sy=0;
+  card.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+  card.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx;
+    const dy=Math.abs(e.changedTouches[0].clientY-sy);
+    if(dx>60&&dy<35){
+      const btn=document.getElementById('lk-'+id);
+      if(btn&&!btn.classList.contains('liked'))doLike('annonce',id,btn);
+      card.style.transition='background .3s';card.style.background='rgba(200,16,46,.07)';
+      setTimeout(()=>card.style.background='',350);
+    }
+  },{passive:true});
+}
+
+// Filtres
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');currentCat=btn.dataset.cat;renderAnnonces();
+  });
+});
+
+function openDrAnn(id){
+  const a=annPub.find(x=>x.id===id);if(!a)return;
+  document.getElementById('dr-ann-titre').textContent=a.titre;
+  const catEl=document.getElementById('dr-ann-cat');catEl.textContent=a.categorie;catEl.className='ann-cat '+(CATS[a.categorie]||'cat-Autre');
+  document.getElementById('dr-ann-meta').textContent='📍 '+a.quartier+' · 👤 '+a.prenom+' · '+new Date(a.date_depot).toLocaleDateString('fr-FR');
+  document.getElementById('dr-ann-content').textContent=a.description;
+  const url=encodeURIComponent(location.href);
+  const txt=encodeURIComponent('📋 '+a.titre+' — CQP Toulouse');
+  document.getElementById('dr-ann-share').innerHTML=`
+    <a class="share-btn share-wa" href="https://wa.me/?text=${txt}%20${url}" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${url}" target="_blank" rel="noopener">Facebook</a>
+    <a class="share-btn share-x" href="https://twitter.com/intent/tweet?text=${txt}&url=${url}" target="_blank" rel="noopener">𝕏</a>
+    <button class="share-btn share-copy" id="copy-ann" onclick="copyLink(this,'${decodeURIComponent(url)}')">🔗 Copier</button>`;
+  let html='';
+  if(a.email)html+=`<a href="mailto:${esc(a.email)}">✉️ ${esc(a.email)}</a>`;
+  if(a.telephone)html+=`<a href="tel:${esc(a.telephone)}">📞 ${esc(a.telephone)}</a>`;
+  if(!a.email&&!a.telephone)html='<p style="color:rgba(244,241,235,.35);font-size:.82rem">Aucun contact renseigné.</p>';
+  document.getElementById('dr-contact-info').innerHTML=html;
+  openDr('dAnn');
+}
+
+function copyLink(btn,url){
+  navigator.clipboard.writeText(url).then(()=>{
+    btn.textContent='✓ Copié !';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='🔗 Copier';btn.classList.remove('copied');},2200);
+  });
+}
+
+function openDr(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeDr(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dAnn');closeDr('dDepot');closeMini();}});
+
+async function deposerAnnonce(){
+  const prenom=document.getElementById('a-prenom').value.trim(),nom=document.getElementById('a-nom').value.trim();
+  const email=document.getElementById('a-email').value.trim(),telephone=document.getElementById('a-tel').value.trim();
+  const categorie=document.getElementById('a-cat').value,quartier=document.getElementById('a-quartier').value;
+  const titre=document.getElementById('a-titre').value.trim(),description=document.getElementById('a-desc').value.trim();
+  const rgpd=document.getElementById('a-rgpd').checked;
+  if(!prenom||!nom||!email||!categorie||!quartier||!titre||!description){showMsg('depotMsg','err','⚠ Remplis tous les champs obligatoires.');return;}
+  if(!rgpd){showMsg('depotMsg','err','⚠ Accepte les conditions.');return;}
+  const btn=document.getElementById('depotBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{
+    const{error}=await sb.from('annonces').insert({prenom,nom,email,telephone,quartier,categorie,titre,description,contact:email});
+    if(error)throw error;
+    // Feedback succès animé
+    const body=document.getElementById('depot-body');
+    body.style.transition='opacity .3s';body.style.opacity='0';
+    setTimeout(()=>{
+      body.innerHTML=`<div style="text-align:center;padding:50px 20px">
+        <div style="font-size:3.5rem;animation:bounceIn .5s ease">✅</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;margin:14px 0">Annonce soumise !</div>
+        <div style="color:rgba(244,241,235,.42);font-size:.85rem;line-height:1.6">Publiée après validation de notre équipe<br>(24–48h).</div>
+        <button onclick="closeDr('dDepot')" style="margin-top:24px;background:var(--rouge);border:none;color:#fff;padding:12px 28px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;border-radius:6px;cursor:pointer">Fermer</button>
+      </div>`;
+      body.style.opacity='1';
+    },350);
+  }catch(e){showMsg('depotMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='📋 Soumettre mon annonce';}
+}
+
+function showMsg(id,type,txt){const m=document.getElementById(id);m.className='msg '+type;m.textContent=txt;m.style.display='block';}
+
+// Mini drawer commentaires
+let miniType=null,miniItemId=null;
+async function openMini(type,id,titre){
+  miniType=type;miniItemId=id;
+  document.getElementById('mini-titre').textContent='💬 '+titre;
+  document.getElementById('mini-ov').classList.add('open');
+  document.getElementById('mini-drw').classList.add('open');
+  document.body.style.overflow='hidden';
+  const pi=document.getElementById('mini-prenom');
+  if(pi&&!pi.value)pi.value=localStorage.getItem('cqp_prenom')||'';
+  await refreshCmts();
+}
+function closeMini(){document.getElementById('mini-ov').classList.remove('open');document.getElementById('mini-drw').classList.remove('open');document.body.style.overflow='';miniType=null;miniItemId=null;}
+async function refreshCmts(){
+  if(!miniType||!miniItemId)return;
+  const{data:cmts}=await sb.from('commentaires').select('*').eq('item_type',miniType).eq('item_id',miniItemId).eq('visible',true).order('created_at',{ascending:true});
+  const list=cmts||[];
+  const cc=document.getElementById('cc-'+miniItemId);if(cc)cc.textContent=list.length;
+  const box=document.getElementById('mini-cmts');if(!box)return;
+  box.innerHTML=list.length?list.map(cm=>`<div class="ci"><div class="ca">${esc((cm.prenom[0]||'?').toUpperCase())}</div><div class="cb2"><div class="cn">${esc(cm.prenom)}</div><div class="ct">${esc(cm.message)}</div></div></div>`).join(''):'<div style="color:rgba(244,241,235,.22);font-size:.85rem;text-align:center;padding:28px">Soyez le premier !</div>';
+  box.scrollTop=box.scrollHeight;
+}
+async function sendCmt(){
+  const msg=document.getElementById('mini-msg')?.value.trim();
+  let prenom=document.getElementById('mini-prenom')?.value.trim()||'Anonyme';
+  if(!msg||!miniType||!miniItemId)return;
+  if(prenom!=='Anonyme')localStorage.setItem('cqp_prenom',prenom);
+  document.getElementById('mini-msg').value='';
+  await sb.from('commentaires').insert({item_type:miniType,item_id:miniItemId,prenom,message:msg});
+  await refreshCmts();
+}
+
+// Bottom nav pub
+function togglePubMenu(e){e.stopPropagation();document.getElementById('pubMenu').classList.toggle('open');}
+document.addEventListener('click',()=>document.getElementById('pubMenu')?.classList.remove('open'));
+
+// Tracking
+(function(){
+  const TRACK='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/track';
+  const page='annonces.html';const sid=getSid();
+  fetch(TRACK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid,page,type:'view'})}).catch(()=>{});
+  setInterval(()=>fetch(TRACK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid,page,type:'ping'})}).catch(()=>{}),30000);
+})();
+
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/cqp-toulouse/sw.js').catch(()=>{}));}
+loadAnnonces();
 </script>
-</body></html>
+</body>
+</html>
