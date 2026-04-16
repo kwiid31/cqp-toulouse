@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — CQP Toulouse</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--r:#C8102E;--bg:#0d0d0d;--bg2:#1a1a1a;--bg3:#252525;--brd:#333;--txt:#f0ede8;--txt2:#aaa}
+body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',sans-serif;height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;flex:1}
+.login-box{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:40px;width:340px;text-align:center}
+.login-box h1{font-size:1.6rem;margin-bottom:6px}
+.login-box p{color:var(--txt2);font-size:.85rem;margin-bottom:24px}
+.login-box input{width:100%;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:12px 16px;color:var(--txt);font-size:.95rem;outline:none;margin-bottom:12px;text-align:center;letter-spacing:4px}
+.login-box input:focus{border-color:var(--r)}
+.login-box button{width:100%;background:var(--r);color:#fff;border:none;border-radius:8px;padding:12px;font-size:.95rem;cursor:pointer}
+.login-err{color:#f87171;font-size:.82rem;margin-top:8px;display:none}
+
+/* APP */
+#app{display:none;flex:1;flex-direction:column;overflow:hidden}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--brd);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.topbar-title span{background:var(--r);color:#fff;padding:3px 10px;border-radius:5px;font-size:.85rem;letter-spacing:.5px}
+.topbar-actions{display:flex;gap:8px}
+.btn-sm{background:var(--bg3);border:1px solid var(--brd);color:var(--txt2);padding:7px 14px;border-radius:7px;font-size:.78rem;cursor:pointer;transition:all .15s}
+.btn-sm:hover{border-color:var(--r);color:var(--txt)}
+.btn-red{background:var(--r);border-color:var(--r);color:#fff}
+
+/* TABS */
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--brd);flex-shrink:0;overflow-x:auto}
+.tab{padding:13px 20px;font-size:.82rem;letter-spacing:.5px;color:var(--txt2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.tab:hover{color:var(--txt)}
+.tab.active{color:var(--r);border-bottom-color:var(--r)}
+
+/* PANELS */
+.panels{flex:1;overflow:hidden;position:relative}
+.panel{display:none;height:100%;overflow-y:auto;padding:20px}
+.panel.active{display:block}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+.tbl th{text-align:left;padding:10px 12px;background:var(--bg3);color:var(--txt2);font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--brd)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--brd);vertical-align:middle}
+.tbl tr:hover td{background:var(--bg3)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
+.badge.pub{background:#14532d;color:#4ade80}
+.badge.drft{background:#431407;color:#fb923c}
+.badge.ia{background:#1e1b4b;color:#a5b4fc}
+.btn-action{background:none;border:1px solid var(--brd);color:var(--txt2);padding:4px 10px;border-radius:5px;font-size:.72rem;cursor:pointer;transition:all .15s;margin-right:4px}
+.btn-action:hover{border-color:var(--r);color:var(--txt)}
+.btn-del{border-color:#7f1d1d;color:#f87171}
+.btn-del:hover{background:#7f1d1d;color:#fff}
+.section-title{font-size:1rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:16px}
+.stat-val{font-size:2rem;font-weight:700;color:var(--r)}
+.stat-lbl{font-size:.72rem;color:var(--txt2);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.empty{text-align:center;padding:40px;color:var(--txt2);font-size:.85rem}
+.spin{text-align:center;padding:40px;color:var(--txt2)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>🔐 CQP Admin</h1>
+    <p>Espace d'administration du site</p>
+    <input type="password" id="pwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')login()">
+    <button onclick="login()">Connexion</button>
+    <div class="login-err" id="login-err">Mot de passe incorrect</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-title"><span>CQP</span> Panneau d'administration</div>
+    <div class="topbar-actions">
+      <a href="index.html" class="btn-sm">← Retour au site</a>
+      <button class="btn-sm" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('actus',this)">📰 Actualités</div>
+    <div class="tab" onclick="showTab('adherents',this)">👥 Adhérents</div>
+    <div class="tab" onclick="showTab('annonces',this)">📋 Annonces</div>
+    <div class="tab" onclick="showTab('evenements',this)">📅 Événements</div>
+    <div class="tab" onclick="showTab('commentaires',this)">💬 Commentaires</div>
+    <div class="tab" onclick="showTab('stats',this)">📊 Stats</div>
+  </div>
+  <div class="panels">
+    <div class="panel active" id="panel-actus"><div class="spin">Chargement…</div></div>
+    <div class="panel" id="panel-adherents"><div class="spin">Chargement…</div></div>
+    <div class="panel" id="panel-annonces"><div class="spin">Chargement…</div></div>
+    <div class="panel" id="panel-evenements"><div class="spin">Chargement…</div></div>
+    <div class="panel" id="panel-commentaires"><div class="spin">Chargement…</div></div>
+    <div class="panel" id="panel-stats"><div class="spin">Chargement…</div></div>
+  </div>
+</div>
+
+<script>
+const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
+const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+const PWD='toulouse2026';
+const sb=supabase.createClient(SBU,SBK);
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function fmt(d){return d?new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';}
+
+function login(){
+  const v=document.getElementById('pwd').value;
+  if(v===PWD){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    loadActus();
+  }else{
+    document.getElementById('login-err').style.display='block';
+    document.getElementById('pwd').value='';
+  }
+}
+function logout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('pwd').value='';
+}
+function showTab(name,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  if(name==='actus')loadActus();
+  else if(name==='adherents')loadAdherents();
+  else if(name==='annonces')loadAnnonces();
+  else if(name==='evenements')loadEvenements();
+  else if(name==='commentaires')loadCommentaires();
+  else if(name==='stats')loadStats();
+}
+</script>
+
+<script>
+async function loadActus(){
+  const p=document.getElementById('panel-actus');
+  p.innerHTML='<div class="spin">Chargement…</div>';
+  const{data}=await sb.from('actus').select('*').order('date_publication',{ascending:false});
+  const rows=(data||[]).map(a=>`
+    <tr>
+      <td>${a.id}</td>
+      <td>${esc(a.titre)}</td>
+      <td>${esc(a.categorie)}</td>
+      <td>${fmt(a.date_publication)}</td>
+      <td><span class="badge ${a.visible?'pub':'drft'}">${a.visible?'Publié':'Brouillon'}</span>${a.ia?'<span class="badge ia" style="margin-left:4px">IA</span>':''}</td>
+      <td>
+        <button class="btn-action" onclick="toggleVis(${a.id},${a.visible})">${a.visible?'Masquer':'✅ Publier'}</button>
+        <button class="btn-action btn-del" onclick="delActu(${a.id})">✕ Suppr.</button>
+      </td>
+    </tr>`).join('');
+  p.innerHTML=`
+    <div class="section-title">Actualités (${(data||[]).length}) <button class="btn-sm btn-red" onclick="loadActus()">↺ Rafraîchir</button></div>
+    <table class="tbl"><thead><tr><th>#</th><th>Titre</th><th>Catégorie</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan=6 class="empty">Aucune actu</td></tr>'}</tbody></table>`;
+}
+async function toggleVis(id,cur){
+  await sb.from('actus').update({visible:!cur}).eq('id',id);
+  loadActus();
+}
+async function delActu(id){
+  if(!confirm('Supprimer cette actu ?'))return;
+  await sb.from('actus').delete().eq('id',id);
+  loadActus();
+}
+
+async function loadAdherents(){
+  const p=document.getElementById('panel-adherents');
+  p.innerHTML='<div class="spin">Chargement…</div>';
+  const{data}=await sb.from('adherents').select('*').order('created_at',{ascending:false});
+  const rows=(data||[]).map(a=>`
+    <tr>
+      <td>${a.id}</td>
+      <td>${esc(a.prenom)} ${esc(a.nom||'')}</td>
+      <td>${esc(a.email)}</td>
+      <td>${esc(a.quartier||'—')}</td>
+      <td>${esc(a.telephone||'—')}</td>
+      <td>${fmt(a.created_at)}</td>
+    </tr>`).join('');
+  p.innerHTML=`
+    <div class="section-title">Adhérents (${(data||[]).length}) <button class="btn-sm btn-red" onclick="loadAdherents()">↺ Rafraîchir</button></div>
+    <table class="tbl"><thead><tr><th>#</th><th>Nom</th><th>Email</th><th>Quartier</th><th>Tél.</th><th>Date</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan=6 class="empty">Aucun adhérent</td></tr>'}</tbody></table>`;
+}
+</script>
+
+<script>
+async function loadAnnonces(){
+  const p=document.getElementById('panel-annonces');
+  p.innerHTML='<div class="spin">Chargement…</div>';
+  const{data}=await sb.from('annonces').select('*').order('date_depot',{ascending:false});
+  const rows=(data||[]).map(a=>`
+    <tr>
+      <td>${a.id}</td>
+      <td>${esc(a.titre)}</td>
+      <td>${esc(a.categorie)}</td>
+      <td>${esc(a.quartier||'—')}</td>
+      <td>${esc(a.prenom)} · ${esc(a.email)}</td>
+      <td><span class="badge ${a.validee?'pub':'drft'}">${a.validee?'Validée':'En attente'}</span></td>
+      <td>
+        <button class="btn-action" onclick="toggleAnn(${a.id},${a.validee})">${a.validee?'Masquer':'✅ Valider'}</button>
+        <button class="btn-action btn-del" onclick="delAnn(${a.id})">✕</button>
+      </td>
+    </tr>`).join('');
+  p.innerHTML=`
+    <div class="section-title">Annonces (${(data||[]).length}) <button class="btn-sm btn-red" onclick="loadAnnonces()">↺</button></div>
+    <table class="tbl"><thead><tr><th>#</th><th>Titre</th><th>Catégorie</th><th>Quartier</th><th>Contact</th><th>Statut</th><th>Actions</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan=7 class="empty">Aucune annonce</td></tr>'}</tbody></table>`;
+}
+async function toggleAnn(id,cur){await sb.from('annonces').update({validee:!cur}).eq('id',id);loadAnnonces();}
+async function delAnn(id){if(!confirm('Supprimer ?'))return;await sb.from('annonces').delete().eq('id',id);loadAnnonces();}
+
+async function loadEvenements(){
+  const p=document.getElementById('panel-evenements');
+  p.innerHTML='<div class="spin">Chargement…</div>';
+  const{data}=await sb.from('evenements').select('*').order('date_debut',{ascending:true});
+  const rows=(data||[]).map(e=>`
+    <tr>
+      <td>${e.id}</td>
+      <td>${esc(e.titre)}</td>
+      <td>${esc(e.lieu||'—')}</td>
+      <td>${fmt(e.date_debut)}</td>
+      <td><span class="badge ${e.validee?'pub':'drft'}">${e.validee?'Validé':'En attente'}</span></td>
+      <td>
+        <button class="btn-action" onclick="toggleEvt(${e.id},${e.validee})">${e.validee?'Masquer':'✅ Valider'}</button>
+        <button class="btn-action btn-del" onclick="delEvt(${e.id})">✕</button>
+      </td>
+    </tr>`).join('');
+  p.innerHTML=`
+    <div class="section-title">Événements (${(data||[]).length}) <button class="btn-sm btn-red" onclick="loadEvenements()">↺</button></div>
+    <table class="tbl"><thead><tr><th>#</th><th>Titre</th><th>Lieu</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan=6 class="empty">Aucun événement</td></tr>'}</tbody></table>`;
+}
+async function toggleEvt(id,cur){await sb.from('evenements').update({validee:!cur,visible:!cur}).eq('id',id);loadEvenements();}
+async function delEvt(id){if(!confirm('Supprimer ?'))return;await sb.from('evenements').delete().eq('id',id);loadEvenements();}
+</script>
+
+<script>
+async function loadCommentaires(){
+  const p=document.getElementById('panel-commentaires');
+  p.innerHTML='<div class="spin">Chargement…</div>';
+  const{data}=await sb.from('commentaires').select('*').order('created_at',{ascending:false}).limit(100);
+  const rows=(data||[]).map(c=>`
+    <tr>
+      <td>${c.id}</td>
+      <td>${esc(c.prenom)}</td>
+      <td><span class="badge drft">${esc(c.item_type)}</span> #${c.item_id}</td>
+      <td style="max-width:300px">${esc(c.message)}</td>
+      <td>${fmt(c.created_at)}</td>
+      <td><span class="badge ${c.visible?'pub':'drft'}">${c.visible?'Visible':'Masqué'}</span></td>
+      <td>
+        <button class="btn-action" onclick="toggleCmt(${c.id},${c.visible})">${c.visible?'Masquer':'Afficher'}</button>
+        <button class="btn-action btn-del" onclick="delCmt(${c.id})">✕</button>
+      </td>
+    </tr>`).join('');
+  p.innerHTML=`
+    <div class="section-title">Commentaires (${(data||[]).length}) <button class="btn-sm btn-red" onclick="loadCommentaires()">↺</button></div>
+    <table class="tbl"><thead><tr><th>#</th><th>Auteur</th><th>Sur</th><th>Message</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+    <tbody>${rows||'<tr><td colspan=7 class="empty">Aucun commentaire</td></tr>'}</tbody></table>`;
+}
+async function toggleCmt(id,cur){await sb.from('commentaires').update({visible:!cur}).eq('id',id);loadCommentaires();}
+async function delCmt(id){if(!confirm('Supprimer ?'))return;await sb.from('commentaires').delete().eq('id',id);loadCommentaires();}
+
+async function loadStats(){
+  const p=document.getElementById('panel-stats');
+  p.innerHTML='<div class="spin">Chargement…</div>';
+  const[{count:cActus},{count:cAdh},{count:cAnn},{count:cEvt},{count:cCmt},{count:cLikes}]=await Promise.all([
+    sb.from('actus').select('*',{count:'exact',head:true}),
+    sb.from('adherents').select('*',{count:'exact',head:true}),
+    sb.from('annonces').select('*',{count:'exact',head:true}),
+    sb.from('evenements').select('*',{count:'exact',head:true}),
+    sb.from('commentaires').select('*',{count:'exact',head:true}),
+    sb.from('likes').select('*',{count:'exact',head:true}),
+  ]);
+  const{data:topLiked}=await sb.from('likes').select('item_type,item_id').order('item_id',{ascending:false}).limit(50);
+  p.innerHTML=`
+    <div class="section-title">Statistiques globales</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-val">${cActus||0}</div><div class="stat-lbl">Actualités</div></div>
+      <div class="stat-card"><div class="stat-val">${cAdh||0}</div><div class="stat-lbl">Adhérents</div></div>
+      <div class="stat-card"><div class="stat-val">${cAnn||0}</div><div class="stat-lbl">Annonces</div></div>
+      <div class="stat-card"><div class="stat-val">${cEvt||0}</div><div class="stat-lbl">Événements</div></div>
+      <div class="stat-card"><div class="stat-val">${cCmt||0}</div><div class="stat-lbl">Commentaires</div></div>
+      <div class="stat-card"><div class="stat-val">${cLikes||0}</div><div class="stat-lbl">Likes totaux</div></div>
+    </div>`;
+}
+</script>
+</body></html>
