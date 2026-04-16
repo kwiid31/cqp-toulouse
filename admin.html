@@ -1,4 +1,9 @@
-<style>
+<!DOCTYPE html><html lang="fr"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — CQP Toulouse</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0d0d0d;color:#f4f1eb;font-family:'Barlow',sans-serif;min-height:100vh}
 .modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.88);backdrop-filter:blur(6px);align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
 @keyframes popIn{from{opacity:0;transform:scale(.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -100,12 +105,17 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
 /* ÉTOILES AVIS */
 .star{font-size:1.8rem;color:rgba(255,255,255,.2);cursor:pointer;transition:color .15s;line-height:1;user-select:none}
 .star.active,.star.hover{color:var(--or)}
-/* Forcer fond sombre sur tout */
-body{background:#0d0d0d;color:#f4f1eb}
-</style>
-
+/* ===== SLIDER PLEIN LARGEUR ===== */
+.slide{transition:none}
+.slide-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:14px}
+.slide-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-bottom:4px}
+.slide-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);color:var(--blanc);letter-spacing:.5px;line-height:1}
+.slide-sub{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;color:rgba(244,241,235,.4);margin-top:6px}
+.slide-more{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);text-decoration:none;flex-shrink:0;padding-top:6px;transition:op
+</style></head><body>
+<a href="index.html" style="position:fixed;top:10px;left:10px;z-index:9999;background:rgba(200,16,46,.9);color:#fff;padding:6px 14px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-decoration:none">← Retour au site</a>
 <!-- LOGIN -->
-<div class="modal-overlay" id="loginModal" onclick="if(event.target.id==='loginModal')closeM('loginModal')" style="display:flex">
+<div class="modal-overlay" id="loginModal" style="display:flex" onclick="if(event.target.id==='loginModal')closeM('loginModal')">
   <div class="login-box">
     <h3>🔐 Espace Admin</h3>
     <p>Entrez le mot de passe pour accéder au panneau d'administration.</p>
@@ -117,7 +127,6 @@ body{background:#0d0d0d;color:#f4f1eb}
     </div>
   </div>
 </div>
-
 <!-- ADMIN -->
 <div class="modal-overlay" id="adminModal" onclick="if(event.target.id==='adminModal')closeM('adminModal')">
   <div class="admin-modal">
@@ -399,19 +408,562 @@ body{background:#0d0d0d;color:#f4f1eb}
     </div><!-- fin admin-content -->
   </div><!-- fin admin-modal -->
 </div><!-- fin adminModal -->
-
-<!-- Lien retour -->
-<a href="index.html" style="position:fixed;top:16px;left:16px;z-index:2000;background:rgba(0,0,0,.5);color:#f4f1eb;padding:6px 14px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-decoration:none;backdrop-filter:blur(4px)">← Retour au site</a>
-
 <script>
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const PWD='toulouse2026';
 const sb=supabase.createClient(SBU,SBK);
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// Clés de config Supabase → DOM
+const DOM_KEYS={
+  'hero-texte':'site-hero-texte','hist-p1':'site-hist-p1','hist-cit':'site-hist-cit','hist-p2':'site-hist-p2',
+  'enc-titre':'site-enc-titre','enc-texte':'site-enc-texte',
+  's1n':'site-s1n','s2n':'site-s2n','s3n':'site-s3n','s1l':'site-s1l','s2l':'site-s2l','s3l':'site-s3l',
+  'adh-p1':'site-adh-p1','adh-p2':'site-adh-p2','footer-email':'footer-email','footer-tel':'footer-tel'
+};
+const DEFAULTS={
+  'hero-texte':'Né en 2026 pour faire entendre la voix des quartiers populaires de Toulouse, le Comité agit là où les besoins sont les plus forts.',
+  'hist-p1':'Écris ici le premier paragraphe de votre histoire.',
+  'hist-cit':'"Nos quartiers ont des problèmes. Mais ils ont surtout des forces."',
+  'hist-p2':'Écris ici la suite de votre histoire.',
+  'enc-titre':'Ancrés dans la réalité','enc-texte':'Permanences, aide aux démarches, soutien scolaire.',
+  's1n':'—','s1l':'Membres','s2n':'—','s2l':'Quartiers','s3n':'2026','s3l':'Fondé en',
+  'adh-p1':"Adhérer au Comité, c'est rejoindre une force collective qui agit dans tes rues.",
+  'adh-p2':'Remplis le formulaire — nous te recontacterons pour te présenter les actions en cours.',
+  'footer-email':'contact@cqp-toulouse.fr','footer-tel':'06 XX XX XX XX',
+  'photo-hero':'https://images.unsplash.com/photo-1560221328-12fe60f83ab8?w=1600&q=80',
+  'photo-encart':''
+};
+let siteConfig={...DEFAULTS};
+
+// Charger la config depuis Supabase
+async function loadConfig(){
+  try{
+    const{data}=await sb.from('site_config').select('key,value');
+    if(data)data.forEach(r=>{siteConfig[r.key]=r.value;});
+    applyAll();
+  }catch(e){applyAll();}
+}
+
+async function saveConfig(key,value){
+  siteConfig[key]=value;
+  await sb.from('site_config').upsert({key,value,updated_at:new Date().toISOString()},{onConflict:'key'});
+}
+
+function applyAll(){
+  Object.entries(DOM_KEYS).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.textContent=siteConfig[k]||'';});
+  // Photo hero
+  const h=siteConfig['photo-hero']||DEFAULTS['photo-hero'];
+  document.getElementById('hero-bg').style.backgroundImage=
+    `linear-gradient(135deg,rgba(200,16,46,.2) 0%,transparent 55%),linear-gradient(to bottom,rgba(13,13,13,.1) 0%,rgba(13,13,13,.9) 100%),url('${h}')`;
+  // Photo encart
+  const enc=siteConfig['photo-encart'];
+  const encEl=document.getElementById('encart-img');
+  const emoji=document.getElementById('encart-emoji');
+  if(enc){encEl.style.backgroundImage=`url('${enc}')`;encEl.style.backgroundSize='cover';encEl.style.backgroundPosition='center';if(emoji)emoji.style.display='none';}
+  else{encEl.style.backgroundImage='none';if(emoji)emoji.style.display='block';}
+}
+
+function loadEditors(){
+  Object.keys(DEFAULTS).forEach(k=>{const el=document.getElementById('ed-'+k);if(el)el.value=siteConfig[k]||'';});
+}
+
+async function save1(key){
+  const ed=document.getElementById('ed-'+key);if(!ed)return;
+  await saveConfig(key,ed.value);
+  const dom=document.getElementById(DOM_KEYS[key]);if(dom)dom.textContent=ed.value;
+  flash('flash-'+key);
+}
+
+async function saveN(keys,fid){
+  for(const k of keys){
+    const ed=document.getElementById('ed-'+k);if(!ed)continue;
+    await saveConfig(k,ed.value);
+    const dom=document.getElementById(DOM_KEYS[k]);if(dom)dom.textContent=ed.value;
+  }
+  flash(fid);
+}
+
+async function savePhotos(type){
+  const urlEl=document.getElementById('ed-photo-'+type);
+  let url='';
+  // Priorité 1 : si un crop est actif, uploader l'image cadrée
+  if(cropState[type]&&cropState[type].file){
+    const statusEl=document.getElementById('status-'+type);
+    statusEl.textContent='⏳ Upload en cours…';statusEl.style.display='block';
+    url=await uploadCroppedPhoto(type);
+    if(!url)return;
+  } else {
+    // Priorité 2 : URL saisie manuellement
+    url=urlEl?urlEl.value.trim():'';
+  }
+  if(url){
+    await saveConfig('photo-'+type,url);
+  } else if(type==='encart'){
+    await saveConfig('photo-encart','');
+  }
+  applyAll();
+  flash(type==='hero'?'flash-photos':'flash-photos-encart');
+}
+
+// ===== CROP SYSTEM =====
+const cropState={};
+function loadCrop(type,input){
+  const file=input.files[0];if(!file)return;
+  const url=URL.createObjectURL(file);
+  cropState[type]={file,url,x:0,y:0,scale:1,dragging:false,lastX:0,lastY:0};
+  const img=document.getElementById('crop-'+type+'-img');
+  img.src=url;
+  img.onload=()=>{
+    const c=document.getElementById('crop-'+type);
+    const cw=c.offsetWidth,ch=c.offsetHeight;
+    const iw=img.naturalWidth,ih=img.naturalHeight;
+    const s=Math.max(cw/iw,ch/ih);
+    cropState[type].scale=s;
+    cropState[type].x=(cw-iw*s)/2;
+    cropState[type].y=(ch-ih*s)/2;
+    applyCropTransform(type);
+  };
+  document.getElementById('crop-'+type+'-wrap').style.display='block';
+}
+function applyCropTransform(type){
+  const s=cropState[type];if(!s)return;
+  const img=document.getElementById('crop-'+type+'-img');
+  img.style.transform=`translate(${s.x}px,${s.y}px) scale(${s.scale})`;
+  img.style.transformOrigin='0 0';
+}
+function startDrag(e,type){
+  e.preventDefault();
+  const s=cropState[type];if(!s)return;
+  s.dragging=true;s.lastX=e.clientX;s.lastY=e.clientY;
+  const onMove=ev=>{if(!s.dragging)return;s.x+=ev.clientX-s.lastX;s.y+=ev.clientY-s.lastY;s.lastX=ev.clientX;s.lastY=ev.clientY;applyCropTransform(type);};
+  const onUp=()=>{s.dragging=false;document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);};
+  document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onUp);
+}
+function startDragT(e,type){
+  e.preventDefault();const t=e.touches[0];
+  const s=cropState[type];if(!s)return;
+  s.dragging=true;s.lastX=t.clientX;s.lastY=t.clientY;
+  const onMove=ev=>{const tt=ev.touches[0];s.x+=tt.clientX-s.lastX;s.y+=tt.clientY-s.lastY;s.lastX=tt.clientX;s.lastY=tt.clientY;applyCropTransform(type);};
+  const onUp=()=>{s.dragging=false;document.removeEventListener('touchmove',onMove);document.removeEventListener('touchend',onUp);};
+  document.addEventListener('touchmove',onMove,{passive:false});document.addEventListener('touchend',onUp);
+}
+function zoomCrop(e,type){
+  e.preventDefault();const s=cropState[type];if(!s)return;
+  const delta=e.deltaY>0?-0.1:0.1;
+  s.scale=Math.max(0.3,Math.min(5,s.scale+delta));
+  applyCropTransform(type);
+}
+function zoomCropBy(type,delta){const s=cropState[type];if(!s)return;s.scale=Math.max(0.3,Math.min(5,s.scale+delta));applyCropTransform(type);}
+function resetCrop(type){
+  const s=cropState[type];if(!s)return;
+  const img=document.getElementById('crop-'+type+'-img');
+  const c=document.getElementById('crop-'+type);
+  const cw=c.offsetWidth,ch=c.offsetHeight,iw=img.naturalWidth,ih=img.naturalHeight;
+  s.scale=Math.max(cw/iw,ch/ih);s.x=(cw-iw*s.scale)/2;s.y=(ch-ih*s.scale)/2;
+  applyCropTransform(type);
+}
+async function uploadCroppedPhoto(type){
+  const s=cropState[type];if(!s)return null;
+  const statusEl=document.getElementById('status-'+type);
+  statusEl.textContent='⏳ Upload en cours…';statusEl.style.display='block';
+  try{
+    // Créer un canvas avec la vue cadrée
+    const cEl=document.getElementById('crop-'+type);
+    const cw=cEl.offsetWidth,ch=cEl.offsetHeight;
+    const canvas=document.createElement('canvas');
+    canvas.width=cw*2;canvas.height=ch*2;
+    const ctx=canvas.getContext('2d');
+    const img=document.getElementById('crop-'+type+'-img');
+    ctx.scale(2,2);
+    ctx.drawImage(img,s.x,s.y,img.naturalWidth*s.scale,img.naturalHeight*s.scale);
+    const blob=await new Promise(r=>canvas.toBlob(r,'image/jpeg',0.92));
+    const filename=`${type}-${Date.now()}.jpg`;
+    const{data,error}=await sb.storage.from('site-photos').upload(filename,blob,{upsert:true,contentType:'image/jpeg'});
+    if(error)throw error;
+    const{data:{publicUrl}}=sb.storage.from('site-photos').getPublicUrl(filename);
+    document.getElementById('ed-photo-'+type).value=publicUrl;
+    statusEl.textContent='✅ Photo uploadée !';statusEl.style.color='#4CAF50';
+    return publicUrl;
+  }catch(e){statusEl.textContent='⚠ Erreur : '+e.message;statusEl.style.color='var(--rouge)';return null;}
+}
+
+function flash(id){const el=document.getElementById(id);if(!el)return;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
+</script>
+<script>
+// Actus public
+let actusPub=[];
+const CATS={Logement:'cat-Logement',Emploi:'cat-Emploi',Service:'cat-Service','Solidarité':'cat-Solidarité',Autre:'cat-Autre'};
+function togglePubMenu(e){
+  if(e)e.stopPropagation();
+  const m=document.getElementById('mob-pub-menu');
+  m.classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  const m=document.getElementById('mob-pub-menu');
+  const btn=document.querySelector('.mob-pub-center');
+  if(m&&m.classList.contains('open')&&!m.contains(e.target)&&e.target!==btn&&!btn?.contains(e.target)){
+    m.classList.remove('open');
+  }
+});
+
+async function loadActus(){
+  const g=document.getElementById('car-actus');
+  try{
+    const{data,error}=await sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).limit(6);
+    if(error)throw error;actusPub=data||[];
+    if(!actusPub.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><span>📰</span>Aucune actualité pour l\'instant.</div>';return;}
+    g.innerHTML=actusPub.map(a=>`<div class="hs-card" onclick="openDrActu(${a.id})">
+      <div class="hs-card-cover" style="background:linear-gradient(160deg,#1a0a0e 0%,#3d0a14 60%,#C8102E 100%)">
+        <div class="hs-card-cover-cat">${esc(a.categorie)}</div>
+        <div class="hs-card-cover-title">${esc(a.titre)}</div>
+      </div>
+      <div class="hs-card-body">
+        <span class="hs-card-cat">${esc(a.categorie)}</span>
+        <div class="hs-card-title">${esc(a.titre)}</div>
+        <div class="hs-card-sub">${esc(a.contenu).substring(0,90)}${a.contenu.length>90?'…':''}</div>
+        <div class="hs-card-footer">
+          <span class="hs-card-date">${new Date(a.date_publication).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}</span>
+          <div class="hs-card-social" onclick="event.stopPropagation()">
+            <button class="hs-lk" id="lk-${a.id}" onclick="cardLike('actu',${a.id})"><span class="h">🤍</span><span id="lc-${a.id}">0</span></button>
+            <button class="hs-cm" onclick="openMini('actu',${a.id},'${esc(a.titre).substring(0,25)}')">💬<span id="cc-${a.id}">0</span></button>
+          </div>
+        </div>
+      </div></div>`).join('');
+    actusPub.forEach(a=>loadCardCounts('actu',a.id));
+    checkLastVisit(actusPub);
+  }catch(e){g.innerHTML='<div class="empty" style="grid-column:1/-1">Impossible de charger.</div>';}
+}
+
+let annPub=[];
+async function loadAnnonces(){
+  const g=document.getElementById('car-annonces');
+  try{
+    const{data,error}=await sb.from('annonces').select('*').eq('validee',true).order('date_depot',{ascending:false}).limit(8);
+    if(error)throw error;annPub=data||[];
+    if(!annPub.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><span>📋</span>Aucune annonce pour l\'instant.</div>';return;}
+    g.innerHTML=annPub.map(a=>`<div class="hs-card" onclick="openDrAnn(${a.id})">
+      ${a.photo_url
+        ?`<img class="hs-card-img" src="${a.photo_url}" alt="${esc(a.titre)}" loading="lazy">`
+        :`<div class="hs-card-cover" style="background:linear-gradient(160deg,#0a1a10 0%,#0a3520 60%,#1a7a40 100%)">
+          <div class="hs-card-cover-cat">${esc(a.categorie)}</div>
+          <div class="hs-card-cover-title">${esc(a.titre)}</div>
+        </div>`}
+      <div class="hs-card-body">
+        <span class="hs-card-cat">${esc(a.categorie)}</span>
+        <div class="hs-card-title">${esc(a.titre)}</div>
+        <div class="hs-card-sub">📍 ${esc(a.quartier)} · 👤 ${esc(a.prenom)} ${freshnessLabel(a.date_depot)}</div>
+        <div class="hs-card-footer">
+          <span class="hs-card-date">${new Date(a.date_depot).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}</span>
+          <div class="hs-card-social" onclick="event.stopPropagation()">
+            <button class="hs-lk" id="lk-${a.id}" onclick="cardLike('annonce',${a.id})"><span class="h">🤍</span><span id="lc-${a.id}">0</span></button>
+            <button class="hs-cm" onclick="openMini('annonce',${a.id},'${esc(a.titre).substring(0,25)}')">💬<span id="cc-${a.id}">0</span></button>
+          </div>
+        </div>
+      </div></div>`).join('');
+    annPub.forEach(a=>loadCardCounts('annonce',a.id));
+  }catch(e){g.innerHTML='<div class="empty" style="grid-column:1/-1">Impossible de charger.</div>';}
+}
+
+function openDrActu(id){
+  const a=actusPub.find(x=>x.id===id);if(!a)return;
+  document.getElementById('dr-actu-titre').textContent=a.titre;
+  document.getElementById('dr-actu-cat').textContent=a.categorie;
+  document.getElementById('dr-actu-date').textContent=new Date(a.date_publication).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('dr-actu-content').textContent=a.contenu;
+  const pageUrl=location.href;
+  const txt='📰 '+a.titre+' — CQP Toulouse';
+  document.getElementById('dr-actu-share').innerHTML=buildShareBtns(pageUrl,txt,'dr-actu-copy');
+  openDr('dActu');
+}
+
+function openDrAnn(id){
+  const a=annPub.find(x=>x.id===id);if(!a)return;
+  document.getElementById('dr-ann-titre').textContent=a.titre;
+  document.getElementById('dr-ann-cat').textContent=a.categorie;
+  document.getElementById('dr-ann-cat').className='ann-cat '+(CATS[a.categorie]||'cat-Autre');
+  document.getElementById('dr-ann-meta').textContent='📍 '+a.quartier+' · 👤 '+a.prenom+' · '+new Date(a.date_depot).toLocaleDateString('fr-FR');
+  document.getElementById('dr-ann-content').textContent=a.description;
+  const pageUrl=location.href+'#annonces';
+  const txt='📋 Annonce: '+a.titre+' ('+a.quartier+') — CQP Toulouse';
+  document.getElementById('dr-ann-share').innerHTML=buildShareBtns(pageUrl,txt,'dr-ann-copy');
+  // Coordonnées directes
+  let html='';
+  if(a.email)html+=`<a href="mailto:${esc(a.email)}">✉️ ${esc(a.email)}</a>`;
+  if(a.telephone)html+=`<a href="tel:${esc(a.telephone)}">📞 ${esc(a.telephone)}</a>`;
+  if(!a.email&&!a.telephone)html='<p style="color:rgba(244,241,235,.4);font-size:.82rem">Aucun contact renseigné.</p>';
+  document.getElementById('dr-contact-info').innerHTML=html;
+  openDr('dAnn');
+}
+
+function openDr(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeDr(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+
+// ===== BOUTONS PARTAGE =====
+function buildShareBtns(rawUrl,text,copyId){
+  const url=encodeURIComponent(rawUrl);
+  const txt=encodeURIComponent(text);
+  return `<a class="share-btn share-wa" href="https://api.whatsapp.com/send?text=${txt}%20${url}" target="_blank" rel="noopener">WhatsApp</a>
+  <a class="share-btn share-fb" href="https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${txt}" target="_blank" rel="noopener">Facebook</a>
+  <a class="share-btn share-x" href="https://twitter.com/intent/tweet?text=${txt}&url=${url}" target="_blank" rel="noopener">𝕏</a>
+  <button class="share-btn share-copy" id="${copyId}" onclick="copyLink(this,'${rawUrl.replace(/'/g,"\\'")}')">🔗 Copier</button>`;
+}
+function copyLink(btn,url){
+  navigator.clipboard.writeText(url).then(()=>{
+    btn.textContent='✓ Copié !';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='🔗 Copier le lien';btn.classList.remove('copied');},2000);
+  });
+}
+
+// ===== FLUX RSS PRESSE LOCALE =====
+
+// ===== ADMIN AVIS =====
+let avisCache=[];
+async function renderAvis(){
+  const b=document.getElementById('avisBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{
+    const{data,error}=await sb.from('avis').select('*').order('created_at',{ascending:false});
+    if(error)throw error;avisCache=data||[];
+    document.getElementById('avisCount').textContent=avisCache.length+' avis';
+    if(!avisCache.length){b.innerHTML='<div class="empty"><span>⭐</span>Aucun avis pour le moment.</div>';return;}
+    const moy=(avisCache.reduce((s,a)=>s+a.note,0)/avisCache.length).toFixed(1);
+    b.innerHTML=`<div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px">
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--or)">${moy}</span>
+      <div><div style="color:var(--or);font-size:1.2rem">${'★'.repeat(Math.round(moy))}${'☆'.repeat(5-Math.round(moy))}</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;color:rgba(244,241,235,.4);text-transform:uppercase">Moyenne sur ${avisCache.length} avis</div></div>
+    </div>
+    <table><thead><tr><th>#</th><th>Prénom</th><th>Note</th><th>Message</th><th>Date</th><th></th></tr></thead><tbody>${avisCache.map((a,i)=>`<tr>
+      <td class="dt">${i+1}</td><td>${esc(a.prenom)}</td>
+      <td><span style="color:var(--or)">${'★'.repeat(a.note)}</span></td>
+      <td style="max-width:300px">${esc(a.message)}</td>
+      <td><span class="dt">${new Date(a.created_at).toLocaleDateString('fr-FR')}</span></td>
+      <td><button class="btn-del" onclick="del('avis',${a.id},renderAvis)">✕</button></td>
+    </tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+// ===== MINI SLIDER AVIS/NEWSLETTER =====
+let avisIdx=0;
+function avisSlide(val, abs=false){
+  avisIdx = abs ? val : Math.max(0,Math.min(1,avisIdx+val));
+  const sl=document.getElementById('sl-avis');
+  if(sl) sl.style.transform=`translateX(-${avisIdx*100}%)`;
+  [0,1].forEach(i=>{
+    const d=document.getElementById('av-dot-'+i);
+    if(d) d.classList.toggle('active',i===avisIdx);
+  });
+}
+// Swipe tactile sur le mini slider
+(function(){
+  const wrap=document.getElementById('sl-avis');
+  if(!wrap)return;
+  let x0=null;
+  wrap.parentElement.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});
+  wrap.parentElement.addEventListener('touchend',e=>{
+    if(x0===null)return;
+    const dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>50)avisSlide(dx<0?1:-1);
+    x0=null;
+  },{passive:true});
+})();
+// ===== WHATSAPP IA =====
+let waResult=null;
+let waImageBase64=null;
+let waImageType=null;
+
+function handleWAImage(input){
+  const file=input.files[0];if(!file)return;
+  waImageType=file.type||'image/jpeg';
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const b64=e.target.result.split(',')[1];
+    waImageBase64=b64;
+    document.getElementById('wa-img-preview').src=e.target.result;
+    document.getElementById('wa-img-preview').style.display='block';
+    document.getElementById('wa-img-label').textContent='Image sélectionnée ✓ — '+file.name;
+    document.getElementById('wa-upload-zone').style.borderColor='var(--or)';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function analyseWA(){
+  const texte=document.getElementById('wa-texte').value.trim();
+  if(!texte&&!waImageBase64){showMsg('wa-msg','err','⚠ Colle un texte ou uploade une image.');return;}
+  const btn=document.getElementById('wa-btn');
+  btn.disabled=true;btn.textContent='⏳ Analyse en cours…';
+  document.getElementById('wa-msg').className='msg';document.getElementById('wa-msg').style.display='none';
+  try{
+    const body={texte:texte||''};
+    if(waImageBase64){body.image_base64=waImageBase64;body.image_type=waImageType;}
+    const res=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/whatsapp-ia',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+    });
+    const data=await res.json();
+    if(!data.ok)throw new Error(data.error||'Erreur IA');
+    waResult=data.result;
+    const r=waResult;
+    document.getElementById('wa-type-badge').textContent=r.type==='evenement'?'📅 Événement':'📰 Actualité';
+    document.getElementById('wa-resume').textContent=r.resume||'';
+    document.getElementById('wa-titre').value=r.titre||'';
+    document.getElementById('wa-categorie').value=r.categorie||'';
+    if(r.type==='evenement'){
+      document.getElementById('wa-contenu-wrap').style.display='none';
+      document.getElementById('wa-lieu-wrap').style.display='block';
+      document.getElementById('wa-date-wrap').style.display='block';
+      document.getElementById('wa-lieu').value=r.lieu||'';
+      if(r.date_debut){try{const d=new Date(r.date_debut);document.getElementById('wa-date').value=d.toISOString().slice(0,16);}catch{}}
+    }else{
+      document.getElementById('wa-contenu-wrap').style.display='block';
+      document.getElementById('wa-lieu-wrap').style.display='none';
+      document.getElementById('wa-date-wrap').style.display='none';
+      document.getElementById('wa-contenu').value=(r.contenu||'').replace(/\\n/g,'\n');
+    }
+    document.getElementById('wa-result').style.display='block';
+  }catch(e){showMsg('wa-msg','err','⚠ '+e.message);}
+  btn.disabled=false;btn.textContent='🤖 Analyser avec l\'IA';
+}
+async function publierWA(){
+  if(!waResult)return;
+  const titre = document.getElementById('wa-titre').value.trim();
+  const categorie = document.getElementById('wa-categorie').value.trim()||'Divers';
+  if(!titre){showMsg('wa-pub-msg','err','⚠ Titre requis.');return;}
+  try{
+    if(waResult.type==='evenement'){
+      const lieu = document.getElementById('wa-lieu').value.trim();
+      const date = document.getElementById('wa-date').value;
+      const desc = document.getElementById('wa-contenu').value.trim()||waResult.description||'';
+      const{error}=await sb.from('evenements').insert({
+        titre,description:desc,lieu,categorie,
+        date_debut:date?new Date(date).toISOString():new Date().toISOString(),
+        validee:true,visible:true,propose_par:'Admin IA'
+      });
+      if(error)throw error;
+      showMsg('wa-pub-msg','ok','✅ Événement publié !');
+    } else {
+      const contenu = document.getElementById('wa-contenu').value.trim();
+      const{error}=await sb.from('actus').insert({
+        titre,contenu,categorie,visible:true,
+        date_publication:new Date().toISOString()
+      });
+      if(error)throw error;
+      showMsg('wa-pub-msg','ok','✅ Actualité publiée !');
+    }
+    setTimeout(()=>{
+      document.getElementById('wa-result').style.display='none';
+      document.getElementById('wa-texte').value='';
+      waResult=null;
+      loadActus();loadEvents();
+    },2000);
+  }catch(e){showMsg('wa-pub-msg','err','⚠ '+e.message);}
+}
+// ===== AVIS =====
+let noteChoisie=0;
+function setNote(n){
+  noteChoisie=n;
+  document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('active',i<n));
+}
+document.querySelectorAll('.star').forEach(s=>{
+  s.addEventListener('mouseover',()=>document.querySelectorAll('.star').forEach((x,i)=>x.classList.toggle('hover',i<parseInt(s.dataset.v))));
+  s.addEventListener('mouseout',()=>document.querySelectorAll('.star').forEach(x=>x.classList.remove('hover')));
+});
+async function envoyerAvis(){
+  const msg=document.getElementById('avis-msg').value.trim();
+  const prenom=document.getElementById('avis-prenom').value.trim()||'Anonyme';
+  if(!noteChoisie){showMsg('avisMsg','err','⚠ Choisissez une note (1 à 5 étoiles).');return;}
+  if(!msg){showMsg('avisMsg','err','⚠ Écrivez votre message.');return;}
+  const btn=document.getElementById('avisBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{
+    const{error}=await sb.from('avis').insert({prenom,note:noteChoisie,message:msg});
+    if(error)throw error;
+    showMsg('avisMsg','ok','🙏 Merci pour votre retour ! Nous le lirons avec attention.');
+    document.getElementById('avis-msg').value='';document.getElementById('avis-prenom').value='';
+    noteChoisie=0;document.querySelectorAll('.star').forEach(s=>s.classList.remove('active'));
+    setTimeout(()=>{btn.disabled=false;btn.textContent='✍️ Envoyer mon avis';},5000);
+  }catch(e){showMsg('avisMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='✍️ Envoyer mon avis';}
+}
+// ===== NEWSLETTER INLINE =====
+async function nlHomeSubmit(){
+  const email=document.getElementById('nl-home-email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('nlHomeMsg','err','⚠ Email invalide.');return;}
+  const btn=document.getElementById('nlHomeBtn');btn.disabled=true;btn.textContent='⏳…';
+  try{
+    const{error}=await sb.from('newsletter_abonnes').insert({email});
+    if(error){if(error.code==='23505')showMsg('nlHomeMsg','ok','✅ Vous êtes déjà abonné·e !');else throw error;}
+    else showMsg('nlHomeMsg','ok','🎉 Bienvenue ! Vous recevrez notre prochaine newsletter.');
+    document.getElementById('nl-home-email').value='';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='📧 S\'abonner gratuitement';},5000);
+  }catch(e){showMsg('nlHomeMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='📧 S\'abonner gratuitement';}
+}
+// ===== SLIDER =====
+let sliderIdx=0;
+const SLIDER_COUNT=4;
+
+function sliderGoTo(idx){
+  sliderIdx=Math.max(0,Math.min(SLIDER_COUNT-1,idx));
+  document.getElementById('slider').style.transform=`translateX(-${sliderIdx*100}%)`;
+  document.getElementById('slider').style.transition='transform .4s cubic-bezier(.4,0,.2,1)';
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===sliderIdx));
+  document.getElementById('arr-left').style.opacity=sliderIdx===0?'0.3':'1';
+  document.getElementById('arr-right').style.opacity=sliderIdx===SLIDER_COUNT-1?'0.3':'1';
+}
+function sliderGo(dir){sliderGoTo(sliderIdx+dir);}
+
+// Swipe tactile
+(function(){
+  let x0=null;
+  const sl=document.getElementById('slider').parentElement;
+  sl.addEventListener('touchstart',e=>{x0=e.touches[0].clientX;},{passive:true});
+  sl.addEventListener('touchend',e=>{
+    if(x0===null)return;
+    const dx=e.changedTouches[0].clientX-x0;
+    if(Math.abs(dx)>50)sliderGo(dx<0?1:-1);
+    x0=null;
+  },{passive:true});
+})();
+
+// ===== CARROUSELS =====
+function carScroll(id,dir){const el=document.getElementById(id);if(el)el.scrollBy({left:dir*280,behavior:'smooth'});}
+
+async function loadPresse(){
+  const g=document.getElementById('car-presse');if(!g)return;
+  g.innerHTML='<div class="slide-spin">⏳ Chargement…</div>';
+  try{
+    const res=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/rss-proxy');
+    if(!res.ok)throw new Error();
+    const data=await res.json();
+    const items=(data.items||[]).slice(0,8);
+    if(!items.length){g.innerHTML='<div class="slide-spin"><a href="presse.html" style="color:var(--or)">Voir la presse →</a></div>';return;}
+    g.innerHTML=items.map(a=>`<a class="slide-presse-card" href="${a.link}" target="_blank" rel="noopener">
+      <div class="ps">${esc(a.source.substring(0,22))}</div>
+      <div class="pt">${esc(a.title.substring(0,70))}${a.title.length>70?'…':''}</div>
+      <div class="pd">${a.date?new Date(a.date).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}):''}</div>
+    </a>`).join('');
+  }catch(e){g.innerHTML='<div class="slide-spin"><a href="presse.html" style="color:var(--or)">Voir la presse →</a></div>';}
+}
 
 
-
-function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').style.display='flex';setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
+async function soumettre(){
+  const prenom=document.getElementById('f-prenom').value.trim(),nom=document.getElementById('f-nom').value.trim();
+  const email=document.getElementById('f-email').value.trim(),quartier=document.getElementById('f-quartier').value;
+  const rgpd=document.getElementById('f-rgpd').checked;
+  if(!prenom||!nom||!email||!quartier){showMsg('formMsg','err','⚠ Remplis tous les champs.');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showMsg('formMsg','err','⚠ Email invalide.');return;}
+  if(!rgpd){showMsg('formMsg','err','⚠ Accepte la politique.');return;}
+  const btn=document.getElementById('submitBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{
+    const{error}=await sb.from('adherents').insert({prenom,nom,email,quartier});
+    if(error){if(error.code==='23505')showMsg('formMsg','err','⚠ Email déjà enregistré.');else showMsg('formMsg','err','⚠ Erreur : '+error.message);btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';return;}
+    showMsg('formMsg','ok','🎉 Bienvenue dans le mouvement !');
+    ['f-prenom','f-nom','f-email'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('f-quartier').value='';document.getElementById('f-rgpd').checked=false;
+    setTimeout(()=>{btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';},6000);
+  }catch(e){showMsg('formMsg','err','⚠ Erreur réseau.');btn.disabled=false;btn.textContent='✊ Je rejoins le mouvement';}
+}
+function showMsg(id,type,txt){const m=document.getElementById(id);m.className='msg '+type;m.textContent=txt;m.style.display='block';}
+</script>
+<script>
+// Login
+function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
 function checkPwd(){if(document.getElementById('pwdInput').value===PWD){closeM('loginModal');loadEditors();renderAdh();document.getElementById('adminModal').classList.add('open');}else{document.getElementById('loginErr').style.display='block';document.getElementById('pwdInput').value='';}}
 function closeM(id){document.getElementById(id).classList.remove('open');}
 
@@ -665,6 +1217,605 @@ function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('op
 function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
 
 // ===== TRACKING VIA EDGE FUNCTION =====
+function initTracking(page){
+  const TRACK='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/track';
+  let sid=sessionStorage.getItem('cqp_sid');
+  if(!sid){sid=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',sid);}
+  function ping(type){
+    fetch(TRACK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid,page,type})}).catch(()=>{});
+  }
+  ping('view');
+  setInterval(()=>ping('ping'),30000);
+}
+
+// ===== STATS ADMIN =====
+let statsInterval=null;
+async function renderStats(){
+  try{
+    // 1. En ligne maintenant — sessions actives dans les 90 dernières secondes
+    const cutoff90s = new Date(Date.now()-90000).toISOString();
+    const{count:liveN}=await sb.from('active_sessions').select('*',{count:'exact',head:true}).gte('last_seen',cutoff90s);
+    document.getElementById('stat-live').textContent=liveN??'0';
+
+    // 2. Visites 24h
+    const depuis24h=new Date(Date.now()-86400000).toISOString();
+    const{count:v24}=await sb.from('page_views').select('*',{count:'exact',head:true}).gte('created_at',depuis24h);
+    document.getElementById('stat-24h').textContent=v24??'0';
+
+    // 3. Visites 7 jours
+    const depuis7j=new Date(Date.now()-7*86400000).toISOString();
+    const{count:v7}=await sb.from('page_views').select('*',{count:'exact',head:true}).gte('created_at',depuis7j);
+    document.getElementById('stat-7j').textContent=v7??'0';
+
+    // 4. Graphique par heure (24h)
+    const{data:views24}=await sb.from('page_views').select('created_at').gte('created_at',depuis24h).order('created_at');
+    const hours=Array(24).fill(0);
+    (views24||[]).forEach(v=>{
+      const h=Math.floor((Date.now()-new Date(v.created_at).getTime())/3600000);
+      if(h>=0&&h<24)hours[23-h]++;
+    });
+    const maxH=Math.max(...hours,1);
+    document.getElementById('chart-hours').innerHTML=hours.map((n,i)=>{
+      const pct=Math.round(n/maxH*100);
+      const isNow=i===23;
+      return `<div title="${n} visite${n>1?'s':''}" style="flex:1;background:${isNow?'var(--rouge)':'rgba(200,16,46,.4)'};height:${Math.max(pct,2)}%;border-radius:2px 2px 0 0;transition:height .3s;cursor:default"></div>`;
+    }).join('');
+
+    // 5. Pages les plus visitées (7j)
+    const{data:pagesRaw}=await sb.from('page_views').select('page').gte('created_at',depuis7j);
+    const pageCounts={};
+    (pagesRaw||[]).forEach(v=>{pageCounts[v.page]=(pageCounts[v.page]||0)+1;});
+    const pagesSorted=Object.entries(pageCounts).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const maxP=pagesSorted[0]?.[1]||1;
+    const pageLabels={'/':"Accueil",'actus.html':"Actualités",'evenements.html':"Événements",'annonces.html':"Annonces",'presse.html':"Presse",'newsletter.html':"Newsletter"};
+    document.getElementById('chart-pages').innerHTML=pagesSorted.map(([p,n])=>`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;color:rgba(244,241,235,.6);width:100px;flex-shrink:0">${pageLabels[p]||p}</div>
+        <div style="flex:1;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;height:20px">
+          <div style="background:var(--rouge);height:100%;width:${Math.round(n/maxP*100)}%;border-radius:3px;transition:width .4s"></div>
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--or);width:36px;text-align:right">${n}</div>
+      </div>`).join('')||'<div style="color:rgba(244,241,235,.3);font-family:\'Barlow Condensed\',sans-serif;letter-spacing:1px;font-size:.8rem">Aucune donnée pour le moment.</div>';
+
+  }catch(e){console.warn('Stats error:',e);}
+}
+// Init
+// Swipe texte "né du bas" sur mobile
+function quiSlide(idx){
+  const track=document.querySelector('.qui-slides');
+  if(!track)return;
+  track.scrollTo({left:idx*track.offsetWidth,behavior:'smooth'});
+  document.querySelectorAll('.qui-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+}
+// Sync points au scroll
+document.addEventListener('DOMContentLoaded',()=>{
+  const track=document.querySelector('.qui-slides');
+  if(!track)return;
+  track.addEventListener('scroll',()=>{
+    const idx=Math.round(track.scrollLeft/track.offsetWidth);
+    document.querySelectorAll('.qui-dot').forEach((d,i)=>d.classList.toggle('active',i===idx));
+  },{passive:true});
+});
+// ===== SOCIAL CARTES HOME — optimisé: 1 requête groupée par type =====
+function getSid(){
+  try{
+    let s=sessionStorage.getItem('cqp_sid');
+    if(!s){s=Math.random().toString(36).slice(2)+Date.now().toString(36);sessionStorage.setItem('cqp_sid',s);}
+    return s;
+  }catch{return 'anon_'+Math.random().toString(36).slice(2);}
+}
+async function loadAllCounts(type,ids){
+  if(!ids||!ids.length)return;
+  const sid=getSid();
+  try{
+    const[{data:allLikes},{data:myLikes},{data:allCmts}]=await Promise.all([
+      sb.from('likes').select('item_id').eq('item_type',type).in('item_id',ids),
+      sb.from('likes').select('item_id').eq('item_type',type).eq('session_id',sid).in('item_id',ids),
+      sb.from('commentaires').select('item_id').eq('item_type',type).eq('visible',true).in('item_id',ids)
+    ]);
+    const likeMap={},myMap={},cmtMap={};
+    (allLikes||[]).forEach(r=>{likeMap[r.item_id]=(likeMap[r.item_id]||0)+1;});
+    (myLikes||[]).forEach(r=>{myMap[r.item_id]=true;});
+    (allCmts||[]).forEach(r=>{cmtMap[r.item_id]=(cmtMap[r.item_id]||0)+1;});
+    ids.forEach(id=>{
+      const liked=!!myMap[id];
+      const btn=document.getElementById('lk-'+id);
+      if(btn){if(liked)btn.classList.add('liked');btn.querySelector('.h').textContent=liked?'❤️':'🤍';}
+      const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=likeMap[id]||0;
+      const cc=document.getElementById('cc-'+id);if(cc)cc.textContent=cmtMap[id]||0;
+    });
+  }catch(e){console.warn('loadAllCounts',e);}
+}
+const _pending={};
+function loadCardCounts(type,id){
+  if(!_pending[type])_pending[type]=[];
+  _pending[type].push(id);
+  clearTimeout(loadCardCounts._t);
+  loadCardCounts._t=setTimeout(()=>{
+    Object.entries(_pending).forEach(([t,ids])=>{loadAllCounts(t,[...new Set(ids)]);delete _pending[t];});
+  },50);
+}
+async function cardLike(type,id){
+  const sid=getSid();const btn=document.getElementById('lk-'+id);if(!btn)return;
+  const liked=btn.classList.contains('liked');
+  btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),300);
+  if(liked){await sb.from('likes').delete().eq('item_type',type).eq('item_id',id).eq('session_id',sid);btn.classList.remove('liked');btn.querySelector('.h').textContent='🤍';}
+  else{await sb.from('likes').insert({item_type:type,item_id:id,session_id:sid}).catch(()=>{});btn.classList.add('liked');btn.querySelector('.h').textContent='❤️';heartBurst(btn);}
+  const{count}=await sb.from('likes').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id);
+  const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=count||0;
+}
+let miniType2=null,miniId2=null;
+async function openMini(type,id,titre){
+  miniType2=type;miniId2=id;
+  const box=document.getElementById('mini-titre2');if(box)box.textContent='💬 '+titre;
+  document.getElementById('mini-ov2')?.classList.add('open');
+  document.getElementById('mini-drw2')?.classList.add('open');
+  document.body.style.overflow='hidden';
+  await refreshMini2();
+}
+function closeMini2(){document.getElementById('mini-ov2')?.classList.remove('open');document.getElementById('mini-drw2')?.classList.remove('open');document.body.style.overflow='';miniType2=null;miniId2=null;}
+async function refreshMini2(){
+  if(!miniType2||!miniId2)return;
+  const{data:cmts}=await sb.from('commentaires').select('*').eq('item_type',miniType2).eq('item_id',miniId2).eq('visible',true).order('created_at',{ascending:true});
+  const list=cmts||[];
+  const cc=document.getElementById('cc-'+miniId2);if(cc)cc.textContent=list.length;
+  const body=document.getElementById('mini-body2');if(!body)return;
+  body.innerHTML=list.length?list.map(cm=>`<div style="display:flex;gap:8px;margin-bottom:10px"><div style="width:28px;height:28px;min-width:28px;background:var(--rouge);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.8rem;color:#fff">${esc(cm.prenom[0].toUpperCase())}</div><div style="background:rgba(255,255,255,.06);border-radius:0 8px 8px 8px;padding:8px 12px;flex:1"><div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--or);margin-bottom:2px">${esc(cm.prenom)}</div><div style="font-size:.82rem;color:rgba(244,241,235,.8)">${esc(cm.message)}</div></div></div>`).join(''):'<div style="color:rgba(244,241,235,.3);font-size:.82rem;text-align:center;padding:20px">Soyez le premier !</div>';
+  body.scrollTop=body.scrollHeight;
+}
+async function sendMini2(){
+  const msg=document.getElementById('mini-msg2')?.value.trim();
+  const prenom=document.getElementById('mini-prenom2')?.value.trim()||'Anonyme';
+  savePrenomLocal(prenom);
+  if(!msg||!miniType2||!miniId2)return;
+  document.getElementById('mini-msg2').value='';
+  await sb.from('commentaires').insert({item_type:miniType2,item_id:miniId2,prenom,message:msg});
+  await refreshMini2();
+}
+
+// ===== 1. LAST VISIT BANNER =====
+function checkLastVisit(actus){
+  try{
+    const last=localStorage.getItem('cqp_last_visit');
+    const now=Date.now();
+    if(last&&actus&&actus.length){
+      const fresh=actus.filter(a=>new Date(a.date_publication).getTime()>parseInt(last));
+      if(fresh.length>0){
+        const b=document.getElementById('new-banner');
+        if(b){
+          b.textContent=`🔴 ${fresh.length} nouvelle${fresh.length>1?'s':''} actu${fresh.length>1?'s':''} depuis ta dernière visite`;
+          b.style.display='block';
+          setTimeout(()=>{b.style.transition='opacity .5s';b.style.opacity='0';setTimeout(()=>b.style.display='none',500);},6000);
+        }
+      }
+    }
+    localStorage.setItem('cqp_last_visit',now);
+    // Mémoriser le prénom pour les commentaires
+    const prenom=localStorage.getItem('cqp_prenom')||'';
+    const mp=document.getElementById('mini-prenom2');if(mp&&prenom)mp.value=prenom;
+    const mp2=document.getElementById('mini-prenom');if(mp2&&prenom)mp2.value=prenom;
+  }catch(e){}
+}
+function savePrenomLocal(val){try{if(val.trim())localStorage.setItem('cqp_prenom',val.trim());}catch(e){}}
+
+// ===== 2. HEARTBURST PARTICLES =====
+function heartBurst(btn){
+  try{
+    const rect=btn.getBoundingClientRect();
+    const emojis=['❤️','🧡','💛','✊'];
+    for(let i=0;i<6;i++){
+      const p=document.createElement('span');
+      p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      p.style.cssText=`position:fixed;left:${rect.left+rect.width/2}px;top:${rect.top}px;font-size:${.8+Math.random()*.8}rem;pointer-events:none;z-index:9999;transition:all .8s ease-out;opacity:1`;
+      document.body.appendChild(p);
+      requestAnimationFrame(()=>{
+        p.style.transform=`translate(${(Math.random()-.5)*80}px,-${40+Math.random()*40}px)`;
+        p.style.opacity='0';
+      });
+      setTimeout(()=>p.remove(),800);
+    }
+  }catch(e){}
+}
+
+// ===== 3. COUNTDOWN ÉVÉNEMENTS =====
+function countdownStr(dateStr){
+  const diff=new Date(dateStr)-Date.now();
+  if(diff<0)return'Passé';
+  const days=Math.floor(diff/86400000);
+  const hours=Math.floor((diff%86400000)/3600000);
+  const time=new Date(dateStr).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  if(days===0)return`⚡ Aujourd'hui ${time}`;
+  if(days===1)return'🔴 Demain';
+  if(days<=7)return`🟠 Dans ${days} jours`;
+  return`📅 ${new Date(dateStr).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}`;
+}
+
+// ===== 4. FRAÎCHEUR ANNONCES =====
+function freshnessLabel(dateStr){
+  const diff=(Date.now()-new Date(dateStr))/3600000;
+  if(diff<24)return'<span class="fresh-badge">🟢 Nouvelle</span>';
+  if(diff<72)return'<span class="fresh-badge fresh-recent">🟡 Récente</span>';
+  if(diff<168)return'<span class="fresh-badge fresh-week">🟠 Cette semaine</span>';
+  return'';
+}
+
+// ===== 5. HOT BADGE =====
+function maybeHotBadge(card, count){
+  if(count>=5&&!card.querySelector('.hot-badge')){
+    const b=document.createElement('span');
+    b.className='hot-badge';b.textContent='🔥 Populaire';
+    const head=card.querySelector('.hs-card-body,.hs-card-cat,.ann-head');
+    if(head)head.appendChild(b);
+  }
+}
+
+// ===== 6. SCROLL REVEAL =====
+function initScrollReveal(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){e.target.classList.add('revealed');obs.unobserve(e.target);}
+    });
+  },{threshold:0.08});
+  document.querySelectorAll('.hs-card,.feed-card').forEach(el=>{
+    el.classList.add('reveal-card');
+    obs.observe(el);
+  });
+}
+
+// ===== 7. RIPPLE sur boutons =====
+function addRipple(el){
+  el.style.position='relative';el.style.overflow='hidden';
+  el.addEventListener('click',function(e){
+    const r=document.createElement('span');
+    const rect=this.getBoundingClientRect();
+    const size=Math.max(rect.width,rect.height);
+    r.style.cssText=`position:absolute;width:${size}px;height:${size}px;border-radius:50%;background:rgba(255,255,255,.2);pointer-events:none;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;transform:scale(0);animation:ripple .5s ease-out forwards`;
+    this.appendChild(r);setTimeout(()=>r.remove(),500);
+  });
+}
+
+
+loadConfig();
+// Lancement parallèle — tous les chargements en même temps
+Promise.all([loadActus(), loadAnnonces(), loadEvents(), loadPresse()]);
+// Initialiser après chargement DOM
+setTimeout(()=>{
+  initScrollReveal();
+  document.querySelectorAll('.hs-cta,.btn-sub,.mob-pub-center').forEach(addRipple);
+},1000);
+initTracking('/');
+
+// ===== TICKER ACTIFS EN DIRECT =====
+async function updateTicker(){
+  try{
+    const fiveMin=new Date(Date.now()-5*60*1000).toISOString();
+    const{count}=await sb.from('active_sessions').select('*',{count:'exact',head:true}).gte('last_seen',fiveMin).catch(()=>({count:0}));
+    const n=count||0;
+    const el=document.getElementById('live-ticker');
+    const txt=document.getElementById('ticker-txt');
+    if(el&&txt&&n>0){
+      txt.textContent=n+' actif'+(n>1?'s':'')+' maintenant';
+      el.style.display='flex';
+    }
+  }catch(e){}
+}
+updateTicker();
+setInterval(updateTicker,30000);
+
+// ===== BANNIÈRE NOUVEAU CONTENU =====
+(function(){
+  try{
+    const last=parseInt(localStorage.getItem('cqp_actus_last')||'0');
+    if(!last){localStorage.setItem('cqp_actus_last',Date.now().toString());return;}
+    sb.from('actus').select('date_publication').eq('visible',true).order('date_publication',{ascending:false}).limit(5)
+      .then(({data})=>{
+        if(!data)return;
+        const newer=data.filter(a=>new Date(a.date_publication).getTime()>last);
+        if(newer.length>0){
+          const b=document.getElementById('new-banner');
+          const t=document.getElementById('new-banner-txt');
+          if(b&&t){
+            t.textContent='🔴 '+newer.length+' nouvelle'+(newer.length>1?'s':'')+' actu'+(newer.length>1?'s':'')+' depuis ta dernière visite';
+            b.style.display='block';
+            setTimeout(()=>{if(b)b.style.display='none';},8000);
+          }
+        }
+        localStorage.setItem('cqp_actus_last',Date.now().toString());
+      }).catch(()=>{});
+  }catch(e){}
+})();
+
+// ===== DOTS NOTIFICATION NAV MOBILE =====
+(async function(){
+  try{
+    const evtLast=parseInt(localStorage.getItem('cqp_evt_last')||'0');
+    const annLast=parseInt(localStorage.getItem('cqp_ann_last')||'0');
+    const[{data:evts},{data:anns}]=await Promise.all([
+      sb.from('evenements').select('date_debut').eq('visible',true).eq('validee',true).order('date_debut',{ascending:false}).limit(1),
+      sb.from('annonces').select('date_depot').eq('validee',true).order('date_depot',{ascending:false}).limit(1)
+    ]);
+    // Dots sur la barre mobile
+    if(evts?.[0]&&evtLast&&new Date(evts[0].date_debut).getTime()>evtLast){
+      document.querySelectorAll('[data-dot-evt]').forEach(el=>el.style.display='block');
+    }
+    if(anns?.[0]&&annLast&&new Date(anns[0].date_depot).getTime()>annLast){
+      document.querySelectorAll('[data-dot-ann]').forEach(el=>el.style.display='block');
+    }
+  }catch(e){}
+})();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/cqp-toulouse/sw.js')
+      .then(()=>console.log('SW enregistré'))
+      .catch(e=>console.warn('SW erreur:',e));
+  });
+}
 </script>
 </body>
 </html>
+
+<script>
+const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
+const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+const PWD='toulouse2026';
+const sb=supabase.createClient(SBU,SBK);
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function fmt(d){try{return d?new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'—';}catch{return d||'—';}}
+function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
+function checkPwd(){if(document.getElementById('pwdInput').value===PWD){closeM('loginModal');loadEditors();renderAdh();document.getElementById('adminModal').classList.add('open');}else{document.getElementById('loginErr').style.display='block';document.getElementById('pwdInput').value='';}}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+
+function switchTab(btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');const t=btn.dataset.tab;document.getElementById(t).classList.add('active');
+  if(t==='t-adh')renderAdh();if(t==='t-actus')renderActusAdmin();
+  if(t==='t-ann')renderAnnAdmin();if(t==='t-evt')renderEvtAdmin();
+  if(t==='t-nl')renderNlAdmin();
+  if(t==='t-avis')renderAvis();
+  if(t==='t-wa'){document.getElementById('wa-texte').focus();}
+  if(t==='t-stats'){
+    renderStats();
+    if(statsInterval)clearInterval(statsInterval);
+    statsInterval=setInterval(renderStats,30000);
+  } else {
+    if(statsInterval){clearInterval(statsInterval);statsInterval=null;}
+  }
+}
+// ===== ADMIN NEWSLETTER =====
+let nlCache=[];
+async function renderNlAdmin(){
+  const b=document.getElementById('nlAdmBody');if(!b)return;
+  b.innerHTML='<div class="spin">⏳</div>';
+  try{
+    const{data,error}=await sb.from('newsletter_abonnes').select('*').order('date_inscription',{ascending:false});
+    if(error)throw error;nlCache=data||[];
+    document.getElementById('nlAdmCount').textContent=nlCache.length+' abonné·e'+(nlCache.length>1?'s':'');
+    if(!nlCache.length){b.innerHTML='<div class="empty"><span>📧</span>Aucun abonné pour le moment.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Email</th><th>Quartier</th><th>Date</th><th>Statut</th></tr></thead><tbody>${nlCache.map((n,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(n.prenom||'—')}</td><td>${esc(n.email)}</td><td>${esc(n.quartier||'—')}</td><td><span class="dt">${new Date(n.date_inscription).toLocaleDateString('fr-FR')}</span></td><td>${n.actif?'<span class="s-ok">Actif</span>':'<span class="s-ko">Désabonné</span>'}</td></tr>`).join('')}</tbody></table>
+    <div style="margin-top:16px;padding:16px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:6px">
+      <p style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;color:var(--or);margin-bottom:6px">💡 Pour envoyer la newsletter</p>
+      <p style="font-size:.8rem;color:rgba(244,241,235,.55);line-height:1.6">Exportez la liste CSV et importez-la dans <a href="https://www.brevo.com" target="_blank" style="color:var(--or)">Brevo.com</a> (gratuit, 300 emails/jour). Créez votre campagne en quelques clics.</p>
+    </div>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+
+// Admin adhérents
+let adhCache=[];
+async function renderAdh(){
+  const b=document.getElementById('adhBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{
+    const{data,error}=await sb.from('adherents').select('*').order('date_inscription',{ascending:false});
+    if(error)throw error;adhCache=data||[];
+    document.getElementById('adhCount').textContent=adhCache.length+' inscrit·e'+(adhCache.length>1?'s':'');
+    if(!adhCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucun·e adhérent·e.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Quartier</th><th>Date</th><th></th></tr></thead><tbody>${adhCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(a.prenom)}</td><td>${esc(a.nom)}</td><td>${esc(a.email)}</td><td><span class="qb">${esc(a.quartier)}</span></td><td><span class="dt">${new Date(a.date_inscription).toLocaleDateString('fr-FR')}</span></td><td><button class="btn-del" onclick="del('adherents',${a.id},renderAdh)">✕</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+
+// Admin actus
+let actusAdmCache=[];
+async function publierActu(){
+  const titre=document.getElementById('actu-titre').value.trim(),contenu=document.getElementById('actu-contenu').value.trim();
+  const categorie=document.getElementById('actu-cat').value;
+  if(!titre||!contenu){showMsg('actuMsg','err','⚠ Titre et contenu obligatoires.');return;}
+  try{const{error}=await sb.from('actus').insert({titre,contenu,categorie,visible:true});
+    if(error)throw error;
+    showMsg('actuMsg','ok','✅ Publié !');
+    document.getElementById('actu-titre').value='';document.getElementById('actu-contenu').value='';
+    setTimeout(()=>{document.getElementById('actuFormBox').classList.remove('open');renderActusAdmin();loadActus();},1500);
+  }catch(e){showMsg('actuMsg','err','⚠ '+e.message);}
+}
+async function renderActusAdmin(){
+  const b=document.getElementById('actusBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{const{data,error}=await sb.from('actus').select('*').order('date_publication',{ascending:false});
+    if(error)throw error;actusAdmCache=data||[];
+    document.getElementById('actusCount').textContent=actusAdmCache.length+' actu'+(actusAdmCache.length>1?'s':'');
+    if(!actusAdmCache.length){b.innerHTML='<div class="empty"><span>📰</span>Aucune.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${actusAdmCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(a.titre)}${!a.visible?'<span style="background:rgba(245,166,35,.15);color:var(--or);font-family:\'Barlow Condensed\',sans-serif;font-size:.6rem;letter-spacing:1px;padding:2px 6px;border-radius:2px;margin-left:6px">🤖 À valider</span>':''}</td><td><span class="qb">${esc(a.categorie)}</span></td><td><span class="dt">${new Date(a.date_publication).toLocaleDateString('fr-FR')}</span></td><td>${a.visible?'<span class="s-ok">Publié</span>':'<span class="s-ko">Brouillon</span>'}</td><td style="display:flex;gap:6px"><button class="btn-ok" onclick="toggleVis(${a.id},${a.visible})">${a.visible?'Masquer':'✅ Publier'}</button><button class="btn-del" onclick="del('actus',${a.id},()=>{renderActusAdmin();loadActus();})">✕</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function toggleVis(id,cur){await sb.from('actus').update({visible:!cur}).eq('id',id);renderActusAdmin();loadActus();}
+
+// Admin annonces
+let annAdmCache=[];
+async function renderAnnAdmin(){
+  const b=document.getElementById('annBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{const{data,error}=await sb.from('annonces').select('*').order('date_depot',{ascending:false});
+    if(error)throw error;annAdmCache=data||[];
+    document.getElementById('annCount').textContent=annAdmCache.length+' annonce'+(annAdmCache.length>1?'s':'');
+    if(!annAdmCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucune.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Quartier</th><th>Email</th><th>Tél</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${annAdmCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td title="${esc(a.description)}">${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td>${esc(a.quartier)}</td><td><span class="dt">${esc(a.email)}</span></td><td><span class="dt">${esc(a.telephone||'—')}</span></td><td>${a.validee?'<span class="s-ok">Validée</span>':'<span class="s-ko">En attente</span>'}</td><td style="display:flex;gap:5px">${!a.validee?`<button class="btn-ok" onclick="valAnn(${a.id},true)">✅</button>`:`<button class="btn-ko" onclick="valAnn(${a.id},false)">↩</button>`}<button class="btn-del" onclick="del('annonces',${a.id},()=>{renderAnnAdmin();loadAnnonces();})">✕</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function valAnn(id,v){await sb.from('annonces').update({validee:v}).eq('id',id);renderAnnAdmin();loadAnnonces();}
+
+// ===== ÉVÉNEMENTS PUBLIC =====
+let eventsPub=[];
+async function loadEvents(){
+  const g=document.getElementById('car-events');
+  try{
+    const now=new Date().toISOString();
+    const{data,error}=await sb.from('evenements').select('*').eq('visible',true).eq('validee',true).gte('date_debut',now).order('date_debut',{ascending:true}).limit(9);
+    if(error)throw error;eventsPub=data||[];
+    if(!eventsPub.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><span>📅</span>Aucun événement à venir.</div>';return;}
+    g.innerHTML=eventsPub.map(evt=>{
+      const d=new Date(evt.date_debut);
+      const dateStr=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+      const heureStr=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      return `<div class="hs-card" onclick="openDrEvt(${evt.id})">
+        ${evt.photo_url?`<img class="hs-card-img" src="${evt.photo_url}" alt="${esc(evt.titre)}" loading="lazy">`:`<div class="hs-card-img-placeholder" style="background:linear-gradient(135deg,rgba(200,16,46,.3),rgba(13,13,13,.9))"><span style="font-size:1.5rem">📅</span><span style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;margin-left:8px">${d.getDate()} ${d.toLocaleDateString('fr-FR',{month:'short'}).toUpperCase()}</span></div>`}
+        <div class="hs-card-body">
+          <span class="hs-card-cat">${esc(evt.categorie)} · ${heureStr}</span>
+          <div class="hs-card-title">${esc(evt.titre)}</div>
+          <div class="hs-card-sub">📍 ${esc(evt.lieu)}</div>
+          <div class="hs-card-footer">
+            <span class="hs-card-date">${dateStr}</span>
+            <span class="evt-countdown">${countdownStr(evt.date_debut)}</span>
+            <div class="hs-card-social" onclick="event.stopPropagation()">
+              <button class="hs-lk" id="lk-${evt.id}" onclick="cardLike('evenement',${evt.id})"><span class="h">🤍</span><span id="lc-${evt.id}">0</span></button>
+              <button class="hs-cm" onclick="openMini('evenement',${evt.id},'${esc(evt.titre).substring(0,25)}')">💬<span id="cc-${evt.id}">0</span></button>
+            </div>
+          </div>
+        </div></div>`;
+    }).join('');
+    eventsPub.forEach(evt=>loadCardCounts('evenement',evt.id));
+  }catch(e){g.innerHTML='<div class="empty" style="grid-column:1/-1">Impossible de charger.</div>';}
+}
+function openDrEvt(id){
+  const evt=eventsPub.find(x=>x.id===id);if(!evt)return;
+  const d=new Date(evt.date_debut);
+  document.getElementById('dr-actu-titre').textContent=evt.titre;
+  document.getElementById('dr-actu-cat').textContent=evt.categorie;
+  document.getElementById('dr-actu-date').textContent='📅 '+d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' · 📍 '+evt.lieu;
+  document.getElementById('dr-actu-content').innerHTML=`<p style="margin-bottom:20px">${esc(evt.description)}</p>
+  <div style="background:rgba(200,16,46,.1);border:1px solid rgba(200,16,46,.3);border-radius:6px;padding:20px;margin-top:16px">
+    <h4 style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:12px">✍️ S'inscrire à cet événement</h4>
+    <div class="fr"><div class="fg"><label>Prénom *</label><input type="text" id="ins-prenom" placeholder="Marie"></div><div class="fg"><label>Nom *</label><input type="text" id="ins-nom" placeholder="Dupont"></div></div>
+    <div class="fg"><label>Email *</label><input type="email" id="ins-email" placeholder="marie@exemple.fr"></div>
+    <div class="fg"><label>Téléphone (optionnel)</label><input type="tel" id="ins-tel" placeholder="06 XX XX XX XX"></div>
+    <div class="fg"><label>Message (optionnel)</label><textarea id="ins-msg" rows="2" placeholder="Questions, besoins particuliers…"></textarea></div>
+    <button class="btn-sub" style="margin-top:8px" onclick="inscrireEvt(${evt.id})">✅ Confirmer mon inscription</button>
+    <div class="msg" id="insMsg"></div>
+  </div>`;
+  openDr('dActu');
+}
+async function inscrireEvt(evtId){
+  const prenom=document.getElementById('ins-prenom').value.trim();
+  const nom=document.getElementById('ins-nom').value.trim();
+  const email=document.getElementById('ins-email').value.trim();
+  const telephone=document.getElementById('ins-tel').value.trim();
+  const message=document.getElementById('ins-msg').value.trim();
+  if(!prenom||!nom||!email){showMsg('insMsg','err','⚠ Prénom, nom et email obligatoires.');return;}
+  try{
+    const{error}=await sb.from('inscriptions_evenements').insert({evenement_id:evtId,prenom,nom,email,telephone,message});
+    if(error){if(error.code==='23505')showMsg('insMsg','err','⚠ Vous êtes déjà inscrit·e à cet événement.');else showMsg('insMsg','err','⚠ Erreur : '+error.message);return;}
+    showMsg('insMsg','ok','🎉 Inscription confirmée ! À très bientôt.');
+  }catch(e){showMsg('insMsg','err','⚠ Erreur réseau.');}
+}
+async function proposerEvt(){
+  const prenom=document.getElementById('pe-prenom').value.trim();
+  const email=document.getElementById('pe-email').value.trim();
+  const titre=document.getElementById('pe-titre').value.trim();
+  const date=document.getElementById('pe-date').value;
+  const lieu=document.getElementById('pe-lieu').value.trim();
+  const desc=document.getElementById('pe-desc').value.trim();
+  if(!prenom||!email||!titre||!date||!lieu||!desc){showMsg('peMsg','err','⚠ Remplis tous les champs.');return;}
+  const btn=document.getElementById('peBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{
+    const{error}=await sb.from('evenements').insert({titre,description:desc,lieu,date_debut:new Date(date).toISOString(),categorie:'Événement',validee:false,propose_par:prenom+' ('+email+')'});
+    if(error)throw error;
+    showMsg('peMsg','ok','✅ Proposition envoyée ! Elle sera examinée par notre équipe.');
+    ['pe-prenom','pe-email','pe-titre','pe-lieu','pe-desc'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('pe-date').value='';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='📅 Soumettre ma proposition';},5000);
+  }catch(e){showMsg('peMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='📅 Soumettre ma proposition';}
+}
+
+// ===== ADMIN ÉVÉNEMENTS =====
+let evtAdmCache=[];
+async function creerEvt(){
+  const titre=document.getElementById('evt-titre').value.trim(),desc=document.getElementById('evt-desc').value.trim();
+  const date=document.getElementById('evt-date').value,lieu=document.getElementById('evt-lieu').value.trim();
+  const categorie=document.getElementById('evt-cat').value,places=parseInt(document.getElementById('evt-places').value)||0;
+  const fin=document.getElementById('evt-fin').value;
+  if(!titre||!desc||!date||!lieu){showMsg('evtMsg','err','⚠ Titre, date, lieu et description obligatoires.');return;}
+  try{
+    const obj={titre,description:desc,lieu,date_debut:new Date(date).toISOString(),categorie,places_max:places,visible:true,validee:true};
+    if(fin)obj.date_fin=new Date(fin).toISOString();
+    const{error}=await sb.from('evenements').insert(obj);
+    if(error)throw error;
+    showMsg('evtMsg','ok','✅ Événement créé !');
+    ['evt-titre','evt-desc','evt-lieu'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('evt-date').value='';document.getElementById('evt-fin').value='';
+    setTimeout(()=>{document.getElementById('evtFormBox').classList.remove('open');renderEvtAdmin();loadEvents();},1500);
+  }catch(e){showMsg('evtMsg','err','⚠ '+e.message);}
+}
+async function renderEvtAdmin(){
+  const b=document.getElementById('evtBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{
+    const{data,error}=await sb.from('evenements').select('*').order('date_debut',{ascending:false});
+    if(error)throw error;evtAdmCache=data||[];
+    // Compter les inscrits pour chaque événement
+    const counts={};
+    const{data:ins}=await sb.from('inscriptions_evenements').select('evenement_id');
+    if(ins)ins.forEach(i=>{counts[i.evenement_id]=(counts[i.evenement_id]||0)+1;});
+    document.getElementById('evtCount').textContent=evtAdmCache.length+' événement'+(evtAdmCache.length>1?'s':'');
+    if(!evtAdmCache.length){b.innerHTML='<div class="empty"><span>📅</span>Aucun événement.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Date</th><th>Lieu</th><th>Cat.</th><th>Inscrits</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${evtAdmCache.map((e,i)=>{
+      const d=new Date(e.date_debut);const nb=counts[e.id]||0;
+      const plMax=e.places_max>0?` / ${e.places_max}`:'';
+      const couleur=e.places_max>0&&nb>=e.places_max?'color:#ff6b6b':'color:#4CAF50';
+      return `<tr><td class="dt">${i+1}</td><td>${esc(e.titre)}</td><td><span class="dt">${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span></td><td>${esc(e.lieu)}</td><td><span class="qb">${esc(e.categorie)}</span></td><td><button class="btn-ok" style="background:none;border:1px solid rgba(255,255,255,.2)" onclick="voirInscrits(${e.id},'${esc(e.titre).replace(/'/g,"\\'")}')"><span style="${couleur}">👥 ${nb}${plMax}</span></button></td><td>${e.validee?'<span class="s-ok">Validé</span>':'<span class="s-ko">Proposition</span>'}</td><td style="display:flex;gap:5px;flex-wrap:wrap">${!e.validee?`<button class="btn-ok" onclick="valEvt(${e.id},true)">✅</button>`:''}<button class="btn-${e.visible?'ko':'ok'}" onclick="toggleEvtVis(${e.id},${e.visible})">${e.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('evenements',${e.id},()=>{renderEvtAdmin();loadEvents();})">✕</button></td></tr>`;
+    }).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function valEvt(id,v){await sb.from('evenements').update({validee:v}).eq('id',id);renderEvtAdmin();}
+async function toggleEvtVis(id,cur){await sb.from('evenements').update({visible:!cur}).eq('id',id);renderEvtAdmin();loadEvents();}
+
+async function voirInscrits(evtId,titre){
+  const b=document.getElementById('inscrits-body');
+  document.getElementById('inscrits-titre').textContent='👥 Inscrits — '+titre;
+  b.innerHTML='<div class="spin">⏳ Chargement…</div>';
+  document.getElementById('dInscrits').classList.add('open');
+  document.body.style.overflow='hidden';
+  try{
+    const{data,error}=await sb.from('inscriptions_evenements').select('*').eq('evenement_id',evtId).order('date_inscription',{ascending:true});
+    if(error)throw error;
+    const inscrits=data||[];
+    document.getElementById('inscrits-count').textContent=inscrits.length+' inscrit·e'+(inscrits.length>1?'s':'');
+    if(!inscrits.length){b.innerHTML='<div class="empty"><span>👥</span>Aucune inscription pour l\'instant.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Téléphone</th><th>Message</th><th>Date</th></tr></thead><tbody>${inscrits.map((ins,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(ins.prenom)}</td><td>${esc(ins.nom)}</td><td>${esc(ins.email)}</td><td><span class="dt">${esc(ins.telephone||'—')}</span></td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(ins.message||'')}"><span class="dt">${esc(ins.message||'—')}</span></td><td><span class="dt">${new Date(ins.date_inscription).toLocaleDateString('fr-FR')}</span></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+
+async function del(table,id,cb){if(!confirm('Supprimer ?'))return;const{error}=await sb.from(table).delete().eq('id',id);if(!error&&cb)cb();else if(error)alert('Erreur : '+error.message);}
+
+function exportCSV(type){
+  const maps={
+    adh:{c:()=>adhCache,h:['#','Prénom','Nom','Email','Quartier','Date'],r:(a,i)=>[i+1,a.prenom,a.nom,a.email,a.quartier,new Date(a.date_inscription).toLocaleDateString('fr-FR')]},
+    ann:{c:()=>annAdmCache,h:['#','Titre','Cat','Quartier','Prénom','Nom','Email','Téléphone','Description','Date','Validée'],r:(a,i)=>[i+1,a.titre,a.categorie,a.quartier,a.prenom,a.nom,a.email,a.telephone||'',a.description,new Date(a.date_depot).toLocaleDateString('fr-FR'),a.validee?'Oui':'Non']},
+    nl:{c:()=>nlCache,h:['#','Prénom','Email','Quartier','Date','Actif'],r:(n,i)=>[i+1,n.prenom||'',n.email,n.quartier||'',new Date(n.date_inscription).toLocaleDateString('fr-FR'),n.actif?'Oui':'Non']},
+    avis:{c:()=>avisCache,h:['#','Prénom','Note','Message','Date'],r:(a,i)=>[i+1,a.prenom,a.note+'★',a.message,new Date(a.created_at).toLocaleDateString('fr-FR')]}
+  };
+  const m=maps[type];if(!m)return;const d=m.c();if(!d.length){alert('Aucune donnée.');return;}
+  const rows=[m.h,...d.map(m.r)];
+  const csv=rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;
+  a.download=`${type}-cqp-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
+}
+
+// Animations
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.style.opacity='1';x.target.style.transform='translateY(0)';}});},{threshold:.08});
+document.querySelectorAll('.visual-box,.form-card,.adhesion-left,.qui-texte,.depot-left').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity .55s ease,transform .55s ease';obs.observe(el);});
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}});});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');closeDr('dAnn');closeDr('dDepot');closeDr('dAdhesion');closeDr('dInscrits');}});
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+
+// ===== TRACKING VIA EDGE FUNCTION =====
+
+</script></body></html>
