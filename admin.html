@@ -1,298 +1,670 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin — CQP Toulouse</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--r:#C8102E;--bg:#0d0d0d;--bg2:#1a1a1a;--bg3:#252525;--brd:#333;--txt:#f0ede8;--txt2:#aaa}
-body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',sans-serif;height:100vh;display:flex;flex-direction:column}
-a{color:inherit;text-decoration:none}
-
-/* LOGIN */
-#login-screen{display:flex;align-items:center;justify-content:center;flex:1}
-.login-box{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:40px;width:340px;text-align:center}
-.login-box h1{font-size:1.6rem;margin-bottom:6px}
-.login-box p{color:var(--txt2);font-size:.85rem;margin-bottom:24px}
-.login-box input{width:100%;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;padding:12px 16px;color:var(--txt);font-size:.95rem;outline:none;margin-bottom:12px;text-align:center;letter-spacing:4px}
-.login-box input:focus{border-color:var(--r)}
-.login-box button{width:100%;background:var(--r);color:#fff;border:none;border-radius:8px;padding:12px;font-size:.95rem;cursor:pointer}
-.login-err{color:#f87171;font-size:.82rem;margin-top:8px;display:none}
-
-/* APP */
-#app{display:none;flex:1;flex-direction:column;overflow:hidden}
-.topbar{background:var(--bg2);border-bottom:1px solid var(--brd);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.topbar-title{font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:10px}
-.topbar-title span{background:var(--r);color:#fff;padding:3px 10px;border-radius:5px;font-size:.85rem;letter-spacing:.5px}
-.topbar-actions{display:flex;gap:8px}
-.btn-sm{background:var(--bg3);border:1px solid var(--brd);color:var(--txt2);padding:7px 14px;border-radius:7px;font-size:.78rem;cursor:pointer;transition:all .15s}
-.btn-sm:hover{border-color:var(--r);color:var(--txt)}
-.btn-red{background:var(--r);border-color:var(--r);color:#fff}
-
-/* TABS */
-.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--brd);flex-shrink:0;overflow-x:auto}
-.tab{padding:13px 20px;font-size:.82rem;letter-spacing:.5px;color:var(--txt2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
-.tab:hover{color:var(--txt)}
-.tab.active{color:var(--r);border-bottom-color:var(--r)}
-
-/* PANELS */
-.panels{flex:1;overflow:hidden;position:relative}
-.panel{display:none;height:100%;overflow-y:auto;padding:20px}
-.panel.active{display:block}
-
-/* TABLE */
-.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
-.tbl th{text-align:left;padding:10px 12px;background:var(--bg3);color:var(--txt2);font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--brd)}
-.tbl td{padding:10px 12px;border-bottom:1px solid var(--brd);vertical-align:middle}
-.tbl tr:hover td{background:var(--bg3)}
-.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:600}
-.badge.pub{background:#14532d;color:#4ade80}
-.badge.drft{background:#431407;color:#fb923c}
-.badge.ia{background:#1e1b4b;color:#a5b4fc}
-.btn-action{background:none;border:1px solid var(--brd);color:var(--txt2);padding:4px 10px;border-radius:5px;font-size:.72rem;cursor:pointer;transition:all .15s;margin-right:4px}
-.btn-action:hover{border-color:var(--r);color:var(--txt)}
-.btn-del{border-color:#7f1d1d;color:#f87171}
-.btn-del:hover{background:#7f1d1d;color:#fff}
-.section-title{font-size:1rem;font-weight:600;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
-.stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:24px}
-.stat-card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:16px}
-.stat-val{font-size:2rem;font-weight:700;color:var(--r)}
-.stat-lbl{font-size:.72rem;color:var(--txt2);letter-spacing:1px;text-transform:uppercase;margin-top:4px}
-.empty{text-align:center;padding:40px;color:var(--txt2);font-size:.85rem}
-.spin{text-align:center;padding:40px;color:var(--txt2)}
+.modal-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.88);backdrop-filter:blur(6px);align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+@keyframes popIn{from{opacity:0;transform:scale(.95) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tickerPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes bannerSlideDown{from{max-height:0;opacity:0}to{max-height:50px;opacity:1}}
+.login-box{background:var(--gf);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:92%;max-width:380px;padding:40px;animation:popIn .3s ease}
+.login-box h3{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:8px}
+.login-box p{font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:24px}
+.login-box input{width:100%;background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:12px 15px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;margin-bottom:14px}
+.login-box input:focus{border-color:var(--rouge)}
+.login-err{font-size:.8rem;color:var(--rouge);margin-bottom:12px;display:none;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.login-btns{display:flex;gap:10px}
+.btn-login{flex:1;background:var(--rouge);color:#fff;border:2px solid var(--rouge);padding:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all .25s}
+.btn-login:hover{background:transparent;color:var(--rouge)}
+.btn-cx{background:transparent;color:rgba(244,241,235,.5);border:1px solid rgba(255,255,255,.15);padding:12px 18px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:1px;text-transform:uppercase;border-radius:3px;cursor:pointer}
+.admin-modal{background:var(--gf);border:1px solid rgba(255,255,255,.1);border-radius:8px;width:96%;max-width:1200px;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;animation:popIn .3s ease}
+.admin-head{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid rgba(255,255,255,.08);background:var(--noir);flex-shrink:0}
+.admin-head h2{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--blanc);margin:0}
+.admin-head h2 span{color:var(--rouge)}
+.a-close{background:none;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
+.a-close:hover{border-color:var(--rouge);color:var(--rouge)}
+.admin-tabs{display:flex;gap:4px;background:var(--gf);padding:0 26px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;overflow-x:auto}
+.tab-btn{background:none;border:none;color:rgba(244,241,235,.45);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;padding:13px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.tab-btn:hover{color:var(--blanc)}
+.tab-btn.active{color:var(--or);border-bottom-color:var(--or)}
+.admin-content{overflow-y:auto;flex:1}
+.tab-panel{display:none;padding:24px}
+.tab-panel.active{display:block}
+.panel-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.badge{background:var(--rouge);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1rem;padding:4px 14px;border-radius:20px}
+.btn-export{background:var(--or);color:var(--noir);border:none;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;border-radius:3px;cursor:pointer}
+.btn-new{background:var(--rouge);color:#fff;border:none;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;border-radius:3px;cursor:pointer}
+.spin{text-align:center;padding:40px;color:rgba(244,241,235,.4);font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:.82rem}
+.empty{padding:50px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;color:rgba(244,241,235,.3)}
+.empty span{display:block;font-size:3rem;margin-bottom:12px}
+table{width:100%;border-collapse:collapse}
+thead{position:sticky;top:0;background:var(--noir);z-index:1}
+thead th{padding:10px 14px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:3px;text-transform:uppercase;color:var(--or);border-bottom:1px solid rgba(255,255,255,.08)}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.05)}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
+.qb{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;background:rgba(200,16,46,.15);border:1px solid rgba(200,16,46,.3);color:#ff6b6b;padding:2px 8px;border-radius:2px}
+.dt{color:rgba(244,241,235,.35);font-size:.74rem}
+.btn-del{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(244,241,235,.3);padding:3px 9px;border-radius:3px;cursor:pointer;font-size:.7rem}
+.btn-del:hover{border-color:var(--rouge);color:var(--rouge)}
+.btn-ok{background:rgba(76,175,80,.15);border:1px solid #4CAF50;color:#4CAF50;padding:3px 9px;border-radius:3px;cursor:pointer;font-size:.7rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.btn-ko{background:rgba(200,16,46,.1);border:1px solid var(--rouge);color:var(--rouge);padding:3px 9px;border-radius:3px;cursor:pointer;font-size:.7rem;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.s-ok{background:rgba(76,175,80,.15);border:1px solid #4CAF50;color:#4CAF50;padding:2px 8px;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase}
+.s-ko{background:rgba(255,152,0,.15);border:1px solid #FF9800;color:#FF9800;padding:2px 8px;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase}
+.actu-form-box{background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:22px;margin-bottom:20px;display:none}
+.actu-form-box.open{display:block}
+.actu-form-box h4{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:16px}
+.ce{display:flex;flex-direction:column;gap:16px}
+.cb{background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;overflow:hidden}
+.cb-head{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.02)}
+.cb-head h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--or)}
+.cb-head span{font-size:.68rem;color:rgba(244,241,235,.25)}
+.cb-body{padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.ef label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.66rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-bottom:5px}
+.ef input,.ef textarea{width:100%;background:var(--gf);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:9px 12px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.86rem;outline:none;transition:border-color .2s;resize:vertical}
+.ef input:focus,.ef textarea:focus{border-color:var(--or)}
+.ef textarea{min-height:80px}
+.r3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.save-btn{align-self:flex-end;background:var(--rouge);color:#fff;border:2px solid var(--rouge);padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;border-radius:3px;cursor:pointer;transition:all .25s}
+.save-btn:hover{background:transparent;color:var(--rouge)}
+.flash{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:#4CAF50;opacity:0;transition:opacity .4s;align-self:flex-end}
+.flash.show{opacity:1}
+.save-row{display:flex;align-items:center;gap:14px}
+.upload-zone{border:2px dashed rgba(255,255,255,.2);border-radius:6px;padding:24px;text-align:center;cursor:pointer;transition:all .25s;position:relative}
+.upload-zone:hover{border-color:var(--or);background:rgba(245,166,35,.05)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone p{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:1px;color:rgba(244,241,235,.5)}
+.upload-zone .icon{font-size:2rem;margin-bottom:8px;display:block}
+.upload-preview{width:100%;height:120px;object-fit:cover;border-radius:4px;margin-top:10px;display:none}
+.upload-status{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;color:var(--or);margin-top:8px;display:none}
+/* PARTAGE */
+.share-btns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.share-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border:none;text-decoration:none;transition:opacity .2s;font-weight:700}
+.share-btn:hover{opacity:.85}
+.share-wa{background:#25D366;color:#fff}
+.share-fb{background:#1877F2;color:#fff}
+.share-x{background:#000;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.share-copy{background:rgba(255,255,255,.1);color:var(--blanc);border:1px solid rgba(255,255,255,.2)}
+.share-copy.copied{background:rgba(76,175,80,.2);border-color:#4CAF50;color:#4CAF50}
+/* RSS ACTUS LOCALES */
+.rss-section{background:var(--gf);border-top:1px solid rgba(255,255,255,.05)}
+.rss-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.rss-card{background:var(--noir);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:16px;text-decoration:none;display:block;transition:all .2s}
+.rss-card:hover{border-color:var(--rouge);transform:translateY(-2px)}
+.rss-source{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:6px}
+.rss-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;color:var(--blanc);line-height:1.3;margin-bottom:6px}
+.rss-date{font-size:.7rem;color:rgba(244,241,235,.3);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+@media(max-width:900px){.rss-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.rss-grid{grid-template-columns:1fr}}
+/* BANDEAU DÉCOUVERTE */
+.band-item{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:#fff;padding:0 40px}
+.band-item::after{content:'·';margin-left:40px;color:rgba(244,241,235,.2)}
+/* ÉTOILES AVIS */
+.star{font-size:1.8rem;color:rgba(255,255,255,.2);cursor:pointer;transition:color .15s;line-height:1;user-select:none}
+.star.active,.star.hover{color:var(--or)}
+/* Forcer fond sombre sur tout */
+body{background:#0d0d0d;color:#f4f1eb}
 </style>
-</head>
-<body>
 
 <!-- LOGIN -->
-<div id="login-screen">
+<div class="modal-overlay" id="loginModal" onclick="if(event.target.id==='loginModal')closeM('loginModal')">
   <div class="login-box">
-    <h1>🔐 CQP Admin</h1>
-    <p>Espace d'administration du site</p>
-    <input type="password" id="pwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')login()">
-    <button onclick="login()">Connexion</button>
-    <div class="login-err" id="login-err">Mot de passe incorrect</div>
+    <h3>🔐 Espace Admin</h3>
+    <p>Entrez le mot de passe pour accéder au panneau d'administration.</p>
+    <input type="password" id="pwdInput" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')checkPwd()">
+    <div class="login-err" id="loginErr">❌ Mot de passe incorrect</div>
+    <div class="login-btns">
+      <button class="btn-login" onclick="checkPwd()">Connexion</button>
+      <button class="btn-cx" onclick="closeM('loginModal')">Annuler</button>
+    </div>
   </div>
 </div>
 
-<!-- APP -->
-<div id="app">
-  <div class="topbar">
-    <div class="topbar-title"><span>CQP</span> Panneau d'administration</div>
-    <div class="topbar-actions">
-      <a href="index.html" class="btn-sm">← Retour au site</a>
-      <button class="btn-sm" onclick="logout()">Déconnexion</button>
+<!-- ADMIN -->
+<div class="modal-overlay" id="adminModal" onclick="if(event.target.id==='adminModal')closeM('adminModal')">
+  <div class="admin-modal">
+    <div class="admin-head"><h2>Panneau <span>Admin</span></h2><button class="a-close" onclick="closeM('adminModal')">✕</button></div>
+    <div class="admin-tabs">
+      <button class="tab-btn active" data-tab="t-adh" onclick="switchTab(this)">👥 Adhérent·es</button>
+      <button class="tab-btn" data-tab="t-actus" onclick="switchTab(this)">📰 Actualités</button>
+      <button class="tab-btn" data-tab="t-ann" onclick="switchTab(this)">📋 Annonces</button>
+      <button class="tab-btn" data-tab="t-evt" onclick="switchTab(this)">📅 Événements</button>
+      <button class="tab-btn" data-tab="t-textes" onclick="switchTab(this)">✏️ Textes & Photos</button>
+      <button class="tab-btn" data-tab="t-nl" onclick="switchTab(this)">📧 Newsletter</button>
+      <button class="tab-btn" data-tab="t-stats" onclick="switchTab(this)">📊 Statistiques</button>
+      <button class="tab-btn" data-tab="t-avis" onclick="switchTab(this)">⭐ Avis</button>
+      <button class="tab-btn" data-tab="t-wa" onclick="switchTab(this)">📲 WhatsApp → IA</button>
     </div>
-  </div>
-  <div class="tabs">
-    <div class="tab active" onclick="showTab('actus',this)">📰 Actualités</div>
-    <div class="tab" onclick="showTab('adherents',this)">👥 Adhérents</div>
-    <div class="tab" onclick="showTab('annonces',this)">📋 Annonces</div>
-    <div class="tab" onclick="showTab('evenements',this)">📅 Événements</div>
-    <div class="tab" onclick="showTab('commentaires',this)">💬 Commentaires</div>
-    <div class="tab" onclick="showTab('stats',this)">📊 Stats</div>
-  </div>
-  <div class="panels">
-    <div class="panel active" id="panel-actus"><div class="spin">Chargement…</div></div>
-    <div class="panel" id="panel-adherents"><div class="spin">Chargement…</div></div>
-    <div class="panel" id="panel-annonces"><div class="spin">Chargement…</div></div>
-    <div class="panel" id="panel-evenements"><div class="spin">Chargement…</div></div>
-    <div class="panel" id="panel-commentaires"><div class="spin">Chargement…</div></div>
-    <div class="panel" id="panel-stats"><div class="spin">Chargement…</div></div>
-  </div>
-</div>
+    <div class="admin-content">
+      <div class="tab-panel active" id="t-adh">
+        <div class="panel-top"><span class="badge" id="adhCount">…</span><button class="btn-export" onclick="exportCSV('adh')">⬇ Export CSV</button></div>
+        <div id="adhBody"><div class="spin">⏳</div></div>
+      </div>
+      <div class="tab-panel" id="t-actus">
+        <div class="panel-top"><span class="badge" id="actusCount">…</span><button class="btn-new" onclick="document.getElementById('actuFormBox').classList.toggle('open')">+ Nouvelle actualité</button></div>
+        <div class="actu-form-box" id="actuFormBox">
+          <h4>✏️ Nouvelle actualité</h4>
+          <div class="fr">
+            <div class="fg"><label>Titre *</label><input type="text" id="actu-titre" placeholder="Titre"></div>
+            <div class="fg"><label>Catégorie</label>
+              <select id="actu-cat">
+                <option value="Actualité">Actualité</option><option value="Événement">Événement</option>
+                <option value="Mobilisation">Mobilisation</option><option value="Victoire">Victoire</option>
+                <option value="Communiqué">Communiqué</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg"><label>Contenu *</label><textarea id="actu-contenu" rows="5" placeholder="Contenu…"></textarea></div>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn-new" onclick="publierActu()">✅ Publier</button>
+            <button class="btn-cx" onclick="document.getElementById('actuFormBox').classList.remove('open')">Annuler</button>
+          </div>
+          <div class="msg" id="actuMsg"></div>
+        </div>
+        <div id="actusBody"><div class="spin">⏳</div></div>
+      </div>
+      <div class="tab-panel" id="t-ann">
+        <div class="panel-top"><span class="badge" id="annCount">…</span><button class="btn-export" onclick="exportCSV('ann')">⬇ Export CSV</button></div>
+        <div id="annBody"><div class="spin">⏳</div></div>
+      </div>
+      <div class="tab-panel" id="t-evt">
+        <div class="panel-top"><span class="badge" id="evtCount">…</span><button class="btn-new" onclick="document.getElementById('evtFormBox').classList.toggle('open')">+ Créer un événement</button></div>
+        <div class="actu-form-box" id="evtFormBox">
+          <h4>📅 Nouvel événement</h4>
+          <div class="fr">
+            <div class="fg"><label>Titre *</label><input type="text" id="evt-titre" placeholder="Réunion mensuelle"></div>
+            <div class="fg"><label>Catégorie</label>
+              <select id="evt-cat">
+                <option value="Réunion">Réunion</option><option value="Atelier">Atelier</option>
+                <option value="Mobilisation">Mobilisation</option><option value="Fête">Fête</option>
+                <option value="Formation">Formation</option>
+              </select>
+            </div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label>Date et heure *</label><input type="datetime-local" id="evt-date"></div>
+            <div class="fg"><label>Lieu *</label><input type="text" id="evt-lieu" placeholder="Salle des fêtes Bellefontaine"></div>
+          </div>
+          <div class="fr">
+            <div class="fg"><label>Places max (0 = illimité)</label><input type="number" id="evt-places" value="0" min="0"></div>
+            <div class="fg"><label>Heure de fin (optionnel)</label><input type="datetime-local" id="evt-fin"></div>
+          </div>
+          <div class="fg"><label>Description *</label><textarea id="evt-desc" rows="4" placeholder="Décrivez l'événement…"></textarea></div>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn-new" onclick="creerEvt()">✅ Publier</button>
+            <button class="btn-cx" onclick="document.getElementById('evtFormBox').classList.remove('open')">Annuler</button>
+          </div>
+          <div class="msg" id="evtMsg"></div>
+        </div>
+        <div id="evtBody"><div class="spin">⏳</div></div>
+      </div>
+      <div class="tab-panel" id="t-textes">
+        <div class="ce">
+          <!-- PHOTOS avec crop -->
+          <div class="cb">
+            <div class="cb-head"><h4>🖼️ Photo d'accueil (Hero)</h4><span>Upload + recadrage</span></div>
+            <div class="cb-body">
+              <div class="upload-zone" id="upload-hero-zone">
+                <input type="file" id="upload-hero-file" accept="image/*" onchange="loadCrop('hero',this)">
+                <span class="icon">📸</span>
+                <p>Clique ou glisse ta photo ici — depuis ton téléphone ou ordi<br><small style="color:rgba(244,241,235,.3)">JPG, PNG, WEBP — max 5MB</small></p>
+              </div>
+              <div id="crop-hero-wrap" style="display:none">
+                <p style="font-size:.75rem;color:rgba(244,241,235,.4);margin-bottom:8px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">🖱 GLISSE pour repositionner · MOLETTE pour zoomer</p>
+                <div class="crop-container" id="crop-hero"
+                  onmousedown="startDrag(event,'hero')" ontouchstart="startDragT(event,'hero')"
+                  onwheel="zoomCrop(event,'hero')">
+                  <img id="crop-hero-img" class="crop-img" alt="Photo hero du site">
+                </div>
+                <div class="crop-controls">
+                  <button class="crop-btn" onclick="zoomCropBy('hero',0.1)">🔍+</button>
+                  <button class="crop-btn" onclick="zoomCropBy('hero',-0.1)">🔍-</button>
+                  <button class="crop-btn" onclick="resetCrop('hero')">↺ Reset</button>
+                  <span class="crop-hint">Ajuste puis clique "Enregistrer"</span>
+                </div>
+              </div>
+              <div class="upload-status" id="status-hero"></div>
+              <div class="ef" style="margin-top:8px"><label>Ou colle une URL</label><input type="text" id="ed-photo-hero" placeholder="https://..."></div>
+              <div class="save-row"><button class="save-btn" onclick="savePhotos('hero')">Enregistrer photo hero</button><span class="flash" id="flash-photos">✓ Sauvegardé !</span></div>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-head"><h4>🖼️ Photo de l'encart</h4><span>"Ancrés dans la réalité"</span></div>
+            <div class="cb-body">
+              <div class="upload-zone">
+                <input type="file" id="upload-encart-file" accept="image/*" onchange="loadCrop('encart',this)">
+                <span class="icon">📸</span>
+                <p>Clique ou glisse ta photo ici<br><small style="color:rgba(244,241,235,.3)">Vide = icône 🏘️</small></p>
+              </div>
+              <div id="crop-encart-wrap" style="display:none">
+                <p style="font-size:.75rem;color:rgba(244,241,235,.4);margin-bottom:8px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px">🖱 GLISSE pour repositionner · MOLETTE pour zoomer</p>
+                <div class="crop-container" id="crop-encart"
+                  onmousedown="startDrag(event,'encart')" ontouchstart="startDragT(event,'encart')"
+                  onwheel="zoomCrop(event,'encart')">
+                  <img id="crop-encart-img" class="crop-img" alt="Photo encart accueil">
+                </div>
+                <div class="crop-controls">
+                  <button class="crop-btn" onclick="zoomCropBy('encart',0.1)">🔍+</button>
+                  <button class="crop-btn" onclick="zoomCropBy('encart',-0.1)">🔍-</button>
+                  <button class="crop-btn" onclick="resetCrop('encart')">↺ Reset</button>
+                </div>
+              </div>
+              <div class="upload-status" id="status-encart"></div>
+              <div class="ef" style="margin-top:8px"><input type="text" id="ed-photo-encart" placeholder="https://... (optionnel)"></div>
+              <div class="save-row"><button class="save-btn" onclick="savePhotos('encart')">Enregistrer photo encart</button><span class="flash" id="flash-photos-encart">✓</span></div>
+            </div>
+          </div>
+          <!-- TEXTES -->
+          <div class="cb">
+            <div class="cb-head"><h4>🦸 Texte d'accueil</h4><span>Sous le grand titre</span></div>
+            <div class="cb-body">
+              <div class="ef"><label>Paragraphe d'intro</label><textarea id="ed-hero-texte" rows="3"></textarea></div>
+              <div class="save-row"><button class="save-btn" onclick="save1('hero-texte')">Enregistrer</button><span class="flash" id="flash-hero-texte">✓</span></div>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-head"><h4>📖 Notre histoire</h4><span>3 zones de texte</span></div>
+            <div class="cb-body">
+              <div class="ef"><label>Premier paragraphe</label><textarea id="ed-hist-p1" rows="4"></textarea></div>
+              <div class="ef"><label>Citation</label><input type="text" id="ed-hist-cit"></div>
+              <div class="ef"><label>Deuxième paragraphe</label><textarea id="ed-hist-p2" rows="4"></textarea></div>
+              <div class="save-row"><button class="save-btn" onclick="saveN(['hist-p1','hist-cit','hist-p2'],'flash-histoire')">Enregistrer tout</button><span class="flash" id="flash-histoire">✓</span></div>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-head"><h4>📊 Encart & chiffres</h4><span>Titre, texte et stats</span></div>
+            <div class="cb-body">
+              <div class="fr">
+                <div class="ef"><label>Titre</label><input type="text" id="ed-enc-titre"></div>
+                <div class="ef"><label>Texte</label><input type="text" id="ed-enc-texte"></div>
+              </div>
+              <div class="r3">
+                <div class="ef"><label>Chiffre 1</label><input type="text" id="ed-s1n"></div>
+                <div class="ef"><label>Chiffre 2</label><input type="text" id="ed-s2n"></div>
+                <div class="ef"><label>Chiffre 3</label><input type="text" id="ed-s3n"></div>
+                <div class="ef"><label>Label 1</label><input type="text" id="ed-s1l"></div>
+                <div class="ef"><label>Label 2</label><input type="text" id="ed-s2l"></div>
+                <div class="ef"><label>Label 3</label><input type="text" id="ed-s3l"></div>
+              </div>
+              <div class="save-row"><button class="save-btn" onclick="saveN(['enc-titre','enc-texte','s1n','s2n','s3n','s1l','s2l','s3l'],'flash-encart')">Enregistrer tout</button><span class="flash" id="flash-encart">✓</span></div>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-head"><h4>✊ Section Adhésion</h4></div>
+            <div class="cb-body">
+              <div class="ef"><label>Paragraphe 1</label><textarea id="ed-adh-p1" rows="3"></textarea></div>
+              <div class="ef"><label>Paragraphe 2</label><textarea id="ed-adh-p2" rows="3"></textarea></div>
+              <div class="save-row"><button class="save-btn" onclick="saveN(['adh-p1','adh-p2'],'flash-adh')">Enregistrer tout</button><span class="flash" id="flash-adh">✓</span></div>
+            </div>
+          </div>
+          <div class="cb">
+            <div class="cb-head"><h4>📬 Infos contact</h4></div>
+            <div class="cb-body">
+              <div class="fr">
+                <div class="ef"><label>Email</label><input type="text" id="ed-footer-email"></div>
+                <div class="ef"><label>Téléphone</label><input type="text" id="ed-footer-tel"></div>
+              </div>
+              <div class="save-row"><button class="save-btn" onclick="saveN(['footer-email','footer-tel'],'flash-contact')">Enregistrer</button><span class="flash" id="flash-contact">✓</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AVIS -->
+      <div class="tab-panel" id="t-avis">
+        <div class="panel-top"><span class="badge" id="avisCount">…</span><button class="btn-export" onclick="exportCSV('avis')">⬇ Export CSV</button></div>
+        <div id="avisBody"><div class="spin">⏳</div></div>
+      </div>
+
+      <!-- WHATSAPP IA -->
+      <div class="tab-panel" id="t-wa">
+        <div style="max-width:680px">
+          <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;margin-bottom:6px">📲 WhatsApp → Site</h3>
+          <p style="font-size:.82rem;color:rgba(244,241,235,.5);margin-bottom:20px;line-height:1.5">Colle un message WhatsApp ou uploade directement une photo de tract/affiche. L'IA analyse et génère automatiquement une actu ou un événement.</p>
+          <!-- Upload image -->
+          <div style="border:2px dashed rgba(255,255,255,.15);border-radius:6px;padding:16px;text-align:center;cursor:pointer;position:relative;margin-bottom:14px;transition:all .2s" id="wa-upload-zone" onmouseover="this.style.borderColor='var(--or)'" onmouseout="this.style.borderColor='rgba(255,255,255,.15)'">
+            <input type="file" accept="image/*" onchange="handleWAImage(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%">
+            <span style="font-size:1.6rem;display:block;margin-bottom:4px">📸</span>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:rgba(244,241,235,.4)" id="wa-img-label">Uploader un tract ou une affiche (optionnel)</span>
+          </div>
+          <img id="wa-img-preview" style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:4px;margin-bottom:14px" alt="Aperçu">
+          <div class="fg">
+            <label>Texte du message WhatsApp</label>
+            <textarea id="wa-texte" rows="6" placeholder="Ex: Salut ! On organise une réunion samedi 19 avril à 14h salle des fêtes du Mirail pour parler des expulsions..."></textarea>
+          </div>
+          <button class="btn-sub" id="wa-btn" onclick="analyseWA()" style="margin-bottom:16px">🤖 Analyser avec l'IA</button>
+          <div class="msg" id="wa-msg"></div>
+
+          <!-- Résultat IA -->
+          <div id="wa-result" style="display:none;background:var(--noir);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:20px;margin-top:16px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+              <span id="wa-type-badge" style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;background:var(--rouge);color:#fff;padding:4px 10px;border-radius:2px"></span>
+              <span style="font-size:.78rem;color:rgba(244,241,235,.4)" id="wa-resume"></span>
+            </div>
+            <div class="fg"><label>Titre</label><input type="text" id="wa-titre"></div>
+            <div class="fg" id="wa-contenu-wrap"><label>Contenu</label><textarea id="wa-contenu" rows="4"></textarea></div>
+            <div class="fg" id="wa-lieu-wrap" style="display:none"><label>Lieu</label><input type="text" id="wa-lieu"></div>
+            <div class="fg" id="wa-date-wrap" style="display:none"><label>Date</label><input type="datetime-local" id="wa-date"></div>
+            <div class="fg"><label>Catégorie</label><input type="text" id="wa-categorie"></div>
+            <div style="display:flex;gap:10px;margin-top:8px">
+              <button class="btn-sub" onclick="publierWA()" style="flex:1">✅ Publier sur le site</button>
+              <button onclick="document.getElementById('wa-result').style.display='none'" style="background:none;border:1px solid rgba(255,255,255,.2);color:rgba(244,241,235,.6);padding:10px 16px;border-radius:3px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase">Annuler</button>
+            </div>
+            <div class="msg" id="wa-pub-msg"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="tab-panel" id="t-stats">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px">
+          <div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:20px;text-align:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:#4CAF50;line-height:1" id="stat-live">—</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-top:6px">🟢 En ligne maintenant</div>
+          </div>
+          <div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:20px;text-align:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--or);line-height:1" id="stat-24h">—</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-top:6px">Visites dernières 24h</div>
+          </div>
+          <div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:20px;text-align:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--rouge);line-height:1" id="stat-7j">—</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:rgba(244,241,235,.4);margin-top:6px">Visites 7 derniers jours</div>
+          </div>
+        </div>
+        <!-- Graphique par heure -->
+        <div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:20px;margin-bottom:20px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:16px">Visites par heure — 24 dernières heures</div>
+          <div id="chart-hours" style="display:flex;align-items:flex-end;gap:3px;height:80px"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;color:rgba(244,241,235,.25);letter-spacing:1px">
+            <span>-24h</span><span>-18h</span><span>-12h</span><span>-6h</span><span>Maintenant</span>
+          </div>
+        </div>
+        <!-- Pages les plus visitées -->
+        <div style="background:var(--noir);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:20px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--or);margin-bottom:16px">Pages les plus visitées — 7 jours</div>
+          <div id="chart-pages"></div>
+        </div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;color:rgba(244,241,235,.25);margin-top:12px;text-align:center">
+          Données anonymes · Mise à jour auto toutes les 30 secondes · <button onclick="renderStats()" style="background:none;border:none;color:var(--or);cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px">↺ Actualiser</button>
+        </div>
+      </div>
+
+      <!-- NEWSLETTER -->
+      <div class="tab-panel" id="t-nl">
+        <div class="panel-top">
+          <span class="badge" id="nlAdmCount">…</span>
+          <button class="btn-export" onclick="exportCSV('nl')">⬇ Export CSV</button>
+        </div>
+        <div id="nlAdmBody"><div class="spin">⏳</div></div>
+      </div>
+
+    </div><!-- fin admin-content -->
+  </div><!-- fin admin-modal -->
+</div><!-- fin adminModal -->
+
+<!-- Lien retour -->
+<a href="index.html" style="position:fixed;top:16px;left:16px;z-index:2000;background:rgba(0,0,0,.5);color:#f4f1eb;padding:6px 14px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-decoration:none;backdrop-filter:blur(4px)">← Retour au site</a>
 
 <script>
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const PWD='toulouse2026';
 const sb=supabase.createClient(SBU,SBK);
-function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function fmt(d){return d?new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';}
 
-function login(){
-  const v=document.getElementById('pwd').value;
-  if(v===PWD){
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('app').style.display='flex';
-    loadActus();
-  }else{
-    document.getElementById('login-err').style.display='block';
-    document.getElementById('pwd').value='';
+
+
+function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
+function checkPwd(){if(document.getElementById('pwdInput').value===PWD){closeM('loginModal');loadEditors();renderAdh();document.getElementById('adminModal').classList.add('open');}else{document.getElementById('loginErr').style.display='block';document.getElementById('pwdInput').value='';}}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+
+function switchTab(btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');const t=btn.dataset.tab;document.getElementById(t).classList.add('active');
+  if(t==='t-adh')renderAdh();if(t==='t-actus')renderActusAdmin();
+  if(t==='t-ann')renderAnnAdmin();if(t==='t-evt')renderEvtAdmin();
+  if(t==='t-nl')renderNlAdmin();
+  if(t==='t-avis')renderAvis();
+  if(t==='t-wa'){document.getElementById('wa-texte').focus();}
+  if(t==='t-stats'){
+    renderStats();
+    if(statsInterval)clearInterval(statsInterval);
+    statsInterval=setInterval(renderStats,30000);
+  } else {
+    if(statsInterval){clearInterval(statsInterval);statsInterval=null;}
   }
 }
-function logout(){
-  document.getElementById('app').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('pwd').value='';
-}
-function showTab(name,el){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('panel-'+name).classList.add('active');
-  if(name==='actus')loadActus();
-  else if(name==='adherents')loadAdherents();
-  else if(name==='annonces')loadAnnonces();
-  else if(name==='evenements')loadEvenements();
-  else if(name==='commentaires')loadCommentaires();
-  else if(name==='stats')loadStats();
-}
-</script>
-
-<script>
-async function loadActus(){
-  const p=document.getElementById('panel-actus');
-  p.innerHTML='<div class="spin">Chargement…</div>';
-  const{data}=await sb.from('actus').select('*').order('date_publication',{ascending:false});
-  const rows=(data||[]).map(a=>`
-    <tr>
-      <td>${a.id}</td>
-      <td>${esc(a.titre)}</td>
-      <td>${esc(a.categorie)}</td>
-      <td>${fmt(a.date_publication)}</td>
-      <td><span class="badge ${a.visible?'pub':'drft'}">${a.visible?'Publié':'Brouillon'}</span>${a.ia?'<span class="badge ia" style="margin-left:4px">IA</span>':''}</td>
-      <td>
-        <button class="btn-action" onclick="toggleVis(${a.id},${a.visible})">${a.visible?'Masquer':'✅ Publier'}</button>
-        <button class="btn-action btn-del" onclick="delActu(${a.id})">✕ Suppr.</button>
-      </td>
-    </tr>`).join('');
-  p.innerHTML=`
-    <div class="section-title">Actualités (${(data||[]).length}) <button class="btn-sm btn-red" onclick="loadActus()">↺ Rafraîchir</button></div>
-    <table class="tbl"><thead><tr><th>#</th><th>Titre</th><th>Catégorie</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-    <tbody>${rows||'<tr><td colspan=6 class="empty">Aucune actu</td></tr>'}</tbody></table>`;
-}
-async function toggleVis(id,cur){
-  await sb.from('actus').update({visible:!cur}).eq('id',id);
-  loadActus();
-}
-async function delActu(id){
-  if(!confirm('Supprimer cette actu ?'))return;
-  await sb.from('actus').delete().eq('id',id);
-  loadActus();
-}
-
-async function loadAdherents(){
-  const p=document.getElementById('panel-adherents');
-  p.innerHTML='<div class="spin">Chargement…</div>';
-  const{data}=await sb.from('adherents').select('*').order('created_at',{ascending:false});
-  const rows=(data||[]).map(a=>`
-    <tr>
-      <td>${a.id}</td>
-      <td>${esc(a.prenom)} ${esc(a.nom||'')}</td>
-      <td>${esc(a.email)}</td>
-      <td>${esc(a.quartier||'—')}</td>
-      <td>${esc(a.telephone||'—')}</td>
-      <td>${fmt(a.created_at)}</td>
-    </tr>`).join('');
-  p.innerHTML=`
-    <div class="section-title">Adhérents (${(data||[]).length}) <button class="btn-sm btn-red" onclick="loadAdherents()">↺ Rafraîchir</button></div>
-    <table class="tbl"><thead><tr><th>#</th><th>Nom</th><th>Email</th><th>Quartier</th><th>Tél.</th><th>Date</th></tr></thead>
-    <tbody>${rows||'<tr><td colspan=6 class="empty">Aucun adhérent</td></tr>'}</tbody></table>`;
-}
-</script>
-
-<script>
-async function loadAnnonces(){
-  const p=document.getElementById('panel-annonces');
-  p.innerHTML='<div class="spin">Chargement…</div>';
-  const{data}=await sb.from('annonces').select('*').order('date_depot',{ascending:false});
-  const rows=(data||[]).map(a=>`
-    <tr>
-      <td>${a.id}</td>
-      <td>${esc(a.titre)}</td>
-      <td>${esc(a.categorie)}</td>
-      <td>${esc(a.quartier||'—')}</td>
-      <td>${esc(a.prenom)} · ${esc(a.email)}</td>
-      <td><span class="badge ${a.validee?'pub':'drft'}">${a.validee?'Validée':'En attente'}</span></td>
-      <td>
-        <button class="btn-action" onclick="toggleAnn(${a.id},${a.validee})">${a.validee?'Masquer':'✅ Valider'}</button>
-        <button class="btn-action btn-del" onclick="delAnn(${a.id})">✕</button>
-      </td>
-    </tr>`).join('');
-  p.innerHTML=`
-    <div class="section-title">Annonces (${(data||[]).length}) <button class="btn-sm btn-red" onclick="loadAnnonces()">↺</button></div>
-    <table class="tbl"><thead><tr><th>#</th><th>Titre</th><th>Catégorie</th><th>Quartier</th><th>Contact</th><th>Statut</th><th>Actions</th></tr></thead>
-    <tbody>${rows||'<tr><td colspan=7 class="empty">Aucune annonce</td></tr>'}</tbody></table>`;
-}
-async function toggleAnn(id,cur){await sb.from('annonces').update({validee:!cur}).eq('id',id);loadAnnonces();}
-async function delAnn(id){if(!confirm('Supprimer ?'))return;await sb.from('annonces').delete().eq('id',id);loadAnnonces();}
-
-async function loadEvenements(){
-  const p=document.getElementById('panel-evenements');
-  p.innerHTML='<div class="spin">Chargement…</div>';
-  const{data}=await sb.from('evenements').select('*').order('date_debut',{ascending:true});
-  const rows=(data||[]).map(e=>`
-    <tr>
-      <td>${e.id}</td>
-      <td>${esc(e.titre)}</td>
-      <td>${esc(e.lieu||'—')}</td>
-      <td>${fmt(e.date_debut)}</td>
-      <td><span class="badge ${e.validee?'pub':'drft'}">${e.validee?'Validé':'En attente'}</span></td>
-      <td>
-        <button class="btn-action" onclick="toggleEvt(${e.id},${e.validee})">${e.validee?'Masquer':'✅ Valider'}</button>
-        <button class="btn-action btn-del" onclick="delEvt(${e.id})">✕</button>
-      </td>
-    </tr>`).join('');
-  p.innerHTML=`
-    <div class="section-title">Événements (${(data||[]).length}) <button class="btn-sm btn-red" onclick="loadEvenements()">↺</button></div>
-    <table class="tbl"><thead><tr><th>#</th><th>Titre</th><th>Lieu</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-    <tbody>${rows||'<tr><td colspan=6 class="empty">Aucun événement</td></tr>'}</tbody></table>`;
-}
-async function toggleEvt(id,cur){await sb.from('evenements').update({validee:!cur,visible:!cur}).eq('id',id);loadEvenements();}
-async function delEvt(id){if(!confirm('Supprimer ?'))return;await sb.from('evenements').delete().eq('id',id);loadEvenements();}
-</script>
-
-<script>
-async function loadCommentaires(){
-  const p=document.getElementById('panel-commentaires');
-  p.innerHTML='<div class="spin">Chargement…</div>';
-  const{data}=await sb.from('commentaires').select('*').order('created_at',{ascending:false}).limit(100);
-  const rows=(data||[]).map(c=>`
-    <tr>
-      <td>${c.id}</td>
-      <td>${esc(c.prenom)}</td>
-      <td><span class="badge drft">${esc(c.item_type)}</span> #${c.item_id}</td>
-      <td style="max-width:300px">${esc(c.message)}</td>
-      <td>${fmt(c.created_at)}</td>
-      <td><span class="badge ${c.visible?'pub':'drft'}">${c.visible?'Visible':'Masqué'}</span></td>
-      <td>
-        <button class="btn-action" onclick="toggleCmt(${c.id},${c.visible})">${c.visible?'Masquer':'Afficher'}</button>
-        <button class="btn-action btn-del" onclick="delCmt(${c.id})">✕</button>
-      </td>
-    </tr>`).join('');
-  p.innerHTML=`
-    <div class="section-title">Commentaires (${(data||[]).length}) <button class="btn-sm btn-red" onclick="loadCommentaires()">↺</button></div>
-    <table class="tbl"><thead><tr><th>#</th><th>Auteur</th><th>Sur</th><th>Message</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
-    <tbody>${rows||'<tr><td colspan=7 class="empty">Aucun commentaire</td></tr>'}</tbody></table>`;
-}
-async function toggleCmt(id,cur){await sb.from('commentaires').update({visible:!cur}).eq('id',id);loadCommentaires();}
-async function delCmt(id){if(!confirm('Supprimer ?'))return;await sb.from('commentaires').delete().eq('id',id);loadCommentaires();}
-
-async function loadStats(){
-  const p=document.getElementById('panel-stats');
-  p.innerHTML='<div class="spin">Chargement…</div>';
-  const[{count:cActus},{count:cAdh},{count:cAnn},{count:cEvt},{count:cCmt},{count:cLikes}]=await Promise.all([
-    sb.from('actus').select('*',{count:'exact',head:true}),
-    sb.from('adherents').select('*',{count:'exact',head:true}),
-    sb.from('annonces').select('*',{count:'exact',head:true}),
-    sb.from('evenements').select('*',{count:'exact',head:true}),
-    sb.from('commentaires').select('*',{count:'exact',head:true}),
-    sb.from('likes').select('*',{count:'exact',head:true}),
-  ]);
-  const{data:topLiked}=await sb.from('likes').select('item_type,item_id').order('item_id',{ascending:false}).limit(50);
-  p.innerHTML=`
-    <div class="section-title">Statistiques globales</div>
-    <div class="stats-row">
-      <div class="stat-card"><div class="stat-val">${cActus||0}</div><div class="stat-lbl">Actualités</div></div>
-      <div class="stat-card"><div class="stat-val">${cAdh||0}</div><div class="stat-lbl">Adhérents</div></div>
-      <div class="stat-card"><div class="stat-val">${cAnn||0}</div><div class="stat-lbl">Annonces</div></div>
-      <div class="stat-card"><div class="stat-val">${cEvt||0}</div><div class="stat-lbl">Événements</div></div>
-      <div class="stat-card"><div class="stat-val">${cCmt||0}</div><div class="stat-lbl">Commentaires</div></div>
-      <div class="stat-card"><div class="stat-val">${cLikes||0}</div><div class="stat-lbl">Likes totaux</div></div>
+// ===== ADMIN NEWSLETTER =====
+let nlCache=[];
+async function renderNlAdmin(){
+  const b=document.getElementById('nlAdmBody');if(!b)return;
+  b.innerHTML='<div class="spin">⏳</div>';
+  try{
+    const{data,error}=await sb.from('newsletter_abonnes').select('*').order('date_inscription',{ascending:false});
+    if(error)throw error;nlCache=data||[];
+    document.getElementById('nlAdmCount').textContent=nlCache.length+' abonné·e'+(nlCache.length>1?'s':'');
+    if(!nlCache.length){b.innerHTML='<div class="empty"><span>📧</span>Aucun abonné pour le moment.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Email</th><th>Quartier</th><th>Date</th><th>Statut</th></tr></thead><tbody>${nlCache.map((n,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(n.prenom||'—')}</td><td>${esc(n.email)}</td><td>${esc(n.quartier||'—')}</td><td><span class="dt">${new Date(n.date_inscription).toLocaleDateString('fr-FR')}</span></td><td>${n.actif?'<span class="s-ok">Actif</span>':'<span class="s-ko">Désabonné</span>'}</td></tr>`).join('')}</tbody></table>
+    <div style="margin-top:16px;padding:16px;background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);border-radius:6px">
+      <p style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;color:var(--or);margin-bottom:6px">💡 Pour envoyer la newsletter</p>
+      <p style="font-size:.8rem;color:rgba(244,241,235,.55);line-height:1.6">Exportez la liste CSV et importez-la dans <a href="https://www.brevo.com" target="_blank" style="color:var(--or)">Brevo.com</a> (gratuit, 300 emails/jour). Créez votre campagne en quelques clics.</p>
     </div>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
 }
+
+// Admin adhérents
+let adhCache=[];
+async function renderAdh(){
+  const b=document.getElementById('adhBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{
+    const{data,error}=await sb.from('adherents').select('*').order('date_inscription',{ascending:false});
+    if(error)throw error;adhCache=data||[];
+    document.getElementById('adhCount').textContent=adhCache.length+' inscrit·e'+(adhCache.length>1?'s':'');
+    if(!adhCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucun·e adhérent·e.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Quartier</th><th>Date</th><th></th></tr></thead><tbody>${adhCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(a.prenom)}</td><td>${esc(a.nom)}</td><td>${esc(a.email)}</td><td><span class="qb">${esc(a.quartier)}</span></td><td><span class="dt">${new Date(a.date_inscription).toLocaleDateString('fr-FR')}</span></td><td><button class="btn-del" onclick="del('adherents',${a.id},renderAdh)">✕</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+
+// Admin actus
+let actusAdmCache=[];
+async function publierActu(){
+  const titre=document.getElementById('actu-titre').value.trim(),contenu=document.getElementById('actu-contenu').value.trim();
+  const categorie=document.getElementById('actu-cat').value;
+  if(!titre||!contenu){showMsg('actuMsg','err','⚠ Titre et contenu obligatoires.');return;}
+  try{const{error}=await sb.from('actus').insert({titre,contenu,categorie,visible:true});
+    if(error)throw error;
+    showMsg('actuMsg','ok','✅ Publié !');
+    document.getElementById('actu-titre').value='';document.getElementById('actu-contenu').value='';
+    setTimeout(()=>{document.getElementById('actuFormBox').classList.remove('open');renderActusAdmin();loadActus();},1500);
+  }catch(e){showMsg('actuMsg','err','⚠ '+e.message);}
+}
+async function renderActusAdmin(){
+  const b=document.getElementById('actusBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{const{data,error}=await sb.from('actus').select('*').order('date_publication',{ascending:false});
+    if(error)throw error;actusAdmCache=data||[];
+    document.getElementById('actusCount').textContent=actusAdmCache.length+' actu'+(actusAdmCache.length>1?'s':'');
+    if(!actusAdmCache.length){b.innerHTML='<div class="empty"><span>📰</span>Aucune.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${actusAdmCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(a.titre)}${!a.visible?'<span style="background:rgba(245,166,35,.15);color:var(--or);font-family:\'Barlow Condensed\',sans-serif;font-size:.6rem;letter-spacing:1px;padding:2px 6px;border-radius:2px;margin-left:6px">🤖 À valider</span>':''}</td><td><span class="qb">${esc(a.categorie)}</span></td><td><span class="dt">${new Date(a.date_publication).toLocaleDateString('fr-FR')}</span></td><td>${a.visible?'<span class="s-ok">Publié</span>':'<span class="s-ko">Brouillon</span>'}</td><td style="display:flex;gap:6px"><button class="btn-ok" onclick="toggleVis(${a.id},${a.visible})">${a.visible?'Masquer':'✅ Publier'}</button><button class="btn-del" onclick="del('actus',${a.id},()=>{renderActusAdmin();loadActus();})">✕</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function toggleVis(id,cur){await sb.from('actus').update({visible:!cur}).eq('id',id);renderActusAdmin();loadActus();}
+
+// Admin annonces
+let annAdmCache=[];
+async function renderAnnAdmin(){
+  const b=document.getElementById('annBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{const{data,error}=await sb.from('annonces').select('*').order('date_depot',{ascending:false});
+    if(error)throw error;annAdmCache=data||[];
+    document.getElementById('annCount').textContent=annAdmCache.length+' annonce'+(annAdmCache.length>1?'s':'');
+    if(!annAdmCache.length){b.innerHTML='<div class="empty"><span>📋</span>Aucune.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Cat.</th><th>Quartier</th><th>Email</th><th>Tél</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${annAdmCache.map((a,i)=>`<tr><td class="dt">${i+1}</td><td title="${esc(a.description)}">${esc(a.titre)}</td><td><span class="qb">${esc(a.categorie)}</span></td><td>${esc(a.quartier)}</td><td><span class="dt">${esc(a.email)}</span></td><td><span class="dt">${esc(a.telephone||'—')}</span></td><td>${a.validee?'<span class="s-ok">Validée</span>':'<span class="s-ko">En attente</span>'}</td><td style="display:flex;gap:5px">${!a.validee?`<button class="btn-ok" onclick="valAnn(${a.id},true)">✅</button>`:`<button class="btn-ko" onclick="valAnn(${a.id},false)">↩</button>`}<button class="btn-del" onclick="del('annonces',${a.id},()=>{renderAnnAdmin();loadAnnonces();})">✕</button></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function valAnn(id,v){await sb.from('annonces').update({validee:v}).eq('id',id);renderAnnAdmin();loadAnnonces();}
+
+// ===== ÉVÉNEMENTS PUBLIC =====
+let eventsPub=[];
+async function loadEvents(){
+  const g=document.getElementById('car-events');
+  try{
+    const now=new Date().toISOString();
+    const{data,error}=await sb.from('evenements').select('*').eq('visible',true).eq('validee',true).gte('date_debut',now).order('date_debut',{ascending:true}).limit(9);
+    if(error)throw error;eventsPub=data||[];
+    if(!eventsPub.length){g.innerHTML='<div class="empty" style="grid-column:1/-1"><span>📅</span>Aucun événement à venir.</div>';return;}
+    g.innerHTML=eventsPub.map(evt=>{
+      const d=new Date(evt.date_debut);
+      const dateStr=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+      const heureStr=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      return `<div class="hs-card" onclick="openDrEvt(${evt.id})">
+        ${evt.photo_url?`<img class="hs-card-img" src="${evt.photo_url}" alt="${esc(evt.titre)}" loading="lazy">`:`<div class="hs-card-img-placeholder" style="background:linear-gradient(135deg,rgba(200,16,46,.3),rgba(13,13,13,.9))"><span style="font-size:1.5rem">📅</span><span style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;margin-left:8px">${d.getDate()} ${d.toLocaleDateString('fr-FR',{month:'short'}).toUpperCase()}</span></div>`}
+        <div class="hs-card-body">
+          <span class="hs-card-cat">${esc(evt.categorie)} · ${heureStr}</span>
+          <div class="hs-card-title">${esc(evt.titre)}</div>
+          <div class="hs-card-sub">📍 ${esc(evt.lieu)}</div>
+          <div class="hs-card-footer">
+            <span class="hs-card-date">${dateStr}</span>
+            <span class="evt-countdown">${countdownStr(evt.date_debut)}</span>
+            <div class="hs-card-social" onclick="event.stopPropagation()">
+              <button class="hs-lk" id="lk-${evt.id}" onclick="cardLike('evenement',${evt.id})"><span class="h">🤍</span><span id="lc-${evt.id}">0</span></button>
+              <button class="hs-cm" onclick="openMini('evenement',${evt.id},'${esc(evt.titre).substring(0,25)}')">💬<span id="cc-${evt.id}">0</span></button>
+            </div>
+          </div>
+        </div></div>`;
+    }).join('');
+    eventsPub.forEach(evt=>loadCardCounts('evenement',evt.id));
+  }catch(e){g.innerHTML='<div class="empty" style="grid-column:1/-1">Impossible de charger.</div>';}
+}
+function openDrEvt(id){
+  const evt=eventsPub.find(x=>x.id===id);if(!evt)return;
+  const d=new Date(evt.date_debut);
+  document.getElementById('dr-actu-titre').textContent=evt.titre;
+  document.getElementById('dr-actu-cat').textContent=evt.categorie;
+  document.getElementById('dr-actu-date').textContent='📅 '+d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' à '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+' · 📍 '+evt.lieu;
+  document.getElementById('dr-actu-content').innerHTML=`<p style="margin-bottom:20px">${esc(evt.description)}</p>
+  <div style="background:rgba(200,16,46,.1);border:1px solid rgba(200,16,46,.3);border-radius:6px;padding:20px;margin-top:16px">
+    <h4 style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:12px">✍️ S'inscrire à cet événement</h4>
+    <div class="fr"><div class="fg"><label>Prénom *</label><input type="text" id="ins-prenom" placeholder="Marie"></div><div class="fg"><label>Nom *</label><input type="text" id="ins-nom" placeholder="Dupont"></div></div>
+    <div class="fg"><label>Email *</label><input type="email" id="ins-email" placeholder="marie@exemple.fr"></div>
+    <div class="fg"><label>Téléphone (optionnel)</label><input type="tel" id="ins-tel" placeholder="06 XX XX XX XX"></div>
+    <div class="fg"><label>Message (optionnel)</label><textarea id="ins-msg" rows="2" placeholder="Questions, besoins particuliers…"></textarea></div>
+    <button class="btn-sub" style="margin-top:8px" onclick="inscrireEvt(${evt.id})">✅ Confirmer mon inscription</button>
+    <div class="msg" id="insMsg"></div>
+  </div>`;
+  openDr('dActu');
+}
+async function inscrireEvt(evtId){
+  const prenom=document.getElementById('ins-prenom').value.trim();
+  const nom=document.getElementById('ins-nom').value.trim();
+  const email=document.getElementById('ins-email').value.trim();
+  const telephone=document.getElementById('ins-tel').value.trim();
+  const message=document.getElementById('ins-msg').value.trim();
+  if(!prenom||!nom||!email){showMsg('insMsg','err','⚠ Prénom, nom et email obligatoires.');return;}
+  try{
+    const{error}=await sb.from('inscriptions_evenements').insert({evenement_id:evtId,prenom,nom,email,telephone,message});
+    if(error){if(error.code==='23505')showMsg('insMsg','err','⚠ Vous êtes déjà inscrit·e à cet événement.');else showMsg('insMsg','err','⚠ Erreur : '+error.message);return;}
+    showMsg('insMsg','ok','🎉 Inscription confirmée ! À très bientôt.');
+  }catch(e){showMsg('insMsg','err','⚠ Erreur réseau.');}
+}
+async function proposerEvt(){
+  const prenom=document.getElementById('pe-prenom').value.trim();
+  const email=document.getElementById('pe-email').value.trim();
+  const titre=document.getElementById('pe-titre').value.trim();
+  const date=document.getElementById('pe-date').value;
+  const lieu=document.getElementById('pe-lieu').value.trim();
+  const desc=document.getElementById('pe-desc').value.trim();
+  if(!prenom||!email||!titre||!date||!lieu||!desc){showMsg('peMsg','err','⚠ Remplis tous les champs.');return;}
+  const btn=document.getElementById('peBtn');btn.disabled=true;btn.textContent='⏳ Envoi…';
+  try{
+    const{error}=await sb.from('evenements').insert({titre,description:desc,lieu,date_debut:new Date(date).toISOString(),categorie:'Événement',validee:false,propose_par:prenom+' ('+email+')'});
+    if(error)throw error;
+    showMsg('peMsg','ok','✅ Proposition envoyée ! Elle sera examinée par notre équipe.');
+    ['pe-prenom','pe-email','pe-titre','pe-lieu','pe-desc'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('pe-date').value='';
+    setTimeout(()=>{btn.disabled=false;btn.textContent='📅 Soumettre ma proposition';},5000);
+  }catch(e){showMsg('peMsg','err','⚠ Erreur : '+e.message);btn.disabled=false;btn.textContent='📅 Soumettre ma proposition';}
+}
+
+// ===== ADMIN ÉVÉNEMENTS =====
+let evtAdmCache=[];
+async function creerEvt(){
+  const titre=document.getElementById('evt-titre').value.trim(),desc=document.getElementById('evt-desc').value.trim();
+  const date=document.getElementById('evt-date').value,lieu=document.getElementById('evt-lieu').value.trim();
+  const categorie=document.getElementById('evt-cat').value,places=parseInt(document.getElementById('evt-places').value)||0;
+  const fin=document.getElementById('evt-fin').value;
+  if(!titre||!desc||!date||!lieu){showMsg('evtMsg','err','⚠ Titre, date, lieu et description obligatoires.');return;}
+  try{
+    const obj={titre,description:desc,lieu,date_debut:new Date(date).toISOString(),categorie,places_max:places,visible:true,validee:true};
+    if(fin)obj.date_fin=new Date(fin).toISOString();
+    const{error}=await sb.from('evenements').insert(obj);
+    if(error)throw error;
+    showMsg('evtMsg','ok','✅ Événement créé !');
+    ['evt-titre','evt-desc','evt-lieu'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('evt-date').value='';document.getElementById('evt-fin').value='';
+    setTimeout(()=>{document.getElementById('evtFormBox').classList.remove('open');renderEvtAdmin();loadEvents();},1500);
+  }catch(e){showMsg('evtMsg','err','⚠ '+e.message);}
+}
+async function renderEvtAdmin(){
+  const b=document.getElementById('evtBody');b.innerHTML='<div class="spin">⏳</div>';
+  try{
+    const{data,error}=await sb.from('evenements').select('*').order('date_debut',{ascending:false});
+    if(error)throw error;evtAdmCache=data||[];
+    // Compter les inscrits pour chaque événement
+    const counts={};
+    const{data:ins}=await sb.from('inscriptions_evenements').select('evenement_id');
+    if(ins)ins.forEach(i=>{counts[i.evenement_id]=(counts[i.evenement_id]||0)+1;});
+    document.getElementById('evtCount').textContent=evtAdmCache.length+' événement'+(evtAdmCache.length>1?'s':'');
+    if(!evtAdmCache.length){b.innerHTML='<div class="empty"><span>📅</span>Aucun événement.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Titre</th><th>Date</th><th>Lieu</th><th>Cat.</th><th>Inscrits</th><th>Statut</th><th>Actions</th></tr></thead><tbody>${evtAdmCache.map((e,i)=>{
+      const d=new Date(e.date_debut);const nb=counts[e.id]||0;
+      const plMax=e.places_max>0?` / ${e.places_max}`:'';
+      const couleur=e.places_max>0&&nb>=e.places_max?'color:#ff6b6b':'color:#4CAF50';
+      return `<tr><td class="dt">${i+1}</td><td>${esc(e.titre)}</td><td><span class="dt">${d.toLocaleDateString('fr-FR')} ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span></td><td>${esc(e.lieu)}</td><td><span class="qb">${esc(e.categorie)}</span></td><td><button class="btn-ok" style="background:none;border:1px solid rgba(255,255,255,.2)" onclick="voirInscrits(${e.id},'${esc(e.titre).replace(/'/g,"\\'")}')"><span style="${couleur}">👥 ${nb}${plMax}</span></button></td><td>${e.validee?'<span class="s-ok">Validé</span>':'<span class="s-ko">Proposition</span>'}</td><td style="display:flex;gap:5px;flex-wrap:wrap">${!e.validee?`<button class="btn-ok" onclick="valEvt(${e.id},true)">✅</button>`:''}<button class="btn-${e.visible?'ko':'ok'}" onclick="toggleEvtVis(${e.id},${e.visible})">${e.visible?'Masquer':'Publier'}</button><button class="btn-del" onclick="del('evenements',${e.id},()=>{renderEvtAdmin();loadEvents();})">✕</button></td></tr>`;
+    }).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+async function valEvt(id,v){await sb.from('evenements').update({validee:v}).eq('id',id);renderEvtAdmin();}
+async function toggleEvtVis(id,cur){await sb.from('evenements').update({visible:!cur}).eq('id',id);renderEvtAdmin();loadEvents();}
+
+async function voirInscrits(evtId,titre){
+  const b=document.getElementById('inscrits-body');
+  document.getElementById('inscrits-titre').textContent='👥 Inscrits — '+titre;
+  b.innerHTML='<div class="spin">⏳ Chargement…</div>';
+  document.getElementById('dInscrits').classList.add('open');
+  document.body.style.overflow='hidden';
+  try{
+    const{data,error}=await sb.from('inscriptions_evenements').select('*').eq('evenement_id',evtId).order('date_inscription',{ascending:true});
+    if(error)throw error;
+    const inscrits=data||[];
+    document.getElementById('inscrits-count').textContent=inscrits.length+' inscrit·e'+(inscrits.length>1?'s':'');
+    if(!inscrits.length){b.innerHTML='<div class="empty"><span>👥</span>Aucune inscription pour l\'instant.</div>';return;}
+    b.innerHTML=`<table><thead><tr><th>#</th><th>Prénom</th><th>Nom</th><th>Email</th><th>Téléphone</th><th>Message</th><th>Date</th></tr></thead><tbody>${inscrits.map((ins,i)=>`<tr><td class="dt">${i+1}</td><td>${esc(ins.prenom)}</td><td>${esc(ins.nom)}</td><td>${esc(ins.email)}</td><td><span class="dt">${esc(ins.telephone||'—')}</span></td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(ins.message||'')}"><span class="dt">${esc(ins.message||'—')}</span></td><td><span class="dt">${new Date(ins.date_inscription).toLocaleDateString('fr-FR')}</span></td></tr>`).join('')}</tbody></table>`;
+  }catch(e){b.innerHTML=`<div class="empty"><span>⚠️</span>${e.message}</div>`;}
+}
+
+async function del(table,id,cb){if(!confirm('Supprimer ?'))return;const{error}=await sb.from(table).delete().eq('id',id);if(!error&&cb)cb();else if(error)alert('Erreur : '+error.message);}
+
+function exportCSV(type){
+  const maps={
+    adh:{c:()=>adhCache,h:['#','Prénom','Nom','Email','Quartier','Date'],r:(a,i)=>[i+1,a.prenom,a.nom,a.email,a.quartier,new Date(a.date_inscription).toLocaleDateString('fr-FR')]},
+    ann:{c:()=>annAdmCache,h:['#','Titre','Cat','Quartier','Prénom','Nom','Email','Téléphone','Description','Date','Validée'],r:(a,i)=>[i+1,a.titre,a.categorie,a.quartier,a.prenom,a.nom,a.email,a.telephone||'',a.description,new Date(a.date_depot).toLocaleDateString('fr-FR'),a.validee?'Oui':'Non']},
+    nl:{c:()=>nlCache,h:['#','Prénom','Email','Quartier','Date','Actif'],r:(n,i)=>[i+1,n.prenom||'',n.email,n.quartier||'',new Date(n.date_inscription).toLocaleDateString('fr-FR'),n.actif?'Oui':'Non']},
+    avis:{c:()=>avisCache,h:['#','Prénom','Note','Message','Date'],r:(a,i)=>[i+1,a.prenom,a.note+'★',a.message,new Date(a.created_at).toLocaleDateString('fr-FR')]}
+  };
+  const m=maps[type];if(!m)return;const d=m.c();if(!d.length){alert('Aucune donnée.');return;}
+  const rows=[m.h,...d.map(m.r)];
+  const csv=rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(';')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;
+  a.download=`${type}-cqp-${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
+}
+
+// Animations
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.style.opacity='1';x.target.style.transform='translateY(0)';}});},{threshold:.08});
+document.querySelectorAll('.visual-box,.form-card,.adhesion-left,.qui-texte,.depot-left').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(20px)';el.style.transition='opacity .55s ease,transform .55s ease';obs.observe(el);});
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{const t=document.querySelector(a.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}});});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDr('dActu');closeDr('dAnn');closeDr('dDepot');closeDr('dAdhesion');closeDr('dInscrits');}});
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+function closeMenu(){document.getElementById('mobileMenu').classList.remove('open');}
+
+// ===== TRACKING VIA EDGE FUNCTION =====
 </script>
-</body></html>
+</body>
+</html>
