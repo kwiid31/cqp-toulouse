@@ -702,10 +702,11 @@ async function loadAllCounts(type,ids){
       const btn=document.getElementById('lk-'+id);
       if(btn){
         btn.classList.toggle('liked',liked);
-        btn.querySelector('.h').textContent=liked?'❤️':'🤍';
+        const hEl=btn.querySelector('.h');if(hEl)hEl.textContent=liked?'❤️':'🤍';
         const lc=btn.querySelector('.lc');if(lc)lc.textContent=lm[id]||0;
       }
-      const cc=document.getElementById('cc-'+id);if(cc)cc.textContent=cm2[id]||0;
+      const ccBtn=document.getElementById('cm-'+id);
+      if(ccBtn){const sp=ccBtn.querySelector('span[id]');if(sp)sp.textContent=cm2[id]||0;}
       // Hot badge
       if((lm[id]||0)>=5){
         const card=document.getElementById('card-'+id);
@@ -731,7 +732,7 @@ async function toggleLike(type,id){
     heartBurst(btn);
   }
   const{data:l}=await sb.from('likes').select('item_id').eq('item_type',type).eq('item_id',id);
-  const lc=btn.querySelector('.lc');if(lc)lc.textContent=(l||[]).length;
+  const lcEl=btn.querySelector('.lc');if(lcEl)lcEl.textContent=(l||[]).length;
 }
 function heartBurst(btn){
   try{
