@@ -15,8 +15,8 @@
 <title>CQP Toulouse — Quartiers Populaires</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
 <style>
+
 /* ============ RESET & BASE ============ */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -57,8 +57,8 @@ img{max-width:100%;display:block}
 .notif-dot::after{content:'';position:absolute;top:8px;right:8px;width:8px;height:8px;
   background:var(--rouge);border-radius:50%;border:2px solid #fff;display:none}
 .notif-dot.has-new::after{display:block}
-</style>
-<style>
+
+
 /* ============ NEW BANNER ============ */
 .new-banner{display:none;background:var(--rouge);color:#fff;padding:10px 16px;
   text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;
@@ -130,8 +130,8 @@ img{max-width:100%;display:block}
   -webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .card-cover-date{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#fff;
   opacity:.9;position:relative;z-index:1;line-height:1}
-</style>
-<style>
+
+
 /* Card body */
 .card-body{padding:12px 14px 8px}
 .card-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;
@@ -208,8 +208,8 @@ img{max-width:100%;display:block}
 /* ============ SPINNER ============ */
 .feed-spinner{text-align:center;padding:32px;color:var(--txt3);
   font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase}
-</style>
-<style>
+
+
 /* ============ BOTTOM NAV ============ */
 .bottom-nav{
   position:fixed;bottom:0;left:0;right:0;z-index:300;
@@ -317,8 +317,8 @@ input.cmt-input:focus{border-color:var(--rouge)}
   border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cmt-send-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;
   stroke-linecap:round;stroke-linejoin:round}
-</style>
-<style>
+
+
 /* ============ ADMIN BADGE ============ */
 .admin-fab{position:fixed;bottom:calc(var(--bar-h) + env(safe-area-inset-bottom) + 12px);right:14px;
   z-index:300;background:rgba(13,13,13,.85);color:#fff;border:none;
@@ -377,7 +377,14 @@ input.cmt-input:focus{border-color:var(--rouge)}
 @keyframes ripple{to{transform:scale(2.5);opacity:0}}
 .reveal-card{opacity:0;transform:translateY(12px);transition:opacity .3s ease,transform .3s ease}
 .reveal-card.revealed{opacity:1;transform:none}
+
 </style>
+</head>
+
+
+
+
+
 </head>
 <body>
 <!-- TOPBAR -->
@@ -877,6 +884,27 @@ function closeAdmin(){
 updateTicker();
 setInterval(updateTicker,30000);
 buildFeed();
+
+// ============ MENU PUBLIER ============
+function togglePubMenu(e){
+  if(e)e.stopPropagation();
+  const m=document.getElementById('pub-menu');
+  const o=document.getElementById('pub-overlay');
+  const isOpen=m.classList.contains('open');
+  m.classList.toggle('open',!isOpen);
+  o.classList.toggle('open',!isOpen);
+}
+function closePubMenu(){
+  document.getElementById('pub-menu')?.classList.remove('open');
+  document.getElementById('pub-overlay')?.classList.remove('open');
+}
+document.addEventListener('click',e=>{
+  const m=document.getElementById('pub-menu');
+  const btn=document.querySelector('.nav-publish');
+  if(m?.classList.contains('open')&&!m.contains(e.target)&&e.target!==btn&&!btn?.contains(e.target)){
+    closePubMenu();
+  }
+});
 
 // PWA Service Worker
 if('serviceWorker' in navigator){
