@@ -1557,10 +1557,7 @@ if('serviceWorker' in navigator){
 </html>
 
 <script>
-const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
-const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const PWD='toulouse2026';
-const sb=supabase.createClient(SBU,SBK);
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function fmt(d){try{return d?new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}):'—';}catch{return d||'—';}}
 function openLogin(){document.getElementById('loginErr').style.display='none';document.getElementById('pwdInput').value='';document.getElementById('loginModal').classList.add('open');setTimeout(()=>document.getElementById('pwdInput').focus(),100);}
