@@ -15,8 +15,8 @@
 <title>CQP Toulouse — Quartiers Populaires</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
 <style>
-
 /* ============ RESET & BASE ============ */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -57,8 +57,8 @@ img{max-width:100%;display:block}
 .notif-dot::after{content:'';position:absolute;top:8px;right:8px;width:8px;height:8px;
   background:var(--rouge);border-radius:50%;border:2px solid #fff;display:none}
 .notif-dot.has-new::after{display:block}
-
-
+</style>
+<style>
 /* ============ NEW BANNER ============ */
 .new-banner{display:none;background:var(--rouge);color:#fff;padding:10px 16px;
   text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;
@@ -130,8 +130,8 @@ img{max-width:100%;display:block}
   -webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .card-cover-date{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#fff;
   opacity:.9;position:relative;z-index:1;line-height:1}
-
-
+</style>
+<style>
 /* Card body */
 .card-body{padding:12px 14px 8px}
 .card-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1.05rem;
@@ -208,8 +208,8 @@ img{max-width:100%;display:block}
 /* ============ SPINNER ============ */
 .feed-spinner{text-align:center;padding:32px;color:var(--txt3);
   font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase}
-
-
+</style>
+<style>
 /* ============ BOTTOM NAV ============ */
 .bottom-nav{
   position:fixed;bottom:0;left:0;right:0;z-index:300;
@@ -317,8 +317,8 @@ input.cmt-input:focus{border-color:var(--rouge)}
   border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cmt-send-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;
   stroke-linecap:round;stroke-linejoin:round}
-
-
+</style>
+<style>
 /* ============ ADMIN BADGE ============ */
 .admin-fab{position:fixed;bottom:calc(var(--bar-h) + env(safe-area-inset-bottom) + 12px);right:14px;
   z-index:300;background:rgba(13,13,13,.85);color:#fff;border:none;
@@ -377,14 +377,7 @@ input.cmt-input:focus{border-color:var(--rouge)}
 @keyframes ripple{to{transform:scale(2.5);opacity:0}}
 .reveal-card{opacity:0;transform:translateY(12px);transition:opacity .3s ease,transform .3s ease}
 .reveal-card.revealed{opacity:1;transform:none}
-
 </style>
-</head>
-
-
-
-
-
 </head>
 <body>
 <!-- TOPBAR -->
@@ -488,26 +481,7 @@ input.cmt-input:focus{border-color:var(--rouge)}
     <div><div style="font-weight:700">Déposer une annonce</div><div style="font-size:.72rem;color:var(--txt3);text-transform:none;letter-spacing:0;font-family:'Barlow',sans-serif">Logement, emploi, solidarité</div></div>
   </button>
 </div>
-<!-- MODAL ADMIN -->
-<div id="admin-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.85);justify-content:flex-end">
-  <div style="width:min(680px,100vw);height:100vh;background:#111;overflow-y:auto;display:flex;flex-direction:column">
-    <div style="background:#0d0d0d;border-bottom:2px solid var(--rouge);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#fff">⚙ Admin CQP</div>
-      <button onclick="closeAdmin()" style="background:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.5);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:.9rem">✕</button>
-    </div>
-    <!-- Tabs -->
-    <div style="display:flex;border-bottom:1px solid rgba(255,255,255,.1);overflow-x:auto">
-      <button class="adm-tab active" onclick="switchAdmTab('actus',this)" style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;padding:12px 16px;border:none;background:none;color:rgba(255,255,255,.5);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s">📰 Actus</button>
-      <button class="adm-tab" onclick="switchAdmTab('annonces',this)" style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;padding:12px 16px;border:none;background:none;color:rgba(255,255,255,.5);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s">📋 Annonces</button>
-      <button class="adm-tab" onclick="switchAdmTab('evenements',this)" style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;padding:12px 16px;border:none;background:none;color:rgba(255,255,255,.5);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s">📅 Événements</button>
-      <button class="adm-tab" onclick="switchAdmTab('adherents',this)" style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;padding:12px 16px;border:none;background:none;color:rgba(255,255,255,.5);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;transition:all .15s">👥 Adhérents</button>
-    </div>
-    <div id="adm-body" style="padding:16px;flex:1;color:#fff;font-family:'Barlow',sans-serif;font-size:.88rem">
-      <div style="text-align:center;padding:40px;color:rgba(255,255,255,.3)">Chargement…</div>
-    </div>
-  </div>
-</div>
-
+<!-- DRAWER ACTU -->
 <div class="drawer-overlay" id="dr-actu" onclick="if(event.target===this)closeDr('dr-actu')">
   <div class="drawer">
     <div class="drawer-head">
@@ -565,12 +539,6 @@ input.cmt-input:focus{border-color:var(--rouge)}
     </div>
   </div>
 </div>
-
-
-
-
-
-
 <script>
 // ============ CONFIG SUPABASE ============
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
@@ -603,7 +571,8 @@ function freshnessLabel(dateStr){
   return'';
 }
 function readTime(text){const w=text.split(' ').length;const m=Math.ceil(w/200);return m<=1?'⚡ 1 min':`📖 ${m} min`;}
-
+</script>
+<script>
 // ============ LIKES & COMMENTAIRES ============
 const _pending={};
 function loadCardCounts(type,id){
@@ -656,7 +625,7 @@ async function toggleLike(type,id){
     await sb.from('likes').delete().eq('item_type',type).eq('item_id',id).eq('session_id',sid);
     btn.classList.remove('liked');btn.querySelector('.h').textContent='🤍';
   }else{
-    try{await sb.from('likes').insert({item_type:type,item_id:id,session_id:sid});}catch{}
+    await sb.from('likes').insert({item_type:type,item_id:id,session_id:sid}).catch(()=>{});
     btn.classList.add('liked');btn.querySelector('.h').textContent='❤️';
     heartBurst(btn);
   }
@@ -676,7 +645,8 @@ function heartBurst(btn){
     });
   }catch{}
 }
-
+</script>
+<script>
 // ============ MINI DRAWER ============
 let miniType=null,miniId=null;
 function openMini(type,id,titre){
@@ -719,7 +689,58 @@ async function sendCmt(){
 function openDr(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
 function closeDr(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
 function openDrDepot(){openDr('dr-depot');}
+</script>
+<script>
+// ============ ACTIONS MENU ============
+function togglePubMenu(e){if(e)e.stopPropagation();const m=document.getElementById('pub-menu');const o=document.getElementById('pub-overlay');m.classList.toggle('open');o.classList.toggle('open');}
+function closePubMenu(){document.getElementById('pub-menu').classList.remove('open');document.getElementById('pub-overlay').classList.remove('open');}
+document.addEventListener('click',e=>{const m=document.getElementById('pub-menu');if(m?.classList.contains('open')&&!m.contains(e.target))closePubMenu();});
 
+// ============ TICKER ============
+async function updateTicker(){
+  try{
+    const t=new Date(Date.now()-5*60*1000).toISOString();
+    const{count}=await sb.from('active_sessions').select('*',{count:'exact',head:true}).gte('last_seen',t);
+    const el=document.getElementById('ticker-txt');
+    if(el&&count>0)el.textContent=`${count} actif${count>1?'s':''} maintenant`;
+  }catch{}
+}
+
+// ============ LAST VISIT ============
+function checkLastVisit(actus){
+  try{
+    const last=localStorage.getItem('cqp_last_visit');
+    const now=Date.now();
+    if(last&&actus){
+      const fresh=actus.filter(a=>new Date(a.date_publication).getTime()>parseInt(last));
+      if(fresh.length>0){
+        const b=document.getElementById('new-banner');
+        if(b){b.textContent=`🔴 ${fresh.length} nouvelle${fresh.length>1?'s':''} actu${fresh.length>1?'s':''} depuis ta dernière visite`;b.style.display='block';document.getElementById('notif-btn').classList.add('has-new');setTimeout(()=>{b.style.transition='opacity .5s';b.style.opacity='0';setTimeout(()=>b.style.display='none',500);},7000);}
+      }
+    }
+    localStorage.setItem('cqp_last_visit',now);
+  }catch{}
+}
+
+// ============ DÉPÔT ANNONCE ============
+async function submitDepot(){
+  const titre=document.getElementById('dep-titre')?.value.trim();
+  const cat=document.getElementById('dep-cat')?.value;
+  const quartier=document.getElementById('dep-quartier')?.value.trim();
+  const desc=document.getElementById('dep-desc')?.value.trim();
+  const prenom=document.getElementById('dep-prenom')?.value.trim();
+  const email=document.getElementById('dep-email')?.value.trim();
+  const tel=document.getElementById('dep-tel')?.value.trim();
+  const msg=document.getElementById('dep-msg');
+  if(!titre||!quartier||!desc||!prenom||!email){if(msg){msg.textContent='⚠ Tous les champs obligatoires (*) doivent être remplis.';msg.className='form-msg err';}return;}
+  const btn=document.querySelector('#dr-depot .btn-submit');if(btn){btn.disabled=true;btn.textContent='Envoi…';}
+  const{error}=await sb.from('annonces').insert({titre,categorie:cat,quartier,description:desc,prenom,email,telephone:tel||null,validee:false});
+  if(btn){btn.disabled=false;btn.textContent='Déposer l\'annonce';}
+  if(error){if(msg){msg.textContent='⚠ Erreur : '+error.message;msg.className='form-msg err';}}
+  else{if(msg){msg.textContent='✅ Annonce envoyée ! Publiée après validation (24–48h).';msg.className='form-msg ok';}setTimeout(()=>{closeDr('dr-depot');['dep-titre','dep-quartier','dep-desc','dep-prenom','dep-email','dep-tel'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});if(msg)msg.className='form-msg';},3000);}
+}
+</script>
+<script>
 // ============ FEED BUILDER ============
 function buildActionBar(type,id,titre){
   return `<div class="card-actions">
@@ -798,7 +819,8 @@ function renderAnnCard(a){
     ${buildActionBar('annonce',a.id,a.titre)}
   </article>`;
 }
-
+</script>
+<script>
 // ============ CHARGEMENT FEED ============
 let allActus=[];
 async function buildFeed(){
@@ -860,16 +882,7 @@ function openActu(id){
 // ============ ADMIN ============
 function openAdmin(){
   const pwd=prompt('Mot de passe admin :');
-  if(pwd==='toulouse2026'){
-    document.getElementById('admin-modal').style.display='flex';
-    document.body.style.overflow='hidden';
-  } else if(pwd !== null) {
-    alert('Mot de passe incorrect');
-  }
-}
-function closeAdmin(){
-  document.getElementById('admin-modal').style.display='none';
-  document.body.style.overflow='';
+  if(pwd==='toulouse2026')window.location='admin.html';
 }
 
 // ============ TRACKING ============
@@ -884,27 +897,6 @@ function closeAdmin(){
 updateTicker();
 setInterval(updateTicker,30000);
 buildFeed();
-
-// ============ MENU PUBLIER ============
-function togglePubMenu(e){
-  if(e)e.stopPropagation();
-  const m=document.getElementById('pub-menu');
-  const o=document.getElementById('pub-overlay');
-  const isOpen=m.classList.contains('open');
-  m.classList.toggle('open',!isOpen);
-  o.classList.toggle('open',!isOpen);
-}
-function closePubMenu(){
-  document.getElementById('pub-menu')?.classList.remove('open');
-  document.getElementById('pub-overlay')?.classList.remove('open');
-}
-document.addEventListener('click',e=>{
-  const m=document.getElementById('pub-menu');
-  const btn=document.querySelector('.nav-publish');
-  if(m?.classList.contains('open')&&!m.contains(e.target)&&e.target!==btn&&!btn?.contains(e.target)){
-    closePubMenu();
-  }
-});
 
 // PWA Service Worker
 if('serviceWorker' in navigator){
