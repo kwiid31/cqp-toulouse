@@ -514,6 +514,20 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
   .qui-dot.active{background:var(--rouge);width:22px;border-radius:4px;}
 }
 
+
+/* ===== VALEUR AJOUTÉE ===== */
+.fresh-badge{font-family:'Barlow Condensed';font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:rgba(76,175,80,.12);border:1px solid #4CAF50;color:#4CAF50;margin-left:6px}
+.fresh-recent{background:rgba(255,193,7,.1);border-color:#FFC107;color:#E6A800}
+.fresh-week{background:rgba(255,152,0,.1);border-color:#FF9800;color:#CC7A00}
+.hot-badge{font-family:'Barlow Condensed';font-size:.62rem;letter-spacing:1.5px;background:rgba(200,16,46,.1);border:1px solid var(--rouge);color:var(--rouge);padding:2px 8px;border-radius:10px;text-transform:uppercase;margin-left:6px}
+.evt-countdown{font-family:'Barlow Condensed';font-size:.75rem;letter-spacing:1.5px;font-weight:700;padding:3px 10px;border-radius:3px;background:rgba(200,16,46,.1);color:var(--rouge);border:1px solid rgba(200,16,46,.3);display:inline-block;margin-bottom:6px}
+/* Scroll reveal */
+.reveal-card{opacity:0;transform:translateY(14px);transition:opacity .35s ease,transform .35s ease}
+.reveal-card.revealed{opacity:1;transform:translateY(0)}
+/* Ripple */
+@keyframes ripple{to{transform:scale(2.5);opacity:0}}
+/* Prénom mémorisé */
+
 </style>
 </head>
 <body>
@@ -1466,6 +1480,7 @@ async function loadActus(){
         </div>
       </div></div>`).join('');
     actusPub.forEach(a=>loadCardCounts('actu',a.id));
+    checkLastVisit(actusPub);
   }catch(e){g.innerHTML='<div class="empty" style="grid-column:1/-1">Impossible de charger.</div>';}
 }
 
@@ -1486,7 +1501,7 @@ async function loadAnnonces(){
       <div class="hs-card-body">
         <span class="hs-card-cat">${esc(a.categorie)}</span>
         <div class="hs-card-title">${esc(a.titre)}</div>
-        <div class="hs-card-sub">📍 ${esc(a.quartier)} · 👤 ${esc(a.prenom)}</div>
+        <div class="hs-card-sub">📍 ${esc(a.quartier)} · 👤 ${esc(a.prenom)} ${freshnessLabel(a.date_depot)}</div>
         <div class="hs-card-footer">
           <span class="hs-card-date">${new Date(a.date_depot).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'})}</span>
           <div class="hs-card-social" onclick="event.stopPropagation()">
@@ -1906,6 +1921,7 @@ async function loadEvents(){
           <div class="hs-card-sub">📍 ${esc(evt.lieu)}</div>
           <div class="hs-card-footer">
             <span class="hs-card-date">${dateStr}</span>
+            <span class="evt-countdown">${countdownStr(evt.date_debut)}</span>
             <div class="hs-card-social" onclick="event.stopPropagation()">
               <button class="hs-lk" id="lk-${evt.id}" onclick="cardLike('evenement',${evt.id})"><span class="h">🤍</span><span id="lc-${evt.id}">0</span></button>
               <button class="hs-cm" onclick="openMini('evenement',${evt.id},'${esc(evt.titre).substring(0,25)}')">💬<span id="cc-${evt.id}">0</span></button>
@@ -2172,7 +2188,7 @@ async function cardLike(type,id){
   const liked=btn.classList.contains('liked');
   btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),300);
   if(liked){await sb.from('likes').delete().eq('item_type',type).eq('item_id',id).eq('session_id',sid);btn.classList.remove('liked');btn.querySelector('.h').textContent='🤍';}
-  else{await sb.from('likes').insert({item_type:type,item_id:id,session_id:sid}).catch(()=>{});btn.classList.add('liked');btn.querySelector('.h').textContent='❤️';}
+  else{await sb.from('likes').insert({item_type:type,item_id:id,session_id:sid}).catch(()=>{});btn.classList.add('liked');btn.querySelector('.h').textContent='❤️';heartBurst(btn);}
   const{count}=await sb.from('likes').select('*',{count:'exact',head:true}).eq('item_type',type).eq('item_id',id);
   const lc=document.getElementById('lc-'+id);if(lc)lc.textContent=count||0;
 }
@@ -2198,14 +2214,123 @@ async function refreshMini2(){
 async function sendMini2(){
   const msg=document.getElementById('mini-msg2')?.value.trim();
   const prenom=document.getElementById('mini-prenom2')?.value.trim()||'Anonyme';
+  savePrenomLocal(prenom);
   if(!msg||!miniType2||!miniId2)return;
   document.getElementById('mini-msg2').value='';
   await sb.from('commentaires').insert({item_type:miniType2,item_id:miniId2,prenom,message:msg});
   await refreshMini2();
 }
+
+// ===== 1. LAST VISIT BANNER =====
+function checkLastVisit(actus){
+  try{
+    const last=localStorage.getItem('cqp_last_visit');
+    const now=Date.now();
+    if(last&&actus&&actus.length){
+      const fresh=actus.filter(a=>new Date(a.date_publication).getTime()>parseInt(last));
+      if(fresh.length>0){
+        const b=document.getElementById('new-banner');
+        if(b){
+          b.textContent=`🔴 ${fresh.length} nouvelle${fresh.length>1?'s':''} actu${fresh.length>1?'s':''} depuis ta dernière visite`;
+          b.style.display='block';
+          setTimeout(()=>{b.style.transition='opacity .5s';b.style.opacity='0';setTimeout(()=>b.style.display='none',500);},6000);
+        }
+      }
+    }
+    localStorage.setItem('cqp_last_visit',now);
+    // Mémoriser le prénom pour les commentaires
+    const prenom=localStorage.getItem('cqp_prenom')||'';
+    const mp=document.getElementById('mini-prenom2');if(mp&&prenom)mp.value=prenom;
+    const mp2=document.getElementById('mini-prenom');if(mp2&&prenom)mp2.value=prenom;
+  }catch(e){}
+}
+function savePrenomLocal(val){try{if(val.trim())localStorage.setItem('cqp_prenom',val.trim());}catch(e){}}
+
+// ===== 2. HEARTBURST PARTICLES =====
+function heartBurst(btn){
+  try{
+    const rect=btn.getBoundingClientRect();
+    const emojis=['❤️','🧡','💛','✊'];
+    for(let i=0;i<6;i++){
+      const p=document.createElement('span');
+      p.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      p.style.cssText=`position:fixed;left:${rect.left+rect.width/2}px;top:${rect.top}px;font-size:${.8+Math.random()*.8}rem;pointer-events:none;z-index:9999;transition:all .8s ease-out;opacity:1`;
+      document.body.appendChild(p);
+      requestAnimationFrame(()=>{
+        p.style.transform=`translate(${(Math.random()-.5)*80}px,-${40+Math.random()*40}px)`;
+        p.style.opacity='0';
+      });
+      setTimeout(()=>p.remove(),800);
+    }
+  }catch(e){}
+}
+
+// ===== 3. COUNTDOWN ÉVÉNEMENTS =====
+function countdownStr(dateStr){
+  const diff=new Date(dateStr)-Date.now();
+  if(diff<0)return'Passé';
+  const days=Math.floor(diff/86400000);
+  const hours=Math.floor((diff%86400000)/3600000);
+  const time=new Date(dateStr).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  if(days===0)return`⚡ Aujourd'hui ${time}`;
+  if(days===1)return'🔴 Demain';
+  if(days<=7)return`🟠 Dans ${days} jours`;
+  return`📅 ${new Date(dateStr).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}`;
+}
+
+// ===== 4. FRAÎCHEUR ANNONCES =====
+function freshnessLabel(dateStr){
+  const diff=(Date.now()-new Date(dateStr))/3600000;
+  if(diff<24)return'<span class="fresh-badge">🟢 Nouvelle</span>';
+  if(diff<72)return'<span class="fresh-badge fresh-recent">🟡 Récente</span>';
+  if(diff<168)return'<span class="fresh-badge fresh-week">🟠 Cette semaine</span>';
+  return'';
+}
+
+// ===== 5. HOT BADGE =====
+function maybeHotBadge(card, count){
+  if(count>=5&&!card.querySelector('.hot-badge')){
+    const b=document.createElement('span');
+    b.className='hot-badge';b.textContent='🔥 Populaire';
+    const head=card.querySelector('.hs-card-body,.hs-card-cat,.ann-head');
+    if(head)head.appendChild(b);
+  }
+}
+
+// ===== 6. SCROLL REVEAL =====
+function initScrollReveal(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){e.target.classList.add('revealed');obs.unobserve(e.target);}
+    });
+  },{threshold:0.08});
+  document.querySelectorAll('.hs-card,.feed-card').forEach(el=>{
+    el.classList.add('reveal-card');
+    obs.observe(el);
+  });
+}
+
+// ===== 7. RIPPLE sur boutons =====
+function addRipple(el){
+  el.style.position='relative';el.style.overflow='hidden';
+  el.addEventListener('click',function(e){
+    const r=document.createElement('span');
+    const rect=this.getBoundingClientRect();
+    const size=Math.max(rect.width,rect.height);
+    r.style.cssText=`position:absolute;width:${size}px;height:${size}px;border-radius:50%;background:rgba(255,255,255,.2);pointer-events:none;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;transform:scale(0);animation:ripple .5s ease-out forwards`;
+    this.appendChild(r);setTimeout(()=>r.remove(),500);
+  });
+}
+
+
 loadConfig();
 // Lancement parallèle — tous les chargements en même temps
 Promise.all([loadActus(), loadAnnonces(), loadEvents(), loadPresse()]);
+// Initialiser après chargement DOM
+setTimeout(()=>{
+  initScrollReveal();
+  document.querySelectorAll('.hs-cta,.btn-sub,.mob-pub-center').forEach(addRipple);
+},1000);
 initTracking('/');
 
 // ===== TICKER ACTIFS EN DIRECT =====
