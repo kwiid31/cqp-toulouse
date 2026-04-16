@@ -882,7 +882,45 @@ function openActu(id){
 // ============ ADMIN ============
 function openAdmin(){
   const pwd=prompt('Mot de passe admin :');
-  if(pwd==='toulouse2026')window.location='admin.html';
+  if(pwd==='toulouse2026'){
+    document.getElementById('admin-panel').style.display='flex';
+    document.body.style.overflow='hidden';
+    loadAdminActus();
+  } else if(pwd!==null){
+    alert('Mot de passe incorrect');
+  }
+}
+function closeAdmin(){
+  document.getElementById('admin-panel').style.display='none';
+  document.body.style.overflow='';
+}
+async function loadAdminActus(){
+  const box=document.getElementById('adm-actus-body');
+  if(!box)return;
+  box.innerHTML='<div style="padding:20px;color:#999;text-align:center">Chargement…</div>';
+  const{data}=await sb.from('actus').select('*').order('date_publication',{ascending:false});
+  if(!data||!data.length){box.innerHTML='<div style="padding:20px;color:#999">Aucune actu.</div>';return;}
+  box.innerHTML=data.map(a=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eee;gap:10px">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.titre)}</div>
+        <div style="font-size:.75rem;color:#999;margin-top:2px">${a.categorie} · ${new Date(a.date_publication).toLocaleDateString('fr-FR')}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+        <span style="font-size:.7rem;padding:3px 8px;border-radius:4px;background:${a.visible?'#f0fdf4':'#fff0f2'};color:${a.visible?'#16a34a':'#C8102E'}">${a.visible?'Publié':'Brouillon'}</span>
+        <button onclick="toggleActuVis(${a.id},${a.visible})" style="border:1px solid #ddd;background:#fff;border-radius:6px;padding:4px 10px;font-size:.75rem;cursor:pointer">${a.visible?'Masquer':'✅ Publier'}</button>
+        <button onclick="deleteActu(${a.id})" style="border:1px solid #fca5a5;background:#fff;color:#C8102E;border-radius:6px;padding:4px 8px;font-size:.75rem;cursor:pointer">✕</button>
+      </div>
+    </div>`).join('');
+}
+async function toggleActuVis(id,cur){
+  await sb.from('actus').update({visible:!cur}).eq('id',id);
+  loadAdminActus();
+}
+async function deleteActu(id){
+  if(!confirm('Supprimer cette actu ?'))return;
+  await sb.from('actus').delete().eq('id',id);
+  loadAdminActus();
 }
 
 // ============ TRACKING ============
@@ -893,15 +931,80 @@ function openAdmin(){
   }catch{}
 })();
 
+// ============ ADHÉSION ============
+async function submitAdhesion(){
+  const prenom=document.getElementById('adh-prenom')?.value.trim();
+  const nom=document.getElementById('adh-nom')?.value.trim();
+  const email=document.getElementById('adh-email')?.value.trim();
+  const quartier=document.getElementById('adh-quartier')?.value.trim();
+  const tel=document.getElementById('adh-tel')?.value.trim();
+  const msg=document.getElementById('adh-msg');
+  if(!prenom||!nom||!email||!quartier){
+    if(msg){msg.textContent='⚠ Remplis tous les champs obligatoires.';msg.style.display='block';msg.style.background='#fff0f2';msg.style.color='#C8102E';}
+    return;
+  }
+  const{error}=await sb.from('adherents').insert({prenom,nom,email,quartier,telephone:tel||null});
+  if(error){
+    if(msg){msg.textContent='⚠ Erreur : '+error.message;msg.style.display='block';msg.style.background='#fff0f2';msg.style.color='#C8102E';}
+  }else{
+    if(msg){msg.textContent='✅ Bienvenue dans le mouvement ! On te contacte bientôt.';msg.style.display='block';msg.style.background='#f0fdf4';msg.style.color='#16a34a';}
+    setTimeout(()=>closeDr('dr-adhesion'),3000);
+  }
+}
+
 // ============ INIT ============
 updateTicker();
 setInterval(updateTicker,30000);
 buildFeed();
+// Ouvrir le drawer adhésion si on vient de a-propos
+if(sessionStorage.getItem('openAdhesion')==='1'){
+  sessionStorage.removeItem('openAdhesion');
+  setTimeout(()=>openDr('dr-adhesion'),600);
+}
 
 // PWA Service Worker
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('/cqp-toulouse/sw.js').catch(()=>{}));
 }
 </script>
+<!-- PANEL ADMIN -->
+<div id="admin-panel" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.7);justify-content:flex-end">
+  <div style="width:min(680px,100vw);height:100vh;background:#fff;display:flex;flex-direction:column;overflow:hidden">
+    <div style="background:#1A1A1A;color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.5px">⚙ Panneau Admin</div>
+      <button onclick="closeAdmin()" style="background:none;border:1px solid rgba(255,255,255,.3);color:#fff;width:32px;height:32px;border-radius:6px;cursor:pointer;font-size:1rem">✕</button>
+    </div>
+    <div style="padding:16px 20px;border-bottom:1px solid #eee;flex-shrink:0">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:#999;margin-bottom:8px">Actualités — valider les brouillons IA</div>
+    </div>
+    <div id="adm-actus-body" style="overflow-y:auto;flex:1;font-family:'Barlow',sans-serif;font-size:.9rem"></div>
+    <div style="padding:16px 20px;border-top:1px solid #eee;flex-shrink:0;display:flex;gap:10px">
+      <button onclick="loadAdminActus()" style="flex:1;padding:10px;background:#f5f5f5;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1px;text-transform:uppercase">🔄 Rafraîchir</button>
+      <a href="evenements.html" onclick="closeAdmin()" style="flex:1;padding:10px;background:#C8102E;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1px;text-transform:uppercase;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center">📅 Gérer évts</a>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER ADHÉSION -->
+<div class="drawer-overlay" id="dr-adhesion" onclick="if(event.target===this)closeDr('dr-adhesion')">
+  <div class="drawer">
+    <div class="drawer-head">
+      <h3>✊ Rejoindre le CQP</h3>
+      <button class="drawer-close-btn" onclick="closeDr('dr-adhesion')">✕</button>
+    </div>
+    <div class="drawer-body">
+      <p style="font-size:.88rem;color:var(--txt2);margin-bottom:20px;line-height:1.6">Tu habites dans un quartier populaire de Toulouse ? Rejoins le comité et construis avec nous.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div style="margin-bottom:12px"><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Prénom *</label><input type="text" id="adh-prenom" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Barlow',sans-serif;font-size:.9rem;color:var(--txt);outline:none"></div>
+        <div style="margin-bottom:12px"><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Nom *</label><input type="text" id="adh-nom" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Barlow',sans-serif;font-size:.9rem;color:var(--txt);outline:none"></div>
+      </div>
+      <div style="margin-bottom:12px"><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Email *</label><input type="email" id="adh-email" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Barlow',sans-serif;font-size:.9rem;color:var(--txt);outline:none"></div>
+      <div style="margin-bottom:12px"><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Quartier *</label><input type="text" id="adh-quartier" placeholder="Mirail, Bellefontaine, Izards…" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Barlow',sans-serif;font-size:.9rem;color:var(--txt);outline:none"></div>
+      <div style="margin-bottom:20px"><label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt2);margin-bottom:4px">Téléphone</label><input type="tel" id="adh-tel" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'Barlow',sans-serif;font-size:.9rem;color:var(--txt);outline:none"></div>
+      <button onclick="submitAdhesion()" style="width:100%;background:var(--rouge);color:#fff;border:none;border-radius:8px;padding:14px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer">✊ Rejoindre le mouvement</button>
+      <div id="adh-msg" style="display:none;text-align:center;padding:10px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;border-radius:6px;margin-top:12px"></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
