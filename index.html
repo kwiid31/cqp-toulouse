@@ -642,12 +642,12 @@ function openDrDepot(){openDr('dr-depot');}
 </script>
 <script>
 // ============ PHOTO STORIES ============
-let storyFile=null;
-let storyVideoFile=null; // v1776435269
-let storyDataUrl=null;
+window.storyFile=null;
+window.storyVideoFile=null;
+window.storyDataUrl=null;
 
 function openStoryUpload(){
-  storyFile=null;storyVideoFile=null;storyDataUrl=null;
+  window.storyFile=null;window.storyVideoFile=null;window.storyDataUrl=null;
   const zone=document.getElementById('story-zone');
   // reset preview
   zone.querySelectorAll('img').forEach(i=>i.remove());
@@ -677,9 +677,9 @@ function triggerStoryGallery(){
   inp.removeAttribute('capture');
   inp.click();
 }
-function handleStoryFile(input){
+window.function handleStoryFile(input){
   const file=input.files[0];if(!file)return;
-  storyFile=file;
+  window.storyFile=file;
   const isVideo=file.type.startsWith('video/');
   const zone=document.getElementById('story-zone');
   const label=document.getElementById('story-zone-label');
@@ -694,14 +694,14 @@ function handleStoryFile(input){
     vid.autoplay=true;vid.muted=true;vid.loop=true;vid.playsInline=true;
     vid.src=URL.createObjectURL(file);
     zone.appendChild(vid);
-    storyDataUrl=null;storyVideoFile=file;
+    window.storyDataUrl=null;window.storyVideoFile=file;
   }else{
     const reader=new FileReader();
     reader.onload=e=>{
-      storyDataUrl=e.target.result;storyVideoFile=null;
+      window.storyDataUrl=e.target.result;window.storyVideoFile=null;
       const img=document.createElement('img');
       img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
-      img.src=storyDataUrl;zone.appendChild(img);
+      img.src=window.storyDataUrl;zone.appendChild(img);
     };
     reader.readAsDataURL(file);
   }
