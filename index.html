@@ -744,6 +744,17 @@ function openStoryViewer(idx){
   document.getElementById('story-viewer').classList.add('open');
   document.body.style.overflow='hidden';
   renderSvSlide();
+  // Incrémenter les vues
+  const s=svStories[idx];
+  if(s&&s.id){
+    sb.from('stories').update({views:(s.views||0)+1}).eq('id',s.id).then(()=>{
+      s.views=(s.views||0)+1;
+      const vc=document.getElementById('sv-views-count');
+      if(vc)vc.textContent=s.views;
+      // Rafraîchir le badge sur le cercle
+      renderStoriesBar(svStories);
+    });
+  }
 }
 function closeStoryViewer(){
   document.getElementById('story-viewer').classList.remove('open');
