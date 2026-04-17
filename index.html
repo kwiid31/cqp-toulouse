@@ -353,23 +353,15 @@ input.cmt-input:focus{border-color:var(--rouge)}
         <div class="story-icon">+</div>
       </div>
     </div>
-    <span class="story-label">Ma story</span>
+    <span class="story-label">Story</span>
   </div>
-  <!-- Navigation rapide (toujours présents) -->
-  <div class="story" onclick="window.location='actus.html'">
-    <div class="story-ring"><div class="story-inner"><div class="story-icon">📰</div></div></div>
+  <!-- Navigation rapide (toujours présents) --></div>
     <span class="story-label">Actus</span>
-  </div>
-  <div class="story" onclick="window.location='evenements.html'">
-    <div class="story-ring"><div class="story-inner"><div class="story-icon">📅</div></div></div>
+  </div></div>
     <span class="story-label">Événements</span>
-  </div>
-  <div class="story" onclick="window.location='annonces.html'">
-    <div class="story-ring"><div class="story-inner"><div class="story-icon">📋</div></div></div>
+  </div></div>
     <span class="story-label">Annonces</span>
-  </div>
-  <div class="story" onclick="window.location='presse.html'">
-    <div class="story-ring"><div class="story-inner"><div class="story-icon">🗞</div></div></div>
+  </div></div>
     <span class="story-label">Presse</span>
   </div>
   <!-- Stories utilisateurs injectées dynamiquement ici -->
@@ -434,7 +426,14 @@ input.cmt-input:focus{border-color:var(--rouge)}
   <div class="story-modal">
     <h3>📸 Publier une story</h3>
     <div class="story-upload-zone" id="story-zone">
-      <input type="file" accept="image/*" capture="environment" onchange="handleStoryFile(this)">
+      <input type="file" id="story-file-input" accept="image/*,video/*" onchange="handleStoryFile(this)" style="display:none">
+      <div style="display:flex;gap:8px;position:relative;z-index:1;flex-direction:column;align-items:center">
+        <div style="display:flex;gap:8px">
+          <button type="button" onclick="triggerStoryCapture('photo')" style="background:var(--rouge);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">📷 Photo</button>
+          <button type="button" onclick="triggerStoryCapture('video')" style="background:#1565C0;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">🎥 Vidéo</button>
+          <button type="button" onclick="triggerStoryGallery()" style="background:#2E7D32;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">🖼 Galerie</button>
+        </div>
+      </div>
       <div class="upload-label" id="story-zone-label">📷</div>
       <div class="upload-hint" id="story-zone-hint">Appuie pour choisir une photo</div>
     </div>
@@ -452,11 +451,12 @@ input.cmt-input:focus{border-color:var(--rouge)}
   <div class="sv-progress" id="sv-progress"></div>
   <div class="sv-head">
     <div class="sv-av" id="sv-av"></div>
-    <div class="sv-name" id="sv-name"></div>
-    <div class="sv-time" id="sv-time"></div>
+    <div style="flex:1"><div class="sv-name" id="sv-name"></div><div class="sv-time" id="sv-time"></div></div>
+    <div id="sv-views" style="display:flex;align-items:center;gap:3px;font-size:.75rem;color:rgba(255,255,255,.75);font-family:'Barlow Condensed',sans-serif;margin-right:8px">👁 <span id="sv-views-count">0</span></div>
     <button class="sv-close" onclick="closeStoryViewer()">✕</button>
   </div>
   <img class="sv-img" id="sv-img" src="" alt="">
+  <video id="sv-vid" src="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover" autoplay muted playsinline loop></video>
   <div class="sv-nav">
     <div class="sv-nav-prev" onclick="storyViewerNav(-1)"></div>
     <div class="sv-nav-next" onclick="storyViewerNav(1)"></div>
@@ -664,45 +664,48 @@ function closeStoryUpload(){
   document.getElementById('story-modal-ov').classList.remove('open');
   document.body.style.overflow='';
 }
+function triggerStoryCapture(mode){
+  const inp=document.getElementById('story-file-input');
+  inp.accept=mode==='video'?'video/*':'image/*';
+  inp.setAttribute('capture','environment');
+  inp.click();
+}
+function triggerStoryGallery(){
+  const inp=document.getElementById('story-file-input');
+  inp.accept='image/*,video/*';
+  inp.removeAttribute('capture');
+  inp.click();
+}
 function handleStoryFile(input){
   const file=input.files[0];if(!file)return;
   storyFile=file;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    storyDataUrl=e.target.result;
-    const zone=document.getElementById('story-zone');
-    zone.querySelectorAll('img').forEach(i=>i.remove());
-    const img=document.createElement('img');
-    img.src=storyDataUrl;img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:10px;z-index:0';
-    zone.appendChild(img);
-    document.getElementById('story-zone-label').style.display='none';
-    document.getElementById('story-zone-hint').style.display='none';
-  };
-  reader.readAsDataURL(file);
-}
-async function submitStory(){
-  if(!storyFile){showStoryMsg('err','⚠ Choisis une photo.');return;}
-  const prenom=(document.getElementById('story-prenom').value.trim()||'Anonyme').substring(0,30);
-  savePrenomLocal(prenom);
-  const btn=document.getElementById('story-submit-btn');
-  btn.disabled=true;btn.textContent='⏳ Publication…';
-  try{
-    // Upload vers Supabase Storage bucket "stories"
-    const ext=storyFile.name.split('.').pop()||'jpg';
-    const path=`${getSid()}_${Date.now()}.${ext}`;
-    const{data:upData,error:upErr}=await sb.storage.from('stories').upload(path,storyFile,{contentType:storyFile.type,upsert:false});
-    if(upErr)throw upErr;
-    const{data:{publicUrl}}=sb.storage.from('stories').getPublicUrl(path);
-    // Insérer dans la table stories
-    const{error:dbErr}=await sb.from('stories').insert({session_id:getSid(),prenom,photo_url:publicUrl});
-    if(dbErr)throw dbErr;
-    showStoryMsg('ok','✅ Story publiée ! Visible 24h.');
-    setTimeout(()=>{closeStoryUpload();loadStories();},1800);
-  }catch(e){
-    btn.disabled=false;btn.textContent='Publier ma story ✨';
-    showStoryMsg('err','⚠ Erreur : '+(e.message||'réessaie'));
+  const isVideo=file.type.startsWith('video/');
+  const zone=document.getElementById('story-zone');
+  const label=document.getElementById('story-zone-label');
+  const hint=document.getElementById('story-zone-hint');
+  if(label)label.style.display='none';
+  if(hint)hint.style.display='none';
+  // Supprimer preview précédent
+  zone.querySelectorAll('img,video').forEach(el=>el.remove());
+  if(isVideo){
+    const vid=document.createElement('video');
+    vid.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+    vid.autoplay=true;vid.muted=true;vid.loop=true;vid.playsInline=true;
+    vid.src=URL.createObjectURL(file);
+    zone.appendChild(vid);
+    storyDataUrl=null;storyVideoFile=file;
+  }else{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      storyDataUrl=e.target.result;storyVideoFile=null;
+      const img=document.createElement('img');
+      img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+      img.src=storyDataUrl;zone.appendChild(img);
+    };
+    reader.readAsDataURL(file);
   }
 }
+
 function showStoryMsg(type,text){
   const m=document.getElementById('story-msg');m.textContent=text;m.className='form-msg '+(type==='ok'?'ok':'err');
 }
@@ -727,7 +730,7 @@ function renderStoriesBar(stories){
     const el=document.createElement('div');
     el.className='story story-dynamic'+(seen?' seen':'');
     el.onclick=()=>openStoryViewer(i);
-    el.innerHTML=`<div class="story-ring"><div class="story-inner"><img src="${esc(s.photo_url)}" alt="" loading="lazy"></div></div><span class="story-label">${esc(s.prenom)}</span>`;
+    el.innerHTML=`<div class="story-ring" style="position:relative"><div class="story-inner">${s.media_type==='video'?'<span style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,.6);color:#fff;border-radius:3px;font-size:.45rem;padding:1px 3px;z-index:2">▶</span>':''}<img src="${esc(s.photo_url||'')}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div></div><span class="story-label">${esc(s.prenom)}</span>${(s.views||0)>0?'<span style="font-size:.52rem;color:#999;font-family:Barlow Condensed,sans-serif">👁 '+(s.views||0)+'</span>':''}`;
     bar.appendChild(el);
   });
 }
@@ -1013,6 +1016,37 @@ loadStories();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('/cqp-toulouse/sw.js').catch(()=>{}));
+}
+
+// ── STORY SUBMIT ─────────────────────────────────────────────────────────────
+async function submitStory(){
+  const prenom=(document.getElementById('story-prenom')?.value||'').trim();
+  const msg=document.getElementById('story-msg');
+  const btn=document.getElementById('story-submit-btn');
+  const file=storyVideoFile||storyFile;
+  if(!file){showStoryMsg('⚠ Choisis une photo ou une vidéo','err');return;}
+  if(!prenom){showStoryMsg('⚠ Entre ton prénom','err');return;}
+  btn.disabled=true;btn.textContent='Publication…';
+  try{
+    const isVideo=file.type.startsWith('video/');
+    const ext=(file.name||'').split('.').pop()||(isVideo?'mp4':'jpg');
+    const fname='story_'+Date.now()+'.'+ext;
+    const{data:up,error:upErr}=await sb.storage.from('stories').upload(fname,file,{contentType:file.type,upsert:false});
+    if(upErr)throw upErr;
+    const{data:{publicUrl}}=sb.storage.from('stories').getPublicUrl(fname);
+    const{error:dbErr}=await sb.from('stories').insert({
+      prenom,photo_url:publicUrl,visible:true,
+      media_type:isVideo?'video':'photo',views:0,
+      expires_at:new Date(Date.now()+24*3600*1000).toISOString()
+    });
+    if(dbErr)throw dbErr;
+    showStoryMsg('✅ Story publiée !','ok');
+    try{localStorage.setItem('cqp_prenom',prenom);}catch{}
+    setTimeout(()=>{closeStoryUpload();loadStories();},1500);
+  }catch(e){
+    showStoryMsg('⚠ Erreur: '+e.message,'err');
+    btn.disabled=false;btn.textContent='Publier ma story ✨';
+  }
 }
 </script>
 </body>
