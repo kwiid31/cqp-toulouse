@@ -141,7 +141,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <button class="tab-btn" data-tab="t-stats" onclick="switchTab(this)">📊 Statistiques</button>
       <button class="tab-btn" data-tab="t-avis" onclick="switchTab(this)">⭐ Avis</button>
       <button class="tab-btn" data-tab="t-wa" onclick="switchTab(this)">📲 WhatsApp → IA</button>
-      <button class="tab-btn" data-tab="t-stories" onclick="switchTab(this)">📸 Stories</button>
+      <button class="tab-btn" data-tab="t-stories" onclick="switchTab(this);setTimeout(()=>loadStoriesAdmin('pending'),100)">📸 Stories</button>
     </div>
     <div class="admin-content">
       <div class="tab-panel active" id="t-adh">
@@ -1820,7 +1820,7 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
 
 // ── ADMIN STORIES ─────────────────────────────────────────────────────────────
-async function loadStories(filter='pending'){
+async function loadStoriesAdmin(filter='pending'){
   const body=document.getElementById('stories-admin-body');
   if(!body)return;
   body.innerHTML='<div class="spin">⏳ Chargement…</div>';
@@ -1865,7 +1865,7 @@ async function loadStories(filter='pending'){
 
 async function approveStory(id){
   await sb.from('stories').update({visible:true,moderated:true}).eq('id',id);
-  loadStories('pending');
+  loadStoriesAdmin('pending');
 }
 async function deleteStory(id,url){
   if(!confirm('Supprimer définitivement cette story ?'))return;
@@ -1873,7 +1873,7 @@ async function deleteStory(id,url){
   const path=url.split('/stories/').pop();
   if(path)await sb.storage.from('stories').remove([path]);
   await sb.from('stories').delete().eq('id',id);
-  loadStories('all');
+  loadStoriesAdmin('all');
 }
 </script>
 </body></html
@@ -1882,9 +1882,9 @@ async function deleteStory(id,url){
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
               <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem">📸 Stories</h3>
               <div style="display:flex;gap:8px">
-                <button onclick="loadStories('pending')" style="background:#E8940F;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">⏳ En attente</button>
-                <button onclick="loadStories('all')" style="background:rgba(255,255,255,.1);color:#f4f1eb;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">Toutes</button>
-                <button onclick="loadStories('reported')" style="background:#C8102E;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">🚩 Signalées</button>
+                <button onclick="loadStoriesAdmin('pending')" style="background:#E8940F;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">⏳ En attente</button>
+                <button onclick="loadStoriesAdmin('all')" style="background:rgba(255,255,255,.1);color:#f4f1eb;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">Toutes</button>
+                <button onclick="loadStoriesAdmin('reported')" style="background:#C8102E;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">🚩 Signalées</button>
               </div>
             </div>
             <div id="stories-admin-body"><div class="spin">⏳</div></div>
