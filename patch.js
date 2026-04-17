@@ -157,4 +157,34 @@ window.reportStory = async function(storyId){
   document.head.appendChild(style);
 })();
 
-console.log('patch.js v3 ✅');
+
+
+// ── 10. Overrider loadStories : filtre expires_at + visible ─────────────────
+window._origLoadStories = window.loadStories;
+window.loadStories = async function(){
+  try{
+    const now = new Date().toISOString();
+    const{data} = await sb.from('stories')
+      .select('*')
+      .eq('visible', true)
+      .gt('expires_at', now)
+      .order('created_at', {ascending:false})
+      .limit(20);
+    svStories = data||[];
+    renderStoriesBar(svStories);
+  }catch(e){ console.warn('loadStories err:', e); }
+};
+// Relancer au cas où les stories ont déjà été chargées
+setTimeout(()=>{ if(typeof loadStories==='function') loadStories(); }, 500);
+
+// ── 11. Charger les stories en attente dans l'admin au clic sur l'onglet ────
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(btn){
+  _origSwitchTab && _origSwitchTab(btn);
+  if(btn && btn.dataset && btn.dataset.tab === 't-stories'){
+    setTimeout(()=>{ if(typeof loadStories_admin==='function') loadStories_admin('pending'); }, 100);
+  }
+};
+function loadStories_admin(filter){ if(typeof loadStories==='function' && window.loadStories!==window._origLoadStories) return; }
+
+console.log('patch.js v3 complet ✅');
