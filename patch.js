@@ -1,3 +1,41 @@
+// ── 0. Initialiser les variables globales manquantes (scope fix) ─────────────
+if(typeof window.storyFile === 'undefined') window.storyFile = null;
+if(typeof window.storyVideoFile === 'undefined') window.storyVideoFile = null;
+if(typeof window.storyDataUrl === 'undefined') window.storyDataUrl = null;
+
+// Patcher handleStoryFile pour qu'il mette à jour window.storyFile
+window.handleStoryFile = function(input){
+  const file = input.files[0]; if(!file) return;
+  const isVideo = file.type.startsWith('video/');
+  if(isVideo){ window.storyVideoFile = file; window.storyFile = null; }
+  else { window.storyFile = file; window.storyVideoFile = null; }
+  
+  const zone = document.getElementById('story-zone');
+  const lbl = document.getElementById('story-zone-label');
+  const hnt = document.getElementById('story-zone-hint');
+  if(lbl) lbl.style.display='none';
+  if(hnt) hnt.style.display='none';
+  zone && zone.querySelectorAll('img,video').forEach(el=>el.remove());
+  
+  if(isVideo){
+    const vid=document.createElement('video');
+    vid.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+    vid.autoplay=true;vid.muted=true;vid.loop=true;vid.playsInline=true;
+    vid.src=URL.createObjectURL(file);
+    zone && zone.appendChild(vid);
+  } else {
+    const reader=new FileReader();
+    reader.onload=e=>{
+      window.storyDataUrl=e.target.result;
+      const img=document.createElement('img');
+      img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover';
+      img.src=window.storyDataUrl;
+      zone && zone.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
 /**
  * CQP Toulouse — patch.js v3
  * Stories modération, caméra directe, swipe, toast, typo, contraste nav
