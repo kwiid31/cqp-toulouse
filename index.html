@@ -714,12 +714,16 @@ function showStoryMsg(type,text){
 // -------- Story viewer --------
 let svStories=[];let svIdx=0;let svTimer=null;const SV_DURATION=5000;
 
-async function loadStories(){
+async async function loadStories(){
   try{
-    const{data}=await sb.from('stories').select('*').eq('visible',true).order('created_at',{ascending:false}).limit(20);
+    const now=new Date().toISOString();
+    const{data}=await sb.from('stories').select('*')
+      .eq('visible',true)
+      .gt('expires_at',now)
+      .order('created_at',{ascending:false}).limit(20);
     svStories=data||[];
     renderStoriesBar(svStories);
-  }catch{}
+  }catch(e){console.warn(e);}
 }
 function renderStoriesBar(stories){
   const bar=document.getElementById('stories-bar');
