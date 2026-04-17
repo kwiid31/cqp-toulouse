@@ -522,7 +522,15 @@ input.cmt-input:focus{border-color:var(--rouge)}
   </div>
 </div>
 
+
+
+
+
+
+
+
 <script>
+
 // ============ CONFIG SUPABASE ============
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
@@ -554,8 +562,9 @@ function freshnessLabel(dateStr){
   return'';
 }
 function readTime(text){const w=text.split(' ').length;const m=Math.ceil(w/200);return m<=1?'⚡ 1 min':`📖 ${m} min`;}
-</script>
-<script>
+
+
+
 // ============ LIKES & COMMENTAIRES ============
 const _pending={};
 function loadCardCounts(type,id){
@@ -598,8 +607,9 @@ async function toggleLike(type,id){
 function heartBurst(btn){
   try{const r=btn.getBoundingClientRect();['❤️','✊','💛','❤️','🧡'].forEach(e=>{const p=document.createElement('span');p.textContent=e;p.style.cssText=`position:fixed;left:${r.left+r.width/2}px;top:${r.top}px;font-size:${.9+Math.random()*.6}rem;pointer-events:none;z-index:9999;transition:all .7s ease-out;opacity:1`;document.body.appendChild(p);requestAnimationFrame(()=>{p.style.transform=`translate(${(Math.random()-.5)*70}px,-${30+Math.random()*40}px)`;p.style.opacity='0';});setTimeout(()=>p.remove(),750);});}catch{}
 }
-</script>
-<script>
+
+
+
 // ============ MINI DRAWER COMMENTAIRES ============
 let miniType=null,miniId=null;
 function openMini(type,id,titre){
@@ -639,8 +649,9 @@ async function sendCmt(){
 function openDr(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
 function closeDr(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
 function openDrDepot(){openDr('dr-depot');}
-</script>
-<script>
+
+
+
 // ============ PHOTO STORIES ============
 window.storyFile=null;
 window.storyVideoFile=null;
@@ -796,8 +807,9 @@ function storyViewerNav(dir){
   if(svIdx<0){svIdx=0;}
   renderSvSlide();
 }
-</script>
-<script>
+
+
+
 // ============ ACTIONS MENU ============
 function togglePubMenu(e){if(e)e.stopPropagation();const m=document.getElementById('pub-menu');const o=document.getElementById('pub-overlay');m.classList.toggle('open');o.classList.toggle('open');}
 function closePubMenu(){document.getElementById('pub-menu').classList.remove('open');document.getElementById('pub-overlay').classList.remove('open');}
@@ -845,8 +857,9 @@ async function submitDepot(){
   if(error){if(msg){msg.textContent='⚠ Erreur : '+error.message;msg.className='form-msg err';}}
   else{if(msg){msg.textContent='✅ Annonce envoyée ! Publiée après validation (24–48h).';msg.className='form-msg ok';}setTimeout(()=>{closeDr('dr-depot');['dep-titre','dep-quartier','dep-desc','dep-prenom','dep-email','dep-tel'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});if(msg)msg.className='form-msg';},3000);}
 }
-</script>
-<script>
+
+
+
 // ============ FEED BUILDER ============
 function buildActionBar(type,id,titre){
   return `<div class="card-actions">
@@ -923,8 +936,9 @@ function renderAnnCard(a){
     ${buildActionBar('annonce',a.id,a.titre)}
   </article>`;
 }
-</script>
-<script>
+
+
+
 // ============ SCROLL INFINI ============
 const FEED_PAGE=8;
 let allFeedItems=[];
@@ -1064,6 +1078,7 @@ async function submitStory(){
     btn.disabled=false;btn.textContent='Publier ma story ✨';
   }
 }
+
 </script>
 <script src="patch.js"></script>
 </body>
