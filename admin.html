@@ -141,6 +141,7 @@ tbody td{padding:10px 14px;font-size:.84rem;color:rgba(244,241,235,.8)}
       <button class="tab-btn" data-tab="t-stats" onclick="switchTab(this)">📊 Statistiques</button>
       <button class="tab-btn" data-tab="t-avis" onclick="switchTab(this)">⭐ Avis</button>
       <button class="tab-btn" data-tab="t-wa" onclick="switchTab(this)">📲 WhatsApp → IA</button>
+      <button class="tab-btn" data-tab="t-stories" onclick="switchTab(this)">📸 Stories</button>
     </div>
     <div class="admin-content">
       <div class="tab-panel active" id="t-adh">
@@ -1817,5 +1818,75 @@ function closeMenu(){document.getElementById('mobileMenu').classList.remove('ope
 
 // ===== TRACKING VIA EDGE FUNCTION =====
 
+
+// ── ADMIN STORIES ─────────────────────────────────────────────────────────────
+async function loadStories(filter='pending'){
+  const body=document.getElementById('stories-admin-body');
+  if(!body)return;
+  body.innerHTML='<div class="spin">⏳ Chargement…</div>';
+  
+  let query=sb.from('stories').select('*').order('created_at',{ascending:false});
+  if(filter==='pending') query=query.eq('visible',false).eq('reported',0);
+  else if(filter==='reported') query=query.gt('reported',0);
+  
+  const{data,error}=await query;
+  if(error){body.innerHTML='<div style="color:#f87171;padding:20px">Erreur: '+esc(error.message)+'</div>';return;}
+  const stories=data||[];
+  
+  if(!stories.length){
+    body.innerHTML='<div style="text-align:center;padding:40px;color:rgba(244,241,235,.4);font-family:\'Barlow Condensed\',sans-serif;letter-spacing:1px">'+(filter==='pending'?'✅ Aucune story en attente':'Aucune story')+'</div>';
+    return;
+  }
+  
+  body.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px">'+stories.map(s=>{
+    const isVid=s.media_type==='video';
+    const isPending=!s.visible&&!s.reported;
+    const isReported=s.reported>0;
+    const expiresIn=s.expires_at?Math.round((new Date(s.expires_at)-Date.now())/3600000):null;
+    return '<div style="background:rgba(255,255,255,.05);border-radius:10px;overflow:hidden;border:1px solid '+(isReported?'#C8102E':isPending?'#E8940F':'rgba(255,255,255,.1)'+'">')+'">'
+      +'<div style="position:relative;height:200px;background:#111;display:flex;align-items:center;justify-content:center">'
+      +(isVid
+        ?'<video src="'+esc(s.photo_url)+'" style="width:100%;height:100%;object-fit:cover" muted playsinline></video><div style="position:absolute;top:6px;left:6px;background:rgba(0,0,0,.7);color:#fff;border-radius:4px;font-size:.6rem;padding:2px 6px">▶ Vidéo</div>'
+        :'<img src="'+esc(s.photo_url)+'" style="width:100%;height:100%;object-fit:cover" loading="lazy">')
+      +'<div style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);color:#fff;border-radius:4px;font-size:.6rem;padding:2px 6px">👁 '+( s.views||0)+'</div>'
+      +(isReported?'<div style="position:absolute;bottom:0;left:0;right:0;background:#C8102E;color:#fff;text-align:center;font-size:.6rem;padding:3px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:1px">🚩 SIGNALÉE</div>':'')
+      +(isPending?'<div style="position:absolute;bottom:0;left:0;right:0;background:#E8940F;color:#fff;text-align:center;font-size:.6rem;padding:3px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:1px">⏳ EN ATTENTE</div>':'')
+      +'</div>'
+      +'<div style="padding:10px">'
+      +'<div style="font-weight:700;font-size:.85rem;margin-bottom:2px">'+esc(s.prenom)+'</div>'
+      +'<div style="font-size:.7rem;color:rgba(244,241,235,.5);margin-bottom:8px">'+(expiresIn!==null?(expiresIn>0?'Expire dans '+expiresIn+'h':'Expiré'):'')+'</div>'
+      +'<div style="display:flex;gap:6px;flex-wrap:wrap">'
+      +(!s.visible?'<button onclick="approveStory('+s.id+')" style="flex:1;background:#14532d;color:#4ade80;border:none;border-radius:5px;padding:5px;font-size:.68rem;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.5px">✅ Valider</button>':'')
+      +'<button onclick="deleteStory('+s.id+',\''+esc(s.photo_url)+'\')" style="flex:1;background:rgba(200,16,46,.2);color:#f87171;border:1px solid rgba(200,16,46,.4);border-radius:5px;padding:5px;font-size:.68rem;cursor:pointer;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.5px">🗑 Suppr.</button>'
+      +'</div>'
+      +'</div></div>';
+  }).join('')+'</div>';
+}
+
+async function approveStory(id){
+  await sb.from('stories').update({visible:true,moderated:true}).eq('id',id);
+  loadStories('pending');
+}
+async function deleteStory(id,url){
+  if(!confirm('Supprimer définitivement cette story ?'))return;
+  // Supprimer du storage
+  const path=url.split('/stories/').pop();
+  if(path)await sb.storage.from('stories').remove([path]);
+  await sb.from('stories').delete().eq('id',id);
+  loadStories('all');
+}
 </script>
-</body></html>
+</body></html
+        <div class="tab-panel" id="t-stories">
+          <div style="max-width:900px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+              <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem">📸 Stories</h3>
+              <div style="display:flex;gap:8px">
+                <button onclick="loadStories('pending')" style="background:#E8940F;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">⏳ En attente</button>
+                <button onclick="loadStories('all')" style="background:rgba(255,255,255,.1);color:#f4f1eb;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">Toutes</button>
+                <button onclick="loadStories('reported')" style="background:#C8102E;color:#fff;border:none;border-radius:6px;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;cursor:pointer">🚩 Signalées</button>
+              </div>
+            </div>
+            <div id="stories-admin-body"><div class="spin">⏳</div></div>
+          </div>
+        </div>>
