@@ -644,6 +644,9 @@ function renderBatch() {
   batch.filter(function(i) { return i._type === 'evt'; }).forEach(function(e) {
     updateCountdown(e.id, e.date_debut);
   });
+
+  // Si le sentinel est encore dans le viewport après ce batch → charger le suivant
+  setTimeout(checkScroll, 60);
 }
 
 function updateCountdown(id, date) {
