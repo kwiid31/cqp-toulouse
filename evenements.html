@@ -440,8 +440,7 @@ function submitPropose() {
     places_max:places,
     visible:false,
     validee:false,
-    propose_par:prenom,
-    email_contact:email
+    propose_par:prenom + ' (' + email + ')'
   }).then(function(r){
     if(r.error){toast('Erreur: '+r.error.message);btn.disabled=false;btn.textContent='Envoyer la proposition';return;}
     document.getElementById('propose-form').style.display='none';
@@ -451,8 +450,8 @@ function submitPropose() {
 
 // Auto-open form if hash
 if(window.location.hash==='#proposer') openPropose();
-
 load();
+(function(){ var k='pv_'+location.pathname; if(!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');sb.from('page_views').insert({session_id:getSid(),page:location.pathname});} })();
 </script>
 </body>
 </html>
