@@ -571,22 +571,8 @@ function svNav(dir) {
 })();
 
 // ── Feed ──────────────────────────────────────────────────────
-function skeletonHTML() {
-  return [1,2,3].map(function() {
-    return '<div class="skel-card">' +
-      '<div class="skel-img skeleton"></div>' +
-      '<div class="skel-body">' +
-        '<div class="skel-line skeleton" style="height:10px;width:40%;margin-bottom:8px;"></div>' +
-        '<div class="skel-line skeleton" style="height:14px;width:85%;margin-bottom:6px;"></div>' +
-        '<div class="skel-line skeleton" style="height:11px;width:65%;"></div>' +
-      '</div>' +
-      '<div class="skel-footer skeleton"></div>' +
-    '</div>';
-  }).join('');
-}
-
 function loadFeed() {
-  document.getElementById('feed').innerHTML = skeletonHTML();
+  document.getElementById('feed').innerHTML = '<div class="loading-feed">Chargement…</div>';
   Promise.all([
     sb.from('actus').select('id,titre,contenu,categorie,date_publication').eq('visible', true).order('date_publication',{ascending:false}),
     sb.from('evenements').select('id,titre,description,lieu,categorie,date_debut,photo_url').eq('visible', true).eq('validee', true).order('date_debut',{ascending:false}).limit(50),
@@ -605,7 +591,7 @@ function loadFeed() {
     items.sort(function(a, b) { return new Date(b._date) - new Date(a._date); });
     feedItems = items;
     feedPage = 0;
-    feedDone = false;
+    feedCycle = 0;
     var newCount = items.length - lastSeenCount;
     var label = items.length + ' publication' + (items.length > 1 ? 's' : '');
     if (newCount > 0 && lastSeenCount > 0) label += ' · <span style="color:var(--red);font-weight:700;">+' + newCount + ' nouvelles</span>';
@@ -614,58 +600,48 @@ function loadFeed() {
     document.getElementById('feed').innerHTML = '';
     renderBatch();
     loadAllCounts();
-    // Rattraper le cas où le sentinel était déjà visible avant le chargement des données
-    setTimeout(function() {
-      var s = document.getElementById('feed-sentinel');
-      if (s && !feedDone && !feedLoading) {
-        var r = s.getBoundingClientRect();
-        if (r.top < window.innerHeight + 300) renderBatch();
-      }
-    }, 120);
   });
 }
 
+var feedCycle = 0;
+
 function renderBatch() {
-  if (feedLoading || feedDone || !feedItems.length) return;
+  if (feedLoading || !feedItems.length) return;
   feedLoading = true;
   var start = feedPage * BATCH;
+
+  // Fin du cycle — on repart du début
+  if (start >= feedItems.length) {
+    feedPage = 0;
+    feedCycle++;
+    start = 0;
+    // Séparateur visuel entre les cycles
+    var sep = document.createElement('div');
+    sep.className = 'feed-end';
+    sep.innerHTML = '<span style="opacity:.5">· · ·</span>';
+    document.getElementById('feed').appendChild(sep);
+  }
+
   var batch = feedItems.slice(start, start + BATCH);
-  if (!batch.length) { feedDone = true; feedLoading = false; showEnd(); return; }
+  if (!batch.length) { feedLoading = false; return; }
+
   var feed = document.getElementById('feed');
   batch.forEach(function(item, i) {
     var el = document.createElement('div');
     el.className = 'card';
-    el.id = 'card-' + item._type + '-' + item.id;
+    // ID unique par cycle pour éviter les doublons DOM
+    el.id = 'card-' + item._type + '-' + item.id + (feedCycle > 0 ? '-c' + feedCycle : '');
     el.innerHTML = buildCard(item);
     feed.appendChild(el);
     setTimeout(function() { el.classList.add('vis'); }, i * 35 + 20);
   });
   feedPage++;
   feedLoading = false;
-  if (feedPage * BATCH >= feedItems.length) { feedDone = true; showEnd(); return; }
-  // Si le sentinel est encore dans le viewport, charger le batch suivant
-  setTimeout(function() {
-    var s = document.getElementById('feed-sentinel');
-    if (s && !feedDone && !feedLoading) {
-      var r = s.getBoundingClientRect();
-      if (r.top < window.innerHeight + 300) renderBatch();
-    }
-  }, 60);
-  // Start countdowns for evt cards
+
+  // Countdowns pour les évènements
   batch.filter(function(i) { return i._type === 'evt'; }).forEach(function(e) {
     updateCountdown(e.id, e.date_debut);
   });
-}
-
-function showEnd() {
-  var feed = document.getElementById('feed');
-  if (!document.getElementById('feed-end')) {
-    var el = document.createElement('div');
-    el.id = 'feed-end';
-    el.className = 'feed-end';
-    el.textContent = feedItems.length ? '✓ Vous êtes à jour' : 'Aucune publication pour le moment';
-    feed.appendChild(el);
-  }
 }
 
 function updateCountdown(id, date) {
@@ -716,10 +692,10 @@ function buildCard(item) {
     '</div>';
 }
 
-// Infinite scroll — IntersectionObserver (like Instagram)
+// Scroll infini circulaire — IntersectionObserver
 var scrollObserver = new IntersectionObserver(function(entries) {
-  if (entries[0].isIntersecting && !feedDone && !feedLoading) renderBatch();
-}, {rootMargin: '300px'});
+  if (entries[0].isIntersecting && !feedLoading) renderBatch();
+}, {rootMargin: '200px'});
 scrollObserver.observe(document.getElementById('feed-sentinel'));
 
 // ── Double-tap to like ────────────────────────────────────────
