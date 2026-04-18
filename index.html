@@ -600,11 +600,8 @@ function loadFeed() {
     document.getElementById('feed').innerHTML = '';
     renderBatch();
     loadAllCounts();
-    // Reconnecter l'observer après le premier batch pour relancer si le sentinel est encore visible
-    requestAnimationFrame(function() {
-      scrollObserver.unobserve(document.getElementById('feed-sentinel'));
-      scrollObserver.observe(document.getElementById('feed-sentinel'));
-    });
+    // Remplir le viewport si le sentinel est déjà visible après le premier batch
+    setTimeout(checkScroll, 80);
   });
 }
 
@@ -697,11 +694,14 @@ function buildCard(item) {
     '</div>';
 }
 
-// Scroll infini circulaire — IntersectionObserver
-var scrollObserver = new IntersectionObserver(function(entries) {
-  if (entries[0].isIntersecting && !feedLoading) renderBatch();
-}, {rootMargin: '200px'});
-scrollObserver.observe(document.getElementById('feed-sentinel'));
+// Scroll infini circulaire — scroll listener fiable
+function checkScroll() {
+  if (feedLoading || !feedItems.length) return;
+  var s = document.getElementById('feed-sentinel');
+  if (!s) return;
+  if (s.getBoundingClientRect().top < window.innerHeight + 250) renderBatch();
+}
+window.addEventListener('scroll', checkScroll, {passive: true});
 
 // ── Double-tap to like ────────────────────────────────────────
 (function() {
