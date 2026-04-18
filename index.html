@@ -260,6 +260,9 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
   <div class="sv-tap-r" onclick="svNav(1)"></div>
 </div>
 
+<!-- Infinite scroll sentinel -->
+<div id="feed-sentinel" style="height:1px;margin:0 0 20px;"></div>
+
 <!-- Comment Drawer -->
 <div class="drawer" id="cmt-drawer">
   <div class="drawer-bg" id="cmt-bg" onclick="closeDrawer()"></div>
@@ -540,13 +543,13 @@ function svNav(dir) {
 // ── Feed ──────────────────────────────────────────────────────
 function loadFeed() {
   Promise.all([
-    sb.from('actus').select('id,titre,contenu,categorie,date_publication,photo_url').eq('visible', true),
+    sb.from('actus').select('id,titre,contenu,categorie,date_publication').eq('visible', true),
     sb.from('evenements').select('id,titre,description,lieu,categorie,date_debut,photo_url').eq('visible', true).eq('validee', true).gt('date_debut', new Date().toISOString()),
     sb.from('annonces').select('id,titre,categorie,quartier,description,date_depot').eq('validee', true)
   ]).then(function(results) {
     var items = [];
     (results[0].data || []).forEach(function(a) {
-      items.push({_type:'actu', _dbtype:'actu', _date: a.date_publication, id:a.id, titre:a.titre, contenu:a.contenu, categorie:a.categorie, photo_url:a.photo_url});
+      items.push({_type:'actu', _dbtype:'actu', _date: a.date_publication, id:a.id, titre:a.titre, contenu:a.contenu, categorie:a.categorie});
     });
     (results[1].data || []).forEach(function(e) {
       items.push({_type:'evt', _dbtype:'evenement', _date: e.date_debut, id:e.id, titre:e.titre, contenu:e.description, categorie:e.categorie, photo_url:e.photo_url, lieu:e.lieu, date_debut:e.date_debut});
@@ -643,10 +646,11 @@ function buildCard(item) {
     '</div>';
 }
 
-// Infinite scroll
-window.addEventListener('scroll', function() {
-  if (!feedDone && window.innerHeight + window.scrollY >= document.body.offsetHeight - 240) renderBatch();
-}, {passive: true});
+// Infinite scroll — IntersectionObserver (like Instagram)
+var scrollObserver = new IntersectionObserver(function(entries) {
+  if (entries[0].isIntersecting && !feedDone && !feedLoading) renderBatch();
+}, {rootMargin: '300px'});
+scrollObserver.observe(document.getElementById('feed-sentinel'));
 
 // ── Likes & counts ────────────────────────────────────────────
 function loadAllCounts() {
@@ -760,6 +764,15 @@ document.addEventListener('click', function(e) {
     closePubMenu();
   }
 }, {passive: true});
+
+// ── Page tracking ─────────────────────────────────────────────
+(function() {
+  var key = 'pv_' + location.pathname;
+  if (!sessionStorage.getItem(key)) {
+    sessionStorage.setItem(key, '1');
+    sb.from('page_views').insert({session_id: getSid(), page: location.pathname});
+  }
+})();
 
 // ── Init ──────────────────────────────────────────────────────
 loadStories();
