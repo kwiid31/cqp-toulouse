@@ -340,10 +340,10 @@ function renderStoriesGrid() {
     return;
   }
   wrap.innerHTML = '<div class="stories-grid">' + stories.map(function(s) {
-    var isImg = s.type === 'image';
+    var isImg = s.media_type !== 'video';
     var media = isImg
-      ? '<img src="' + esc(s.url) + '" loading="lazy" alt="story">'
-      : '<video src="' + esc(s.url) + '" muted playsinline preload="metadata"></video>';
+      ? '<img src="' + esc(s.photo_url) + '" loading="lazy" alt="story">'
+      : '<video src="' + esc(s.photo_url) + '" muted playsinline preload="metadata"></video>';
     var statusBadge = s.visible
       ? '<span class="badge pub story-status">✓</span>'
       : '<span class="badge pending story-status">⏳</span>';
@@ -354,7 +354,7 @@ function renderStoriesGrid() {
         '<div class="story-thumb-date">' + fmtDate(s.created_at) + '</div>' +
         '<div class="story-thumb-actions">' +
           (!s.visible ? '<button class="btn-sm btn-green" onclick="validateStory(' + s.id + ')">✓ Valider</button>' : '<button class="btn-sm btn-muted" onclick="hideStory(' + s.id + ')">Masquer</button>') +
-          '<button class="btn-sm btn-red" onclick="deleteStory(' + s.id + ',\'' + esc(s.url) + '\')">✕</button>' +
+          '<button class="btn-sm btn-red" onclick="deleteStory(' + s.id + ',\'' + esc(s.photo_url) + '\')">✕</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -380,7 +380,7 @@ function hideStory(id) {
 }
 function deleteStory(id, url) {
   confirm2('Supprimer la story', 'La story sera supprimée définitivement.', function() {
-    var path = url.split('/stories/').pop();
+    var path = (url || '').split('/stories/').pop();
     sb.storage.from('stories').remove([path]).then(function() {
       sb.from('stories').delete().eq('id', id).then(function(r) {
         if (r.error) { toast('Erreur: ' + r.error.message, 'err'); return; }
@@ -435,19 +435,19 @@ function deleteActu(id) {
 
 // ── Adhérents ─────────────────────────────────────────────────
 function loadAdherents() {
-  sb.from('adherents').select('*').order('created_at',{ascending:false}).then(function(res) {
+  sb.from('adherents').select('*').order('date_inscription',{ascending:false}).then(function(res) {
     var wrap = document.getElementById('adh-tbl-wrap');
-    if (res.error || !res.data) { wrap.innerHTML = '<div class="loading">Erreur</div>'; return; }
+    if (res.error || !res.data) { wrap.innerHTML = '<div class="loading">Erreur: ' + (res.error ? res.error.message : '?') + '</div>'; return; }
     if (!res.data.length) { wrap.innerHTML = '<table><tr class="empty-row"><td colspan="4">Aucun adhérent</td></tr></table>'; return; }
     wrap.innerHTML = '<table>' +
-      '<thead><tr><th>Nom</th><th>Email</th><th>Quartier</th><th>Date</th></tr></thead>' +
+      '<thead><tr><th>Nom</th><th>Email</th><th>Quartier</th><th>Inscription</th></tr></thead>' +
       '<tbody>' + res.data.map(function(a) {
-        var nom = [a.prenom, a.nom].filter(Boolean).join(' ') || a.nom || a.prenom || '—';
+        var nom = [a.prenom, a.nom].filter(Boolean).join(' ') || '—';
         return '<tr>' +
           '<td>' + esc(nom) + '</td>' +
           '<td><div class="trunc">' + esc(a.email || '—') + '</div></td>' +
           '<td>' + esc(a.quartier || '—') + '</td>' +
-          '<td style="white-space:nowrap">' + fmtDate(a.created_at) + '</td>' +
+          '<td style="white-space:nowrap">' + fmtDate(a.date_inscription) + '</td>' +
         '</tr>';
       }).join('') + '</tbody></table>';
   });
@@ -620,7 +620,7 @@ function loadStats() {
 
 // ── Export CSV ────────────────────────────────────────────────
 function exportCsv(table) {
-  sb.from(table).select('*').order('created_at',{ascending:false}).then(function(res) {
+  sb.from(table).select('*').order('id',{ascending:false}).then(function(res) {
     if (!res.data || !res.data.length) { toast('Aucune donnée', 'err'); return; }
     var keys = Object.keys(res.data[0]);
     var csv = keys.join(',') + '\n' + res.data.map(function(row) {
