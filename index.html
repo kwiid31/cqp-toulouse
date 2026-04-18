@@ -447,17 +447,16 @@ function submitStory() {
       media_type: window.storyFileType,
       visible: false,
       expires_at: expires,
-      views: 0,
-      session_id: getSid()
+      views: 0
     }).then(function(insRes) {
       if (insRes.error) {
-        toast('Erreur : ' + insRes.error.message);
+        toast('Erreur envoi : ' + insRes.error.message);
         btn.disabled = false;
         btn.textContent = 'Publier la story';
         return;
       }
       closeStoryModal();
-      toast('✓ Visible après validation (quelques minutes)');
+      toast('Story envoyée — visible après validation par l\'admin');
     });
   });
 }
@@ -543,9 +542,9 @@ function svNav(dir) {
 // ── Feed ──────────────────────────────────────────────────────
 function loadFeed() {
   Promise.all([
-    sb.from('actus').select('id,titre,contenu,categorie,date_publication').eq('visible', true),
-    sb.from('evenements').select('id,titre,description,lieu,categorie,date_debut,photo_url').eq('visible', true).eq('validee', true).gt('date_debut', new Date().toISOString()),
-    sb.from('annonces').select('id,titre,categorie,quartier,description,date_depot').eq('validee', true)
+    sb.from('actus').select('id,titre,contenu,categorie,date_publication').eq('visible', true).order('date_publication',{ascending:false}),
+    sb.from('evenements').select('id,titre,description,lieu,categorie,date_debut,photo_url').eq('visible', true).eq('validee', true).order('date_debut',{ascending:false}).limit(50),
+    sb.from('annonces').select('id,titre,categorie,quartier,description,date_depot').eq('validee', true).order('date_depot',{ascending:false}).limit(50)
   ]).then(function(results) {
     var items = [];
     (results[0].data || []).forEach(function(a) {
@@ -611,6 +610,7 @@ function updateCountdown(id, date) {
 
 function buildCard(item) {
   var typeLabel = {actu:'Actu', evt:'Événement', ann:'Annonce'}[item._type];
+  var pages = {actu:'actus.html', evt:'evenements.html', ann:'annonces.html'};
   var img = item.photo_url ? '<img class="card-img" src="' + esc(item.photo_url) + '" loading="lazy" alt="">' : '';
   var date = timeAgo(item._date);
   var extra = '';
@@ -623,7 +623,8 @@ function buildCard(item) {
   if (item._type === 'ann' && item.quartier) {
     extra = '<div class="card-extra"><div class="card-loc"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + esc(item.quartier) + '</div></div>';
   }
-  return img +
+  return '<a href="' + pages[item._type] + '" style="display:block;text-decoration:none;color:inherit;">' +
+    img +
     '<div class="card-body">' +
       '<div class="card-meta">' +
         '<span class="badge ' + item._type + '">' + typeLabel + '</span>' +
@@ -633,16 +634,17 @@ function buildCard(item) {
       '<div class="card-title">' + esc(item.titre || '') + '</div>' +
       '<div class="card-text">' + esc(item.contenu || '') + '</div>' +
       extra +
-    '</div>' +
+    '</div></a>' +
     '<div class="card-footer">' +
-      '<button class="btn-act" id="like-' + item._type + '-' + item.id + '" onclick="toggleLike(\'' + item._dbtype + '\',' + item.id + ',\'' + item._type + '\')">' +
+      '<button class="btn-act" id="like-' + item._type + '-' + item.id + '" onclick="event.preventDefault();toggleLike(\'' + item._dbtype + '\',' + item.id + ',\'' + item._type + '\')">' +
         '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
         '<span id="lc-' + item._type + '-' + item.id + '">0</span>' +
       '</button>' +
-      '<button class="btn-act" onclick="openDrawer(\'' + item._dbtype + '\',' + item.id + ',\'' + item._type + '\',\'' + esc(item.titre || '') + '\')">' +
+      '<button class="btn-act" onclick="event.preventDefault();openDrawer(\'' + item._dbtype + '\',' + item.id + ',\'' + item._type + '\',\'' + esc(item.titre || '') + '\')">' +
         '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' +
         '<span id="cc-' + item._type + '-' + item.id + '">0</span>' +
       '</button>' +
+      '<span style="margin-left:auto;font-family:\'Barlow Condensed\',sans-serif;font-size:.78rem;color:var(--red);padding-right:6px;opacity:.8;">Voir →</span>' +
     '</div>';
 }
 
