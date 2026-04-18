@@ -145,9 +145,14 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
     <div class="topbar-logo">CQP Toulouse</div>
     <div class="topbar-sub">Comité des Quartiers Populaires</div>
   </div>
-  <a href="a-propos.html" class="topbar-info" aria-label="À propos">
-    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-  </a>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <a href="a-propos.html" class="topbar-info" aria-label="À propos">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </a>
+    <a href="admin.html" class="topbar-info" aria-label="Admin" title="Administration">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg>
+    </a>
+  </div>
 </header>
 
 <!-- Stories Bar -->
@@ -349,13 +354,13 @@ function renderStoriesBar() {
     el.className = 'story-item';
     el.setAttribute('data-idx', i);
     el.onclick = function() { openSv(i); };
-    var inner = s.type === 'video'
+    var inner = s.media_type === 'video'
       ? '<div class="story-inner" style="background:#111;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" fill="#fff" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>'
-      : '<div class="story-inner"><img src="' + esc(s.url) + '" loading="lazy" alt="story"></div>';
+      : '<div class="story-inner"><img src="' + esc(s.photo_url) + '" loading="lazy" alt="story"></div>';
     el.innerHTML =
-      '<div class="story-ring' + (s.type === 'video' ? '' : '') + '">' +
+      '<div class="story-ring">' +
         inner +
-        (s.type === 'video' ? '<span class="story-vid-badge">▶</span>' : '') +
+        (s.media_type === 'video' ? '<span class="story-vid-badge">▶</span>' : '') +
       '</div>' +
       '<span class="story-label">Story</span>' +
       '<span class="story-views">👁 ' + (s.views || 0) + '</span>';
@@ -435,8 +440,8 @@ function submitStory() {
     var url = SUPA_URL + '/storage/v1/object/public/stories/' + path;
     var expires = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
     sb.from('stories').insert({
-      url: url,
-      type: window.storyFileType,
+      photo_url: url,
+      media_type: window.storyFileType,
       visible: false,
       expires_at: expires,
       views: 0,
@@ -476,15 +481,15 @@ function svShow() {
   var img = document.getElementById('sv-img');
   var vid = document.getElementById('sv-vid');
   vid.pause();
-  if (s.type === 'video') {
+  if (s.media_type === 'video') {
     img.style.display = 'none';
     vid.style.display = 'block';
-    vid.src = s.url;
+    vid.src = s.photo_url;
     vid.play();
   } else {
     vid.style.display = 'none';
     img.style.display = 'block';
-    img.src = s.url;
+    img.src = s.photo_url;
   }
   // Progress segments
   var prog = document.getElementById('sv-progress');
@@ -495,7 +500,7 @@ function svShow() {
     var f = document.getElementById('svf-' + i);
     if (f) f.style.width = '100%';
   }
-  var dur = s.type === 'video' ? 15000 : 5000;
+  var dur = s.media_type === 'video' ? 15000 : 5000;
   var fill = document.getElementById('svf-' + svIdx);
   if (fill) {
     fill.style.transition = 'width ' + (dur / 1000) + 's linear';
