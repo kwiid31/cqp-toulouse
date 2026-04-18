@@ -332,6 +332,7 @@ function sendCmt() {
 }
 
 load();
+(function(){ var k='pv_'+location.pathname; if(!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');sb.from('page_views').insert({session_id:getSid(),page:location.pathname});} })();
 </script>
 </body>
 </html>
