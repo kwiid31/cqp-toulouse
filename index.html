@@ -600,6 +600,11 @@ function loadFeed() {
     document.getElementById('feed').innerHTML = '';
     renderBatch();
     loadAllCounts();
+    // Reconnecter l'observer après le premier batch pour relancer si le sentinel est encore visible
+    requestAnimationFrame(function() {
+      scrollObserver.unobserve(document.getElementById('feed-sentinel'));
+      scrollObserver.observe(document.getElementById('feed-sentinel'));
+    });
   });
 }
 
