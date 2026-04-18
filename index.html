@@ -614,11 +614,19 @@ function loadFeed() {
     document.getElementById('feed').innerHTML = '';
     renderBatch();
     loadAllCounts();
+    // Rattraper le cas où le sentinel était déjà visible avant le chargement des données
+    setTimeout(function() {
+      var s = document.getElementById('feed-sentinel');
+      if (s && !feedDone && !feedLoading) {
+        var r = s.getBoundingClientRect();
+        if (r.top < window.innerHeight + 300) renderBatch();
+      }
+    }, 120);
   });
 }
 
 function renderBatch() {
-  if (feedLoading || feedDone) return;
+  if (feedLoading || feedDone || !feedItems.length) return;
   feedLoading = true;
   var start = feedPage * BATCH;
   var batch = feedItems.slice(start, start + BATCH);
@@ -634,7 +642,15 @@ function renderBatch() {
   });
   feedPage++;
   feedLoading = false;
-  if (feedPage * BATCH >= feedItems.length) { feedDone = true; showEnd(); }
+  if (feedPage * BATCH >= feedItems.length) { feedDone = true; showEnd(); return; }
+  // Si le sentinel est encore dans le viewport, charger le batch suivant
+  setTimeout(function() {
+    var s = document.getElementById('feed-sentinel');
+    if (s && !feedDone && !feedLoading) {
+      var r = s.getBoundingClientRect();
+      if (r.top < window.innerHeight + 300) renderBatch();
+    }
+  }, 60);
   // Start countdowns for evt cards
   batch.filter(function(i) { return i._type === 'evt'; }).forEach(function(e) {
     updateCountdown(e.id, e.date_debut);
