@@ -592,6 +592,7 @@ function deleteCmt(id) {
 function loadStats() {
   var grid = document.getElementById('stats-grid');
   grid.innerHTML = '<div class="loading">Calcul…</div>';
+  var since7 = new Date(Date.now() - 7*24*3600*1000).toISOString();
   Promise.all([
     sb.from('actus').select('*',{count:'exact',head:true}),
     sb.from('adherents').select('*',{count:'exact',head:true}),
@@ -599,22 +600,44 @@ function loadStats() {
     sb.from('evenements').select('*',{count:'exact',head:true}),
     sb.from('commentaires').select('*',{count:'exact',head:true}),
     sb.from('likes').select('*',{count:'exact',head:true}),
-    sb.from('stories').select('views')
+    sb.from('stories').select('views'),
+    sb.from('page_views').select('*',{count:'exact',head:true}),
+    sb.from('page_views').select('session_id'),
+    sb.from('page_views').select('page,created_at').gte('created_at',since7),
+    sb.from('page_views').select('*',{count:'exact',head:true}).gte('created_at',since7)
   ]).then(function(results) {
-    var totalViews = (results[6].data || []).reduce(function(sum, s){ return sum + (s.views || 0); }, 0);
-    var statsDef = [
-      {label:'Actualités', val: results[0].count || 0},
-      {label:'Adhérent·es', val: results[1].count || 0},
-      {label:'Annonces', val: results[2].count || 0},
-      {label:'Événements', val: results[3].count || 0},
-      {label:'Commentaires', val: results[4].count || 0},
-      {label:'Likes', val: results[5].count || 0},
-      {label:'Vues stories', val: totalViews},
-      {label:'Stories', val: (results[6].data || []).length}
-    ];
-    grid.innerHTML = statsDef.map(function(s) {
-      return '<div class="stat-card"><div class="stat-val">' + s.val + '</div><div class="stat-label">' + esc(s.label) + '</div></div>';
+    var totalViews = (results[6].data || []).reduce(function(sum,s){return sum+(s.views||0);},0);
+    var allSessions = results[8].data || [];
+    var uniqueSessions = new Set(allSessions.map(function(r){return r.session_id;})).size;
+    var pvLast7 = results[10].count || 0;
+    var pageRows = results[9].data || [];
+    var pageCounts = {};
+    pageRows.forEach(function(r){ pageCounts[r.page]=(pageCounts[r.page]||0)+1; });
+    var pageLabels = {'/' :'Accueil','/index.html':'Accueil','/actus.html':'Actus','/evenements.html':'Évènements','/annonces.html':'Annonces','/a-propos.html':'À propos'};
+    var pageHtml = Object.keys(pageCounts).sort(function(a,b){return pageCounts[b]-pageCounts[a];}).slice(0,6).map(function(p){
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-family:Barlow Condensed,sans-serif;font-size:.85rem;">'
+        +'<span style="color:var(--muted)">'+(pageLabels[p]||p)+'</span>'
+        +'<span style="color:var(--text);font-weight:600;">'+pageCounts[p]+'</span></div>';
     }).join('');
+    var statsDef = [
+      {label:'Vues totales',val:results[7].count||0},
+      {label:'Sessions uniques',val:uniqueSessions},
+      {label:'Vues 7j',val:pvLast7},
+      {label:'Actualités',val:results[0].count||0},
+      {label:'Adhérent·es',val:results[1].count||0},
+      {label:'Annonces',val:results[2].count||0},
+      {label:'Événements',val:results[3].count||0},
+      {label:'Commentaires',val:results[4].count||0},
+      {label:'Likes',val:results[5].count||0},
+      {label:'Vues stories',val:totalViews},
+      {label:'Stories',val:(results[6].data||[]).length}
+    ];
+    grid.innerHTML = statsDef.map(function(s){
+      return '<div class="stat-card"><div class="stat-val">'+s.val+'</div><div class="stat-label">'+esc(s.label)+'</div></div>';
+    }).join('');
+    if (pageHtml) {
+      grid.innerHTML += '<div class="stat-card" style="grid-column:1/-1"><div class="stat-label" style="margin-bottom:8px;">Pages vues (7 derniers jours)</div>'+pageHtml+'</div>';
+    }
   });
 }
 
