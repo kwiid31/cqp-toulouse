@@ -833,6 +833,7 @@ function openDrawer(dbtype, id, localType, title) {
 function closeDrawer() {
   document.getElementById('cmt-bg').classList.remove('open');
   document.getElementById('cmt-panel').classList.remove('open');
+  document.getElementById('cmt-drawer').style.pointerEvents = '';
   cmtTarget = null;
 }
 function loadCmts() {
