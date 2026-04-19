@@ -67,6 +67,8 @@ function trackPage() {
     '.btn-act{position:relative!important;overflow:hidden!important;}',
     '@keyframes ring-pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,16,46,.3)}60%{box-shadow:0 0 0 6px rgba(200,16,46,0)}}',
     '.story-ring:not(.seen):not(.add){animation:ring-pulse 2.5s ease-in-out infinite;}',
+    '@keyframes heartPop{0%{transform:scale(1)}20%{transform:scale(1.45)}55%{transform:scale(.88)}100%{transform:scale(1)}}',
+    '.btn-act.popping svg{animation:heartPop .38s cubic-bezier(.36,.07,.19,.97);}',
   ].join('');
   document.head.appendChild(s);
 })();
