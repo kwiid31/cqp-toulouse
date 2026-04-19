@@ -614,6 +614,19 @@ function renderBatch() {
   feedPage++;
   feedLoading = false;
 
+  if (feedCycle > 0) {
+    batch.forEach(function(item) {
+      var base = document.getElementById('card-' + item._type + '-' + item.id);
+      var dupe = document.getElementById('card-' + item._type + '-' + item.id + '-c' + feedCycle);
+      if (!base || !dupe) return;
+      var lc0 = base.querySelector('[id^="lc-"]'), cc0 = base.querySelector('[id^="cc-"]'), lb0 = base.querySelector('[id^="like-"]');
+      var lc1 = dupe.querySelector('[id^="lc-"]'), cc1 = dupe.querySelector('[id^="cc-"]'), lb1 = dupe.querySelector('[id^="like-"]');
+      if (lc1 && lc0) lc1.textContent = lc0.textContent;
+      if (cc1 && cc0) cc1.textContent = cc0.textContent;
+      if (lb1 && lb0 && lb0.classList.contains('liked')) lb1.classList.add('liked');
+    });
+  }
+
   batch.filter(function(i) { return i._type === 'evt'; }).forEach(function(e) {
     updateCountdown(e.id, e.date_debut);
   });
@@ -774,7 +787,7 @@ function loadAllCounts() {
 function tapLike(dbtype, id, localType, btnEl) {
   var key = localType + '-' + id;
   var btn = btnEl || document.getElementById('like-' + key);
-  var cnt = document.getElementById('lc-' + key);
+  var cnt = (btn && btn.querySelector('span')) || document.getElementById('lc-' + key);
   var sid = getSid();
   if (navigator.vibrate) navigator.vibrate(40);
   if (btn) { btn.classList.remove('popping'); void btn.offsetWidth; btn.classList.add('popping'); setTimeout(function(){ btn.classList.remove('popping'); }, 400); }
