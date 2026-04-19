@@ -335,13 +335,20 @@ function toggleLike(id) {
   var btn=document.getElementById('like-'+id);
   var cnt=document.getElementById('lc-'+id);
   var sid=getSid();
-  if (likedSet[id]) {
+  if (navigator.vibrate) navigator.vibrate(40);
+  if (btn) { btn.classList.remove('popping'); void btn.offsetWidth; btn.classList.add('popping'); setTimeout(function(){ btn.classList.remove('popping'); }, 400); }
+  var wasLiked = !!likedSet[id];
+  var prev = parseInt((cnt && cnt.textContent) || 0);
+  likedSet[id] = !wasLiked;
+  if (btn) wasLiked ? btn.classList.remove('liked') : btn.classList.add('liked');
+  animCount(cnt, wasLiked ? Math.max(0, prev - 1) : prev + 1);
+  if (wasLiked) {
     sb.from('likes').delete().eq('item_type','evenement').eq('item_id',id).eq('session_id',sid).then(function(r){
-      if(!r.error){likedSet[id]=false;btn.classList.remove('liked');cnt.textContent=Math.max(0,parseInt(cnt.textContent||0)-1);}
+      if(r.error){likedSet[id]=true;if(btn)btn.classList.add('liked');animCount(cnt,prev);}
     });
   } else {
     sb.from('likes').insert({item_type:'evenement',item_id:id,session_id:sid}).then(function(r){
-      if(!r.error){likedSet[id]=true;btn.classList.add('liked');cnt.textContent=parseInt(cnt.textContent||0)+1;}
+      if(r.error){likedSet[id]=false;if(btn)btn.classList.remove('liked');animCount(cnt,prev);}
     });
   }
 }
@@ -373,13 +380,25 @@ function sendCmt() {
   var text=document.getElementById('cmt-text').value.trim();
   if(!name||!text){toast('Prénom et commentaire requis');return;}
   localStorage.setItem('cqp_prenom',name);
-  sb.from('commentaires').insert({item_type:'evenement',item_id:cmtTarget.id,prenom:name,message:text,visible:true}).then(function(r){
-    if(r.error){toast('Erreur: '+r.error.message);return;}
-    document.getElementById('cmt-text').value='';
-    toast('Commentaire publié ✓');
-    loadCmts(cmtTarget.id);
-    var el=document.getElementById('cc-'+cmtTarget.id);
-    if(el) el.textContent=parseInt(el.textContent||0)+1;
+  var list=document.getElementById('cmt-list');
+  var tempId='ctmp-'+Date.now();
+  var tempEl=document.createElement('div');
+  tempEl.className='cmt-item'; tempEl.id=tempId;
+  tempEl.innerHTML='<div class="cmt-name">'+esc(name)+'</div><div class="cmt-msg">'+esc(text)+'</div><div class="cmt-time">à l\'instant</div>';
+  if(!list.querySelector('.cmt-item')) list.innerHTML='';
+  list.appendChild(tempEl);
+  document.getElementById('cmt-text').value='';
+  var cc=document.getElementById('cc-'+cmtTarget.id);
+  animCount(cc, parseInt((cc&&cc.textContent)||0)+1);
+  var savedTarget=cmtTarget.id;
+  sb.from('commentaires').insert({item_type:'evenement',item_id:savedTarget,prenom:name,message:text,visible:true}).then(function(r){
+    if(r.error){
+      var te=document.getElementById(tempId); if(te) te.parentNode.removeChild(te);
+      animCount(cc, Math.max(0,parseInt((cc&&cc.textContent)||0)-1));
+      toast('Erreur: '+r.error.message,'err'); return;
+    }
+    toast('Commentaire publié ✓','ok');
+    loadCmts(savedTarget);
   });
 }
 
