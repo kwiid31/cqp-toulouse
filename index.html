@@ -41,7 +41,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 .feed{padding:0;}
 
 /* CARDS */
-.card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;margin:0 12px 12px;opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;}
+.card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;margin:0 12px 12px;opacity:0;transform:translateY(18px) scale(.97);transition:opacity .35s ease,transform .35s cubic-bezier(.22,.61,.36,1);}
 .card.vis{opacity:1;transform:none;}
 .card-img{width:100%;height:180px;object-fit:cover;}
 .card-body{padding:12px 14px 8px;}
@@ -157,6 +157,10 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 /* LIKE ANIMATION */
 @keyframes heartPop{0%{transform:scale(1)}20%{transform:scale(1.45)}55%{transform:scale(.88)}100%{transform:scale(1)}}
 .btn-act.popping svg{animation:heartPop .38s cubic-bezier(.36,.07,.19,.97);}
+
+/* SKELETON (fallback si core.js pas encore chargé) */
+.skel-card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;margin:0 12px 12px;}
+.skel-img{height:180px;}.skel-body{padding:12px 14px 16px;}.skel-line{border-radius:6px;margin-bottom:10px;}.skel-footer{height:44px;border-top:1px solid #f5f5f5;margin-top:8px;}
 
 /* SHARE */
 .btn-share{margin-left:auto;}
@@ -546,7 +550,7 @@ function svNav(dir) {
 
 // ── Feed ──────────────────────────────────────────────────────
 function loadFeed() {
-  document.getElementById('feed').innerHTML = '<div class="loading-feed">Chargement…</div>';
+  document.getElementById('feed').innerHTML = buildSkeletons(3);
   Promise.all([
     sb.from('actus').select('id,titre,contenu,categorie,date_publication').eq('visible', true).order('date_publication',{ascending:false}),
     sb.from('evenements').select('id,titre,description,lieu,categorie,date_debut,photo_url').eq('visible', true).eq('validee', true).order('date_debut',{ascending:false}).limit(50),
@@ -603,7 +607,7 @@ function renderBatch() {
     el.id = 'card-' + item._type + '-' + item.id + (feedCycle > 0 ? '-c' + feedCycle : '');
     el.innerHTML = buildCard(item);
     feed.appendChild(el);
-    setTimeout(function() { el.classList.add('vis'); }, i * 35 + 20);
+    setTimeout(function() { el.classList.add('vis'); }, i * 60 + 30);
   });
   feedPage++;
   feedLoading = false;
@@ -667,7 +671,7 @@ function checkScroll() {
   if (feedLoading || !feedItems.length) return;
   var s = document.getElementById('feed-sentinel');
   if (!s) return;
-  if (s.getBoundingClientRect().top < window.innerHeight + 250) renderBatch();
+  if (s.getBoundingClientRect().top < window.innerHeight + 700) renderBatch();
 }
 window.addEventListener('scroll', checkScroll, {passive: true});
 
@@ -743,8 +747,7 @@ function loadAllCounts() {
       var counts = {};
       (res.data || []).forEach(function(l) { counts[l.item_id] = (counts[l.item_id] || 0) + 1; });
       Object.keys(counts).forEach(function(id) {
-        var el = document.getElementById('lc-' + localType + '-' + id);
-        if (el) el.textContent = counts[id];
+        animCount(document.getElementById('lc-' + localType + '-' + id), counts[id]);
       });
     });
 
@@ -760,8 +763,7 @@ function loadAllCounts() {
       var counts = {};
       (res.data || []).forEach(function(l) { counts[l.item_id] = (counts[l.item_id] || 0) + 1; });
       Object.keys(counts).forEach(function(id) {
-        var el = document.getElementById('cc-' + localType + '-' + id);
-        if (el) el.textContent = counts[id];
+        animCount(document.getElementById('cc-' + localType + '-' + id), counts[id]);
       });
     });
   });
@@ -844,13 +846,30 @@ function sendCmt() {
   var text = document.getElementById('cmt-text').value.trim();
   if (!name || !text) { toast('Prénom et commentaire requis'); return; }
   localStorage.setItem('cqp_prenom', name);
+
+  // Optimistic UI : affiche le commentaire immédiatement
+  var list = document.getElementById('cmt-list');
+  var tempId = 'ctmp-' + Date.now();
+  var tempEl = document.createElement('div');
+  tempEl.className = 'cmt-item';
+  tempEl.id = tempId;
+  tempEl.innerHTML = '<div class="cmt-name">' + esc(name) + '</div><div class="cmt-msg">' + esc(text) + '</div><div class="cmt-time">à l\'instant</div>';
+  var emptyMsg = list.querySelector('[style*="text-align"]');
+  if (emptyMsg) list.innerHTML = '';
+  list.appendChild(tempEl);
+  document.getElementById('cmt-text').value = '';
+  var cc = document.getElementById('cc-' + cmtTarget.localType + '-' + cmtTarget.id);
+  animCount(cc, parseInt((cc && cc.textContent) || 0) + 1);
+
   sb.from('commentaires').insert({item_type: cmtTarget.dbtype, item_id: cmtTarget.id, prenom: name, message: text, visible: true}).then(function(r) {
-    if (r.error) { toast('Erreur : ' + r.error.message); return; }
-    document.getElementById('cmt-text').value = '';
-    toast('Commentaire publié ✓');
-    loadCmts();
-    var el = document.getElementById('cc-' + cmtTarget.localType + '-' + cmtTarget.id);
-    if (el) el.textContent = parseInt(el.textContent || 0) + 1;
+    if (r.error) {
+      var te = document.getElementById(tempId);
+      if (te) te.parentNode.removeChild(te);
+      animCount(cc, Math.max(0, parseInt((cc && cc.textContent) || 0) - 1));
+      toast('Erreur : ' + r.error.message, 'err');
+      return;
+    }
+    toast('Commentaire publié ✓', 'ok');
   });
 }
 
@@ -867,7 +886,30 @@ document.addEventListener('click', function(e) {
   }
 }, {passive: true});
 
+// ── Story skeletons ───────────────────────────────────────────
+function initStorySkeleton() {
+  var bar = document.getElementById('stories-bar');
+  var addBtn = document.getElementById('story-add-btn');
+  bar.innerHTML = '';
+  bar.appendChild(addBtn);
+  for (var i = 0; i < 4; i++) {
+    var el = document.createElement('div');
+    el.className = 'story-item';
+    el.innerHTML =
+      '<div style="width:58px;height:58px;border-radius:50%" class="skeleton"></div>' +
+      '<div class="skeleton" style="height:9px;width:38px;border-radius:4px;margin-top:4px"></div>';
+    bar.appendChild(el);
+  }
+}
+
+// ── Ripple global sur tous les boutons d'action ───────────────
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.btn-act');
+  if (btn) ripple(btn, e);
+});
+
 // ── Init ──────────────────────────────────────────────────────
+initStorySkeleton();
 trackPage();
 loadStories();
 loadFeed();
