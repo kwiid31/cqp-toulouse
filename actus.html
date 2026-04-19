@@ -19,7 +19,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 .topbar-count{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;color:var(--muted);margin-left:auto;}
 
 .list{padding:12px;}
-.card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;margin-bottom:12px;opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;}
+.card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;margin-bottom:12px;opacity:0;transform:translateY(18px) scale(.97);transition:opacity .35s ease,transform .35s cubic-bezier(.22,.61,.36,1);}
 .card.visible{opacity:1;transform:none;}
 .card-img{width:100%;height:190px;object-fit:cover;}
 .card-body{padding:12px 14px 8px;}
@@ -142,6 +142,7 @@ var likedSet = {};
 var openActuId = null;
 
 function load() {
+  document.getElementById('list').innerHTML = buildSkeletons(3);
   sb.from('actus').select('*').eq('visible', true).order('date_publication', {ascending: false}).then(function(res) {
     if (res.error) { document.getElementById('list').innerHTML = '<div class="loading">Erreur de chargement</div>'; return; }
     actus = res.data || [];
@@ -186,7 +187,7 @@ function renderList() {
   }).join('');
   setTimeout(function() {
     document.querySelectorAll('.card').forEach(function(c, i) {
-      setTimeout(function(){ c.classList.add('visible'); }, i * 40);
+      setTimeout(function(){ c.classList.add('visible'); }, i * 60);
     });
   }, 50);
 }
@@ -199,8 +200,7 @@ function loadCounts() {
     var counts = {};
     (res.data||[]).forEach(function(l){ counts[l.item_id] = (counts[l.item_id]||0) + 1; });
     Object.keys(counts).forEach(function(id) {
-      var el = document.getElementById('lc-'+id);
-      if (el) el.textContent = counts[id];
+      animCount(document.getElementById('lc-'+id), counts[id]);
     });
   });
   sb.from('likes').select('item_id').eq('item_type', 'actu').eq('session_id', sid).in('item_id', ids).then(function(res) {
@@ -214,8 +214,7 @@ function loadCounts() {
     var counts = {};
     (res.data||[]).forEach(function(l){ counts[l.item_id] = (counts[l.item_id]||0) + 1; });
     Object.keys(counts).forEach(function(id) {
-      var el = document.getElementById('cc-'+id);
-      if (el) el.textContent = counts[id];
+      animCount(document.getElementById('cc-'+id), counts[id]);
     });
   });
 }
