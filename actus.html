@@ -223,13 +223,20 @@ function toggleLike(id) {
   var btn = document.getElementById('like-'+id);
   var cnt = document.getElementById('lc-'+id);
   var sid = getSid();
-  if (likedSet[id]) {
+  if (navigator.vibrate) navigator.vibrate(40);
+  if (btn) { btn.classList.remove('popping'); void btn.offsetWidth; btn.classList.add('popping'); setTimeout(function(){ btn.classList.remove('popping'); }, 400); }
+  var wasLiked = !!likedSet[id];
+  var prev = parseInt((cnt && cnt.textContent) || 0);
+  likedSet[id] = !wasLiked;
+  if (btn) wasLiked ? btn.classList.remove('liked') : btn.classList.add('liked');
+  animCount(cnt, wasLiked ? Math.max(0, prev - 1) : prev + 1);
+  if (wasLiked) {
     sb.from('likes').delete().eq('item_type','actu').eq('item_id',id).eq('session_id',sid).then(function(res) {
-      if (!res.error) { likedSet[id]=false; btn.classList.remove('liked'); cnt.textContent = Math.max(0,parseInt(cnt.textContent||0)-1); }
+      if (res.error) { likedSet[id]=true; if(btn) btn.classList.add('liked'); animCount(cnt, prev); }
     });
   } else {
     sb.from('likes').insert({item_type:'actu',item_id:id,session_id:sid}).then(function(res) {
-      if (!res.error) { likedSet[id]=true; btn.classList.add('liked'); cnt.textContent = parseInt(cnt.textContent||0)+1; }
+      if (res.error) { likedSet[id]=false; if(btn) btn.classList.remove('liked'); animCount(cnt, prev); }
     });
   }
 }
@@ -293,13 +300,24 @@ function sendCmt() {
   var text = document.getElementById('art-cmt-text').value.trim();
   if (!name || !text) { toast('Prénom et commentaire requis'); return; }
   localStorage.setItem('cqp_prenom', name);
+  var list = document.getElementById('art-cmts');
+  var tempId = 'ctmp-' + Date.now();
+  var tempEl = document.createElement('div');
+  tempEl.className = 'cmt-item'; tempEl.id = tempId;
+  tempEl.innerHTML = '<div class="cmt-name">'+esc(name)+'</div><div class="cmt-msg">'+esc(text)+'</div><div class="cmt-time">à l\'instant</div>';
+  if (!list.querySelector('.cmt-item')) list.innerHTML = '';
+  list.appendChild(tempEl);
+  document.getElementById('art-cmt-text').value = '';
+  var cc = document.getElementById('cc-'+openActuId);
+  animCount(cc, parseInt((cc && cc.textContent) || 0) + 1);
   sb.from('commentaires').insert({item_type:'actu',item_id:openActuId,prenom:name,message:text,visible:true}).then(function(res) {
-    if (res.error) { toast('Erreur: '+res.error.message); return; }
-    document.getElementById('art-cmt-text').value = '';
-    toast('Commentaire publié ✓');
+    if (res.error) {
+      var te = document.getElementById(tempId); if (te) te.parentNode.removeChild(te);
+      animCount(cc, Math.max(0, parseInt((cc && cc.textContent) || 0) - 1));
+      toast('Erreur: '+res.error.message, 'err'); return;
+    }
+    toast('Commentaire publié ✓', 'ok');
     loadArtCmts(openActuId);
-    var el = document.getElementById('cc-'+openActuId);
-    if (el) el.textContent = parseInt(el.textContent||0)+1;
   });
 }
 
