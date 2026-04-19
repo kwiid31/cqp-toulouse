@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/core.js"></script>
 <style>
 :root{--red:#C8102E;--bg:#0d0d0d;--card:#1a1a1a;--border:#2a2a2a;--text:#f0f0f0;--muted:#888;--green:#22c55e;--blue:#3b82f6;--yellow:#f59e0b;--r:10px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -243,26 +244,13 @@ tr:hover td{background:rgba(255,255,255,.02);}
 <div class="toast" id="toast"></div>
 
 <script>
-var SUPA_URL = 'https://vzfwtyczqfbhbjzotjft.supabase.co';
-var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
-var sb = supabase.createClient(SUPA_URL, SUPA_KEY);
 var ADMIN_PW = 'toulouse2026';
-
 var currentStoriesFilter = 'pending';
 var allStories = [];
 
-// ── Utils ─────────────────────────────────────────────────────
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// ── Utils admin-spécifiques ───────────────────────────────────
 function fmtDate(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
 function fmtDatetime(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
-function toast(msg, type) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.style.background = type === 'ok' ? '#16a34a' : type === 'err' ? '#dc2626' : '#1a1a1a';
-  el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(function(){ el.classList.remove('show'); }, 3000);
-}
 function confirm2(title, msg, onOk) {
   document.getElementById('confirm-title').textContent = title;
   document.getElementById('confirm-msg').textContent = msg;
@@ -292,7 +280,6 @@ function doLogout() {
   document.getElementById('login-pw').value = '';
   document.getElementById('login-err').textContent = '';
 }
-// Auto-login if session active
 if (sessionStorage.getItem('cqp_admin') === '1') {
   document.getElementById('login-overlay').style.display = 'none';
   document.getElementById('admin-wrap').style.display = 'flex';
@@ -659,7 +646,6 @@ function exportCsv(table) {
   });
 }
 
-// Load stories tab on admin open
 if (sessionStorage.getItem('cqp_admin') === '1') {
   tabLoaded['stories'] = false;
   loadStories();
