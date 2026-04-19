@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/core.js"></script>
 <style>
 :root{--red:#C8102E;--bg:#F7F8FA;--card:#fff;--text:#1a1a1a;--muted:#6b7280;--r:12px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -136,35 +137,9 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 <div class="toast" id="toast"></div>
 
 <script>
-var SUPA_URL = 'https://vzfwtyczqfbhbjzotjft.supabase.co';
-var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
-var sb = supabase.createClient(SUPA_URL, SUPA_KEY);
-
 var actus = [];
 var likedSet = {};
 var openActuId = null;
-
-function getSid() {
-  var s = sessionStorage.getItem('cqp_sid');
-  if (!s) { s = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)); sessionStorage.setItem('cqp_sid', s); }
-  return s;
-}
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function timeAgo(d) {
-  var diff = (Date.now() - new Date(d)) / 1000;
-  if (diff < 60) return 'à l\'instant';
-  if (diff < 3600) return Math.floor(diff/60) + ' min';
-  if (diff < 86400) return Math.floor(diff/3600) + 'h';
-  if (diff < 604800) return Math.floor(diff/86400) + 'j';
-  return new Date(d).toLocaleDateString('fr-FR', {day:'numeric',month:'short'});
-}
-function toast(msg) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(function(){ el.classList.remove('show'); }, 3000);
-}
 
 function load() {
   sb.from('actus').select('*').eq('visible', true).order('date_publication', {ascending: false}).then(function(res) {
@@ -209,7 +184,6 @@ function renderList() {
       '</div>' +
     '</div>';
   }).join('');
-  // Animate in
   setTimeout(function() {
     document.querySelectorAll('.card').forEach(function(c, i) {
       setTimeout(function(){ c.classList.add('visible'); }, i * 40);
@@ -289,7 +263,6 @@ function openArt(id) {
     '</div>';
   document.getElementById('art-overlay').classList.add('open');
   document.getElementById('art-drawer').classList.add('open');
-  // Restore saved name
   var saved = localStorage.getItem('cqp_prenom');
   if (saved) document.getElementById('art-cmt-name').value = saved;
   loadArtCmts(id);
@@ -332,7 +305,7 @@ function sendCmt() {
 }
 
 load();
-(function(){ var k='pv_'+location.pathname; if(!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');sb.from('page_views').insert({session_id:getSid(),page:location.pathname});} })();
+trackPage();
 </script>
 </body>
 </html>
