@@ -26,7 +26,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 .chip.active{background:var(--red);border-color:var(--red);color:#fff;}
 
 .list{padding:12px 12px 4px;}
-.card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06);padding:14px;margin-bottom:10px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;}
+.card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06);padding:14px;margin-bottom:10px;opacity:0;transform:translateY(18px) scale(.97);transition:opacity .35s ease,transform .35s cubic-bezier(.22,.61,.36,1);}
 .card.visible{opacity:1;transform:none;}
 .card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
 .card-cat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
@@ -236,6 +236,7 @@ var CAT_COLORS = {Logement:'#f59e0b',Emploi:'#3b82f6',Solidarité:'#8b5cf6',Serv
 var CAT_ICONS = {Logement:'🏠',Emploi:'💼',Solidarité:'🤝',Service:'🔧',Autre:'📌'};
 
 function load() {
+  document.getElementById('list').innerHTML = buildSkeletons(3, false);
   sb.from('annonces').select('*').eq('validee', true).order('date_depot', {ascending: false}).then(function(res) {
     if (res.error) { document.getElementById('list').innerHTML = '<div class="loading">Erreur de chargement</div>'; return; }
     allAnnonces = res.data || [];
@@ -291,7 +292,7 @@ function renderList() {
 
   setTimeout(function() {
     document.querySelectorAll('.card').forEach(function(c, i) {
-      setTimeout(function(){ c.classList.add('visible'); }, i * 40);
+      setTimeout(function(){ c.classList.add('visible'); }, i * 60);
     });
   }, 50);
 }
@@ -303,7 +304,7 @@ function loadCounts() {
   sb.from('likes').select('item_id').eq('item_type','annonce').in('item_id',ids).then(function(res) {
     var counts = {};
     (res.data||[]).forEach(function(l){ counts[l.item_id]=(counts[l.item_id]||0)+1; });
-    Object.keys(counts).forEach(function(id){ var el=document.getElementById('lc-'+id); if(el) el.textContent=counts[id]; });
+    Object.keys(counts).forEach(function(id){ animCount(document.getElementById('lc-'+id), counts[id]); });
   });
   sb.from('likes').select('item_id').eq('item_type','annonce').eq('session_id',sid).in('item_id',ids).then(function(res) {
     (res.data||[]).forEach(function(l){
@@ -315,7 +316,7 @@ function loadCounts() {
   sb.from('commentaires').select('item_id').eq('item_type','annonce').eq('visible',true).in('item_id',ids).then(function(res) {
     var counts = {};
     (res.data||[]).forEach(function(l){ counts[l.item_id]=(counts[l.item_id]||0)+1; });
-    Object.keys(counts).forEach(function(id){ var el=document.getElementById('cc-'+id); if(el) el.textContent=counts[id]; });
+    Object.keys(counts).forEach(function(id){ animCount(document.getElementById('cc-'+id), counts[id]); });
   });
 }
 
