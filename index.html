@@ -579,6 +579,8 @@ function loadFeed() {
     renderBatch();
     loadAllCounts();
     setTimeout(checkScroll, 80);
+  }).catch(function() {
+    document.getElementById('feed').innerHTML = '<div class="loading-feed" style="color:var(--red)">Erreur de chargement<br><small style="color:var(--muted);font-size:.8rem">Tirez vers le bas pour réessayer</small></div>';
   });
 }
 
@@ -776,13 +778,19 @@ function tapLike(dbtype, id, localType, btnEl) {
   var sid = getSid();
   if (navigator.vibrate) navigator.vibrate(40);
   if (btn) { btn.classList.remove('popping'); void btn.offsetWidth; btn.classList.add('popping'); setTimeout(function(){ btn.classList.remove('popping'); }, 400); }
-  if (likedSet[key]) {
+  // Optimistic : mise à jour immédiate + revert si erreur
+  var wasLiked = !!likedSet[key];
+  var prev = parseInt((cnt && cnt.textContent) || 0);
+  likedSet[key] = !wasLiked;
+  if (btn) wasLiked ? btn.classList.remove('liked') : btn.classList.add('liked');
+  animCount(cnt, wasLiked ? Math.max(0, prev - 1) : prev + 1);
+  if (wasLiked) {
     sb.from('likes').delete().eq('item_type', dbtype).eq('item_id', id).eq('session_id', sid).then(function(r) {
-      if (!r.error) { likedSet[key] = false; if (btn) btn.classList.remove('liked'); if (cnt) cnt.textContent = Math.max(0, parseInt(cnt.textContent || 0) - 1); }
+      if (r.error) { likedSet[key] = true; if (btn) btn.classList.add('liked'); animCount(cnt, prev); }
     });
   } else {
     sb.from('likes').insert({item_type: dbtype, item_id: id, session_id: sid}).then(function(r) {
-      if (!r.error) { likedSet[key] = true; if (btn) btn.classList.add('liked'); if (cnt) cnt.textContent = parseInt(cnt.textContent || 0) + 1; }
+      if (r.error) { likedSet[key] = false; if (btn) btn.classList.remove('liked'); animCount(cnt, prev); }
     });
   }
 }
@@ -854,8 +862,7 @@ function sendCmt() {
   tempEl.className = 'cmt-item';
   tempEl.id = tempId;
   tempEl.innerHTML = '<div class="cmt-name">' + esc(name) + '</div><div class="cmt-msg">' + esc(text) + '</div><div class="cmt-time">à l\'instant</div>';
-  var emptyMsg = list.querySelector('[style*="text-align"]');
-  if (emptyMsg) list.innerHTML = '';
+  if (!list.querySelector('.cmt-item')) list.innerHTML = '';
   list.appendChild(tempEl);
   document.getElementById('cmt-text').value = '';
   var cc = document.getElementById('cc-' + cmtTarget.localType + '-' + cmtTarget.id);
