@@ -20,7 +20,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 .topbar-propose{background:var(--red);color:#fff;border:none;padding:7px 14px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;}
 
 .list{padding:12px;}
-.card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;margin-bottom:12px;opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;}
+.card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;margin-bottom:12px;opacity:0;transform:translateY(18px) scale(.97);transition:opacity .35s ease,transform .35s cubic-bezier(.22,.61,.36,1);}
 .card.visible{opacity:1;transform:none;}
 .card-img{width:100%;height:180px;object-fit:cover;}
 .card-body{padding:12px 14px 8px;}
@@ -241,6 +241,7 @@ function formatDate(d) {
 }
 
 function load() {
+  document.getElementById('list').innerHTML = buildSkeletons(3);
   sb.from('evenements').select('*').eq('visible', true).eq('validee', true)
     .gt('date_debut', new Date().toISOString())
     .order('date_debut', {ascending: true}).then(function(res) {
@@ -292,7 +293,7 @@ function renderList() {
 
   setTimeout(function() {
     document.querySelectorAll('.card').forEach(function(c, i) {
-      setTimeout(function(){ c.classList.add('visible'); }, i * 50);
+      setTimeout(function(){ c.classList.add('visible'); }, i * 60);
     });
   }, 50);
 
@@ -314,7 +315,7 @@ function loadCounts() {
   sb.from('likes').select('item_id').eq('item_type','evenement').in('item_id',ids).then(function(res) {
     var counts = {};
     (res.data||[]).forEach(function(l){ counts[l.item_id] = (counts[l.item_id]||0)+1; });
-    Object.keys(counts).forEach(function(id){ var el=document.getElementById('lc-'+id); if(el) el.textContent=counts[id]; });
+    Object.keys(counts).forEach(function(id){ animCount(document.getElementById('lc-'+id), counts[id]); });
   });
   sb.from('likes').select('item_id').eq('item_type','evenement').eq('session_id',sid).in('item_id',ids).then(function(res) {
     (res.data||[]).forEach(function(l){
@@ -326,7 +327,7 @@ function loadCounts() {
   sb.from('commentaires').select('item_id').eq('item_type','evenement').eq('visible',true).in('item_id',ids).then(function(res) {
     var counts = {};
     (res.data||[]).forEach(function(l){ counts[l.item_id]=(counts[l.item_id]||0)+1; });
-    Object.keys(counts).forEach(function(id){ var el=document.getElementById('cc-'+id); if(el) el.textContent=counts[id]; });
+    Object.keys(counts).forEach(function(id){ animCount(document.getElementById('cc-'+id), counts[id]); });
   });
 }
 
