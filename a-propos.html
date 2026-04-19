@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="js/core.js"></script>
 <style>
 :root{--red:#C8102E;--bg:#F7F8FA;--card:#fff;--text:#1a1a1a;--muted:#6b7280;--r:12px;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -232,18 +233,6 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 <div class="toast" id="toast"></div>
 
 <script>
-var SUPA_URL = 'https://vzfwtyczqfbhbjzotjft.supabase.co';
-var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
-var sb = supabase.createClient(SUPA_URL, SUPA_KEY);
-
-function toast(msg) {
-  var el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(function(){ el.classList.remove('show'); }, 3000);
-}
-
 function loadStats() {
   sb.from('adherents').select('*', {count: 'exact', head: true}).then(function(res) {
     var el = document.getElementById('stat-adh');
@@ -276,7 +265,7 @@ function submitJoin() {
 }
 
 loadStats();
-(function(){var k='pv_'+location.pathname;if(!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');sb.from('page_views').insert({session_id:getSid(),page:location.pathname});}})();
+trackPage();
 </script>
 </body>
 </html>
