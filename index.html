@@ -478,11 +478,11 @@ input.cmt-input:focus{border-color:var(--rouge)}
     <button class="wall-input" onclick="openWall()">Quoi de neuf dans ton quartier ?</button>
   </div>
   <div class="wall-expand" id="wall-expand">
-    <textarea class="wall-textarea" id="wall-text" rows="3" placeholder="Quoi de neuf dans ton quartier ?"></textarea>
-    <label class="wall-photo-btn" title="Ajouter une photo">📷<input type="file" id="wall-photo-file" accept="image/*" onchange="wallPhotoPreview(this)"></label>
+    <input class="wall-prenom-input" id="wall-prenom" placeholder="Votre prénom" maxlength="30" oninput="updateWallAv(this.value)">
+    <textarea class="wall-textarea" id="wall-text" rows="3" placeholder="Partagez une info, une question, un événement…"></textarea>
     <img id="wall-photo-prev" class="wall-photo-preview">
     <div class="wall-foot">
-      <input class="wall-prenom-input" id="wall-prenom" placeholder="Votre prénom" maxlength="30">
+      <label class="wall-photo-btn" title="Ajouter une photo">📷<input type="file" id="wall-photo-file" accept="image/*" onchange="wallPhotoPreview(this)"></label>
       <button class="wall-submit" id="wall-btn" onclick="publishPost()">Publier</button>
     </div>
     <div class="wall-msg" id="wall-msg"></div>
@@ -967,15 +967,18 @@ async function publishStory(){
       .from('stories')
       .upload(fileName,_storyFile,{cacheControl:'3600',upsert:false,contentType:_storyFile.type});
     if(upErr)throw upErr;
-    const{data:{publicUrl}}=sb.storage.from('stories').getPublicUrl(fileName);
-    // Colonnes réelles de la table stories
-    await sb.from('stories').insert({
+    // getPublicUrl robuste — compatible toutes versions SDK
+    const urlResult=sb.storage.from('stories').getPublicUrl(fileName);
+    const publicUrl=urlResult?.data?.publicUrl||`https://vzfwtyczqfbhbjzotjft.supabase.co/storage/v1/object/public/stories/${fileName}`;
+    if(!publicUrl)throw new Error('URL publique introuvable');
+    const{error:insertErr}=await sb.from('stories').insert({
       prenom:prenom||'Anonyme',
       photo_url:publicUrl,
       media_type:isVideo?'video':'image',
       visible:true,
       session_id:getSid()
     });
+    if(insertErr)throw insertErr;
     msgEl.textContent='✅ Story publiée !';
     setTimeout(()=>{closeStoryPreview();loadStories();},1200);
   }catch(e){
