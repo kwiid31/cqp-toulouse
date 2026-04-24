@@ -84,6 +84,28 @@ body{min-height:100vh;padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bot
 .story-add-icon svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.5;
   stroke-linecap:round;stroke-linejoin:round}
 .story-card.seen .story-card-av{border-color:#8A8D91}
+/* ── STORY PREVIEW (création style Snap) ─────────────── */
+#story-preview{display:none;position:fixed;inset:0;z-index:800;background:#000;flex-direction:column}
+#story-preview.open{display:flex}
+.sp-media{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sp-media img,.sp-media video{width:100%;height:100%;object-fit:cover}
+.sp-top{position:absolute;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:max(14px,env(safe-area-inset-top)) 14px 10px}
+.sp-close{width:40px;height:40px;background:rgba(0,0,0,.45);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.sp-close svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.sp-caption-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;width:calc(100% - 40px);pointer-events:none}
+.sp-caption-input{width:100%;background:rgba(0,0,0,.35);border:none;border-radius:10px;padding:12px 16px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.5px;text-align:center;outline:none;backdrop-filter:blur(4px);pointer-events:all}
+.sp-caption-input::placeholder{color:rgba(255,255,255,.55)}
+.sp-bottom{position:absolute;bottom:0;left:0;right:0;z-index:10;padding:16px 16px calc(24px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.75))}
+.sp-fields{display:flex;gap:8px;margin-bottom:12px}
+.sp-field{flex:1;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);border-radius:24px;padding:10px 14px;color:#fff;font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;backdrop-filter:blur(4px)}
+.sp-field::placeholder{color:rgba(255,255,255,.55)}
+.sp-publish{width:100%;padding:15px;background:var(--rouge);border:none;border-radius:28px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s}
+.sp-publish:active{opacity:.8}
+.sp-publish svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.sp-publish-spinner{display:none;width:20px;height:20px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sp-msg{text-align:center;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;margin-top:10px;min-height:18px}
+
 
 /* ── STORY VIEWER (Instagram) ─────────────────────────── */
 #story-viewer{
@@ -439,7 +461,7 @@ input.cmt-input:focus{border-color:var(--rouge)}
 
 <!-- STORIES BAR -->
 <div class="stories-wrap" id="stories-bar">
-  <div class="story-card add-story" onclick="openStoryDrawer()">
+  <div class="story-card add-story" onclick="openStoryCapture()">
     <div class="story-add-icon">
       <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </div>
@@ -488,7 +510,7 @@ input.cmt-input:focus{border-color:var(--rouge)}
 <!-- PUB OVERLAY + MENU -->
 <div class="pub-overlay" id="pub-overlay" onclick="closePubMenu()"></div>
 <div class="pub-menu" id="pub-menu">
-  <button class="pub-menu-item" onclick="closePubMenu();openStoryDrawer()">
+  <button class="pub-menu-item" onclick="closePubMenu();openStoryCapture()">
     <div class="pub-menu-icon" style="background:#fff0f2">📸</div> Story
   </button>
   <button class="pub-menu-item" onclick="closePubMenu();openDr('dr-depot')">
@@ -528,26 +550,29 @@ input.cmt-input:focus{border-color:var(--rouge)}
   </div>
 </div>
 
-<!-- DRAWER CRÉER STORY -->
-<div class="create-story-drawer-overlay" id="cs-overlay" onclick="if(event.target===this)closeStoryDrawer()">
-  <div class="cs-drawer">
-    <div class="cs-head">
-      <h3>📸 Créer une story</h3>
-      <button class="cs-close" onclick="closeStoryDrawer()">✕</button>
+<!-- INPUT FILE CACHÉ (ouvre caméra/galerie native) -->
+<input type="file" id="story-file-input" accept="image/*,video/*" capture="environment" style="display:none" onchange="handleStoryFile(event)">
+
+<!-- STORY PREVIEW (style Snap/Insta) -->
+<div id="story-preview">
+  <div class="sp-media" id="sp-media"></div>
+  <div class="sp-top">
+    <button class="sp-close" onclick="closeStoryPreview()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <input class="sp-caption-input" id="sp-caption" placeholder="Ajouter une légende…" maxlength="80">
+  <div class="sp-bottom">
+    <div class="sp-fields">
+      <input class="sp-field" id="sp-prenom" placeholder="Votre prénom" maxlength="30">
+      <input class="sp-field" id="sp-quartier" placeholder="Votre quartier" maxlength="40">
     </div>
-    <div class="cs-body">
-      <p style="font-size:.85rem;color:var(--txt2);margin-bottom:16px;line-height:1.7">Votre story sera visible 24h par tous les habitants. Elle sera publiée après validation.</p>
-      <div class="form-group"><label>Titre *</label><input type="text" id="cs-titre" placeholder="Ex: Réunion de quartier ce soir"></div>
-      <div class="form-group"><label>Catégorie *</label>
-        <select id="cs-cat"><option value="Actualité">Actualité</option><option value="Événement">Événement</option><option value="Annonce">Annonce</option><option value="Témoignage">Témoignage</option><option value="Alerte">Alerte</option></select>
-      </div>
-      <div class="form-group"><label>Description</label><textarea id="cs-desc" rows="3" placeholder="Quelques mots…"></textarea></div>
-      <div class="form-group"><label>Votre prénom *</label><input type="text" id="cs-prenom" placeholder="Karim"></div>
-      <div class="form-group"><label>Quartier *</label><input type="text" id="cs-quartier" placeholder="Mirail, Bellefontaine…"></div>
-      <div class="form-group"><label>Lien image (optionnel)</label><input type="url" id="cs-img" placeholder="https://…"></div>
-      <button class="btn-submit" onclick="submitStory()">📤 Publier la story</button>
-      <div class="form-msg" id="cs-msg"></div>
-    </div>
+    <button class="sp-publish" onclick="publishStory()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <span id="sp-btn-txt">Publier ma story</span>
+      <div class="sp-publish-spinner" id="sp-spinner"></div>
+    </button>
+    <div class="sp-msg" id="sp-msg"></div>
   </div>
 </div>
 
@@ -921,8 +946,10 @@ function renderStory(){
   document.getElementById('sv-time').textContent=timeAgo(s.created_at||new Date().toISOString());
   // Media
   const mediaDiv=document.getElementById('sv-media');
-  if(s.media_url&&s.media_type==='image'){
-    mediaDiv.innerHTML=`<img src="${esc(s.media_url)}" style="width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;bottom:80px;left:20px;right:20px;z-index:5"><div style="font-family:Barlow Condensed,sans-serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:6px">${esc(s.categorie||'')}</div><div style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:#fff;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.5)">${esc(s.titre)}</div></div>`;
+  if(s.media_url&&s.media_type==='video'){
+    mediaDiv.innerHTML=`<video src="${esc(s.media_url)}" autoplay muted playsinline loop style="width:100%;height:100%;object-fit:cover"></video><div style="position:absolute;bottom:80px;left:20px;right:20px;z-index:5;pointer-events:none"><div style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:#fff;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.6)">${esc(s.titre)}</div></div>`;
+  }else if(s.media_url&&s.media_type==='image'){
+    mediaDiv.innerHTML=`<img src="${esc(s.media_url)}" style="width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;bottom:80px;left:20px;right:20px;z-index:5;pointer-events:none"><div style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:#fff;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.6)">${esc(s.titre)}</div></div>`;
   }else{
     const bgClass=s.categorie==='Événement'?'evt-bg':s.categorie==='Annonce'?'ann-bg':'actu-bg';
     mediaDiv.innerHTML=`<div class="sv-media-placeholder ${bgClass}"><div class="sv-placeholder-cat">${esc(s.categorie||'Story')}</div><div class="sv-placeholder-title">${esc(s.titre)}</div>${s.description?`<p style="position:relative;z-index:1;margin-top:10px;font-family:Barlow,sans-serif;font-size:.88rem;color:rgba(255,255,255,.85);line-height:1.6">${esc(s.description)}</p>`:''}</div>`;
