@@ -424,6 +424,47 @@ input.cmt-input:focus{border-color:var(--rouge)}
   body{padding-bottom:0}
   .feed-wrap{padding-top:8px}
 }
+
+/* ── MUR QUOI DE NEUF (Facebook style) ── */
+.wall-box{background:#fff;margin:0 0 8px;padding:12px 14px;}
+@media(min-width:600px){.wall-box{border-radius:8px;margin:0 8px 10px;box-shadow:0 1px 2px rgba(0,0,0,.15);}}
+.wall-top{display:flex;align-items:center;gap:10px;}
+.wall-av{width:40px;height:40px;min-width:40px;border-radius:50%;background:var(--rouge);
+  display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;
+  font-size:.95rem;color:#fff;flex-shrink:0;font-weight:700;}
+.wall-input{flex:1;background:var(--bg3);border:none;border-radius:22px;padding:10px 16px;
+  color:var(--txt3);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;
+  cursor:pointer;text-align:left;transition:background .15s;}
+.wall-input:hover{background:#d8dadf;}
+.wall-expand{display:none;flex-direction:column;gap:10px;margin-top:12px;}
+.wall-expand.open{display:flex;}
+.wall-prenom-input{padding:10px 14px;background:var(--bg3);border:1.5px solid var(--border);
+  border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.88rem;
+  outline:none;transition:border .15s;}
+.wall-prenom-input:focus{border-color:var(--rouge);}
+.wall-textarea{width:100%;padding:12px 14px;background:var(--bg3);border:1.5px solid var(--border);
+  border-radius:10px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.92rem;
+  outline:none;resize:none;line-height:1.6;}
+.wall-textarea:focus{border-color:var(--rouge);}
+.wall-photo-preview{width:100%;max-height:220px;object-fit:cover;border-radius:10px;display:none;}
+.wall-foot{display:flex;align-items:center;gap:8px;}
+.wall-photo-btn{width:38px;height:38px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;flex-shrink:0;cursor:pointer;}
+.wall-photo-btn input{display:none;}
+.wall-submit{flex:1;padding:10px;background:var(--rouge);border:none;border-radius:22px;
+  color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1.5px;
+  text-transform:uppercase;transition:opacity .15s;cursor:pointer;}
+.wall-submit:active,.wall-submit:disabled{opacity:.6;}
+.wall-msg{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;
+  color:var(--txt3);text-align:center;min-height:16px;}
+/* Post card */
+.post-card{background:#fff;margin:0 0 8px;overflow:hidden;}
+@media(min-width:600px){.post-card{border-radius:8px;margin:0 8px 10px;box-shadow:0 1px 2px rgba(0,0,0,.15);}}
+.post-body{padding:6px 14px 12px;font-size:.92rem;color:var(--txt);line-height:1.65;
+  white-space:pre-wrap;word-break:break-word;}
+.post-img{width:100%;max-height:420px;object-fit:cover;display:block;}
+
 </style>
 </head>
 <body>
@@ -444,9 +485,9 @@ input.cmt-input:focus{border-color:var(--rouge)}
     <button class="tbi tbi-notif" aria-label="Notifications">
       <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" fill="none" stroke="var(--txt)" stroke-width="2" stroke-linecap="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke="var(--txt)" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
-    <button class="tbi" onclick="openAdmin()" aria-label="Admin">
+    <a class="tbi" href="admin.html" aria-label="Admin" style="display:flex;align-items:center;justify-content:center">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="var(--txt)" stroke-width="2"/><path d="M6 20v-1a6 6 0 0 1 12 0v1" fill="none" stroke="var(--txt)" stroke-width="2" stroke-linecap="round"/></svg>
-    </button>
+    </a>
   </div>
 </header>
 
@@ -686,10 +727,10 @@ input.cmt-input:focus{border-color:var(--rouge)}
 </div>
 
 <!-- ADMIN FAB -->
-<button class="admin-fab" onclick="openAdmin()">
+<a class="admin-fab" href="admin.html">
   <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
   Admin
-</button>
+</a>
 
 
 <script>
@@ -975,10 +1016,9 @@ async function publishStory(){
       prenom:prenom||'Anonyme',
       photo_url:publicUrl,
       media_type:isVideo?'video':'image',
-      visible:true,
-      session_id:getSid()
+      visible:true
     });
-    if(insertErr)throw insertErr;
+    if(insertErr){console.error('Insert error:',insertErr);throw new Error(insertErr.message||'Insert failed');}
     msgEl.textContent='✅ Story publiée !';
     setTimeout(()=>{closeStoryPreview();loadStories();},1200);
   }catch(e){
