@@ -2,270 +2,80 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>À Propos – CQP Toulouse</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#C8102E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>À propos — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/core.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--red:#C8102E;--bg:#F7F8FA;--card:#fff;--text:#1a1a1a;--muted:#6b7280;--r:12px;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padding-bottom:80px;-webkit-tap-highlight-color:transparent;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--rouge:#C8102E;--txt:#050505;--txt2:#65676B;--txt3:#8A8D91;--bg:#F0F2F5;--bg3:#E4E6EB;--border:#CED0D4;--nav-h:56px;}
+html,body{font-size:15px;background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh}
+body{padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 4px)}
+a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:inherit;outline:none}
 
-.topbar{background:#fff;padding:12px 16px 10px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.topbar-back{color:var(--muted);text-decoration:none;display:flex;align-items:center;}
-.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.5px;}
+.topbar{position:sticky;top:0;z-index:200;background:#fff;border-bottom:1px solid var(--border);height:var(--nav-h);display:flex;align-items:center;gap:10px;padding:0 14px;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.back-btn{width:38px;height:38px;border:none;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.back-btn svg{width:20px;height:20px;stroke:var(--txt);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:.5px;flex:1}
 
-/* Hero */
-.hero{background:var(--red);color:#fff;padding:40px 20px 32px;text-align:center;}
-.hero-logo{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:2px;line-height:1;}
-.hero-sub{font-family:'Barlow Condensed',sans-serif;font-size:1rem;opacity:.85;margin-top:4px;text-transform:uppercase;letter-spacing:1px;}
-.hero-tagline{font-family:'Barlow',sans-serif;font-size:.95rem;opacity:.9;margin-top:16px;line-height:1.5;max-width:320px;margin-left:auto;margin-right:auto;}
+.page-hero{background:linear-gradient(135deg,#0d0d0d 0%,#2a0509 60%,var(--rouge) 100%);padding:28px 16px 24px;color:#fff;position:relative}
+.hero-tag{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;line-height:1}
 
-/* Stats */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:#fff;border-bottom:1px solid #f0f0f0;}
-.stat{padding:20px 12px;text-align:center;border-right:1px solid #f0f0f0;}
-.stat:last-child{border-right:none;}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--red);line-height:1;}
-.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.content-wrap{max-width:680px;margin:0 auto;padding:16px}
+.content-card{background:#fff;border-radius:8px;padding:20px 20px 24px;box-shadow:0 1px 3px rgba(0,0,0,.1);line-height:1.9;font-size:.95rem;color:var(--txt2);white-space:pre-wrap;word-break:break-word}
 
-/* Sections */
-.section{background:#fff;margin:12px 12px 0;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.05);overflow:hidden;}
-.section-head{padding:16px 16px 0;display:flex;align-items:center;gap:10px;}
-.section-icon{font-size:1.3rem;}
-.section-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.5px;}
-.section-body{padding:12px 16px 16px;font-size:.9rem;line-height:1.7;color:#374151;}
-
-/* Values */
-.values{margin:12px;}
-.value-card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.05);padding:16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;}
-.value-icon{width:44px;height:44px;border-radius:12px;background:#fef2f2;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
-.value-title{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.3px;margin-bottom:3px;}
-.value-desc{font-size:.85rem;color:var(--muted);line-height:1.5;}
-
-/* Quartiers */
-.quartiers{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px 16px;}
-.quartier-chip{background:#fef2f2;color:var(--red);font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:700;padding:5px 12px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;}
-
-/* Rejoindre */
-.join-section{margin:12px;background:var(--red);border-radius:var(--r);overflow:hidden;padding:24px 20px;}
-.join-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;letter-spacing:.5px;margin-bottom:6px;}
-.join-sub{font-family:'Barlow Condensed',sans-serif;font-size:.9rem;color:rgba(255,255,255,.85);margin-bottom:20px;}
-.join-form{display:flex;flex-direction:column;gap:10px;}
-.join-inp{padding:11px 14px;border:none;border-radius:10px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;background:#fff;}
-.join-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.join-btn{padding:13px;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.5px;cursor:pointer;}
-.join-btn:disabled{opacity:.5;cursor:default;}
-.join-success{text-align:center;padding:16px;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;color:#fff;background:rgba(0,0,0,.2);border-radius:10px;display:none;}
-
-/* Bottom nav */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;display:flex;align-items:flex-end;justify-content:space-around;padding:0 8px 8px;z-index:100;height:64px;}
-.bnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.65rem;text-decoration:none;padding:8px 4px 0;flex:1;}
-.bnav-item.active{color:var(--red);}
-.bnav-item svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;}
-.bnav-fab-wrap{flex:0 0 64px;display:flex;justify-content:center;align-items:flex-end;padding-bottom:4px;}
-.bnav-fab{width:52px;height:52px;background:var(--red);border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(200,16,46,.4);margin-bottom:10px;}
-.bnav-fab svg{width:26px;height:26px;fill:#fff;stroke:none;}
-
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);background:#1a1a1a;color:#fff;padding:10px 20px;border-radius:24px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;z-index:500;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:300;background:#fff;border-top:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav-h);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -1px 8px rgba(0,0,0,.06)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;padding:6px 0}
+.nav-item.active,.nav-item:hover{color:var(--rouge)}
+.nav-item svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-pub{width:48px;height:48px;border-radius:50%;background:var(--rouge);color:#fff;border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(200,16,46,.45);margin-top:-12px;flex-shrink:0}
+.nav-pub svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.nav-middle{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:4px;flex-shrink:0}
+@media(min-width:700px){.bottom-nav{display:none}body{padding-bottom:0}}
 </style>
 </head>
 <body>
-
 <header class="topbar">
-  <a href="index.html" class="topbar-back">
-    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-  </a>
-  <div class="topbar-title">À Propos</div>
-  <a href="admin.html" style="color:var(--muted);display:flex;align-items:center;margin-left:auto;" title="Admin">
-    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
-  </a>
+  <button class="back-btn" onclick="history.length>1?history.back():location.href='index.html'">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="topbar-title">À propos</span>
 </header>
 
-<!-- Hero -->
-<div class="hero">
-  <div class="hero-logo">CQP<br>Toulouse</div>
-  <div class="hero-sub">Comité des Quartiers Populaires</div>
-  <div class="hero-tagline">Une organisation de terrain, par et pour les habitant·es des quartiers populaires de Toulouse.</div>
+<div class="page-hero">
+  <div class="hero-tag">CQP Toulouse</div>
+  <h2 class="hero-title">À propos</h2>
 </div>
 
-<!-- Stats -->
-<div class="stats">
-  <div class="stat">
-    <div class="stat-val" id="stat-adh">…</div>
-    <div class="stat-label">Adhérent·es</div>
-  </div>
-  <div class="stat">
-    <div class="stat-val">8</div>
-    <div class="stat-label">Quartiers</div>
-  </div>
-  <div class="stat">
-    <div class="stat-val">2022</div>
-    <div class="stat-label">Fondé en</div>
-  </div>
-</div>
+<main class="content-wrap">
+  <div class="content-card" id="apropos-content">Chargement…</div>
+</main>
 
-<!-- Histoire -->
-<div class="section" style="margin-top:12px;">
-  <div class="section-head">
-    <span class="section-icon">📖</span>
-    <span class="section-title">Notre histoire</span>
-  </div>
-  <div class="section-body">
-    Le Comité des Quartiers Populaires de Toulouse est né en 2022 d'une volonté collective d'habitant·es des quartiers populaires de Toulouse qui refusent de subir.
-    <br><br>
-    Face à l'abandon des services publics, à la précarité croissante et à l'invisibilisation des quartiers dans les décisions politiques, des habitant·es du Mirail, de Bellefontaine, des Izards, de la Reynerie et d'autres quartiers ont décidé de se rassembler.
-    <br><br>
-    Le CQP est né de cette colère et de cette solidarité. Ni parti politique, ni association bureaucratique : un outil au service des quartiers.
-  </div>
-</div>
-
-<!-- Quartiers -->
-<div class="section">
-  <div class="section-head">
-    <span class="section-icon">📍</span>
-    <span class="section-title">Nos quartiers</span>
-  </div>
-  <div class="quartiers">
-    <span class="quartier-chip">Le Mirail</span>
-    <span class="quartier-chip">Bellefontaine</span>
-    <span class="quartier-chip">Les Izards</span>
-    <span class="quartier-chip">La Reynerie</span>
-    <span class="quartier-chip">Papus</span>
-    <span class="quartier-chip">Bagatelle</span>
-    <span class="quartier-chip">Empalot</span>
-    <span class="quartier-chip">La Faourette</span>
-  </div>
-</div>
-
-<!-- Valeurs -->
-<div class="values">
-  <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.5px;margin:8px 4px 10px;">Nos valeurs</div>
-  <div class="value-card">
-    <div class="value-icon">🏘️</div>
-    <div>
-      <div class="value-title">Ancrage populaire</div>
-      <div class="value-desc">Une organisation de terrain sans représentants parachutés d'en haut. Les décisions se prennent dans les quartiers, avec les habitant·es.</div>
-    </div>
-  </div>
-  <div class="value-card">
-    <div class="value-icon">🤝</div>
-    <div>
-      <div class="value-title">Solidarité concrète</div>
-      <div class="value-desc">Actions directes : aide au logement, soutien juridique, entraide quotidienne. Pas de discours sans actes.</div>
-    </div>
-  </div>
-  <div class="value-card">
-    <div class="value-icon">📣</div>
-    <div>
-      <div class="value-title">Voix des invisibles</div>
-      <div class="value-desc">Porter la parole des habitant·es ignoré·es par les médias et le système politique. Rendre visible ce qu'on veut effacer.</div>
-    </div>
-  </div>
-  <div class="value-card">
-    <div class="value-icon">✊</div>
-    <div>
-      <div class="value-title">Indépendance</div>
-      <div class="value-desc">Aucune soumission à un parti, à une mairie ou à un financeur qui dicterait nos positions. Seuls les quartiers décident.</div>
-    </div>
-  </div>
-</div>
-
-<!-- Rejoindre -->
-<div class="join-section" id="rejoindre">
-  <div class="join-title">Rejoindre le CQP</div>
-  <div class="join-sub">Adhère et participe à la construction d'un mouvement populaire à Toulouse.</div>
-  <div class="join-form" id="join-form">
-    <div class="join-row">
-      <input class="join-inp" id="j-prenom" placeholder="Prénom *" maxlength="60">
-      <input class="join-inp" id="j-nom" placeholder="Nom *" maxlength="60">
-    </div>
-    <input class="join-inp" id="j-email" type="email" placeholder="Email *" maxlength="150">
-    <input class="join-inp" id="j-quartier" placeholder="Votre quartier *" maxlength="100">
-    <button class="join-btn" id="join-btn" onclick="submitJoin()">Rejoindre le mouvement</button>
-  </div>
-  <div class="join-success" id="join-success">
-    ✅ Bienvenue dans le CQP !<br>L'équipe vous contactera très bientôt.
-  </div>
-</div>
-
-<!-- Contact -->
-<div class="section" style="margin-bottom:12px;">
-  <div class="section-head">
-    <span class="section-icon">✉️</span>
-    <span class="section-title">Nous contacter</span>
-  </div>
-  <div class="section-body">
-    Pour toute question, prise de contact ou demande de soutien&nbsp;:
-    <br><br>
-    <strong>Email :</strong> contact@cqp-toulouse.fr<br>
-    <strong>Réseaux :</strong> @CQPToulouse sur les réseaux sociaux
-  </div>
-</div>
-
-<!-- Bottom Nav -->
-<nav class="bnav">
-  <a href="index.html" class="bnav-item">
-    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    <span>Accueil</span>
-  </a>
-  <a href="actus.html" class="bnav-item">
-    <svg viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h10"/></svg>
-    <span>Actus</span>
-  </a>
-  <div class="bnav-fab-wrap">
-    <button class="bnav-fab" onclick="location.href='#rejoindre'" aria-label="Rejoindre">
-      <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-    </button>
-  </div>
-  <a href="evenements.html" class="bnav-item">
-    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    <span>Évts</span>
-  </a>
-  <a href="annonces.html" class="bnav-item">
-    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-    <span>Annonces</span>
-  </a>
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
+  <a class="nav-item" href="actus.html"><svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Actus</a>
+  <div class="nav-middle"><a href="index.html" class="nav-pub"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></a></div>
+  <a class="nav-item" href="evenements.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Évts</a>
+  <a class="nav-item" href="annonces.html"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Annonces</a>
 </nav>
 
-<div class="toast" id="toast"></div>
-
 <script>
-function loadStats() {
-  sb.from('adherents').select('*', {count: 'exact', head: true}).then(function(res) {
-    var el = document.getElementById('stat-adh');
-    if (el) el.textContent = res.count || '0';
-  });
+const sb=supabase.createClient(
+  'https://vzfwtyczqfbhbjzotjft.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk'
+);
+async function loadApropos(){
+  try{
+    const{data}=await sb.from('site_config').select('value').eq('key','apropos').single();
+    document.getElementById('apropos-content').textContent=data?.value||'Contenu à venir.';
+  }catch(e){
+    document.getElementById('apropos-content').textContent='Contenu à venir.';
+  }
 }
-
-function submitJoin() {
-  var prenom = document.getElementById('j-prenom').value.trim();
-  var nom = document.getElementById('j-nom').value.trim();
-  var email = document.getElementById('j-email').value.trim();
-  var quartier = document.getElementById('j-quartier').value.trim();
-  if (!prenom || !nom || !email || !quartier) { toast('Tous les champs sont requis'); return; }
-  if (!/\S+@\S+\.\S+/.test(email)) { toast('Email invalide'); return; }
-  var btn = document.getElementById('join-btn');
-  btn.disabled = true;
-  btn.textContent = 'Envoi…';
-  sb.from('adherents').insert({prenom: prenom, nom: nom, email: email, quartier: quartier}).then(function(res) {
-    if (res.error) {
-      if (res.error.code === '23505') { toast('Cet email est déjà enregistré'); }
-      else { toast('Erreur : ' + res.error.message); }
-      btn.disabled = false;
-      btn.textContent = 'Rejoindre le mouvement';
-      return;
-    }
-    document.getElementById('join-form').style.display = 'none';
-    document.getElementById('join-success').style.display = 'block';
-    loadStats();
-  });
-}
-
-loadStats();
-trackPage();
+loadApropos();
 </script>
 </body>
 </html>

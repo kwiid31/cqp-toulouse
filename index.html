@@ -471,6 +471,24 @@ input.cmt-input:focus{border-color:var(--rouge)}
 </div>
 
 <!-- FEED -->
+<!-- MUR QUOI DE NEUF -->
+<div class="wall-box" id="wall-box">
+  <div class="wall-top">
+    <div class="wall-av" id="wall-av">?</div>
+    <button class="wall-input" onclick="openWall()">Quoi de neuf dans ton quartier ?</button>
+  </div>
+  <div class="wall-expand" id="wall-expand">
+    <textarea class="wall-textarea" id="wall-text" rows="3" placeholder="Quoi de neuf dans ton quartier ?"></textarea>
+    <label class="wall-photo-btn" title="Ajouter une photo">📷<input type="file" id="wall-photo-file" accept="image/*" onchange="wallPhotoPreview(this)"></label>
+    <img id="wall-photo-prev" class="wall-photo-preview">
+    <div class="wall-foot">
+      <input class="wall-prenom-input" id="wall-prenom" placeholder="Votre prénom" maxlength="30">
+      <button class="wall-submit" id="wall-btn" onclick="publishPost()">Publier</button>
+    </div>
+    <div class="wall-msg" id="wall-msg"></div>
+  </div>
+</div>
+
 <main class="feed-wrap">
   <div class="feed-spinner" id="feed-spinner">
     <div style="display:flex;align-items:center;justify-content:center;gap:10px">
@@ -551,7 +569,7 @@ input.cmt-input:focus{border-color:var(--rouge)}
 </div>
 
 <!-- INPUT FILE CACHÉ (ouvre caméra/galerie native) -->
-<input type="file" id="story-file-input" accept="image/*,video/*" capture="environment" style="display:none" onchange="handleStoryFile(event)">
+<input type="file" id="story-file-input" accept="image/*,video/*" style="display:none" onchange="handleStoryFile(event)">
 
 <!-- STORY PREVIEW (style Snap/Insta) -->
 <div id="story-preview">
@@ -679,6 +697,60 @@ input.cmt-input:focus{border-color:var(--rouge)}
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
+
+
+// ============ MUR QUOI DE NEUF ============
+let _wallPhotoFile=null;
+function openWall(){
+  document.getElementById('wall-expand').classList.add('open');
+  document.getElementById('wall-text').focus();
+  try{const p=localStorage.getItem('cqp_prenom');if(p){document.getElementById('wall-prenom').value=p;updateWallAv(p);}}catch{}
+}
+document.addEventListener('click',e=>{
+  const box=document.getElementById('wall-box');
+  if(box&&!box.contains(e.target))document.getElementById('wall-expand').classList.remove('open');
+});
+function updateWallAv(prenom){
+  const av=document.getElementById('wall-av');
+  if(av)av.textContent=(prenom||'?')[0].toUpperCase();
+}
+function wallPhotoPreview(input){
+  const prev=document.getElementById('wall-photo-prev');
+  _wallPhotoFile=input.files[0]||null;
+  if(_wallPhotoFile){prev.src=URL.createObjectURL(_wallPhotoFile);prev.style.display='block';}
+  else{prev.style.display='none';}
+}
+async function publishPost(){
+  const contenu=document.getElementById('wall-text').value.trim();
+  const prenom=document.getElementById('wall-prenom').value.trim()||'Anonyme';
+  const msgEl=document.getElementById('wall-msg');
+  const btn=document.getElementById('wall-btn');
+  if(!contenu&&!_wallPhotoFile){msgEl.textContent='Écrivez quelque chose ou ajoutez une photo.';return;}
+  btn.disabled=true;btn.textContent='Publication…';msgEl.textContent='';
+  try{
+    localStorage.setItem('cqp_prenom',prenom);
+    updateWallAv(prenom);
+    let photo_url=null;
+    if(_wallPhotoFile){
+      const ext=_wallPhotoFile.name.split('.').pop()||'jpg';
+      const name=`post-${Date.now()}.${ext}`;
+      const{error:upErr}=await sb.storage.from('posts-photos').upload(name,_wallPhotoFile,{contentType:_wallPhotoFile.type,upsert:false});
+      if(upErr)throw upErr;
+      photo_url=sb.storage.from('posts-photos').getPublicUrl(name).data.publicUrl;
+    }
+    await sb.from('posts').insert({prenom,contenu:contenu||null,photo_url,visible:true,session_id:getSid()});
+    document.getElementById('wall-text').value='';
+    document.getElementById('wall-photo-prev').style.display='none';
+    document.getElementById('wall-photo-file').value='';
+    _wallPhotoFile=null;
+    document.getElementById('wall-expand').classList.remove('open');
+    msgEl.textContent='';
+    buildFeed();
+  }catch(e){
+    msgEl.textContent='Erreur lors de la publication.';
+    console.error(e);
+  }finally{btn.disabled=false;btn.textContent='Publier';}
+}
 
 // ============ UTILS ============
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
@@ -976,7 +1048,7 @@ function renderStory(){
   // Media
   const mediaDiv=document.getElementById('sv-media');
   const _mediaUrl=s.photo_url||s.media_url||'';if(_mediaUrl&&s.media_type==='video'){
-    mediaDiv.innerHTML=`<video src="${esc(_mediaUrl)}" autoplay muted playsinline loop style="width:100%;height:100%;object-fit:cover"></video>`;
+    mediaDiv.innerHTML=`<video src="${esc(_mediaUrl)}" autoplay playsinline loop style="width:100%;height:100%;object-fit:cover" controls></video>`;
   }else if(_mediaUrl&&s.media_type==='image'){
     mediaDiv.innerHTML=`<img src="${esc(_mediaUrl)}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`;
   }else{
@@ -1036,6 +1108,21 @@ function buildActionBar(type,id,titre){
       Partager
     </button>
   </div>`;
+}
+
+
+function renderPostCard(p){
+  const av=(p.prenom||'A')[0].toUpperCase();
+  const txt=p.contenu?`<div class="post-body">${esc(p.contenu)}</div>`:'';
+  const img=p.photo_url?`<img class="post-img" src="${esc(p.photo_url)}" loading="lazy">`:'';
+  return `<article class="post-card reveal-card" id="card-${p.id}">
+    <div class="card-head">
+      <div class="card-av" style="background:#7C3AED">${av}</div>
+      <div class="card-meta"><div class="card-src">${esc(p.prenom||'Anonyme')}</div><div class="card-ts">💬 ${timeAgo(p.created_at)}</div></div>
+    </div>
+    ${txt}${img}
+    ${buildActionBar('post',p.id,p.contenu||'Post')}
+  </article>`;
 }
 
 function renderActuCard(a){
@@ -1105,16 +1192,18 @@ async function buildFeed(){
   document.getElementById('feed-spinner').style.display='block';
   document.getElementById('new-banner').style.display='none';
   try{
-    const[{data:actus},{data:evts},{data:ann}]=await Promise.all([
+    const[{data:actus},{data:evts},{data:ann},{data:posts}]=await Promise.all([
       sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).limit(6),
       sb.from('evenements').select('*').eq('visible',true).eq('validee',true).gte('date_debut',new Date().toISOString()).order('date_debut',{ascending:true}).limit(4),
-      sb.from('annonces').select('*').eq('validee',true).order('date_depot',{ascending:false}).limit(4)
+      sb.from('annonces').select('*').eq('validee',true).order('date_depot',{ascending:false}).limit(4),
+      sb.from('posts').select('*').eq('visible',true).order('created_at',{ascending:false}).limit(8)
     ]);
     allActus=actus||[];
     const items=[
       ...(actus||[]).map(a=>({...a,_type:'actu',_date:a.date_publication})),
       ...(evts||[]).map(e=>({...e,_type:'evt',_date:e.created_at||e.date_debut})),
-      ...(ann||[]).map(a=>({...a,_type:'ann',_date:a.date_depot}))
+      ...(ann||[]).map(a=>({...a,_type:'ann',_date:a.date_depot})),
+      ...(posts||[]).map(p=>({...p,_type:'post',_date:p.created_at}))
     ].sort((a,b)=>new Date(b._date)-new Date(a._date));
     document.getElementById('feed-spinner').style.display='none';
     const feed=document.getElementById('feed');
@@ -1126,6 +1215,7 @@ async function buildFeed(){
       if(item._type==='actu')return renderActuCard(item);
       if(item._type==='evt')return renderEvtCard(item);
       if(item._type==='ann')return renderAnnCard(item);
+      if(item._type==='post')return renderPostCard(item);
       return '';
     }).join('');
     const actuIds=(actus||[]).map(a=>a.id);

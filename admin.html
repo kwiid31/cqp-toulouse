@@ -2,655 +2,637 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Admin – CQP Toulouse</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0d0d0d">
+<title>Admin — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="js/core.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--red:#C8102E;--bg:#0d0d0d;--card:#1a1a1a;--border:#2a2a2a;--text:#f0f0f0;--muted:#888;--green:#22c55e;--blue:#3b82f6;--yellow:#f59e0b;--r:10px;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --rouge:#C8102E;--blue:#1877F2;--green:#42B72A;--purple:#7C3AED;--orange:#EA580C;
+  --bg:#0d0d0d;--bg2:#1a1a1a;--bg3:#252525;--bg4:#2e2e2e;
+  --border:#333;--txt:#fff;--txt2:rgba(255,255,255,.65);--txt3:rgba(255,255,255,.35);
+  --nav-h:60px;--radius:10px;
+}
+html,body{font-size:15px;background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:inherit;outline:none}
+input,select,textarea{font-family:inherit}
 
-/* LOGIN MODAL */
-.login-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;}
-.login-box{background:#1a1a1a;border:1px solid var(--border);border-radius:16px;padding:32px 28px;width:100%;max-width:360px;text-align:center;}
-.login-logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--red);letter-spacing:1px;margin-bottom:4px;}
-.login-sub{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:28px;}
-.login-inp{width:100%;padding:12px 14px;background:#0d0d0d;border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:'Barlow',sans-serif;font-size:.95rem;outline:none;margin-bottom:12px;}
-.login-inp:focus{border-color:var(--red);}
-.login-btn{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.5px;cursor:pointer;}
-.login-err{color:#f87171;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;margin-top:10px;min-height:20px;}
+/* ── LOGIN ── */
+.login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:24px;padding:24px}
+.login-screen.hidden{display:none}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:2px;color:var(--rouge)}
+.login-sub{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:var(--txt3);margin-top:-16px}
+.login-form{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px}
+.login-input{width:100%;padding:14px 16px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--txt);font-size:.95rem;outline:none;transition:border .15s}
+.login-input:focus{border-color:var(--rouge)}
+.login-btn{width:100%;padding:14px;background:var(--rouge);border:none;border-radius:var(--radius);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase}
+.login-err{color:var(--rouge);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;text-align:center}
 
-/* LAYOUT */
-.admin-wrap{display:none;flex-direction:column;min-height:100vh;}
-.admin-header{background:#111;border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
-.admin-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--red);letter-spacing:1px;}
-.admin-back{color:var(--muted);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;display:flex;align-items:center;gap:4px;}
-.admin-back:hover{color:var(--text);}
-.logout-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;cursor:pointer;}
-.logout-btn:hover{color:var(--text);border-color:var(--muted);}
+/* ── LAYOUT ── */
+.app{display:none;min-height:100vh;flex-direction:column}
+.app.visible{display:flex}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);height:var(--nav-h);display:flex;align-items:center;gap:12px;padding:0 16px;position:sticky;top:0;z-index:100}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1px;color:var(--rouge)}
+.tb-title{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);flex:1}
+.tb-logout{background:var(--bg3);border:none;color:var(--txt2);padding:8px 14px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase}
 
-/* TABS */
-.tabs-wrap{background:#111;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
-.tabs-wrap::-webkit-scrollbar{display:none;}
-.tabs{display:flex;min-width:max-content;}
-.tab{padding:12px 16px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;}
-.tab.active{color:var(--text);border-bottom-color:var(--red);}
-.tab:hover{color:var(--text);}
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:16px}
+@media(max-width:600px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:4px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;color:var(--txt)}
+.stat-val.rouge{color:var(--rouge)}
+.stat-val.blue{color:var(--blue)}
+.stat-val.green{color:var(--green)}
+.stat-val.orange{color:var(--orange)}
+.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3)}
+.stat-sub{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;color:var(--txt3)}
 
-/* CONTENT */
-.tab-content{display:none;padding:20px;}
-.tab-content.active{display:block;}
+/* ── TABS ── */
+.tabs-wrap{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);padding:0 8px;background:var(--bg2);scrollbar-width:none;position:sticky;top:var(--nav-h);z-index:90}
+.tabs-wrap::-webkit-scrollbar{display:none}
+.tab-btn{border:none;background:none;padding:14px 16px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .15s}
+.tab-btn.active{color:var(--txt);border-bottom-color:var(--rouge)}
 
-/* SECTION HEADER */
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
-.sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.5px;}
-.sec-filters{display:flex;gap:6px;flex-wrap:wrap;}
-.filter-chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:.3px;transition:all .18s;}
-.filter-chip.active{background:var(--red);border-color:var(--red);color:#fff;}
+/* ── CONTENT ── */
+.tab-content{display:none;padding:16px;max-width:800px;margin:0 auto;width:100%}
+.tab-content.active{display:block}
 
-/* TABLE */
-.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border);}
-table{width:100%;border-collapse:collapse;font-size:.85rem;}
-th{background:#111;padding:10px 12px;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);border-bottom:1px solid var(--border);white-space:nowrap;}
-td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
-tr:last-child td{border-bottom:none;}
-tr:hover td{background:rgba(255,255,255,.02);}
+/* ── SECTION HEADER ── */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.5px}
+.btn-add{background:var(--rouge);border:none;color:#fff;padding:10px 18px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.btn-add.blue{background:var(--blue)}
+.btn-add.green{background:var(--green)}
+.btn-add.purple{background:var(--purple)}
 
-/* BADGES */
-.badge{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-radius:20px;}
-.badge.pending{background:#f59e0b22;color:#f59e0b;}
-.badge.pub{background:#22c55e22;color:#22c55e;}
-.badge.hidden{background:#6b728022;color:#6b7280;}
-.badge.red{background:#C8102E22;color:#C8102E;}
+/* ── FORM PANEL ── */
+.form-panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px;display:none}
+.form-panel.open{display:block}
+.form-panel h4{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.5px;margin-bottom:16px;color:var(--rouge)}
+.form-panel h4.blue{color:var(--blue)}
+.form-panel h4.green{color:var(--green)}
+.form-panel h4.purple{color:var(--purple)}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-size:.9rem;outline:none;transition:border .15s;resize:vertical}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--rouge)}
+.fg select option{background:var(--bg3)}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.fg-row{grid-template-columns:1fr}}
+.fp-foot{display:flex;gap:10px;margin-top:4px}
+.btn-save{flex:1;padding:12px;background:var(--rouge);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase}
+.btn-cancel{padding:12px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1px;text-transform:uppercase}
+.fp-msg{margin-top:10px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-align:center}
 
-/* ACTION BUTTONS */
-.btn-sm{padding:5px 10px;border-radius:6px;border:none;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.3px;transition:all .18s;white-space:nowrap;}
-.btn-sm:hover{opacity:.85;}
-.btn-green{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44;}
-.btn-red{background:#C8102E22;color:#C8102E;border:1px solid #C8102E44;}
-.btn-muted{background:#2a2a2a;color:var(--muted);border:1px solid var(--border);}
-.btn-blue{background:#3b82f622;color:#3b82f6;border:1px solid #3b82f644;}
-.btns-cell{display:flex;gap:5px;flex-wrap:wrap;}
+/* ── LISTE ITEMS ── */
+.item-list{display:flex;flex-direction:column;gap:8px}
+.item-row{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;align-items:flex-start;gap:12px}
+.item-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.item-info{flex:1;min-width:0}
+.item-title{font-family:'Barlow',sans-serif;font-weight:600;font-size:.9rem;color:var(--txt);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:.75rem;color:var(--txt3);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.badge{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:4px}
+.badge-on{background:rgba(66,183,42,.15);color:var(--green);border:1px solid rgba(66,183,42,.3)}
+.badge-off{background:rgba(255,255,255,.06);color:var(--txt3);border:1px solid var(--border)}
+.badge-pending{background:rgba(234,88,12,.15);color:var(--orange);border:1px solid rgba(234,88,12,.3)}
+.item-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.act-btn{padding:7px 12px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;border:none;cursor:pointer;white-space:nowrap}
+.act-publish{background:var(--rouge);color:#fff}
+.act-hide{background:var(--bg3);color:var(--txt2);border:1px solid var(--border)}
+.act-validate{background:var(--green);color:#fff}
+.act-delete{background:transparent;color:rgba(255,60,60,.6);border:1px solid rgba(255,60,60,.2)}
 
-/* STORIES GRID */
-.stories-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:4px;}
-.story-thumb{background:#111;border-radius:10px;border:1px solid var(--border);overflow:hidden;position:relative;aspect-ratio:.56;cursor:pointer;}
-.story-thumb img,.story-thumb video{width:100%;height:100%;object-fit:cover;}
-.story-thumb-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8));padding:8px 6px 6px;}
-.story-thumb-views{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;color:#fff;display:flex;align-items:center;gap:3px;}
-.story-thumb-date{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;color:rgba(255,255,255,.7);margin-top:1px;}
-.story-thumb-actions{display:flex;gap:4px;margin-top:5px;}
-.story-thumb-actions .btn-sm{flex:1;text-align:center;font-size:.65rem;padding:4px 4px;}
-.story-status{position:absolute;top:6px;left:6px;}
+/* ── STORIES THUMB ── */
+.story-thumb{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;background:var(--bg3);border:2px solid var(--rouge)}
 
-/* STATS GRID */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 16px;}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--red);line-height:1;}
-.stat-label{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:3px;}
+/* ── APROPOS EDITOR ── */
+.apropos-editor{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.apropos-editor h4{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.5px;margin-bottom:12px;color:var(--purple)}
+.apropos-editor textarea{width:100%;min-height:280px;padding:14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-size:.9rem;outline:none;line-height:1.8;resize:vertical}
+.apropos-editor textarea:focus{border-color:var(--purple)}
+.apropos-hint{font-size:.78rem;color:var(--txt3);margin-top:8px;line-height:1.6}
 
-/* TEXT TRUNCATE */
-.trunc{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.trunc-sm{max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* ── SPINNER ── */
+.load-spin{text-align:center;padding:32px;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase}
 
-/* LOADING */
-.loading{padding:32px;text-align:center;color:var(--muted);font-family:'Barlow Condensed',sans-serif;}
-.empty-row td{text-align:center;padding:32px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.85rem;}
+/* ── ONLINE INDICATOR ── */
+.online-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse-g 2s infinite;flex-shrink:0}
+@keyframes pulse-g{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 
-/* TOAST */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(14px);background:#1a1a1a;color:#fff;border:1px solid var(--border);padding:10px 20px;border-radius:24px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;z-index:2000;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* CONFIRM DIALOG */
-.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px;}
-.confirm-overlay.open{display:flex;}
-.confirm-box{background:#1a1a1a;border:1px solid var(--border);border-radius:14px;padding:24px;width:100%;max-width:320px;text-align:center;}
-.confirm-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;margin-bottom:10px;}
-.confirm-msg{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;color:var(--muted);margin-bottom:20px;line-height:1.5;}
-.confirm-btns{display:flex;gap:10px;}
-.confirm-btns .btn-sm{flex:1;padding:10px;font-size:.8rem;}
+/* ── FILE INPUT ── */
+.file-label{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--bg3);border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;color:var(--txt2);font-size:.85rem;transition:border .15s}
+.file-label:hover{border-color:var(--rouge)}
+.file-label input{display:none}
+.file-preview{width:100%;height:120px;object-fit:cover;border-radius:8px;margin-top:8px;display:none}
 </style>
 </head>
 <body>
 
-<!-- Login Modal -->
-<div class="login-overlay" id="login-overlay">
-  <div class="login-box">
-    <div class="login-logo">CQP Admin</div>
-    <div class="login-sub">Panneau d'administration</div>
-    <input class="login-inp" id="login-pw" type="password" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="login-btn" onclick="doLogin()">Accéder</button>
+<!-- ── LOGIN ── -->
+<div class="login-screen" id="login-screen">
+  <div class="login-logo">CQP</div>
+  <div class="login-sub">Administration</div>
+  <div class="login-form">
+    <input class="login-input" type="password" id="login-pwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Accéder au dashboard</button>
     <div class="login-err" id="login-err"></div>
   </div>
 </div>
 
-<!-- Admin Wrap -->
-<div class="admin-wrap" id="admin-wrap">
-  <header class="admin-header">
-    <div class="admin-logo">CQP Admin</div>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <a href="index.html" class="admin-back">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        Site
-      </a>
-      <button class="logout-btn" onclick="doLogout()">Déconnexion</button>
-    </div>
+<!-- ── APP ── -->
+<div class="app" id="app">
+  <header class="topbar">
+    <span class="tb-logo">CQP</span>
+    <span class="tb-title">Dashboard Admin — Toulouse</span>
+    <span class="online-dot" id="online-dot"></span>
+    <button class="tb-logout" onclick="doLogout()">Déconnexion</button>
   </header>
 
+  <!-- STATS -->
+  <div class="stats-row" id="stats-row">
+    <div class="stat-card"><div class="stat-val rouge" id="s-actus">—</div><div class="stat-label">Actualités</div></div>
+    <div class="stat-card"><div class="stat-val blue" id="s-evts">—</div><div class="stat-label">Événements</div></div>
+    <div class="stat-card"><div class="stat-val green" id="s-ann">—</div><div class="stat-label">Annonces</div></div>
+    <div class="stat-card"><div class="stat-val orange" id="s-stories">—</div><div class="stat-label">Stories</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-posts">—</div><div class="stat-label">Posts mur</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-visites">—</div><div class="stat-label">Visites totales</div><div class="stat-sub" id="s-visites-sub"></div></div>
+    <div class="stat-card"><div class="stat-val green" id="s-online">—</div><div class="stat-label">Connectés maintenant</div></div>
+    <div class="stat-card"><div class="stat-val" id="s-adherents">—</div><div class="stat-label">Adhérents</div></div>
+  </div>
+
+  <!-- TABS -->
   <div class="tabs-wrap">
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('stories',this)">📸 Stories</div>
-      <div class="tab" onclick="switchTab('actus',this)">📰 Actus</div>
-      <div class="tab" onclick="switchTab('adherents',this)">👥 Adhérents</div>
-      <div class="tab" onclick="switchTab('annonces',this)">📋 Annonces</div>
-      <div class="tab" onclick="switchTab('evts',this)">📅 Évts</div>
-      <div class="tab" onclick="switchTab('cmts',this)">💬 Commentaires</div>
-      <div class="tab" onclick="switchTab('stats',this)">📊 Stats</div>
-    </div>
+    <button class="tab-btn active" onclick="switchTab('actus',this)">📰 Actus</button>
+    <button class="tab-btn" onclick="switchTab('evenements',this)">📅 Événements</button>
+    <button class="tab-btn" onclick="switchTab('annonces',this)">📋 Annonces</button>
+    <button class="tab-btn" onclick="switchTab('posts',this)">💬 Posts mur</button>
+    <button class="tab-btn" onclick="switchTab('stories',this)">📸 Stories</button>
+    <button class="tab-btn" onclick="switchTab('adherents',this)">👥 Adhérents</button>
+    <button class="tab-btn" onclick="switchTab('apropos',this)">✏️ À propos</button>
   </div>
 
-  <!-- STORIES -->
-  <div class="tab-content active" id="tab-stories">
-    <div class="sec-head">
-      <span class="sec-title">Stories</span>
-      <div class="sec-filters">
-        <button class="filter-chip active" onclick="storiesFilter('pending',this)">En attente</button>
-        <button class="filter-chip" onclick="storiesFilter('all',this)">Toutes</button>
-        <button class="filter-chip" onclick="storiesFilter('approved',this)">Approuvées</button>
-      </div>
-    </div>
-    <div id="stories-grid-wrap">
-      <div class="loading">Chargement…</div>
-    </div>
-  </div>
-
-  <!-- ACTUS -->
-  <div class="tab-content" id="tab-actus">
+  <!-- ═══ ACTUS ═══ -->
+  <div class="tab-content active" id="tab-actus">
     <div class="sec-head">
       <span class="sec-title">Actualités</span>
+      <button class="btn-add" onclick="toggleForm('form-actu')">+ Nouvelle actu</button>
     </div>
-    <div class="tbl-wrap" id="actus-tbl-wrap">
-      <div class="loading">Chargement…</div>
+    <div class="form-panel" id="form-actu">
+      <h4>📰 Nouvelle actualité</h4>
+      <div class="fg"><label>Titre *</label><input type="text" id="a-titre" placeholder="Titre de l'article"></div>
+      <div class="fg-row">
+        <div class="fg"><label>Catégorie</label>
+          <select id="a-cat"><option value="Politique">Politique</option><option value="Logement">Logement</option><option value="Culture">Culture</option><option value="Social">Social</option><option value="Emploi">Emploi</option><option value="Sécurité">Sécurité</option><option value="Général">Général</option></select>
+        </div>
+        <div class="fg"><label>Date de publication</label><input type="datetime-local" id="a-date"></div>
+      </div>
+      <div class="fg"><label>Contenu *</label><textarea id="a-contenu" rows="6" placeholder="Contenu de l'article…"></textarea></div>
+      <div class="fg">
+        <label>Photo</label>
+        <label class="file-label"><input type="file" id="a-photo" accept="image/*" onchange="previewImg(this,'a-photo-prev')">📷 Choisir une photo</label>
+        <img id="a-photo-prev" class="file-preview">
+      </div>
+      <div class="fg"><label>Visible immédiatement</label><select id="a-visible"><option value="true">Oui — publié</option><option value="false">Non — brouillon</option></select></div>
+      <div class="fp-foot">
+        <button class="btn-save" onclick="saveActu()">Publier l'article</button>
+        <button class="btn-cancel" onclick="toggleForm('form-actu')">Annuler</button>
+      </div>
+      <div class="fp-msg" id="a-msg"></div>
     </div>
+    <div class="item-list" id="list-actus"><div class="load-spin">Chargement…</div></div>
   </div>
 
-  <!-- ADHERENTS -->
-  <div class="tab-content" id="tab-adherents">
-    <div class="sec-head">
-      <span class="sec-title">Adhérents</span>
-      <button class="btn-sm btn-muted" onclick="exportCsv('adherents')">⬇ Export CSV</button>
-    </div>
-    <div class="tbl-wrap" id="adh-tbl-wrap">
-      <div class="loading">Chargement…</div>
-    </div>
-  </div>
-
-  <!-- ANNONCES -->
-  <div class="tab-content" id="tab-annonces">
-    <div class="sec-head">
-      <span class="sec-title">Annonces</span>
-    </div>
-    <div class="tbl-wrap" id="ann-tbl-wrap">
-      <div class="loading">Chargement…</div>
-    </div>
-  </div>
-
-  <!-- EVTS -->
-  <div class="tab-content" id="tab-evts">
+  <!-- ═══ ÉVÉNEMENTS ═══ -->
+  <div class="tab-content" id="tab-evenements">
     <div class="sec-head">
       <span class="sec-title">Événements</span>
+      <button class="btn-add blue" onclick="toggleForm('form-evt')">+ Nouvel événement</button>
     </div>
-    <div class="tbl-wrap" id="evts-tbl-wrap">
-      <div class="loading">Chargement…</div>
+    <div class="form-panel" id="form-evt">
+      <h4 class="blue">📅 Nouvel événement</h4>
+      <div class="fg"><label>Titre *</label><input type="text" id="e-titre" placeholder="Nom de l'événement"></div>
+      <div class="fg-row">
+        <div class="fg"><label>Date début *</label><input type="datetime-local" id="e-debut"></div>
+        <div class="fg"><label>Date fin</label><input type="datetime-local" id="e-fin"></div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Lieu</label><input type="text" id="e-lieu" placeholder="Adresse ou salle"></div>
+        <div class="fg"><label>Catégorie</label>
+          <select id="e-cat"><option value="Réunion">Réunion</option><option value="Manifestation">Manifestation</option><option value="Culture">Culture</option><option value="Solidarité">Solidarité</option><option value="Sport">Sport</option><option value="Autre">Autre</option></select>
+        </div>
+      </div>
+      <div class="fg"><label>Description</label><textarea id="e-desc" rows="4" placeholder="Description de l'événement…"></textarea></div>
+      <div class="fg-row">
+        <div class="fg"><label>Places max (0 = illimité)</label><input type="number" id="e-places" value="0" min="0"></div>
+        <div class="fg"><label>Proposé par</label><input type="text" id="e-propose" placeholder="Nom de l'organisateur"></div>
+      </div>
+      <div class="fg">
+        <label>Photo</label>
+        <label class="file-label"><input type="file" id="e-photo" accept="image/*" onchange="previewImg(this,'e-photo-prev')">📷 Choisir une photo</label>
+        <img id="e-photo-prev" class="file-preview">
+      </div>
+      <div class="fp-foot">
+        <button class="btn-save" style="background:var(--blue)" onclick="saveEvt()">Créer l'événement</button>
+        <button class="btn-cancel" onclick="toggleForm('form-evt')">Annuler</button>
+      </div>
+      <div class="fp-msg" id="e-msg"></div>
     </div>
+    <div class="item-list" id="list-evts"><div class="load-spin">Chargement…</div></div>
   </div>
 
-  <!-- COMMENTS -->
-  <div class="tab-content" id="tab-cmts">
-    <div class="sec-head">
-      <span class="sec-title">Commentaires</span>
-    </div>
-    <div class="tbl-wrap" id="cmts-tbl-wrap">
-      <div class="loading">Chargement…</div>
-    </div>
+  <!-- ═══ ANNONCES ═══ -->
+  <div class="tab-content" id="tab-annonces">
+    <div class="sec-head"><span class="sec-title">Annonces</span></div>
+    <div class="item-list" id="list-annonces"><div class="load-spin">Chargement…</div></div>
   </div>
 
-  <!-- STATS -->
-  <div class="tab-content" id="tab-stats">
-    <div class="sec-head">
-      <span class="sec-title">Statistiques</span>
-    </div>
-    <div class="stats-grid" id="stats-grid">
-      <div class="loading">Chargement…</div>
+  <!-- ═══ POSTS MUR ═══ -->
+  <div class="tab-content" id="tab-posts">
+    <div class="sec-head"><span class="sec-title">Posts du mur</span></div>
+    <div class="item-list" id="list-posts"><div class="load-spin">Chargement…</div></div>
+  </div>
+
+  <!-- ═══ STORIES ═══ -->
+  <div class="tab-content" id="tab-stories">
+    <div class="sec-head"><span class="sec-title">Stories</span></div>
+    <div class="item-list" id="list-stories"><div class="load-spin">Chargement…</div></div>
+  </div>
+
+  <!-- ═══ ADHÉRENTS ═══ -->
+  <div class="tab-content" id="tab-adherents">
+    <div class="sec-head"><span class="sec-title">Adhérents</span></div>
+    <div class="item-list" id="list-adherents"><div class="load-spin">Chargement…</div></div>
+  </div>
+
+  <!-- ═══ À PROPOS ═══ -->
+  <div class="tab-content" id="tab-apropos">
+    <div class="sec-head"><span class="sec-title">Page À propos</span></div>
+    <div class="apropos-editor">
+      <h4>✏️ Modifier le contenu de la page "À propos"</h4>
+      <textarea id="apropos-text" placeholder="Contenu de la page à propos…"></textarea>
+      <div class="apropos-hint">Le texte sera affiché tel quel sur la page publique. Vous pouvez utiliser des sauts de ligne.</div>
+      <div class="fp-foot" style="margin-top:16px">
+        <button class="btn-save" style="background:var(--purple);max-width:260px" onclick="saveApropos()">💾 Enregistrer les modifications</button>
+      </div>
+      <div class="fp-msg" id="apropos-msg"></div>
     </div>
   </div>
 </div>
-
-<!-- Confirm Dialog -->
-<div class="confirm-overlay" id="confirm-overlay">
-  <div class="confirm-box">
-    <div class="confirm-title" id="confirm-title">Confirmer</div>
-    <div class="confirm-msg" id="confirm-msg">Cette action est irréversible.</div>
-    <div class="confirm-btns">
-      <button class="btn-sm btn-muted" onclick="closeConfirm()">Annuler</button>
-      <button class="btn-sm btn-red" id="confirm-ok" onclick="">Confirmer</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
 
 <script>
-var ADMIN_PW = 'toulouse2026';
-var currentStoriesFilter = 'pending';
-var allStories = [];
+const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
+const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+const sb=supabase.createClient(SBU,SBK);
+const PWD='toulouse2026';
 
-// ── Utils admin-spécifiques ───────────────────────────────────
-function fmtDate(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
-function fmtDatetime(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
-function confirm2(title, msg, onOk) {
-  document.getElementById('confirm-title').textContent = title;
-  document.getElementById('confirm-msg').textContent = msg;
-  document.getElementById('confirm-ok').onclick = function() { closeConfirm(); onOk(); };
-  document.getElementById('confirm-overlay').classList.add('open');
+// ── AUTH ──
+function doLogin(){
+  const v=document.getElementById('login-pwd').value;
+  if(v===PWD){
+    sessionStorage.setItem('cqp_admin','1');
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    initDashboard();
+  }else{document.getElementById('login-err').textContent='Mot de passe incorrect';}
 }
-function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
+function doLogout(){sessionStorage.removeItem('cqp_admin');location.reload();}
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function timeAgo(d){if(!d)return'';const diff=(Date.now()-new Date(d))/1000;if(diff<60)return"À l'instant";if(diff<3600)return`Il y a ${Math.floor(diff/60)} min`;if(diff<86400)return`Il y a ${Math.floor(diff/3600)} h`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});}
 
-// ── Auth ──────────────────────────────────────────────────────
-function doLogin() {
-  var pw = document.getElementById('login-pw').value;
-  if (pw === ADMIN_PW) {
-    document.getElementById('login-overlay').style.display = 'none';
-    var wrap = document.getElementById('admin-wrap');
-    wrap.style.display = 'flex';
-    sessionStorage.setItem('cqp_admin', '1');
-    loadStories();
-  } else {
-    document.getElementById('login-err').textContent = 'Mot de passe incorrect';
-    document.getElementById('login-pw').value = '';
-  }
-}
-function doLogout() {
-  sessionStorage.removeItem('cqp_admin');
-  document.getElementById('login-overlay').style.display = 'flex';
-  document.getElementById('admin-wrap').style.display = 'none';
-  document.getElementById('login-pw').value = '';
-  document.getElementById('login-err').textContent = '';
-}
-if (sessionStorage.getItem('cqp_admin') === '1') {
-  document.getElementById('login-overlay').style.display = 'none';
-  document.getElementById('admin-wrap').style.display = 'flex';
+// ── INIT ──
+async function initDashboard(){
+  loadStats();
+  loadTab('actus');
+  setInterval(loadStats,30000);
 }
 
-// ── Tabs ──────────────────────────────────────────────────────
-var tabLoaded = {};
-function switchTab(name, el) {
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
-  document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('active'); });
+// ── STATS ──
+async function loadStats(){
+  try{
+    const[{count:ca},{count:ce},{count:cann},{count:cs},{count:cp},{count:cadh},{data:vdata},{data:online}]=await Promise.all([
+      sb.from('actus').select('*',{count:'exact',head:true}).eq('visible',true),
+      sb.from('evenements').select('*',{count:'exact',head:true}).eq('validee',true),
+      sb.from('annonces').select('*',{count:'exact',head:true}).eq('validee',true),
+      sb.from('stories').select('*',{count:'exact',head:true}).eq('visible',true),
+      sb.from('posts').select('*',{count:'exact',head:true}).eq('visible',true),
+      sb.from('adherents').select('*',{count:'exact',head:true}),
+      sb.from('page_views').select('id').order('id',{ascending:false}).limit(1),
+      sb.from('active_sessions').select('*').gte('last_seen',new Date(Date.now()-5*60000).toISOString())
+    ]);
+    document.getElementById('s-actus').textContent=ca||0;
+    document.getElementById('s-evts').textContent=ce||0;
+    document.getElementById('s-ann').textContent=cann||0;
+    document.getElementById('s-stories').textContent=cs||0;
+    document.getElementById('s-posts').textContent=cp||0;
+    document.getElementById('s-adherents').textContent=cadh||0;
+    document.getElementById('s-online').textContent=(online||[]).length;
+    if(vdata&&vdata[0])document.getElementById('s-visites').textContent=vdata[0].id;
+  }catch(e){console.warn('stats',e);}
+}
+
+// ── TABS ──
+const tabLoaded={};
+function switchTab(name,el){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
-  if (!tabLoaded[name]) {
-    tabLoaded[name] = true;
-    if (name === 'actus') loadActus();
-    else if (name === 'adherents') loadAdherents();
-    else if (name === 'annonces') loadAnnonces();
-    else if (name === 'evts') loadEvts();
-    else if (name === 'cmts') loadCmts();
-    else if (name === 'stats') loadStats();
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(!tabLoaded[name]){tabLoaded[name]=true;loadTab(name);}
+}
+function loadTab(name){
+  if(name==='actus')loadActus();
+  else if(name==='evenements')loadEvts();
+  else if(name==='annonces')loadAnnonces();
+  else if(name==='posts')loadPosts();
+  else if(name==='stories')loadStories();
+  else if(name==='adherents')loadAdherents();
+  else if(name==='apropos')loadApropos();
+}
+
+// ── TOGGLE FORM ──
+function toggleForm(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('open');
+  if(el.classList.contains('open'))el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ── PREVIEW IMAGE ──
+function previewImg(input,previewId){
+  const prev=document.getElementById(previewId);
+  if(input.files&&input.files[0]){
+    prev.src=URL.createObjectURL(input.files[0]);
+    prev.style.display='block';
   }
 }
 
-// ── Stories ───────────────────────────────────────────────────
-function loadStories() {
-  sb.from('stories').select('*').order('created_at',{ascending:false}).then(function(res) {
-    if (res.error) { document.getElementById('stories-grid-wrap').innerHTML = '<div class="loading">Erreur</div>'; return; }
-    allStories = res.data || [];
-    renderStoriesGrid();
-  });
+// ── UPLOAD PHOTO ──
+async function uploadPhoto(file,bucket){
+  if(!file)return null;
+  const ext=file.name.split('.').pop()||'jpg';
+  const name=`${Date.now()}.${ext}`;
+  const{error}=await sb.storage.from(bucket).upload(name,file,{contentType:file.type,upsert:false});
+  if(error)throw error;
+  return sb.storage.from(bucket).getPublicUrl(name).data.publicUrl;
 }
-function storiesFilter(f, el) {
-  currentStoriesFilter = f;
-  document.querySelectorAll('#tab-stories .filter-chip').forEach(function(c){ c.classList.remove('active'); });
-  if (el) el.classList.add('active');
-  renderStoriesGrid();
+
+// ── ACTUS ──
+async function loadActus(){
+  const{data}=await sb.from('actus').select('*').order('date_publication',{ascending:false}).limit(50);
+  const el=document.getElementById('list-actus');
+  if(!data||!data.length){el.innerHTML='<div class="load-spin">Aucune actualité</div>';return;}
+  el.innerHTML=data.map(a=>`
+    <div class="item-row">
+      ${a.photo_url?`<img class="item-thumb" src="${esc(a.photo_url)}" loading="lazy">`:'<div class="item-thumb"></div>'}
+      <div class="item-info">
+        <div class="item-title">${esc(a.titre)}</div>
+        <div class="item-meta">
+          <span class="badge ${a.visible?'badge-on':'badge-off'}">${a.visible?'Publié':'Masqué'}</span>
+          <span>${esc(a.categorie||'')}</span>
+          <span>${timeAgo(a.date_publication)}</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act-btn ${a.visible?'act-hide':'act-publish'}" onclick="toggleActu(${a.id},${a.visible})">${a.visible?'Masquer':'Publier'}</button>
+        <button class="act-btn act-delete" onclick="deleteActu(${a.id})">Supprimer</button>
+      </div>
+    </div>`).join('');
 }
-function renderStoriesGrid() {
-  var stories = allStories;
-  if (currentStoriesFilter === 'pending') stories = stories.filter(function(s){ return !s.visible; });
-  else if (currentStoriesFilter === 'approved') stories = stories.filter(function(s){ return s.visible; });
-  var wrap = document.getElementById('stories-grid-wrap');
-  if (!stories.length) {
-    wrap.innerHTML = '<div class="loading">Aucune story dans cette catégorie</div>';
-    return;
-  }
-  wrap.innerHTML = '<div class="stories-grid">' + stories.map(function(s) {
-    var isImg = s.media_type !== 'video';
-    var media = isImg
-      ? '<img src="' + esc(s.photo_url) + '" loading="lazy" alt="story">'
-      : '<video src="' + esc(s.photo_url) + '" muted playsinline preload="metadata"></video>';
-    var statusBadge = s.visible
-      ? '<span class="badge pub story-status">✓</span>'
-      : '<span class="badge pending story-status">⏳</span>';
-    return '<div class="story-thumb">' +
-      media + statusBadge +
-      '<div class="story-thumb-overlay">' +
-        '<div class="story-thumb-views">👁 ' + (s.views || 0) + '</div>' +
-        '<div class="story-thumb-date">' + fmtDate(s.created_at) + '</div>' +
-        '<div class="story-thumb-actions">' +
-          (!s.visible ? '<button class="btn-sm btn-green" onclick="validateStory(' + s.id + ')">✓ Valider</button>' : '<button class="btn-sm btn-muted" onclick="hideStory(' + s.id + ')">Masquer</button>') +
-          '<button class="btn-sm btn-red" onclick="deleteStory(' + s.id + ',\'' + esc(s.photo_url) + '\')">✕</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  }).join('') + '</div>';
-}
-function validateStory(id) {
-  sb.from('stories').update({visible: true}).eq('id', id).then(function(r) {
-    if (r.error) { toast('Erreur: ' + r.error.message, 'err'); return; }
-    var s = allStories.find(function(x){ return x.id === id; });
-    if (s) s.visible = true;
-    renderStoriesGrid();
-    toast('Story validée ✓', 'ok');
-  });
-}
-function hideStory(id) {
-  sb.from('stories').update({visible: false}).eq('id', id).then(function(r) {
-    if (r.error) { toast('Erreur: ' + r.error.message, 'err'); return; }
-    var s = allStories.find(function(x){ return x.id === id; });
-    if (s) s.visible = false;
-    renderStoriesGrid();
-    toast('Story masquée', 'ok');
-  });
-}
-function deleteStory(id, url) {
-  confirm2('Supprimer la story', 'La story sera supprimée définitivement.', function() {
-    var path = (url || '').split('/stories/').pop();
-    sb.storage.from('stories').remove([path]).then(function() {
-      sb.from('stories').delete().eq('id', id).then(function(r) {
-        if (r.error) { toast('Erreur: ' + r.error.message, 'err'); return; }
-        allStories = allStories.filter(function(s){ return s.id !== id; });
-        renderStoriesGrid();
-        toast('Story supprimée', 'ok');
-      });
+async function saveActu(){
+  const titre=document.getElementById('a-titre').value.trim();
+  const contenu=document.getElementById('a-contenu').value.trim();
+  const cat=document.getElementById('a-cat').value;
+  const dateVal=document.getElementById('a-date').value;
+  const visible=document.getElementById('a-visible').value==='true';
+  const photoFile=document.getElementById('a-photo').files[0];
+  const msg=document.getElementById('a-msg');
+  if(!titre||!contenu){msg.textContent='Titre et contenu obligatoires.';msg.style.color='var(--rouge)';return;}
+  msg.textContent='Publication en cours…';msg.style.color='var(--txt3)';
+  try{
+    const photo_url=photoFile?await uploadPhoto(photoFile,'site-photos'):null;
+    await sb.from('actus').insert({
+      titre,contenu,categorie:cat,
+      date_publication:dateVal?new Date(dateVal).toISOString():new Date().toISOString(),
+      visible,
+      ...(photo_url&&{photo_url})
     });
-  });
+    msg.textContent='✅ Article publié !';msg.style.color='var(--green)';
+    setTimeout(()=>{toggleForm('form-actu');tabLoaded.actus=false;loadTab('actus');msg.textContent='';},1500);
+  }catch(e){msg.textContent='Erreur : '+e.message;msg.style.color='var(--rouge)';console.error(e);}
+}
+async function toggleActu(id,current){
+  await sb.from('actus').update({visible:!current}).eq('id',id);
+  tabLoaded.actus=false;loadTab('actus');loadStats();
+}
+async function deleteActu(id){
+  if(!confirm('Supprimer définitivement cet article ?'))return;
+  await sb.from('actus').delete().eq('id',id);
+  tabLoaded.actus=false;loadTab('actus');loadStats();
 }
 
-// ── Actus ─────────────────────────────────────────────────────
-function loadActus() {
-  sb.from('actus').select('*').order('date_publication',{ascending:false}).then(function(res) {
-    var wrap = document.getElementById('actus-tbl-wrap');
-    if (res.error || !res.data) { wrap.innerHTML = '<div class="loading">Erreur</div>'; return; }
-    if (!res.data.length) { wrap.innerHTML = '<table><tr class="empty-row"><td colspan="5">Aucune actualité</td></tr></table>'; return; }
-    wrap.innerHTML = '<table>' +
-      '<thead><tr><th>Titre</th><th>Catégorie</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>' +
-      '<tbody>' + res.data.map(function(a) {
-        return '<tr>' +
-          '<td><div class="trunc">' + esc(a.titre || '') + '</div></td>' +
-          '<td><div class="trunc-sm">' + esc(a.categorie || '—') + '</div></td>' +
-          '<td style="white-space:nowrap">' + fmtDate(a.date_publication) + '</td>' +
-          '<td>' + (a.visible ? '<span class="badge pub">Publié</span>' : '<span class="badge hidden">Brouillon</span>') + '</td>' +
-          '<td><div class="btns-cell">' +
-            (a.visible
-              ? '<button class="btn-sm btn-muted" onclick="toggleActu(' + a.id + ',false)">Masquer</button>'
-              : '<button class="btn-sm btn-green" onclick="toggleActu(' + a.id + ',true)">Publier</button>') +
-            '<button class="btn-sm btn-red" onclick="deleteActu(' + a.id + ')">Suppr.</button>' +
-          '</div></td>' +
-        '</tr>';
-      }).join('') + '</tbody></table>';
-  });
+// ── ÉVÉNEMENTS ──
+async function loadEvts(){
+  const{data}=await sb.from('evenements').select('*').order('date_debut',{ascending:false}).limit(50);
+  const el=document.getElementById('list-evts');
+  if(!data||!data.length){el.innerHTML='<div class="load-spin">Aucun événement</div>';return;}
+  el.innerHTML=data.map(e=>{
+    const d=new Date(e.date_debut);
+    return `<div class="item-row">
+      ${e.photo_url?`<img class="item-thumb" src="${esc(e.photo_url)}" loading="lazy">`:'<div class="item-thumb"></div>'}
+      <div class="item-info">
+        <div class="item-title">${esc(e.titre)}</div>
+        <div class="item-meta">
+          <span class="badge ${e.validee?'badge-on':'badge-pending'}">${e.validee?'Visible':'En attente'}</span>
+          <span>${d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})}</span>
+          <span>${esc(e.lieu||'')}</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act-btn ${e.validee?'act-hide':'act-validate'}" onclick="toggleEvt(${e.id},${e.validee})">${e.validee?'Masquer':'Valider'}</button>
+        <button class="act-btn act-delete" onclick="deleteEvt(${e.id})">Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
 }
-function toggleActu(id, visible) {
-  sb.from('actus').update({visible: visible}).eq('id', id).then(function(r) {
-    if (r.error) { toast('Erreur', 'err'); return; }
-    toast(visible ? 'Publié ✓' : 'Masqué', 'ok');
-    tabLoaded['actus'] = false; loadActus(); tabLoaded['actus'] = true;
-  });
-}
-function deleteActu(id) {
-  confirm2('Supprimer l\'actu', 'Cette actualité sera supprimée définitivement.', function() {
-    sb.from('actus').delete().eq('id', id).then(function(r) {
-      if (r.error) { toast('Erreur', 'err'); return; }
-      toast('Supprimée', 'ok');
-      tabLoaded['actus'] = false; loadActus(); tabLoaded['actus'] = true;
+async function saveEvt(){
+  const titre=document.getElementById('e-titre').value.trim();
+  const debut=document.getElementById('e-debut').value;
+  const fin=document.getElementById('e-fin').value;
+  const lieu=document.getElementById('e-lieu').value.trim();
+  const cat=document.getElementById('e-cat').value;
+  const desc=document.getElementById('e-desc').value.trim();
+  const places=parseInt(document.getElementById('e-places').value)||0;
+  const propose=document.getElementById('e-propose').value.trim();
+  const photoFile=document.getElementById('e-photo').files[0];
+  const msg=document.getElementById('e-msg');
+  if(!titre||!debut){msg.textContent='Titre et date obligatoires.';msg.style.color='var(--rouge)';return;}
+  msg.textContent='Création en cours…';msg.style.color='var(--txt3)';
+  try{
+    const photo_url=photoFile?await uploadPhoto(photoFile,'site-photos'):null;
+    await sb.from('evenements').insert({
+      titre,description:desc||null,lieu:lieu||null,
+      date_debut:new Date(debut).toISOString(),
+      date_fin:fin?new Date(fin).toISOString():null,
+      categorie:cat,places_max:places,
+      propose_par:propose||null,
+      visible:true,validee:true,
+      ...(photo_url&&{photo_url})
     });
-  });
+    msg.textContent='✅ Événement créé !';msg.style.color='var(--green)';
+    setTimeout(()=>{toggleForm('form-evt');tabLoaded.evenements=false;loadTab('evenements');msg.textContent='';},1500);
+  }catch(e){msg.textContent='Erreur : '+e.message;msg.style.color='var(--rouge)';console.error(e);}
+}
+async function toggleEvt(id,current){
+  await sb.from('evenements').update({validee:!current,visible:!current}).eq('id',id);
+  tabLoaded.evenements=false;loadTab('evenements');loadStats();
+}
+async function deleteEvt(id){
+  if(!confirm('Supprimer définitivement cet événement ?'))return;
+  await sb.from('evenements').delete().eq('id',id);
+  tabLoaded.evenements=false;loadTab('evenements');loadStats();
 }
 
-// ── Adhérents ─────────────────────────────────────────────────
-function loadAdherents() {
-  sb.from('adherents').select('*').order('date_inscription',{ascending:false}).then(function(res) {
-    var wrap = document.getElementById('adh-tbl-wrap');
-    if (res.error || !res.data) { wrap.innerHTML = '<div class="loading">Erreur: ' + (res.error ? res.error.message : '?') + '</div>'; return; }
-    if (!res.data.length) { wrap.innerHTML = '<table><tr class="empty-row"><td colspan="4">Aucun adhérent</td></tr></table>'; return; }
-    wrap.innerHTML = '<table>' +
-      '<thead><tr><th>Nom</th><th>Email</th><th>Quartier</th><th>Inscription</th></tr></thead>' +
-      '<tbody>' + res.data.map(function(a) {
-        var nom = [a.prenom, a.nom].filter(Boolean).join(' ') || '—';
-        return '<tr>' +
-          '<td>' + esc(nom) + '</td>' +
-          '<td><div class="trunc">' + esc(a.email || '—') + '</div></td>' +
-          '<td>' + esc(a.quartier || '—') + '</td>' +
-          '<td style="white-space:nowrap">' + fmtDate(a.date_inscription) + '</td>' +
-        '</tr>';
-      }).join('') + '</tbody></table>';
-  });
+// ── ANNONCES ──
+async function loadAnnonces(){
+  const{data}=await sb.from('annonces').select('*').order('date_depot',{ascending:false}).limit(60);
+  const el=document.getElementById('list-annonces');
+  if(!data||!data.length){el.innerHTML='<div class="load-spin">Aucune annonce</div>';return;}
+  el.innerHTML=data.map(a=>`
+    <div class="item-row">
+      <div class="item-info">
+        <div class="item-title">${esc(a.titre)}</div>
+        <div class="item-meta">
+          <span class="badge ${a.validee?'badge-on':'badge-pending'}">${a.validee?'Validée':'En attente'}</span>
+          <span>${esc(a.prenom||'')} · ${esc(a.quartier||'')}</span>
+          <span>${timeAgo(a.date_depot)}</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act-btn ${a.validee?'act-hide':'act-validate'}" onclick="toggleAnn(${a.id},${a.validee})">${a.validee?'Masquer':'Valider'}</button>
+        <button class="act-btn act-delete" onclick="deleteAnn(${a.id})">Supprimer</button>
+      </div>
+    </div>`).join('');
+}
+async function toggleAnn(id,current){
+  await sb.from('annonces').update({validee:!current}).eq('id',id);
+  tabLoaded.annonces=false;loadTab('annonces');loadStats();
+}
+async function deleteAnn(id){
+  if(!confirm('Supprimer définitivement ?'))return;
+  await sb.from('annonces').delete().eq('id',id);
+  tabLoaded.annonces=false;loadTab('annonces');loadStats();
 }
 
-// ── Annonces ──────────────────────────────────────────────────
-function loadAnnonces() {
-  sb.from('annonces').select('*').order('date_depot',{ascending:false}).then(function(res) {
-    var wrap = document.getElementById('ann-tbl-wrap');
-    if (res.error || !res.data) { wrap.innerHTML = '<div class="loading">Erreur</div>'; return; }
-    if (!res.data.length) { wrap.innerHTML = '<table><tr class="empty-row"><td colspan="6">Aucune annonce</td></tr></table>'; return; }
-    wrap.innerHTML = '<table>' +
-      '<thead><tr><th>Titre</th><th>Catégorie</th><th>Quartier</th><th>Contact</th><th>Statut</th><th>Actions</th></tr></thead>' +
-      '<tbody>' + res.data.map(function(a) {
-        return '<tr>' +
-          '<td><div class="trunc">' + esc(a.titre || '') + '</div></td>' +
-          '<td>' + esc(a.categorie || '—') + '</td>' +
-          '<td>' + esc(a.quartier || '—') + '</td>' +
-          '<td><div class="trunc-sm">' + esc(a.prenom || '') + ' <a href="mailto:' + esc(a.email||'') + '" style="color:var(--blue)">' + esc(a.email||'—') + '</a></div></td>' +
-          '<td>' + (a.validee ? '<span class="badge pub">Validée</span>' : '<span class="badge pending">En attente</span>') + '</td>' +
-          '<td><div class="btns-cell">' +
-            (!a.validee ? '<button class="btn-sm btn-green" onclick="validateAnn(' + a.id + ')">Valider</button>' : '<button class="btn-sm btn-muted" onclick="unvalidateAnn(' + a.id + ')">Masquer</button>') +
-            '<button class="btn-sm btn-red" onclick="deleteAnn(' + a.id + ')">Suppr.</button>' +
-          '</div></td>' +
-        '</tr>';
-      }).join('') + '</tbody></table>';
-  });
+// ── POSTS MUR ──
+async function loadPosts(){
+  const{data}=await sb.from('posts').select('*').order('created_at',{ascending:false}).limit(60);
+  const el=document.getElementById('list-posts');
+  if(!data||!data.length){el.innerHTML='<div class="load-spin">Aucun post</div>';return;}
+  el.innerHTML=data.map(p=>`
+    <div class="item-row">
+      ${p.photo_url?`<img class="item-thumb" src="${esc(p.photo_url)}" loading="lazy">`:''}
+      <div class="item-info">
+        <div class="item-title">${esc((p.contenu||'').substring(0,80))}${(p.contenu||'').length>80?'…':''}</div>
+        <div class="item-meta">
+          <span class="badge ${p.visible?'badge-on':'badge-off'}">${p.visible?'Visible':'Masqué'}</span>
+          <span>${esc(p.prenom||'Anonyme')}</span>
+          <span>${timeAgo(p.created_at)}</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act-btn ${p.visible?'act-hide':'act-publish'}" onclick="togglePost(${p.id},${p.visible})">${p.visible?'Masquer':'Montrer'}</button>
+        <button class="act-btn act-delete" onclick="deletePost(${p.id})">Supprimer</button>
+      </div>
+    </div>`).join('');
 }
-function validateAnn(id) {
-  sb.from('annonces').update({validee: true}).eq('id', id).then(function(r) {
-    if (r.error) { toast('Erreur', 'err'); return; }
-    toast('Annonce validée ✓', 'ok');
-    tabLoaded['annonces'] = false; loadAnnonces(); tabLoaded['annonces'] = true;
-  });
+async function togglePost(id,current){
+  await sb.from('posts').update({visible:!current}).eq('id',id);
+  tabLoaded.posts=false;loadTab('posts');
 }
-function unvalidateAnn(id) {
-  sb.from('annonces').update({validee: false}).eq('id', id).then(function(r) {
-    if (r.error) { toast('Erreur', 'err'); return; }
-    toast('Annonce masquée', 'ok');
-    tabLoaded['annonces'] = false; loadAnnonces(); tabLoaded['annonces'] = true;
-  });
-}
-function deleteAnn(id) {
-  confirm2('Supprimer l\'annonce', 'Cette annonce sera supprimée définitivement.', function() {
-    sb.from('annonces').delete().eq('id', id).then(function(r) {
-      if (r.error) { toast('Erreur', 'err'); return; }
-      toast('Supprimée', 'ok');
-      tabLoaded['annonces'] = false; loadAnnonces(); tabLoaded['annonces'] = true;
-    });
-  });
+async function deletePost(id){
+  if(!confirm('Supprimer définitivement ce post ?'))return;
+  await sb.from('posts').delete().eq('id',id);
+  tabLoaded.posts=false;loadTab('posts');loadStats();
 }
 
-// ── Événements ────────────────────────────────────────────────
-function loadEvts() {
-  sb.from('evenements').select('*').order('date_debut',{ascending:false}).then(function(res) {
-    var wrap = document.getElementById('evts-tbl-wrap');
-    if (res.error || !res.data) { wrap.innerHTML = '<div class="loading">Erreur</div>'; return; }
-    if (!res.data.length) { wrap.innerHTML = '<table><tr class="empty-row"><td colspan="6">Aucun événement</td></tr></table>'; return; }
-    wrap.innerHTML = '<table>' +
-      '<thead><tr><th>Titre</th><th>Lieu</th><th>Date</th><th>Proposé par</th><th>Statut</th><th>Actions</th></tr></thead>' +
-      '<tbody>' + res.data.map(function(e) {
-        var status = (e.visible && e.validee) ? '<span class="badge pub">Publié</span>' : (!e.validee ? '<span class="badge pending">En attente</span>' : '<span class="badge hidden">Masqué</span>');
-        return '<tr>' +
-          '<td><div class="trunc">' + esc(e.titre || '') + '</div></td>' +
-          '<td><div class="trunc-sm">' + esc(e.lieu || '—') + '</div></td>' +
-          '<td style="white-space:nowrap">' + fmtDatetime(e.date_debut) + '</td>' +
-          '<td>' + esc(e.propose_par || '—') + '</td>' +
-          '<td>' + status + '</td>' +
-          '<td><div class="btns-cell">' +
-            (!e.validee ? '<button class="btn-sm btn-green" onclick="validateEvt(' + e.id + ')">Valider</button>' : '') +
-            (e.visible ? '<button class="btn-sm btn-muted" onclick="toggleEvt(' + e.id + ',false)">Masquer</button>' : '<button class="btn-sm btn-blue" onclick="toggleEvt(' + e.id + ',true)">Publier</button>') +
-            '<button class="btn-sm btn-red" onclick="deleteEvt(' + e.id + ')">Suppr.</button>' +
-          '</div></td>' +
-        '</tr>';
-      }).join('') + '</tbody></table>';
-  });
+// ── STORIES ──
+async function loadStories(){
+  const{data}=await sb.from('stories').select('*').order('created_at',{ascending:false}).limit(50);
+  const el=document.getElementById('list-stories');
+  if(!data||!data.length){el.innerHTML='<div class="load-spin">Aucune story</div>';return;}
+  el.innerHTML=data.map(s=>`
+    <div class="item-row">
+      ${s.photo_url?`<img class="story-thumb" src="${esc(s.photo_url)}" loading="lazy">`:'<div class="story-thumb"></div>'}
+      <div class="item-info">
+        <div class="item-title">${esc(s.prenom||'Anonyme')} · <span style="font-weight:400;color:var(--txt3)">${s.media_type==='video'?'🎬 Vidéo':'📷 Photo'}</span></div>
+        <div class="item-meta">
+          <span class="badge ${s.visible?'badge-on':'badge-pending'}">${s.visible?'Visible':'Masquée'}</span>
+          <span>${timeAgo(s.created_at)}</span>
+          ${s.views?`<span>${s.views} vues</span>`:''}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act-btn ${s.visible?'act-hide':'act-publish'}" onclick="toggleStory(${s.id},${s.visible})">${s.visible?'Masquer':'Valider'}</button>
+        <button class="act-btn act-delete" onclick="deleteStory(${s.id})">Supprimer</button>
+      </div>
+    </div>`).join('');
 }
-function validateEvt(id) {
-  sb.from('evenements').update({validee: true, visible: true}).eq('id', id).then(function(r) {
-    if (r.error) { toast('Erreur', 'err'); return; }
-    toast('Événement validé et publié ✓', 'ok');
-    tabLoaded['evts'] = false; loadEvts(); tabLoaded['evts'] = true;
-  });
+async function toggleStory(id,current){
+  await sb.from('stories').update({visible:!current}).eq('id',id);
+  tabLoaded.stories=false;loadTab('stories');loadStats();
 }
-function toggleEvt(id, visible) {
-  sb.from('evenements').update({visible: visible}).eq('id', id).then(function(r) {
-    if (r.error) { toast('Erreur', 'err'); return; }
-    toast(visible ? 'Publié ✓' : 'Masqué', 'ok');
-    tabLoaded['evts'] = false; loadEvts(); tabLoaded['evts'] = true;
-  });
-}
-function deleteEvt(id) {
-  confirm2('Supprimer l\'événement', 'Cet événement sera supprimé définitivement.', function() {
-    sb.from('evenements').delete().eq('id', id).then(function(r) {
-      if (r.error) { toast('Erreur', 'err'); return; }
-      toast('Supprimé', 'ok');
-      tabLoaded['evts'] = false; loadEvts(); tabLoaded['evts'] = true;
-    });
-  });
+async function deleteStory(id){
+  if(!confirm('Supprimer définitivement cette story ?'))return;
+  await sb.from('stories').delete().eq('id',id);
+  tabLoaded.stories=false;loadTab('stories');loadStats();
 }
 
-// ── Commentaires ──────────────────────────────────────────────
-function loadCmts() {
-  sb.from('commentaires').select('*').order('created_at',{ascending:false}).limit(200).then(function(res) {
-    var wrap = document.getElementById('cmts-tbl-wrap');
-    if (res.error || !res.data) { wrap.innerHTML = '<div class="loading">Erreur</div>'; return; }
-    if (!res.data.length) { wrap.innerHTML = '<table><tr class="empty-row"><td colspan="5">Aucun commentaire</td></tr></table>'; return; }
-    wrap.innerHTML = '<table>' +
-      '<thead><tr><th>Type</th><th>Auteur</th><th>Message</th><th>Date</th><th>Actions</th></tr></thead>' +
-      '<tbody>' + res.data.map(function(c) {
-        return '<tr>' +
-          '<td><span class="badge ' + (c.item_type==='actu'?'red':c.item_type==='evenement'?'pub':'hidden') + '">' + esc(c.item_type||'') + '</span></td>' +
-          '<td>' + esc(c.prenom || '—') + '</td>' +
-          '<td><div class="trunc">' + esc(c.message || '') + '</div></td>' +
-          '<td style="white-space:nowrap">' + fmtDatetime(c.created_at) + '</td>' +
-          '<td><div class="btns-cell">' +
-            (c.visible ? '<button class="btn-sm btn-muted" onclick="toggleCmt(' + c.id + ',false)">Masquer</button>' : '<button class="btn-sm btn-green" onclick="toggleCmt(' + c.id + ',true)">Afficher</button>') +
-            '<button class="btn-sm btn-red" onclick="deleteCmt(' + c.id + ')">Suppr.</button>' +
-          '</div></td>' +
-        '</tr>';
-      }).join('') + '</tbody></table>';
-  });
-}
-function toggleCmt(id, visible) {
-  sb.from('commentaires').update({visible: visible}).eq('id', id).then(function(r) {
-    if (r.error) { toast('Erreur', 'err'); return; }
-    toast(visible ? 'Commentaire affiché' : 'Commentaire masqué', 'ok');
-    tabLoaded['cmts'] = false; loadCmts(); tabLoaded['cmts'] = true;
-  });
-}
-function deleteCmt(id) {
-  confirm2('Supprimer le commentaire', 'Ce commentaire sera supprimé définitivement.', function() {
-    sb.from('commentaires').delete().eq('id', id).then(function(r) {
-      if (r.error) { toast('Erreur', 'err'); return; }
-      toast('Supprimé', 'ok');
-      tabLoaded['cmts'] = false; loadCmts(); tabLoaded['cmts'] = true;
-    });
-  });
+// ── ADHÉRENTS ──
+async function loadAdherents(){
+  const{data}=await sb.from('adherents').select('*').order('created_at',{ascending:false}).limit(100);
+  const el=document.getElementById('list-adherents');
+  if(!data||!data.length){el.innerHTML='<div class="load-spin">Aucun adhérent</div>';return;}
+  el.innerHTML=data.map(a=>`
+    <div class="item-row">
+      <div class="item-info">
+        <div class="item-title">${esc(a.prenom||'')} ${esc(a.nom||'')}</div>
+        <div class="item-meta">
+          <span>${esc(a.email||'')}</span>
+          <span>${esc(a.quartier||'')}</span>
+          <span>${timeAgo(a.created_at)}</span>
+        </div>
+      </div>
+    </div>`).join('');
 }
 
-// ── Stats ─────────────────────────────────────────────────────
-function loadStats() {
-  var grid = document.getElementById('stats-grid');
-  grid.innerHTML = '<div class="loading">Calcul…</div>';
-  var since7 = new Date(Date.now() - 7*24*3600*1000).toISOString();
-  Promise.all([
-    sb.from('actus').select('*',{count:'exact',head:true}),
-    sb.from('adherents').select('*',{count:'exact',head:true}),
-    sb.from('annonces').select('*',{count:'exact',head:true}),
-    sb.from('evenements').select('*',{count:'exact',head:true}),
-    sb.from('commentaires').select('*',{count:'exact',head:true}),
-    sb.from('likes').select('*',{count:'exact',head:true}),
-    sb.from('stories').select('views'),
-    sb.from('page_views').select('*',{count:'exact',head:true}),
-    sb.from('page_views').select('session_id'),
-    sb.from('page_views').select('page,created_at').gte('created_at',since7),
-    sb.from('page_views').select('*',{count:'exact',head:true}).gte('created_at',since7)
-  ]).then(function(results) {
-    var totalViews = (results[6].data || []).reduce(function(sum,s){return sum+(s.views||0);},0);
-    var allSessions = results[8].data || [];
-    var uniqueSessions = new Set(allSessions.map(function(r){return r.session_id;})).size;
-    var pvLast7 = results[10].count || 0;
-    var pageRows = results[9].data || [];
-    var pageCounts = {};
-    pageRows.forEach(function(r){ pageCounts[r.page]=(pageCounts[r.page]||0)+1; });
-    var pageLabels = {'/' :'Accueil','/index.html':'Accueil','/actus.html':'Actus','/evenements.html':'Évènements','/annonces.html':'Annonces','/a-propos.html':'À propos'};
-    var pageHtml = Object.keys(pageCounts).sort(function(a,b){return pageCounts[b]-pageCounts[a];}).slice(0,6).map(function(p){
-      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-family:Barlow Condensed,sans-serif;font-size:.85rem;">'
-        +'<span style="color:var(--muted)">'+(pageLabels[p]||p)+'</span>'
-        +'<span style="color:var(--text);font-weight:600;">'+pageCounts[p]+'</span></div>';
-    }).join('');
-    var statsDef = [
-      {label:'Vues totales',val:results[7].count||0},
-      {label:'Sessions uniques',val:uniqueSessions},
-      {label:'Vues 7j',val:pvLast7},
-      {label:'Actualités',val:results[0].count||0},
-      {label:'Adhérent·es',val:results[1].count||0},
-      {label:'Annonces',val:results[2].count||0},
-      {label:'Événements',val:results[3].count||0},
-      {label:'Commentaires',val:results[4].count||0},
-      {label:'Likes',val:results[5].count||0},
-      {label:'Vues stories',val:totalViews},
-      {label:'Stories',val:(results[6].data||[]).length}
-    ];
-    grid.innerHTML = statsDef.map(function(s){
-      return '<div class="stat-card"><div class="stat-val">'+s.val+'</div><div class="stat-label">'+esc(s.label)+'</div></div>';
-    }).join('');
-    if (pageHtml) {
-      grid.innerHTML += '<div class="stat-card" style="grid-column:1/-1"><div class="stat-label" style="margin-bottom:8px;">Pages vues (7 derniers jours)</div>'+pageHtml+'</div>';
-    }
-  });
+// ── À PROPOS ──
+async function loadApropos(){
+  try{
+    const{data}=await sb.from('site_config').select('value').eq('key','apropos').single();
+    if(data)document.getElementById('apropos-text').value=data.value||'';
+  }catch(e){console.warn('apropos',e);}
+}
+async function saveApropos(){
+  const val=document.getElementById('apropos-text').value.trim();
+  const msg=document.getElementById('apropos-msg');
+  if(!val){msg.textContent='Le contenu ne peut pas être vide.';msg.style.color='var(--rouge)';return;}
+  try{
+    await sb.from('site_config').upsert({key:'apropos',value:val,updated_at:new Date().toISOString()},{onConflict:'key'});
+    msg.textContent='✅ Page à propos mise à jour !';msg.style.color='var(--green)';
+    setTimeout(()=>msg.textContent='',3000);
+  }catch(e){msg.textContent='Erreur : '+e.message;msg.style.color='var(--rouge)';console.error(e);}
 }
 
-// ── Export CSV ────────────────────────────────────────────────
-function exportCsv(table) {
-  sb.from(table).select('*').order('id',{ascending:false}).then(function(res) {
-    if (!res.data || !res.data.length) { toast('Aucune donnée', 'err'); return; }
-    var keys = Object.keys(res.data[0]);
-    var csv = keys.join(',') + '\n' + res.data.map(function(row) {
-      return keys.map(function(k){ var v = String(row[k]||'').replace(/"/g,'""'); return '"'+v+'"'; }).join(',');
-    }).join('\n');
-    var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url; a.download = table + '_' + new Date().toISOString().slice(0,10) + '.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-    toast('Export terminé ✓', 'ok');
-  });
+// ── BOOT ──
+if(sessionStorage.getItem('cqp_admin')==='1'){
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+  initDashboard();
 }
-
-if (sessionStorage.getItem('cqp_admin') === '1') {
-  tabLoaded['stories'] = false;
-  loadStories();
-  tabLoaded['stories'] = true;
-}
+document.getElementById('login-pwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 </script>
 </body>
 </html>
