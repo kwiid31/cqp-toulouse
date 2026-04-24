@@ -563,10 +563,6 @@ input.cmt-input:focus{border-color:var(--rouge)}
   </div>
   <input class="sp-caption-input" id="sp-caption" placeholder="Ajouter une légende…" maxlength="80">
   <div class="sp-bottom">
-    <div class="sp-fields">
-      <input class="sp-field" id="sp-prenom" placeholder="Votre prénom" maxlength="30">
-      <input class="sp-field" id="sp-quartier" placeholder="Votre quartier" maxlength="40">
-    </div>
     <button class="sp-publish" onclick="publishStory()">
       <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       <span id="sp-btn-txt">Publier ma story</span>
@@ -882,29 +878,28 @@ function closeStoryPreview(){
 }
 
 async function publishStory(){
-  const prenom=document.getElementById('sp-prenom').value.trim();
-  const quartier=document.getElementById('sp-quartier').value.trim();
   const caption=document.getElementById('sp-caption').value.trim();
   const msgEl=document.getElementById('sp-msg');
-  if(!prenom||!quartier){msgEl.textContent='Prénom et quartier obligatoires.';return;}
   if(!_storyFile){msgEl.textContent='Aucun média sélectionné.';return;}
-  try{localStorage.setItem('cqp_prenom',prenom);}catch{}
+  // Récupérer prénom depuis localStorage (optionnel)
+  let prenom='';
+  try{prenom=localStorage.getItem('cqp_prenom')||'';}catch{}
   document.getElementById('sp-btn-txt').textContent='Publication…';
   document.getElementById('sp-spinner').style.display='block';
   msgEl.textContent='';
   try{
     const isVideo=_storyFile.type.startsWith('video');
-    const ext=_storyFile.name.split('.').pop()||(isVideo?'mp4':'jpg');
+    const ext=(_storyFile.name||'').split('.').pop()||(isVideo?'mp4':'jpg');
     const fileName=`${Date.now()}-${getSid()}.${ext}`;
     const{data:upData,error:upErr}=await sb.storage
       .from('stories')
       .upload(fileName,_storyFile,{cacheControl:'3600',upsert:false,contentType:_storyFile.type});
     if(upErr)throw upErr;
     const{data:{publicUrl}}=sb.storage.from('stories').getPublicUrl(fileName);
+    // Colonnes réelles de la table stories
     await sb.from('stories').insert({
-      titre:caption||`Story de ${prenom}`,
-      auteur:prenom,quartier,
-      media_url:publicUrl,
+      prenom:prenom||'Anonyme',
+      photo_url:publicUrl,
       media_type:isVideo?'video':'image',
       visible:true,
       session_id:getSid()
@@ -915,7 +910,7 @@ async function publishStory(){
     console.error(e);
     document.getElementById('sp-btn-txt').textContent='Publier ma story';
     document.getElementById('sp-spinner').style.display='none';
-    msgEl.textContent='Erreur upload — vérifiez votre connexion.';
+    msgEl.textContent='Erreur — vérifiez votre connexion.';
   }
 }
 
@@ -926,43 +921,25 @@ async function loadStories(){
     const{data}=await sb.from('stories').select('*').eq('visible',true).order('created_at',{ascending:false}).limit(12);
     allStories=data||[];
     const bar=document.getElementById('stories-bar');
-    // Keep first add-story card
     const addCard=bar.querySelector('.add-story');
     bar.innerHTML='';
     bar.appendChild(addCard);
-    if(!allStories.length){
-      // Show default placeholder stories
-      const defaults=[
-        {id:'d1',titre:'Actualités',categorie:'Actus',auteur:'CQP',color:'#C8102E',icon:'📰'},
-        {id:'d2',titre:'Événements',categorie:'Évts',auteur:'CQP',color:'#1877F2',icon:'📅'},
-        {id:'d3',titre:'Annonces',categorie:'Annonces',auteur:'CQP',color:'#42B72A',icon:'📋'},
-        {id:'d4',titre:'À propos',categorie:'CQP',auteur:'CQP',color:'#7C3AED',icon:'✊'},
-      ];
-      defaults.forEach(s=>{
-        const c=document.createElement('div');
-        c.className='story-card';
-        c.style.background=s.color;
-        c.innerHTML=`<div class="story-card-grad"></div><div class="story-card-av add-av" style="border-color:#fff;background:rgba(255,255,255,.3);font-size:1.4rem">${s.icon}</div><div class="story-card-name">${s.titre}</div>`;
-        c.onclick=()=>{
-          if(s.id==='d1')window.location='actus.html';
-          else if(s.id==='d2')window.location='evenements.html';
-          else if(s.id==='d3')window.location='annonces.html';
-          else window.location='a-propos.html';
-        };
-        bar.appendChild(c);
-      });
-      return;
-    }
+    // Pas d'encarts placeholder — si aucune story, juste le bouton "+"
+    if(!allStories.length)return;
     allStories.forEach((s,i)=>{
-      const c=document.createElement('div');
-      c.className='story-card';
-      const av=s.auteur?s.auteur[0].toUpperCase():'C';
-      const imgBg=s.media_url?`<img class="story-card-bg" src="${esc(s.media_url)}" loading="lazy">`:'';
-      const bgColor=s.categorie==='Événement'?'#1565C0':s.categorie==='Annonce'?'#1a4a24':'#4a0b16';
-      if(!imgBg)c.style.background=bgColor;
-      c.innerHTML=`${imgBg}<div class="story-card-grad"></div><div class="story-card-av">${av}</div><div class="story-card-name">${esc(s.auteur||'CQP')}<br><span style="font-weight:400;opacity:.8">${esc(s.quartier||s.categorie||'')}</span></div>`;
-      c.onclick=()=>openStoryViewer(i);
-      bar.appendChild(c);
+      const el=document.createElement('div');
+      el.className='story-card';
+      // photo_url est le vrai champ en base
+      const mediaUrl=s.photo_url||s.media_url||'';
+      const av=s.prenom?s.prenom[0].toUpperCase():'?';
+      if(mediaUrl){
+        el.innerHTML=`<img class="story-card-bg" src="${esc(mediaUrl)}" loading="lazy"><div class="story-card-grad"></div><div class="story-card-av">${av}</div><div class="story-card-name">${esc(s.prenom||'')}</div>`;
+      }else{
+        el.style.background='#4a0b16';
+        el.innerHTML=`<div class="story-card-grad"></div><div class="story-card-av">${av}</div><div class="story-card-name">${esc(s.prenom||'Story')}</div>`;
+      }
+      el.onclick=()=>openStoryViewer(i);
+      bar.appendChild(el);
     });
   }catch(e){console.warn('stories',e);}
 }
@@ -994,14 +971,14 @@ function renderStory(){
   // Head
   const av=s.auteur?s.auteur[0].toUpperCase():'C';
   document.getElementById('sv-av').textContent=av;
-  document.getElementById('sv-name').textContent=esc(s.auteur||'CQP Toulouse')+(s.quartier?` · ${s.quartier}`:'');
+  document.getElementById('sv-name').textContent=esc(s.prenom||'CQP Toulouse');
   document.getElementById('sv-time').textContent=timeAgo(s.created_at||new Date().toISOString());
   // Media
   const mediaDiv=document.getElementById('sv-media');
-  if(s.media_url&&s.media_type==='video'){
-    mediaDiv.innerHTML=`<video src="${esc(s.media_url)}" autoplay muted playsinline loop style="width:100%;height:100%;object-fit:cover"></video><div style="position:absolute;bottom:80px;left:20px;right:20px;z-index:5;pointer-events:none"><div style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:#fff;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.6)">${esc(s.titre)}</div></div>`;
-  }else if(s.media_url&&s.media_type==='image'){
-    mediaDiv.innerHTML=`<img src="${esc(s.media_url)}" style="width:100%;height:100%;object-fit:cover" loading="lazy"><div style="position:absolute;bottom:80px;left:20px;right:20px;z-index:5;pointer-events:none"><div style="font-family:Bebas Neue,sans-serif;font-size:1.8rem;color:#fff;line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.6)">${esc(s.titre)}</div></div>`;
+  const _mediaUrl=s.photo_url||s.media_url||'';if(_mediaUrl&&s.media_type==='video'){
+    mediaDiv.innerHTML=`<video src="${esc(_mediaUrl)}" autoplay muted playsinline loop style="width:100%;height:100%;object-fit:cover"></video>`;
+  }else if(_mediaUrl&&s.media_type==='image'){
+    mediaDiv.innerHTML=`<img src="${esc(_mediaUrl)}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`;
   }else{
     const bgClass=s.categorie==='Événement'?'evt-bg':s.categorie==='Annonce'?'ann-bg':'actu-bg';
     mediaDiv.innerHTML=`<div class="sv-media-placeholder ${bgClass}"><div class="sv-placeholder-cat">${esc(s.categorie||'Story')}</div><div class="sv-placeholder-title">${esc(s.titre)}</div>${s.description?`<p style="position:relative;z-index:1;margin-top:10px;font-family:Barlow,sans-serif;font-size:.88rem;color:rgba(255,255,255,.85);line-height:1.6">${esc(s.description)}</p>`:''}</div>`;
