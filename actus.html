@@ -19,22 +19,23 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);padd
 .topbar-count{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;color:var(--muted);margin-left:auto;}
 
 .list{padding:12px;}
-.card{background:#fff;border-radius:var(--r);box-shadow:0 2px 8px rgba(0,0,0,.06);overflow:hidden;margin-bottom:12px;opacity:0;transform:translateY(18px) scale(.97);transition:opacity .35s ease,transform .35s cubic-bezier(.22,.61,.36,1);}
+.card{background:#fff;border-radius:var(--r);box-shadow:0 3px 14px rgba(0,0,0,.07);overflow:hidden;margin-bottom:18px;opacity:0;transform:translateY(18px) scale(.97);transition:opacity .35s ease,transform .35s cubic-bezier(.22,.61,.36,1);border-left:4px solid var(--red);}
 .card.visible{opacity:1;transform:none;}
 .card-img{width:100%;height:190px;object-fit:cover;}
-.card-body{padding:12px 14px 8px;}
-.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
-.badge{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:20px;background:var(--red);color:#fff;}
-.badge-cat{background:#f3f4f6;color:var(--muted);}
-.card-date{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;color:var(--muted);margin-left:auto;}
-.card-title{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;line-height:1.2;margin-bottom:6px;cursor:pointer;}
+.card-body{padding:14px 16px 10px;}
+.card-meta{display:flex;align-items:center;gap:7px;margin-bottom:9px;flex-wrap:wrap;}
+.card-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;font-weight:700;flex-shrink:0;background:#fef2f2;color:var(--red);}
+.badge{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 10px;border-radius:20px;background:var(--red);color:#fff;}
+.badge-cat{background:#f3f4f6;color:var(--muted);font-size:.65rem;}
+.card-date{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;color:var(--muted);margin-left:auto;}
+.card-title{font-family:'Barlow Condensed',sans-serif;font-size:1.38rem;font-weight:700;line-height:1.25;margin-bottom:6px;cursor:pointer;color:var(--text);}
 .card-title:hover{color:var(--red);}
-.card-text{font-size:.85rem;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-.card-footer{display:flex;align-items:center;gap:8px;padding:8px 14px 12px;border-top:1px solid #f5f5f5;margin-top:8px;}
-.btn-act{display:flex;align-items:center;gap:4px;background:none;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;color:var(--muted);padding:5px 10px;border-radius:20px;transition:all .18s;}
+.card-text{font-size:.9rem;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.card-footer{display:flex;align-items:center;gap:2px;padding:10px 10px 14px;border-top:1px solid #f5f5f5;margin-top:8px;}
+.btn-act{display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.92rem;color:var(--muted);padding:8px 12px;border-radius:20px;transition:all .18s;min-height:44px;}
 .btn-act:hover{background:var(--bg);}
 .btn-act.liked{color:var(--red);}
-.btn-act svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+.btn-act svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;}
 .btn-act.liked svg{fill:var(--red);stroke:var(--red);}
 .btn-share{margin-left:auto;color:var(--muted);}
 .loading{text-align:center;padding:40px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;}
@@ -159,15 +160,18 @@ function renderList() {
     return;
   }
   el.innerHTML = actus.map(function(a) {
+    var words=(a.titre||'').trim().split(/\s+/),ini=words.slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase()||'?';
+    var title=a.titre&&a.titre===a.titre.toUpperCase()?a.titre.toLowerCase().split(' ').map(function(w,i){return i===0||!['et','de','du','des','le','la','les','un','une','à','au','aux','en','sur','pour','par','avec','dans'].includes(w)?w.charAt(0).toUpperCase()+w.slice(1):w;}).join(' '):a.titre;
     return '<div class="card" id="card-'+a.id+'">' +
       (a.photo_url ? '<img class="card-img" src="'+esc(a.photo_url)+'" loading="lazy">' : '') +
       '<div class="card-body">' +
         '<div class="card-meta">' +
+          '<div class="card-avatar">'+ini+'</div>' +
           '<span class="badge">Actu</span>' +
           (a.categorie ? '<span class="badge badge-cat">'+esc(a.categorie)+'</span>' : '') +
           '<span class="card-date">'+timeAgo(a.date_publication)+'</span>' +
         '</div>' +
-        '<div class="card-title" onclick="openArt('+a.id+')">'+esc(a.titre)+'</div>' +
+        '<div class="card-title" onclick="openArt('+a.id+')">'+esc(title)+'</div>' +
         '<div class="card-text">'+esc(a.contenu||'')+'</div>' +
       '</div>' +
       '<div class="card-footer">' +
