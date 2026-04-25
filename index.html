@@ -545,10 +545,10 @@ function renderStoryBar(){
     el.className='story-thumb';
     const mediaUrl=s.photo_url||'';
     // Vignette rect avec image de fond si dispo, sinon dégradé rouge
-    if(mediaUrl && s.media_type!=='video'){
-      el.innerHTML=`<img class="story-thumb-img" src="${esc(mediaUrl)}" loading="lazy"><div class="story-thumb-new"></div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
-    } else if(mediaUrl && s.media_type==='video'){
-      el.innerHTML=`<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0508,var(--rouge));display:flex;align-items:center;justify-content:center;font-size:1.8rem">🎬</div><div class="story-thumb-new"></div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
+    if(mediaUrl){
+      // Toujours afficher photo_url comme vignette, vidéo ou photo
+      const badge=s.media_type==='video'?'<span style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,.5);color:#fff;font-size:.55rem;padding:2px 5px;border-radius:4px;backdrop-filter:blur(2px)">▶ Vidéo</span>':'';
+      el.innerHTML=`<img class="story-thumb-img" src="${esc(mediaUrl)}" loading="lazy">${badge}<div class="story-thumb-new"></div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
     } else {
       const av=(s.prenom||'?')[0].toUpperCase();
       el.innerHTML=`<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0508,var(--rouge));display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:2rem;color:#fff">${av}</div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
