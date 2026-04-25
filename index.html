@@ -280,6 +280,20 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
 .btn-primary:active{opacity:.85;}
 .form-msg{margin-top:10px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;}
 
+
+/* ── PULL TO REFRESH ──────────────────────────────────────── */
+.ptr-indicator{
+  position:fixed;top:calc(var(--nav) + 40px);left:50%;transform:translateX(-50%) translateY(-80px);
+  z-index:150;background:#fff;border-radius:50%;width:40px;height:40px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+  transition:transform .2s ease;pointer-events:none;
+}
+.ptr-indicator.visible{transform:translateX(-50%) translateY(0);}
+.ptr-indicator svg{animation:none;width:20px;height:20px;stroke:var(--rouge);fill:none;stroke-width:2;stroke-linecap:round;}
+.ptr-indicator.spinning svg{animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 @media(min-width:700px){.bottom-nav,.pub-menu,.pub-overlay{display:none;}body{padding-bottom:0;}}
 </style>
 </head>
@@ -345,6 +359,11 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
     </button>
     <div class="sp-msg" id="sp-msg"></div>
   </div>
+</div>
+
+<!-- PULL TO REFRESH INDICATOR -->
+<div class="ptr-indicator" id="ptr">
+  <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
 </div>
 
 <!-- COMPOSER -->
@@ -604,11 +623,13 @@ function openSV(startIdx){
     if(target)target.scrollIntoView({behavior:'instant'});
     startSV2Progress(startIdx);
   });
-  // Observer pour détecter le slide visible
+  // Observer pour détecter le slide visible + boucle infinie
+  let _svCur=startIdx;
   const io=new IntersectionObserver(entries=>{
     entries.forEach(e=>{
       if(e.isIntersecting){
         const i=parseInt(e.target.dataset.idx);
+        _svCur=i;
         startSV2Progress(i);
         if(stories[i])sb.from('stories').update({views:(stories[i].views||0)+1}).eq('id',stories[i].id).then(()=>{});
       }
@@ -616,6 +637,19 @@ function openSV(startIdx){
   },{threshold:.6});
   [...sv2.children].forEach(s=>io.observe(s));
   sv2._io=io;
+  sv2._svCur=()=>_svCur;
+  // Scroll infini : quand on atteint la dernière slide, revenir à la première
+  sv2.addEventListener('scroll',()=>{
+    const total=sv2.children.length;
+    if(!total)return;
+    const scrolled=sv2.scrollTop;
+    const h=sv2.clientHeight;
+    // Si on est tout en bas (dernière story visible)
+    if(scrolled+h>=sv2.scrollHeight-10){
+      // Revenir silencieusement à la première sans animation
+      sv2.scrollTo({top:0,behavior:'instant'});
+    }
+  },{passive:true});
 }
 function startSV2Progress(idx){
   clearTimeout(svTimer);
@@ -1025,9 +1059,60 @@ async function loadFeed(reset=false){
   finally{feedLoading=false;}
 }
 
-// Scroll infini
+
+// ═══════════════════════════════════════════════════════════
+//  PULL TO REFRESH
+// ═══════════════════════════════════════════════════════════
+(()=>{
+  let startY=0,pulling=false,triggered=false;
+  const THRESHOLD=75;
+  const ptr=document.getElementById('ptr');
+  
+  document.addEventListener('touchstart',e=>{
+    if(window.scrollY===0)startY=e.touches[0].clientY;
+    triggered=false;
+  },{passive:true});
+  
+  document.addEventListener('touchmove',e=>{
+    if(startY===0)return;
+    const dy=e.touches[0].clientY-startY;
+    if(dy>0&&window.scrollY===0){
+      pulling=true;
+      const pct=Math.min(dy/THRESHOLD,1);
+      if(dy>10){
+        ptr.classList.add('visible');
+        ptr.style.transform=`translateX(-50%) translateY(${Math.min(dy*0.4,40)}px) rotate(${dy*2}deg)`;
+      }
+      if(dy>=THRESHOLD&&!triggered){triggered=true;ptr.classList.add('spinning');}
+    }
+  },{passive:true});
+  
+  document.addEventListener('touchend',()=>{
+    if(triggered){
+      loadFeed(true);
+      setTimeout(()=>{
+        ptr.classList.remove('visible','spinning');
+        ptr.style.transform='';
+      },800);
+    } else {
+      ptr.classList.remove('visible','spinning');
+      ptr.style.transform='';
+    }
+    startY=0;pulling=false;triggered=false;
+  },{passive:true});
+})();
+
+// Scroll infini feed
 window.addEventListener('scroll',()=>{
-  if(window.innerHeight+window.scrollY>=document.body.offsetHeight-400)loadFeed();
+  if(window.innerHeight+window.scrollY>=document.body.offsetHeight-400){
+    if(feedDone){
+      // Boucle : on repart du début
+      feedPage=0;feedDone=false;
+      loadFeed();
+    } else {
+      loadFeed();
+    }
+  }
 },{passive:true});
 
 // ═══════════════════════════════════════════════════════════
