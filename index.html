@@ -322,27 +322,11 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
 </div>
 <input type="file" id="story-file-input" accept="image/*,video/*">
 
-<!-- STORY VIEWER -->
-<div id="sv">
-  <div class="sv-bars" id="sv-bars"></div>
-  <div class="sv-header">
-    <div class="sv-av" id="sv-av">?</div>
-    <div class="sv-meta">
-      <div class="sv-name" id="sv-name"></div>
-      <div class="sv-time" id="sv-time"></div>
-    </div>
-    <button class="sv-close" onclick="closeSV()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>
-  <div class="sv-media" id="sv-media"></div>
-  <div class="sv-tap-l" id="sv-tap-l"></div>
-  <div class="sv-tap-r" id="sv-tap-r"></div>
-  <div class="sv-footer">
-    <div class="sv-reply">
-      <input class="sv-reply-input" placeholder="Envoyer un message…">
-      <button class="sv-like-btn" onclick="this.textContent='❤️';setTimeout(()=>this.textContent='🤍',1200)">🤍</button>
-    </div>
-  </div>
+<!-- VIEWER STORIES VERTICAL (TikTok style) -->
+<div id="sv2" style="display:none;position:fixed;inset:0;z-index:500;background:#000;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
 </div>
+
+<!-- sv2 injecté dynamiquement -->
 
 <!-- STORY PREVIEW (création) -->
 <div id="story-preview">
@@ -546,9 +530,25 @@ function renderStoryBar(){
     const mediaUrl=s.photo_url||'';
     // Vignette rect avec image de fond si dispo, sinon dégradé rouge
     if(mediaUrl){
-      // Toujours afficher photo_url comme vignette, vidéo ou photo
-      const badge=s.media_type==='video'?'<span style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,.5);color:#fff;font-size:.55rem;padding:2px 5px;border-radius:4px;backdrop-filter:blur(2px)">▶ Vidéo</span>':'';
-      el.innerHTML=`<img class="story-thumb-img" src="${esc(mediaUrl)}" loading="lazy">${badge}<div class="story-thumb-new"></div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
+      const isVid=s.media_type==='video';
+      const badge=isVid?'<span style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,.55);color:#fff;font-size:.5rem;font-family:Barlow Condensed,sans-serif;letter-spacing:.5px;padding:2px 6px;border-radius:4px">▶ Vidéo</span>':'';
+      if(isVid){
+        // Canvas pour capturer frame 0 de la vidéo
+        const vid=document.createElement('video');
+        vid.src=mediaUrl;vid.crossOrigin='anonymous';vid.muted=true;vid.playsInline=true;
+        const canvas=document.createElement('canvas');canvas.width=80;canvas.height=120;
+        canvas.className='story-thumb-img';
+        canvas.style.cssText='width:100%;height:100%;object-fit:cover;display:block;';
+        el.appendChild(canvas);
+        const inner=document.createElement('div');inner.innerHTML=badge+`<div class="story-thumb-new"></div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
+        while(inner.firstChild)el.appendChild(inner.firstChild);
+        vid.addEventListener('loadeddata',()=>{
+          try{const ctx=canvas.getContext('2d');ctx.drawImage(vid,0,0,80,120);vid.remove();}catch{}
+        },{once:true});
+        vid.load();
+      } else {
+        el.innerHTML=`<img class="story-thumb-img" src="${esc(mediaUrl)}" loading="lazy">${badge}<div class="story-thumb-new"></div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
+      }
     } else {
       const av=(s.prenom||'?')[0].toUpperCase();
       el.innerHTML=`<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0508,var(--rouge));display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:2rem;color:#fff">${av}</div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
@@ -558,49 +558,93 @@ function renderStoryBar(){
   });
 }
 
-// Story Viewer
-let svIdx=0,svTimer=null;
-function openSV(idx){
-  svIdx=idx;
-  document.getElementById('sv').classList.add('open');
+// Story Viewer TikTok (scroll vertical snap)
+let svTimer=null;
+function openSV(startIdx){
+  const sv2=document.getElementById('sv2');
+  sv2.innerHTML='';
+  // Construire les slides
+  stories.forEach((s,i)=>{
+    const slide=document.createElement('div');
+    slide.style.cssText='width:100%;height:100vh;scroll-snap-align:start;flex-shrink:0;position:relative;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;';
+    slide.dataset.idx=i;
+    // Media
+    const media=document.createElement('div');
+    media.style.cssText='position:absolute;inset:0;';
+    if(s.media_type==='video'){
+      media.innerHTML=`<video src="${esc(s.photo_url)}" autoplay playsinline loop style="width:100%;height:100%;object-fit:cover"></video>`;
+    } else {
+      media.innerHTML=`<img src="${esc(s.photo_url)}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">`;
+    }
+    slide.appendChild(media);
+    // Barre progression
+    const bar=document.createElement('div');
+    bar.style.cssText='position:absolute;top:max(14px,env(safe-area-inset-top));left:10px;right:10px;z-index:10;height:2px;background:rgba(255,255,255,.3);border-radius:2px;overflow:hidden;';
+    bar.innerHTML=`<div id="sv2-prog-${i}" style="height:100%;background:#fff;width:0;transition:width linear;"></div>`;
+    slide.appendChild(bar);
+    // Header
+    const head=document.createElement('div');
+    head.style.cssText='position:absolute;top:calc(max(14px,env(safe-area-inset-top))+10px);left:12px;right:12px;z-index:10;display:flex;align-items:center;gap:10px;';
+    head.innerHTML=`
+      <div style="width:34px;height:34px;border-radius:50%;border:2px solid #fff;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:.85rem;color:#fff;flex-shrink:0;">${(s.prenom||'?')[0].toUpperCase()}</div>
+      <div style="flex:1;"><div style="font-family:Barlow Condensed,sans-serif;font-size:.88rem;font-weight:700;color:#fff;">${esc(s.prenom||'CQP')}</div><div style="font-size:.7rem;color:rgba(255,255,255,.7);">${timeAgo(s.created_at)}</div></div>
+      <button onclick="closeSV2()" style="width:36px;height:36px;background:rgba(0,0,0,.3);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+        <svg viewBox="0 0 24 24" width="18" height="18" style="stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>`;
+    slide.appendChild(head);
+    // Footer like/réponse
+    const foot=document.createElement('div');
+    foot.style.cssText='position:absolute;bottom:0;left:0;right:0;z-index:10;padding:12px 14px calc(20px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.6));display:flex;align-items:center;gap:10px;';
+    foot.innerHTML=`
+      <input placeholder="Envoyer un message…" style="flex:1;background:transparent;border:1.5px solid rgba(255,255,255,.6);border-radius:24px;padding:10px 16px;color:#fff;font-family:Barlow,sans-serif;font-size:.88rem;outline:none;">
+      <button onclick="this.textContent=this.textContent==='🤍'?'❤️':'🤍'" style="background:none;border:none;font-size:1.6rem;">🤍</button>`;
+    slide.appendChild(foot);
+    sv2.appendChild(slide);
+  });
+  sv2.style.display='block';
   document.body.style.overflow='hidden';
-  renderSV();
-  document.getElementById('sv-tap-l').onclick=()=>svNav(-1);
-  document.getElementById('sv-tap-r').onclick=()=>svNav(1);
+  // Scroll au bon slide
+  requestAnimationFrame(()=>{
+    const target=sv2.children[startIdx];
+    if(target)target.scrollIntoView({behavior:'instant'});
+    startSV2Progress(startIdx);
+  });
+  // Observer pour détecter le slide visible
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const i=parseInt(e.target.dataset.idx);
+        startSV2Progress(i);
+        if(stories[i])sb.from('stories').update({views:(stories[i].views||0)+1}).eq('id',stories[i].id).then(()=>{});
+      }
+    });
+  },{threshold:.6});
+  [...sv2.children].forEach(s=>io.observe(s));
+  sv2._io=io;
 }
-function closeSV(){
+function startSV2Progress(idx){
   clearTimeout(svTimer);
-  document.getElementById('sv').classList.remove('open');
-  document.body.style.overflow='';
-  document.getElementById('sv-media').innerHTML='';
-}
-function renderSV(){
-  clearTimeout(svTimer);
-  if(svIdx<0||svIdx>=stories.length){closeSV();return;}
-  const s=stories[svIdx];
-  // bars
-  document.getElementById('sv-bars').innerHTML=stories.map((_,i)=>
-    `<div class="sv-bar"><div class="sv-bar-fill ${i<svIdx?'done':''}" id="svf-${i}"></div></div>`).join('');
-  // header
-  document.getElementById('sv-av').textContent=(s.prenom||'?')[0].toUpperCase();
-  document.getElementById('sv-name').textContent=esc(s.prenom||'CQP');
-  document.getElementById('sv-time').textContent=timeAgo(s.created_at);
-  // media
-  const md=document.getElementById('sv-media');
-  if(s.media_type==='video'){
-    md.innerHTML=`<video src="${esc(s.photo_url)}" autoplay playsinline loop style="width:100%;height:100%;object-fit:cover"></video>`;
-  }else{
-    md.innerHTML=`<img src="${esc(s.photo_url)}" style="width:100%;height:100%;object-fit:cover" loading="lazy">`;
-  }
-  // progress bar
+  const s=stories[idx];if(!s)return;
+  const fill=document.getElementById(`sv2-prog-${idx}`);
+  if(!fill)return;
+  // Reset les autres
+  document.querySelectorAll('[id^="sv2-prog-"]').forEach(el=>{if(el!==fill){el.style.transition='none';el.style.width='0';}});
   const dur=s.media_type==='video'?15000:5000;
-  const fill=document.getElementById(`svf-${svIdx}`);
-  if(fill){fill.style.transition=`width ${dur}ms linear`;requestAnimationFrame(()=>fill.style.width='100%');}
-  svTimer=setTimeout(()=>svNav(1),dur);
-  // incr views
-  sb.from('stories').update({views:(s.views||0)+1}).eq('id',s.id).then(()=>{});
+  fill.style.transition='none';fill.style.width='0';
+  requestAnimationFrame(()=>{
+    fill.style.transition=`width ${dur}ms linear`;
+    fill.style.width='100%';
+  });
 }
-function svNav(d){clearTimeout(svTimer);svIdx+=d;renderSV();}
+function closeSV2(){
+  const sv2=document.getElementById('sv2');
+  if(sv2._io)sv2._io.disconnect();
+  clearTimeout(svTimer);
+  sv2.style.display='none';
+  sv2.innerHTML='';
+  document.body.style.overflow='';
+}
+function closeSV(){closeSV2();}
 
 // Story Create
 let _sf=null,_su=null;
