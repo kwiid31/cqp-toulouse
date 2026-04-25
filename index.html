@@ -59,37 +59,33 @@ img{max-width:100%;display:block}
 /* ── STORIES BAR ───────────────────────────────────────── */
 .stories-bar{
   background:#fff;border-bottom:1px solid var(--border);
-  display:flex;gap:10px;padding:10px 12px;
-  overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory;
+  display:flex;gap:8px;padding:10px 12px;
+  overflow-x:auto;scrollbar-width:none;
   -webkit-overflow-scrolling:touch;
 }
 .stories-bar::-webkit-scrollbar{display:none;}
 .story-thumb{
-  scroll-snap-align:start;flex-shrink:0;
-  width:72px;display:flex;flex-direction:column;align-items:center;gap:5px;
-  cursor:pointer;
+  flex-shrink:0;width:80px;height:120px;border-radius:10px;
+  position:relative;overflow:hidden;cursor:pointer;
+  background:var(--bg3);
 }
-.story-ring{
-  width:66px;height:66px;border-radius:50%;padding:2.5px;
-  background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
-  position:relative;
+.story-thumb.add-story{
+  border:2px dashed var(--border);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;background:#fff;
 }
-.story-ring.seen{background:var(--border);}
-.story-ring.add{background:var(--bg3);}
-.story-avatar{
-  width:100%;height:100%;border-radius:50%;border:2.5px solid #fff;
-  background:var(--rouge);display:flex;align-items:center;justify-content:center;
-  font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:#fff;overflow:hidden;
-}
-.story-avatar img{width:100%;height:100%;object-fit:cover;}
-.story-add-badge{
-  position:absolute;bottom:0;right:0;width:22px;height:22px;
-  background:var(--rouge);border-radius:50%;border:2px solid #fff;
-  display:flex;align-items:center;justify-content:center;
-}
-.story-add-badge svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;}
-.story-label{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:.3px;
-  color:var(--txt2);text-align:center;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.story-add-icon{width:32px;height:32px;background:var(--rouge);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;}
+.story-add-icon svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;}
+.story-add-txt{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:1px;
+  text-transform:uppercase;color:var(--txt3);}
+.story-thumb-img{width:100%;height:100%;object-fit:cover;display:block;}
+.story-thumb-grad{position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(0,0,0,.7));padding:6px 5px 5px;}
+.story-thumb-name{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;
+  letter-spacing:.5px;color:#fff;display:block;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.story-thumb-new{position:absolute;top:5px;left:5px;width:5px;height:5px;
+  background:var(--rouge);border-radius:50%;border:1.5px solid #fff;}
 
 /* ── STORY VIEWER ──────────────────────────────────────── */
 #sv{position:fixed;inset:0;z-index:500;background:#000;display:none;flex-direction:column;}
@@ -319,12 +315,9 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
 
 <!-- STORIES BAR -->
 <div class="stories-bar" id="stories-bar">
-  <div class="story-thumb" onclick="openStoryCapture()">
-    <div class="story-ring add">
-      <div class="story-avatar">CQP</div>
-      <div class="story-add-badge"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-    </div>
-    <span class="story-label">Ma story</span>
+  <div class="story-thumb add-story" onclick="openStoryCapture()">
+    <div class="story-add-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+    <span class="story-add-txt">Story</span>
   </div>
 </div>
 <input type="file" id="story-file-input" accept="image/*,video/*">
@@ -419,6 +412,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
 <div class="pub-menu" id="pub-menu">
   <button class="pub-item" onclick="closePub();openStoryCapture()"><div class="pub-icon" style="background:#fff0f2">📸</div>Story</button>
   <button class="pub-item" onclick="closePub();openComposer()"><div class="pub-icon" style="background:#f3f0ff">✍️</div>Post</button>
+  <button class="pub-item" onclick="closePub();openDr('dr-evt-pub')"><div class="pub-icon" style="background:#e7f3ff">📅</div>Événement</button>
   <button class="pub-item" onclick="closePub();openDr('dr-annonce')"><div class="pub-icon" style="background:#f0fdf4">📋</div>Annonce</button>
 </div>
 
@@ -456,6 +450,26 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
       <div class="fg"><label>Téléphone</label><input type="tel" id="an-tel" placeholder="06 xx xx xx xx"></div>
       <button class="btn-primary" onclick="submitAnnonce()">Déposer l'annonce</button>
       <div class="form-msg" id="an-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER EVENEMENT PUBLIC -->
+<div class="drawer-overlay" id="dr-evt-pub" onclick="if(event.target===this)closeDr('dr-evt-pub')">
+  <div class="drawer">
+    <div class="drawer-head"><h3>📅 Proposer un événement</h3><button class="drawer-x" onclick="closeDr('dr-evt-pub')">✕</button></div>
+    <div class="drawer-body">
+      <p style="font-size:.84rem;color:var(--txt2);margin-bottom:16px;line-height:1.7">Votre événement sera publié après validation par l'équipe CQP.</p>
+      <div class="fg"><label>Titre *</label><input type="text" id="pe-titre" placeholder="Nom de l'événement"></div>
+      <div class="fg-row">
+        <div class="fg"><label>Date *</label><input type="datetime-local" id="pe-date"></div>
+        <div class="fg"><label>Catégorie</label><select id="pe-cat"><option>Réunion</option><option>Manifestation</option><option>Culture</option><option>Solidarité</option><option>Sport</option><option>Autre</option></select></div>
+      </div>
+      <div class="fg"><label>Lieu</label><input type="text" id="pe-lieu" placeholder="Adresse ou salle"></div>
+      <div class="fg"><label>Description</label><textarea id="pe-desc" rows="3" placeholder="Décrivez l'événement…"></textarea></div>
+      <div class="fg"><label>Votre prénom *</label><input type="text" id="pe-prenom" placeholder="Karim"></div>
+      <button class="btn-primary" onclick="submitEvtPub()">📅 Proposer l'événement</button>
+      <div class="form-msg" id="pe-msg"></div>
     </div>
   </div>
 </div>
@@ -523,19 +537,22 @@ async function loadStories(){
 }
 function renderStoryBar(){
   const bar=document.getElementById('stories-bar');
-  const addBtn=bar.querySelector('.story-thumb');
+  const addBtn=bar.querySelector('.add-story');
   bar.innerHTML='';
   bar.appendChild(addBtn);
   stories.forEach((s,i)=>{
     const el=document.createElement('div');
     el.className='story-thumb';
-    const av=(s.prenom||'?')[0].toUpperCase();
     const mediaUrl=s.photo_url||'';
-    el.innerHTML=`
-      <div class="story-ring">
-        <div class="story-avatar">${mediaUrl?`<img src="${esc(mediaUrl)}" loading="lazy">`:`${av}`}</div>
-      </div>
-      <span class="story-label">${esc(s.prenom||'')}</span>`;
+    // Vignette rect avec image de fond si dispo, sinon dégradé rouge
+    if(mediaUrl && s.media_type!=='video'){
+      el.innerHTML=`<img class="story-thumb-img" src="${esc(mediaUrl)}" loading="lazy"><div class="story-thumb-new"></div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
+    } else if(mediaUrl && s.media_type==='video'){
+      el.innerHTML=`<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0508,var(--rouge));display:flex;align-items:center;justify-content:center;font-size:1.8rem">🎬</div><div class="story-thumb-new"></div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
+    } else {
+      const av=(s.prenom||'?')[0].toUpperCase();
+      el.innerHTML=`<div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0508,var(--rouge));display:flex;align-items:center;justify-content:center;font-family:Bebas Neue,sans-serif;font-size:2rem;color:#fff">${av}</div><div class="story-thumb-grad"><span class="story-thumb-name">${esc(s.prenom||'')}</span></div>`;
+    }
     el.onclick=()=>openSV(i);
     bar.appendChild(el);
   });
@@ -1005,6 +1022,31 @@ async function submitAnnonce(){
     msg.textContent='✅ Annonce envoyée — validation sous 24h.';msg.style.color='var(--green)';
     setTimeout(()=>closeDr('dr-annonce'),2000);
   }catch(e){msg.textContent='Erreur.';msg.style.color='var(--rouge)';console.error(e);}
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DÉPÔT ÉVÉNEMENT PUBLIC
+// ═══════════════════════════════════════════════════════════
+async function submitEvtPub(){
+  const titre=document.getElementById('pe-titre').value.trim();
+  const dateVal=document.getElementById('pe-date').value;
+  const cat=document.getElementById('pe-cat').value;
+  const lieu=document.getElementById('pe-lieu').value.trim();
+  const desc=document.getElementById('pe-desc').value.trim();
+  const prenom=document.getElementById('pe-prenom').value.trim();
+  const msg=document.getElementById('pe-msg');
+  if(!titre||!dateVal||!prenom){msg.textContent='Titre, date et prénom obligatoires.';msg.style.color='var(--rouge)';return;}
+  try{
+    await sb.from('evenements').insert({
+      titre,date_debut:new Date(dateVal).toISOString(),categorie:cat,
+      lieu:lieu||'',description:desc||'',propose_par:prenom,
+      visible:false,validee:false
+    });
+    msg.textContent='✅ Événement proposé — validation sous 24h.';msg.style.color='var(--green)';
+    setTimeout(()=>closeDr('dr-evt-pub'),2000);
+  }catch(e){
+    msg.textContent='Erreur : '+e.message;msg.style.color='var(--rouge)';console.error(e);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
