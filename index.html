@@ -586,7 +586,8 @@ function openSV(startIdx){
     const media=document.createElement('div');
     media.style.cssText='position:absolute;inset:0;';
     if(s.media_type==='video'){
-      media.innerHTML=`<video src="${esc(s.photo_url)}" autoplay playsinline loop style="width:100%;height:100%;object-fit:cover"></video>`;
+      // Muted par défaut — l'IntersectionObserver active le son quand visible
+      media.innerHTML=`<video src="${esc(s.photo_url)}" playsinline loop muted preload="auto" style="width:100%;height:100%;object-fit:cover"></video>`;
     } else {
       media.innerHTML=`<img src="${esc(s.photo_url)}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">`;
     }
@@ -622,16 +623,25 @@ function openSV(startIdx){
     const target=sv2.children[startIdx];
     if(target)target.scrollIntoView({behavior:'instant'});
     startSV2Progress(startIdx);
+    // Lancer la vidéo du slide de départ
+    const startVid=target?.querySelector('video');
+    if(startVid){startVid.muted=false;startVid.play().catch(()=>{startVid.muted=true;startVid.play().catch(()=>{});});}
   });
   // Observer pour détecter le slide visible + boucle infinie
   let _svCur=startIdx;
   const io=new IntersectionObserver(entries=>{
     entries.forEach(e=>{
+      const vid=e.target.querySelector('video');
       if(e.isIntersecting){
         const i=parseInt(e.target.dataset.idx);
         _svCur=i;
         startSV2Progress(i);
+        // Jouer la vidéo visible AVEC son
+        if(vid){vid.muted=false;vid.play().catch(()=>{vid.muted=true;vid.play().catch(()=>{});});}
         if(stories[i])sb.from('stories').update({views:(stories[i].views||0)+1}).eq('id',stories[i].id).then(()=>{});
+      } else {
+        // Mettre en pause et couper le son de toutes les autres vidéos
+        if(vid){vid.pause();vid.muted=true;}
       }
     });
   },{threshold:.6});
@@ -669,6 +679,8 @@ function closeSV2(){
   const sv2=document.getElementById('sv2');
   if(sv2._io)sv2._io.disconnect();
   clearTimeout(svTimer);
+  // Stopper toutes les vidéos avant de fermer
+  sv2.querySelectorAll('video').forEach(v=>{v.pause();v.src='';});
   sv2.style.display='none';
   sv2.innerHTML='';
   document.body.style.overflow='';
@@ -1106,9 +1118,8 @@ async function loadFeed(reset=false){
 window.addEventListener('scroll',()=>{
   if(window.innerHeight+window.scrollY>=document.body.offsetHeight-400){
     if(feedDone){
-      // Boucle : on repart du début
-      feedPage=0;feedDone=false;
-      loadFeed();
+      // Fin du feed — repartir du début proprement avec reset
+      loadFeed(true);
     } else {
       loadFeed();
     }
