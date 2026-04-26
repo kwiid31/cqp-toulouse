@@ -507,7 +507,7 @@ const sb=supabase.createClient(SBU,SBK);
 //  UTILS
 // ═══════════════════════════════════════════════════════════
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
-const getSid=()=>{try{let s=sessionStorage.getItem('sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);sessionStorage.setItem('sid',s);}return s;}catch{return 'x'+Date.now();}};
+const getSid=()=>{try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Date.now();}};
 const savePrenom=v=>{try{if(v.trim())localStorage.setItem('cqp_prenom',v.trim());}catch{}};
 const getPrenom=()=>{try{return localStorage.getItem('cqp_prenom')||'';}catch{return '';}};
 const timeAgo=d=>{if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;if(s<604800)return`Il y a ${Math.floor(s/86400)} j`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});};
@@ -1130,7 +1130,7 @@ async function loadFeed(reset=false){
 
 // Scroll infini feed
 window.addEventListener('scroll',()=>{
-  if(window.innerHeight+window.scrollY>=document.body.offsetHeight-600){
+  if(window.innerHeight+window.scrollY>=document.body.offsetHeight-300){
     if(feedDone){
       // Fin du feed — enchaîner naturellement depuis le début
       // Pas de reset visible : on ajoute juste une "coupure" discrète puis recharge

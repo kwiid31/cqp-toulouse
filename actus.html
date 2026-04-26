@@ -259,27 +259,48 @@ const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
-function getSid(){try{let s=sessionStorage.getItem('sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);sessionStorage.setItem('sid',s);}return s;}catch{return 'x'+Math.random().toString(36).slice(2);}}
+function getSid(){try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Math.random().toString(36).slice(2);}}
 function savePrenomLocal(v){try{if(v.trim())localStorage.setItem('cqp_prenom',v.trim());}catch{}}
 function timeAgo(d){const diff=(Date.now()-new Date(d))/1000;if(diff<60)return"À l'instant";if(diff<3600)return`Il y a ${Math.floor(diff/60)} min`;if(diff<86400)return`Il y a ${Math.floor(diff/3600)} h`;if(diff<604800)return`Il y a ${Math.floor(diff/86400)} j`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});}
 function readTime(text){const w=(text||'').split(' ').length;return Math.ceil(w/200)<=1?'⚡ 1 min':`📖 ${Math.ceil(w/200)} min`;}
 
-let allActus=[],currentFilter='';
-async function loadActus(){
+let allActus=[],currentFilter='',_aPage=0,_aDone=false,_aLoading=false;
+const A_PAGE=8;
+async function loadActus(reset=false){
+  if(_aLoading||_aDone)return;
+  if(reset){_aPage=0;_aDone=false;allActus=[];}
+  _aLoading=true;
   try{
-    let q=sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).limit(50);
-    const{data}=await q;
-    allActus=data||[];
-    document.getElementById('actu-count').textContent=allActus.length+' articles';
-    renderActus(allActus);
-  }catch(e){document.getElementById('spinner').innerHTML='<p style="color:var(--txt3)">Erreur de chargement. <button onclick="loadActus()" style="color:var(--rouge);background:none;border:none;cursor:pointer">Réessayer</button></p>';console.error(e);}
+    const from=_aPage*A_PAGE,to=from+A_PAGE-1;
+    const{data}=await sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).range(from,to);
+    const items=data||[];
+    allActus=[...allActus,...items];
+    if(items.length<A_PAGE)_aDone=true;
+    document.getElementById('actu-count').textContent=allActus.length+(allActus.length>=A_PAGE?'+ ':' ')+'articles';
+    renderActus(currentFilter?allActus.filter(a=>a.categorie===currentFilter):allActus);
+    _aPage++;
+  }catch(e){document.getElementById('spinner').innerHTML='<p style="color:var(--txt3)">Erreur. <button onclick="loadActus()" style="color:var(--rouge);background:none;border:none;cursor:pointer">Réessayer</button></p>';console.error(e);}
+  finally{_aLoading=false;}
 }
+// Scroll infini + boucle
+window.addEventListener('scroll',()=>{
+  if(window.innerHeight+window.scrollY>=document.body.offsetHeight-300){
+    if(_aDone){
+      // Boucle naturelle : repartir du début
+      const sep=document.createElement('div');
+      sep.style.cssText='text-align:center;padding:16px 0;color:var(--txt3);font-family:Barlow Condensed,sans-serif;font-size:.68rem;letter-spacing:2px';
+      sep.textContent='· · · · ·';
+      document.getElementById('actus-list').appendChild(sep);
+      _aPage=0;_aDone=false;allActus=[];
+      setTimeout(()=>loadActus(),300);
+    } else loadActus();
+  }
+},{passive:true});
 function filterActus(cat,btn){
   currentFilter=cat;
   document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  const filtered=cat?allActus.filter(a=>a.categorie===cat):allActus;
-  renderActus(filtered);
+  renderActus(cat?allActus.filter(a=>a.categorie===cat):allActus);
 }
 function renderActus(list){
   document.getElementById('spinner').style.display='none';
