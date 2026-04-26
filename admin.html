@@ -235,29 +235,45 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
     </div>
 
 
-      <!-- AUTO GROQ -->
-      <div style="background:linear-gradient(135deg,#1a0a2e,#2d1a4e);border:1px solid rgba(124,58,237,.3);border-radius:10px;padding:18px;margin-bottom:16px;">
-        <div style="font-family:Bebas Neue,sans-serif;font-size:1.05rem;letter-spacing:.5px;color:#a78bfa;margin-bottom:2px;">⚡ Auto-génération planifiée</div>
-        <div style="font-family:Barlow Condensed,sans-serif;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(167,139,250,.55);margin-bottom:12px;">Groq génère et publie des actus automatiquement</div>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
-          <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.8);font-family:Barlow,sans-serif;font-size:.85rem;cursor:pointer;">
-            <input type="checkbox" id="auto-on" onchange="toggleAutoGroq(this.checked)" style="width:18px;height:18px;accent-color:#7C3AED;cursor:pointer;">
-            Activer
+      <!-- AUTO GROQ SERVEUR -->
+      <div style="background:linear-gradient(135deg,#1a0a2e,#2d1a4e);border:1px solid rgba(124,58,237,.3);border-radius:10px;padding:20px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <span style="font-family:Bebas Neue,sans-serif;font-size:1.1rem;letter-spacing:.5px;color:#a78bfa;">⚡ Auto-génération côté serveur</span>
+          <span id="groq-server-badge" style="font-family:Barlow Condensed,sans-serif;font-size:.6rem;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);">Chargement…</span>
+        </div>
+        <div style="font-family:Barlow Condensed,sans-serif;font-size:.7rem;letter-spacing:1px;color:rgba(167,139,250,.6);margin-bottom:14px;">
+          Groq scrape La Dépêche + actu.fr puis rédige une actu QPV. Fonctionne même téléphone éteint.
+        </div>
+        <!-- Ligne ON/OFF + fréquence -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:rgba(255,255,255,.85);font-family:Barlow,sans-serif;font-size:.9rem;">
+            <div id="groq-toggle" onclick="toggleGroqServer()" style="width:48px;height:26px;border-radius:13px;background:#333;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;">
+              <div id="groq-toggle-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;"></div>
+            </div>
+            <span id="groq-toggle-label">Activé / Désactivé</span>
           </label>
-          <select id="auto-interval" style="padding:8px 12px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:Barlow,sans-serif;font-size:.85rem;outline:none;" onchange="saveAutoConfig()">
-            <option value="1">Chaque heure</option>
-            <option value="3" selected>Toutes les 3h</option>
-            <option value="6">Toutes les 6h</option>
+          <select id="groq-freq" onchange="saveGroqServerConfig()" style="padding:8px 12px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:Barlow,sans-serif;font-size:.85rem;outline:none;">
+            <option value="1">Toutes les heures</option>
+            <option value="3">Toutes les 3h</option>
+            <option value="6" selected>Toutes les 6h</option>
             <option value="12">Toutes les 12h</option>
             <option value="24">1× par jour</option>
           </select>
         </div>
-        <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <input id="auto-topics" placeholder="Sujets séparés par des virgules (ex: logement, sécurité, culture)" style="flex:1;padding:10px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:Barlow,sans-serif;font-size:.85rem;outline:none;">
-          <button onclick="saveAutoConfig()" style="padding:10px 16px;background:#7C3AED;border:none;border-radius:8px;color:#fff;font-family:Barlow Condensed,sans-serif;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">💾 Sauver</button>
+        <!-- Statut dernière/prochaine génération -->
+        <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-family:Barlow Condensed,sans-serif;font-size:.75rem;color:rgba(255,255,255,.6);">
+          <div id="groq-last-run">Dernière génération : —</div>
+          <div id="groq-next-run">Prochaine génération : —</div>
         </div>
-        <div id="auto-status" style="font-family:Barlow Condensed,sans-serif;font-size:.72rem;color:rgba(167,139,250,.7);margin-bottom:6px;">Statut : inactif</div>
-        <div id="auto-log" style="max-height:80px;overflow-y:auto;"></div>
+        <!-- Bouton test immédiat -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button onclick="testGroqNow()" id="groq-test-btn" style="flex:1;padding:11px;background:#7C3AED;border:none;border-radius:8px;color:#fff;font-family:Barlow Condensed,sans-serif;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;min-width:160px;">
+            🧪 Générer une actu maintenant
+          </button>
+        </div>
+        <div id="groq-test-msg" style="margin-top:10px;font-family:Barlow Condensed,sans-serif;font-size:.75rem;letter-spacing:1px;text-align:center;min-height:16px;"></div>
+        <!-- Log -->
+        <div id="groq-server-log" style="margin-top:12px;max-height:100px;overflow-y:auto;"></div>
       </div>
     <div class="item-list" id="list-actus"><div class="load">Chargement…</div></div>
   </div>
@@ -408,94 +424,97 @@ async function loadStats(){
 }
 
 
-// ── AUTO GROQ ──────────────────────────────────────
-const GROQ_KEY='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';
-let _autoTimer=null;
+// ── AUTO GROQ SERVEUR ──────────────────────────────
+const EFN_URL = 'https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/groq-auto';
+let _groqEnabled = false;
 
-function loadAutoConfig(){
+async function loadGroqServerConfig(){
   try{
-    const cfg=JSON.parse(localStorage.getItem('cqp_auto')||'{}');
-    if(cfg.on)document.getElementById('auto-on').checked=true;
-    if(cfg.interval)document.getElementById('auto-interval').value=cfg.interval;
-    if(cfg.topics)document.getElementById('auto-topics').value=cfg.topics;
-    if(cfg.on)startAutoGroq(cfg);
-    updateAutoStatus(cfg.on,cfg.interval,cfg.lastRun);
-  }catch{}
+    const rows = await(await sb.from('site_config').select('key,value').in('key',['groq_auto_enabled','groq_auto_interval_hours','groq_auto_last_run'])).data;
+    const map = Object.fromEntries((rows||[]).map(r=>[r.key,r.value]));
+    _groqEnabled = map.groq_auto_enabled === 'true';
+    const freq = map.groq_auto_interval_hours || '6';
+    if(document.getElementById('groq-freq')) document.getElementById('groq-freq').value = freq;
+    updateGroqToggleUI(_groqEnabled);
+    // Last run
+    const last = map.groq_auto_last_run;
+    if(last){
+      const d = new Date(last);
+      document.getElementById('groq-last-run').textContent = 'Dernière génération : ' + d.toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      const h = parseInt(freq)||6;
+      const next = new Date(d.getTime() + h*3600*1000);
+      document.getElementById('groq-next-run').textContent = 'Prochaine génération (serveur) : ' + next.toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    }
+    // Badge
+    const badge = document.getElementById('groq-server-badge');
+    if(badge){
+      badge.textContent = _groqEnabled ? '● Actif' : '○ Inactif';
+      badge.style.background = _groqEnabled ? 'rgba(66,183,42,.2)' : 'rgba(255,255,255,.08)';
+      badge.style.color = _groqEnabled ? '#42B72A' : 'rgba(255,255,255,.4)';
+    }
+    // Log
+    loadGroqLog();
+  }catch(e){console.warn('groq config',e);}
 }
-function saveAutoConfig(){
-  const on=document.getElementById('auto-on').checked;
-  const interval=document.getElementById('auto-interval').value;
-  const topics=document.getElementById('auto-topics').value.trim();
-  const cfg={on,interval,topics};
-  try{localStorage.setItem('cqp_auto',JSON.stringify(cfg));}catch{}
-  if(on)startAutoGroq(cfg);else stopAutoGroq();
-  updateAutoStatus(on,interval,null);
-  addAutoLog('⚙️ Config sauvegardée');
+function updateGroqToggleUI(on){
+  const t=document.getElementById('groq-toggle');
+  const k=document.getElementById('groq-toggle-knob');
+  const l=document.getElementById('groq-toggle-label');
+  if(!t)return;
+  t.style.background = on ? '#7C3AED' : '#333';
+  k.style.left = on ? '25px' : '3px';
+  if(l) l.textContent = on ? 'Activé — Groq génère automatiquement' : 'Désactivé';
 }
-function toggleAutoGroq(on){
-  const interval=document.getElementById('auto-interval').value;
-  const topics=document.getElementById('auto-topics').value.trim();
-  const cfg={on,interval,topics};
-  try{localStorage.setItem('cqp_auto',JSON.stringify(cfg));}catch{}
-  if(on){startAutoGroq(cfg);addAutoLog('▶️ Auto-génération activée');}
-  else{stopAutoGroq();addAutoLog('⏹️ Arrêtée');}
-  updateAutoStatus(on,interval,null);
+async function toggleGroqServer(){
+  _groqEnabled = !_groqEnabled;
+  updateGroqToggleUI(_groqEnabled);
+  await saveGroqServerConfig();
 }
-function startAutoGroq(cfg){
-  stopAutoGroq();
-  const ms=(parseInt(cfg.interval)||3)*3600*1000;
-  // Lancer immédiatement si nécessaire
-  const stored=JSON.parse(localStorage.getItem('cqp_auto')||'{}');
-  const last=stored.lastRun?Date.now()-new Date(stored.lastRun).getTime():Infinity;
-  if(last>=ms)runAutoGroq(cfg);
-  _autoTimer=setInterval(()=>runAutoGroq(cfg),ms);
+async function saveGroqServerConfig(){
+  const freq = document.getElementById('groq-freq')?.value || '6';
+  await sb.from('site_config').upsert({key:'groq_auto_enabled',value:String(_groqEnabled)},{onConflict:'key'});
+  await sb.from('site_config').upsert({key:'groq_auto_interval_hours',value:freq},{onConflict:'key'});
+  const badge=document.getElementById('groq-server-badge');
+  if(badge){
+    badge.textContent=_groqEnabled?'● Actif':'○ Inactif';
+    badge.style.background=_groqEnabled?'rgba(66,183,42,.2)':'rgba(255,255,255,.08)';
+    badge.style.color=_groqEnabled?'#42B72A':'rgba(255,255,255,.4)';
+  }
 }
-function stopAutoGroq(){
-  if(_autoTimer){clearInterval(_autoTimer);_autoTimer=null;}
-}
-async function runAutoGroq(cfg){
-  const topicList=(cfg.topics||'logement,sécurité,emploi,culture,solidarité').split(',').map(t=>t.trim()).filter(Boolean);
-  const topic=topicList[Math.floor(Math.random()*topicList.length)];
-  const cats=['Politique','Logement','Social','Emploi','Culture','Sécurité'];
-  const cat=cats[Math.floor(Math.random()*cats.length)];
-  addAutoLog(`🤖 Génération : "${topic}"…`);
+async function testGroqNow(){
+  const btn=document.getElementById('groq-test-btn');
+  const msg=document.getElementById('groq-test-msg');
+  btn.disabled=true;btn.textContent='⏳ Génération en cours…';msg.textContent='';msg.style.color='rgba(167,139,250,.8)';
   try{
-    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_KEY}`},
-      body:JSON.stringify({
-        model:'llama3-8b-8192',
-        messages:[{role:'user',content:`Tu es journaliste militant des quartiers populaires de Toulouse. Écris une actualité sur : "${topic}". Catégorie : ${cat}. Réponds UNIQUEMENT en JSON : {"titre":"...","contenu":"..."}. Titre max 10 mots, contenu 150-250 mots, ton engagé et bienveillant.`}],
-        temperature:0.75,max_tokens:600
-      })
-    });
-    if(!r.ok)throw new Error(r.statusText);
-    const data=await r.json();
-    const raw=data.choices[0].message.content.trim().replace(/```json?|```/g,'');
-    const j=JSON.parse(raw);
-    await sb.from('actus').insert({titre:j.titre,contenu:j.contenu,categorie:cat,visible:true,date_publication:new Date().toISOString()});
-    const now=new Date().toISOString();
-    try{const s=JSON.parse(localStorage.getItem('cqp_auto')||'{}');s.lastRun=now;localStorage.setItem('cqp_auto',JSON.stringify(s));}catch{}
-    addAutoLog(`✅ Publié : "${j.titre.slice(0,40)}…"`);
-    updateAutoStatus(true,cfg.interval,now);
-    loaded.actus=false;loadTab('actus');loadStats();
-  }catch(e){addAutoLog(`❌ ${e.message}`);}
+    const r = await fetch(EFN_URL+'?force=true',{method:'GET'});
+    const d = await r.json();
+    if(d.ok){
+      msg.textContent='✅ Publié : "'+d.titre+'" (source: '+d.source+')';
+      msg.style.color='#42B72A';
+      loaded.actus=false;loadTab('actus');loadStats();
+      setTimeout(()=>loadGroqLog(),1000);
+    } else {
+      msg.textContent='❌ Erreur : '+(d.error||d.msg||'Inconnue — vérifier la clé API Groq');
+      msg.style.color='#ff6b6b';
+    }
+  }catch(e){
+    msg.textContent='❌ Connexion impossible : '+String(e);
+    msg.style.color='#ff6b6b';
+  }
+  btn.disabled=false;btn.textContent='🧪 Générer une actu maintenant';
 }
-function updateAutoStatus(on,interval,lastRun){
-  const el=document.getElementById('auto-status');if(!el)return;
-  const h=parseInt(interval)||3;
-  const next=lastRun?new Date(new Date(lastRun).getTime()+h*3600*1000):null;
-  el.textContent=on
-    ?`✅ Actif — toutes les ${h}h${next?' — prochaine : '+next.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):''} `
-    :'⏹️ Inactif';
+async function loadGroqLog(){
+  const {data} = await sb.from('groq_log').select('*').order('created_at',{ascending:false}).limit(5);
+  const el=document.getElementById('groq-server-log');if(!el||!data)return;
+  el.innerHTML=data.map(r=>{
+    const d=new Date(r.created_at);
+    const t=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const icon=r.status==='success'?'✅':'❌';
+    const txt=r.status==='success'?r.actu_titre:r.message;
+    return `<div style="font-family:Barlow Condensed,sans-serif;font-size:.68rem;color:rgba(255,255,255,.5);padding:2px 0;border-top:1px solid rgba(255,255,255,.05);margin-top:4px;">${icon} [${t}] ${esc(txt||'')}</div>`;
+  }).join('');
 }
-function addAutoLog(msg){
-  const el=document.getElementById('auto-log');if(!el)return;
-  const d=document.createElement('div');
-  d.style.cssText='font-family:Barlow Condensed,sans-serif;font-size:.68rem;color:rgba(167,139,250,.6);padding:1px 0;';
-  d.textContent=`[${new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}] ${msg}`;
-  el.prepend(d);while(el.children.length>6)el.removeChild(el.lastChild);
-}
+
 
 // GROQ
 let groqResult={titre:'',contenu:'',cat:''};
@@ -750,7 +769,7 @@ async function delItem(table,id,tab){
 function init(){
   loaded.actus=true;loadActus();
   loadStats();setInterval(loadStats,30000);
-  setTimeout(loadAutoConfig,500);
+  setTimeout(loadGroqServerConfig,500);
 }
 document.getElementById('pwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 if(sessionStorage.getItem('cqp_adm')==='1'){
