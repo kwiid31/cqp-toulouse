@@ -394,19 +394,19 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
   <a class="nav-item active" href="index.html">
     <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil
   </a>
-  <a class="nav-item" href="actus.html">
-    <svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>Actus
+  <a class="nav-item" href="groupes.html">
+    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Groupes
   </a>
   <div class="nav-center">
     <button class="nav-pub" onclick="togglePub(event)">
       <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </button>
   </div>
-  <a class="nav-item" href="evenements.html">
-    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Évts
+  <a class="nav-item" href="actus.html">
+    <svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>Actus
   </a>
-  <a class="nav-item" href="annonces.html">
-    <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Annonces
+  <a class="nav-item" href="profil.html">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil
   </a>
 </nav>
 
@@ -648,16 +648,30 @@ function openSV(startIdx){
   [...sv2.children].forEach(s=>io.observe(s));
   sv2._io=io;
   sv2._svCur=()=>_svCur;
-  // Scroll infini : quand on atteint la dernière slide, revenir à la première
+  // Scroll infini naturel : clone de la 1ère story en fin de liste
+  // Quand le clone devient visible → on remet le vrai scroll à la 1ère sans que l'user le voie
+  if(sv2.children.length>1){
+    const clone=sv2.children[0].cloneNode(true);
+    clone.dataset.clone='true';
+    // Mettre à jour la barre de progression du clone
+    const cloneFill=clone.querySelector('[id^="sv2-prog-"]');
+    if(cloneFill)cloneFill.id='sv2-prog-clone';
+    sv2.appendChild(clone);
+  }
   sv2.addEventListener('scroll',()=>{
+    if(sv2.dataset.resetting)return;
     const total=sv2.children.length;
     if(!total)return;
-    const scrolled=sv2.scrollTop;
-    const h=sv2.clientHeight;
-    // Si on est tout en bas (dernière story visible)
-    if(scrolled+h>=sv2.scrollHeight-10){
-      // Revenir silencieusement à la première sans animation
+    // Si le clone (dernier enfant) est visible
+    const lastChild=sv2.children[total-1];
+    if(!lastChild?.dataset?.clone)return;
+    const rect=lastChild.getBoundingClientRect();
+    if(rect.top<sv2.clientHeight*0.5){
+      // Revenir silencieusement à la 1ère slide (même position visuelle)
+      sv2.dataset.resetting='1';
       sv2.scrollTo({top:0,behavior:'instant'});
+      setTimeout(()=>delete sv2.dataset.resetting,50);
+      startSV2Progress(0);
     }
   },{passive:true});
 }
@@ -1116,10 +1130,16 @@ async function loadFeed(reset=false){
 
 // Scroll infini feed
 window.addEventListener('scroll',()=>{
-  if(window.innerHeight+window.scrollY>=document.body.offsetHeight-400){
+  if(window.innerHeight+window.scrollY>=document.body.offsetHeight-600){
     if(feedDone){
-      // Fin du feed — repartir du début proprement avec reset
-      loadFeed(true);
+      // Fin du feed — enchaîner naturellement depuis le début
+      // Pas de reset visible : on ajoute juste une "coupure" discrète puis recharge
+      feedPage=0;feedDone=false;
+      const sep=document.createElement('div');
+      sep.style.cssText='text-align:center;padding:20px 0;font-family:Barlow Condensed,sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);border-top:1px solid var(--border);margin-top:8px;';
+      sep.textContent='· · · · ·';
+      document.getElementById('feed').appendChild(sep);
+      setTimeout(()=>loadFeed(),200);
     } else {
       loadFeed();
     }
