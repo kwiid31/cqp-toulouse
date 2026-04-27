@@ -1053,9 +1053,10 @@ async function loadFeed(reset=false){
     ].sort((a,b)=>new Date(b._date)-new Date(a._date));
 
     const feed=document.getElementById('feed');
-    if(feedPage===0)feed.innerHTML='';
+    if(feedPage===0){feed.innerHTML='';window._allFeedItems=[];}
     if(!items.length&&feedPage===0){feed.innerHTML='<div class="empty"><p>Aucun contenu pour l\'instant</p></div>';feedDone=true;return;}
     if(items.length<PAGE)feedDone=true;
+    window._allFeedItems=[...(window._allFeedItems||[]),...items];
 
     const html=items.map(it=>{
       if(it._type==='actu')return mkActu(it);
@@ -1132,14 +1133,27 @@ async function loadFeed(reset=false){
 window.addEventListener('scroll',()=>{
   if(window.innerHeight+window.scrollY>=document.body.offsetHeight-300){
     if(feedDone){
-      // Fin du feed — enchaîner naturellement depuis le début
-      // Pas de reset visible : on ajoute juste une "coupure" discrète puis recharge
-      feedPage=0;feedDone=false;
+      // Boucle fluide : ré-injecter les items déjà en mémoire sans recharger la page
+      const feed=document.getElementById('feed');
       const sep=document.createElement('div');
-      sep.style.cssText='text-align:center;padding:20px 0;font-family:Barlow Condensed,sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);border-top:1px solid var(--border);margin-top:8px;';
+      sep.style.cssText='text-align:center;padding:16px 0 8px;font-family:Barlow Condensed,sans-serif;font-size:.68rem;letter-spacing:2px;color:var(--txt3);';
       sep.textContent='· · · · ·';
-      document.getElementById('feed').appendChild(sep);
-      setTimeout(()=>loadFeed(),200);
+      feed.appendChild(sep);
+      // Ré-ajouter les items depuis le début en append (pas de reset)
+      if(window._allFeedItems&&window._allFeedItems.length){
+        const html=window._allFeedItems.map(it=>{
+          if(it._type==='actu')return mkActu(it);
+          if(it._type==='evt')return mkEvt(it);
+          if(it._type==='ann')return mkAnn(it);
+          if(it._type==='post')return mkPost(it);
+          return '';
+        }).join('');
+        feed.insertAdjacentHTML('beforeend',html);
+        // Reveal animation sur les nouveaux items
+        const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}});},{threshold:.05});
+        feed.querySelectorAll('.reveal:not(.in)').forEach(el=>obs.observe(el));
+      }
+      feedDone=false; // Permettre un autre cycle
     } else {
       loadFeed();
     }
