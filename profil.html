@@ -116,7 +116,8 @@ let _profil=null;
 function renderAv(p){const av=document.getElementById('pav');if(p?.photo_url)av.innerHTML=`<img src="${esc(p.photo_url)}">`;else av.textContent=(p?.prenom||'?')[0].toUpperCase();}
 async function loadProfil(){
   const sid=getSid();
-  const{data}=await sb.from('profils').select('*').eq('session_id',sid).single().catch(()=>({data:null}));
+  const{data:rows}=await sb.from('profils').select('*').eq('session_id',sid).limit(1);
+  const data=rows&&rows.length>0?rows[0]:null;
   if(data){_profil=data;document.getElementById('pnom').textContent=data.prenom;document.getElementById('pquartier').textContent=data.quartier?'📍 '+data.quartier:'';document.getElementById('pbio').textContent=data.bio||'';document.getElementById('e-prenom').value=data.prenom||'';document.getElementById('e-quartier').value=data.quartier||'';document.getElementById('e-bio').value=data.bio||'';renderAv(data);}
   else{try{const p=localStorage.getItem('cqp_prenom');if(p)document.getElementById('e-prenom').value=p;}catch{}}
   const[{count:cp},{count:cs},{count:cg}]=await Promise.all([sb.from('posts').select('*',{count:'exact',head:true}).eq('session_id',sid),sb.from('stories').select('*',{count:'exact',head:true}).eq('session_id',sid),sb.from('groupe_membres').select('*',{count:'exact',head:true}).eq('session_id',sid)]);
