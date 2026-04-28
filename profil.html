@@ -133,6 +133,16 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
         <option>Rangueil</option><option>Basso Cambo</option><option>Borderouge</option>
         <option>Izards</option><option>Sept Deniers</option><option>Autre</option>
       </select>
+      <div>
+        <div style="font-family:Barlow Condensed,sans-serif;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:8px;">Choisis ton code secret à 4 chiffres *</div>
+        <div class="code-inputs">
+          <input class="code-input" id="n0" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="newCodeNext(this,0)">
+          <input class="code-input" id="n1" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="newCodeNext(this,1)">
+          <input class="code-input" id="n2" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="newCodeNext(this,2)">
+          <input class="code-input" id="n3" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="newCodeNext(this,3)">
+        </div>
+        <div style="font-size:.75rem;color:var(--txt3);margin-top:6px;text-align:center;">Ce code te servira à te reconnecter partout</div>
+      </div>
       <button class="ls-btn" style="background:var(--purple)" onclick="createProfil()">✨ Créer mon profil</button>
       <div class="ls-err" id="create-err"></div>
     </div>
@@ -226,6 +236,10 @@ function switchTab(t){
 }
 
 // ── CODE INPUT : auto-focus suivant ──
+function newCodeNext(el,idx){
+  el.value=el.value.replace(/\D/g,'');
+  if(el.value.length===1&&idx<3)document.getElementById('n'+(idx+1)).focus();
+}
 function codeNext(el,idx){
   el.value=el.value.replace(/\D/g,'');
   if(el.value.length===1&&idx<3)document.getElementById('c'+(idx+1)).focus();
@@ -253,21 +267,24 @@ async function loginWithCode(){
 async function createProfil(){
   const prenom=document.getElementById('new-prenom').value.trim();
   const quartier=document.getElementById('new-quartier').value;
+  const code=[0,1,2,3].map(i=>document.getElementById('n'+i).value).join('');
   const err=document.getElementById('create-err');
   if(!prenom){err.textContent='Le prénom est obligatoire.';return;}
+  if(code.length<4||!/^\d{4}$/.test(code)){err.textContent='Choisis ton code à 4 chiffres.';return;}
+  err.textContent='Vérification…';
+  // Vérifier que le code n'est pas déjà pris
+  const{data:existing}=await sb.from('profils').select('id').eq('code',code).limit(1);
+  if(existing?.length){err.textContent='Ce code est déjà utilisé. Choisis-en un autre.';return;}
   err.textContent='Création en cours…';
   const sid=getOrCreateSid();
-  // Générer un code unique
-  const{data:fn}=await sb.rpc('generate_unique_code');
-  const code=fn;
   const{data,error}=await sb.from('profils').insert({
-    session_id:sid,prenom,quartier:quartier||null,code,created_at:new Date().toISOString(),updated_at:new Date().toISOString()
+    session_id:sid,prenom,quartier:quartier||null,code,
+    created_at:new Date().toISOString(),updated_at:new Date().toISOString()
   }).select().single();
   if(error){err.textContent='Erreur : '+error.message;return;}
   saveCode(code);
   try{localStorage.setItem('cqp_prenom',prenom);}catch{}
   err.textContent='';
-  // Afficher le code avant de continuer
   showCodeModal(code,()=>showApp(data));
 }
 

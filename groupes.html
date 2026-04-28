@@ -165,6 +165,24 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
   </div>
 </div>
 
+<!-- POPUP CODE GROUPE -->
+<div id="code-ov" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:340px;width:100%;text-align:center;">
+    <div style="font-size:1.8rem;margin-bottom:6px;">🔑</div>
+    <div style="font-family:Bebas Neue,sans-serif;font-size:1.3rem;margin-bottom:4px;" id="popup-groupe-nom">Rejoindre le groupe</div>
+    <p style="font-size:.84rem;color:#65676B;margin-bottom:20px;line-height:1.6">Entre ton code à 4 chiffres pour rejoindre ce groupe et accéder aux messages</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px;">
+      <input class="code-input" id="gcp0" maxlength="1" inputmode="numeric" style="width:60px;height:64px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:1.8rem;background:#F0F2F5;border:2px solid #CED0D4;border-radius:10px;outline:none;" oninput="gcpNext(this,0)">
+      <input class="code-input" id="gcp1" maxlength="1" inputmode="numeric" style="width:60px;height:64px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:1.8rem;background:#F0F2F5;border:2px solid #CED0D4;border-radius:10px;outline:none;" oninput="gcpNext(this,1)">
+      <input class="code-input" id="gcp2" maxlength="1" inputmode="numeric" style="width:60px;height:64px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:1.8rem;background:#F0F2F5;border:2px solid #CED0D4;border-radius:10px;outline:none;" oninput="gcpNext(this,2)">
+      <input class="code-input" id="gcp3" maxlength="1" inputmode="numeric" style="width:60px;height:64px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:1.8rem;background:#F0F2F5;border:2px solid #CED0D4;border-radius:10px;outline:none;" oninput="gcpNext(this,3)">
+    </div>
+    <div id="popup-err" style="font-family:Barlow Condensed,sans-serif;font-size:.78rem;letter-spacing:1px;color:#C8102E;min-height:18px;margin-bottom:10px;"></div>
+    <button onclick="confirmCodeGroupe()" style="width:100%;padding:13px;background:#7C3AED;border:none;border-radius:8px;color:#fff;font-family:Barlow Condensed,sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:8px;">Confirmer</button>
+    <button onclick="closeCodePopup()" style="width:100%;padding:11px;background:#F0F2F5;border:none;border-radius:8px;color:#65676B;font-family:Barlow Condensed,sans-serif;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">Annuler</button>
+  </div>
+</div>
+
 <!-- NAV -->
 <nav class="bottom-nav">
   <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
@@ -304,35 +322,92 @@ async function createGroupe(){
 
 // ── VIEWER GROUPE ──
 let _realtimeSub=null;
+// Code validé cette session (pour ne pas redemander à chaque groupe)
+let _sessionCode=null;
+let _pendingGroupeId=null;
+
+function gcpNext(el,idx){
+  el.value=el.value.replace(/\D/g,'');
+  if(el.value.length===1&&idx<3)document.getElementById('gcp'+(idx+1)).focus();
+  if(el.value.length===1&&idx===3)confirmCodeGroupe();
+}
+function closeCodePopup(){
+  document.getElementById('code-ov').style.display='none';
+  document.body.style.overflow='';
+  [0,1,2,3].forEach(i=>{const el=document.getElementById('gcp'+i);if(el)el.value='';});
+  _pendingGroupeId=null;
+}
+async function confirmCodeGroupe(){
+  const code=[0,1,2,3].map(i=>document.getElementById('gcp'+i).value).join('');
+  const err=document.getElementById('popup-err');
+  if(code.length<4){err.textContent='Entre les 4 chiffres de ton code.';return;}
+  err.textContent='Vérification…';
+  const{data:rows}=await sb.from('profils').select('*').eq('code',code).limit(1);
+  if(!rows?.length){err.textContent='Code inconnu. Crée ton profil dabord.';return;}
+  const profil=rows[0];
+  _sessionCode=code;
+  // Sauvegarder en local pour cette session
+  try{localStorage.setItem('cqp_code',code);localStorage.setItem('cqp_prenom',profil.prenom);}catch{}
+  // Mettre à jour session_id
+  const sid=getSid();
+  await sb.from('profils').update({session_id:sid}).eq('code',code);
+  closeCodePopup();
+  // Continuer vers le groupe
+  if(_pendingGroupeId)doOpenGroupe(_pendingGroupeId,profil);
+}
+
 async function openGroupe(id){
+  const g=allGroupes.find(x=>x.id===id);if(!g)return;
+  // Vérifier si connecté cette session
+  const savedCode=_sessionCode||localStorage.getItem('cqp_code');
+  if(!savedCode){
+    // Demander le code
+    _pendingGroupeId=id;
+    document.getElementById('popup-groupe-nom').textContent=g.nom;
+    document.getElementById('popup-err').textContent='';
+    [0,1,2,3].forEach(i=>{const el=document.getElementById('gcp'+i);if(el)el.value='';});
+    document.getElementById('code-ov').style.display='flex';
+    document.body.style.overflow='hidden';
+    setTimeout(()=>document.getElementById('gcp0')?.focus(),200);
+    return;
+  }
+  _sessionCode=savedCode;
+  // Récupérer le profil
+  const{data:rows}=await sb.from('profils').select('*').eq('code',savedCode).limit(1);
+  const profil=rows?.[0]||null;
+  doOpenGroupe(id,profil);
+}
+
+async function doOpenGroupe(id,profil){
   const g=allGroupes.find(x=>x.id===id);if(!g)return;
   curGroupe=g;
   document.getElementById('gv-title').textContent=g.nom;
   document.getElementById('gv-members').textContent=`${EMOJIS[g.categorie]||'💬'} ${g.membres_count||1} membre${(g.membres_count||1)>1?'s':''}`;
   document.getElementById('gv').classList.add('open');
   document.body.style.overflow='hidden';
-  // Pré-remplir prénom
-  const p=getPrenom();
-  // Afficher ou non le footer selon si membre
   const isMembre=mesGroupes.has(id);
   document.getElementById('gv-footer').style.display=isMembre?'':'none';
-  loadMessages(id);
-  // Realtime
-  if(_realtimeSub)sb.removeChannel(_realtimeSub);
-  _realtimeSub=sb.channel(`groupe-${id}`).on('postgres_changes',{event:'INSERT',schema:'public',table:'groupe_messages',filter:`groupe_id=eq.${id}`},(payload)=>{
-    appendMessage(payload.new,getSid());
-  }).subscribe();
+  loadMessages(id,profil);
+  // Realtime — messages instantanés
+  if(_realtimeSub)try{sb.removeChannel(_realtimeSub);}catch{}
+  _realtimeSub=sb.channel(`gm-${id}-${Date.now()}`)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'groupe_messages',filter:`groupe_id=eq.${id}`},
+      (payload)=>{ appendMessage(payload.new,getSid()); }
+    ).subscribe((status)=>{
+      console.log('Realtime groupe',id,status);
+    });
 }
 function closeViewer(){
   document.getElementById('gv').classList.remove('open');
   document.body.style.overflow='';
   curGroupe=null;
-  if(_realtimeSub){sb.removeChannel(_realtimeSub);_realtimeSub=null;}
+  if(_realtimeSub){try{sb.removeChannel(_realtimeSub);}catch{}; _realtimeSub=null;}
 }
-async function loadMessages(groupeId){
-  const{data}=await sb.from('groupe_messages').select('*').eq('groupe_id',groupeId).eq('visible',true).order('created_at',{ascending:true}).limit(80);
+async function loadMessages(groupeId,profil){
   const el=document.getElementById('gv-msgs');
   const sid=getSid();
+  el.innerHTML='<div class="spinner">Chargement…</div>';
+  const{data}=await sb.from('groupe_messages').select('*').eq('groupe_id',groupeId).eq('visible',true).order('created_at',{ascending:true}).limit(100);
   if(!data?.length){
     const isMembre=mesGroupes.has(groupeId);
     el.innerHTML=isMembre
@@ -376,7 +451,13 @@ async function sendMessage(){
   const contenu=input.value.trim();
   if(!contenu&&!_msgPhoto)return;
   const sid=getSid();
-  const prenom=getPrenom()||'Anonyme';
+  // Récupérer le prénom depuis le profil si possible
+  const code=_sessionCode||localStorage.getItem('cqp_code');
+  let prenom=getPrenom()||'Anonyme';
+  if(code&&!prenom){
+    const{data:p}=await sb.from('profils').select('prenom').eq('code',code).single().catch(()=>({data:null}));
+    if(p?.prenom)prenom=p.prenom;
+  }
   let photo_url=null;
   if(_msgPhoto){
     const ext=_msgPhoto.name.split('.').pop()||'jpg';

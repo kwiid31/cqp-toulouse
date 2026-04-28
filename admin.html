@@ -109,7 +109,14 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 .groq-result.visible{display:block;}
 .groq-result-titre{font-family:'Barlow',sans-serif;font-weight:600;font-size:.95rem;color:#fff;margin-bottom:8px;}
 .groq-result-body{font-size:.85rem;color:rgba(255,255,255,.7);line-height:1.7;white-space:pre-wrap;max-height:200px;overflow-y:auto;}
-.groq-pub-btn{margin-top:12px;width:100%;padding:11px;background:var(--green);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;}
+.groq-pub-btn{padding:11px 20px;background:var(--green);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
+.groq-mode-btn{flex:1;padding:10px;background:none;border:none;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:rgba(167,139,250,.7);cursor:pointer;transition:all .15s;}
+.groq-mode-btn.active{background:rgba(124,58,237,.4);color:#fff;}
+.groq-tf-btn{padding:9px 16px;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.5);border-radius:8px;color:#a78bfa;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .15s;}
+.groq-tf-btn:hover{background:rgba(124,58,237,.5);color:#fff;}
+.chat-msg{padding:8px 12px;border-radius:8px;font-size:.85rem;line-height:1.5;max-width:90%;}
+.chat-user{background:rgba(124,58,237,.3);color:#e0d4ff;align-self:flex-end;border-radius:8px 0 8px 8px;}
+.chat-ai{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);align-self:flex-start;border-radius:0 8px 8px 8px;}
 .groq-msg{margin-top:8px;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:rgba(167,139,250,.7);text-align:center;}
 
 /* ITEMS LIST */
@@ -195,19 +202,52 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
       <button class="btn-new" onclick="togglePanel('fp-actu')">+ Nouvelle actu</button>
     </div>
 
-    <!-- GROQ -->
+    <!-- GROQ STUDIO -->
     <div class="groq-panel">
-      <div class="groq-title">🤖 Génération IA — Groq</div>
-      <div class="groq-sub">Générer une actualité automatiquement avec Llama 3</div>
-      <div class="groq-input-row">
-        <input class="groq-topic" id="groq-topic" placeholder="Ex: Logement social dans les quartiers…">
-        <select class="groq-cat" id="groq-cat"><option value="Politique">Politique</option><option value="Logement">Logement</option><option value="Social">Social</option><option value="Culture">Culture</option><option value="Emploi">Emploi</option><option value="Sécurité">Sécurité</option></select>
-        <button class="groq-btn" id="groq-btn" onclick="genGroq()">✨ Générer</button>
+      <div class="groq-title">🤖 Studio IA — Groq</div>
+      <div class="groq-sub">Parle a Groq | Colle un article | Depose une image</div>
+      <div style="display:flex;gap:0;border:1.5px solid rgba(124,58,237,.4);border-radius:8px;overflow:hidden;margin-bottom:14px;">
+        <button class="groq-mode-btn active" id="gmode-chat" onclick="setGroqMode('chat')">💬 Chat</button>
+        <button class="groq-mode-btn" id="gmode-text" onclick="setGroqMode('text')" style="border-left:1px solid rgba(124,58,237,.4);">📋 Texte</button>
+        <button class="groq-mode-btn" id="gmode-img" onclick="setGroqMode('img')" style="border-left:1px solid rgba(124,58,237,.4);">🖼️ Image</button>
       </div>
-      <div class="groq-result" id="groq-result">
+      <div id="gm-chat">
+        <div id="groq-chat-hist" style="min-height:60px;max-height:200px;overflow-y:auto;background:rgba(0,0,0,.2);border-radius:8px;padding:10px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;font-size:.85rem;"></div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <textarea id="groq-chat-input" placeholder="Ex: J'ai assiste a une reunion sur le logement au Mirail..." style="flex:1;padding:10px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:Barlow,sans-serif;font-size:.88rem;outline:none;resize:none;min-height:70px;line-height:1.5;"></textarea>
+          <button onclick="sendGroqChat()" id="gchat-btn" style="width:42px;height:42px;background:#7C3AED;border:none;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;align-self:flex-end;flex-shrink:0;"><svg viewBox="0 0 24 24" width="18" height="18" style="stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+        </div>
+      </div>
+      <div id="gm-text" style="display:none;">
+        <textarea id="groq-paste-text" placeholder="Colle ici un article, un communique, le texte d'un prospectus..." style="width:100%;padding:12px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:Barlow,sans-serif;font-size:.88rem;outline:none;resize:vertical;min-height:120px;line-height:1.5;margin-bottom:10px;"></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+          <button onclick="groqTransform('actu')" class="groq-tf-btn">📰 Actu</button>
+          <button onclick="groqTransform('annonce')" class="groq-tf-btn">📋 Annonce</button>
+          <button onclick="groqTransform('evenement')" class="groq-tf-btn">📅 Evenement</button>
+        </div>
+      </div>
+      <div id="gm-img" style="display:none;">
+        <label style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px;background:rgba(255,255,255,.05);border:2px dashed rgba(124,58,237,.4);border-radius:8px;cursor:pointer;margin-bottom:10px;">
+          <svg viewBox="0 0 24 24" width="32" height="32" style="stroke:rgba(167,139,250,.7);fill:none;stroke-width:1.5;stroke-linecap:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span style="font-family:Barlow Condensed,sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(167,139,250,.7);">Photo, prospectus, affiche...</span>
+          <input type="file" id="groq-img-file" accept="image/*" style="display:none;" onchange="previewGroqImg(this)">
+        </label>
+        <img id="groq-img-prev" style="width:100%;max-height:150px;object-fit:cover;border-radius:8px;display:none;margin-bottom:10px;">
+        <input id="groq-img-context" placeholder="Contexte optionnel..." style="width:100%;padding:10px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:Barlow,sans-serif;font-size:.88rem;outline:none;margin-bottom:10px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="groqFromImg('actu')" class="groq-tf-btn">📰 Actu</button>
+          <button onclick="groqFromImg('annonce')" class="groq-tf-btn">📋 Annonce</button>
+          <button onclick="groqFromImg('evenement')" class="groq-tf-btn">📅 Evenement</button>
+        </div>
+      </div>
+      <div class="groq-result" id="groq-result" style="margin-top:14px;">
+        <div id="groq-result-type" style="font-family:Barlow Condensed,sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,.7);margin-bottom:6px;"></div>
         <div class="groq-result-titre" id="groq-titre"></div>
         <div class="groq-result-body" id="groq-body"></div>
-        <button class="groq-pub-btn" onclick="pubGroqActu()">✅ Publier cette actu</button>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="groq-pub-btn" onclick="pubGroqContent()">Publier</button>
+          <button onclick="document.getElementById('groq-result').classList.remove('visible')" style="padding:10px 16px;background:rgba(255,255,255,.1);border:none;border-radius:8px;color:rgba(255,255,255,.6);font-family:Barlow Condensed,sans-serif;font-size:.75rem;cursor:pointer;">Annuler</button>
+        </div>
       </div>
       <div class="groq-msg" id="groq-msg"></div>
     </div>
@@ -516,8 +556,103 @@ async function loadGroqLog(){
 }
 
 
+// GROQ STUDIO
+const GROQ_KEY=atob('Z3NrX2xxaWk1aDJlaWNQYk5POU5ubUFHV0dkeWIzRllFZDlPMDBBeXk0SWpRR0xJbml6TzA5TXc=');
+let groqResult={titre:'',contenu:'',cat:'',type:'actu'};
+let _chatHist=[];
+let _groqImgFile=null;
+
+function setGroqMode(m){
+  ['chat','text','img'].forEach(x=>{
+    document.getElementById('gm-'+x).style.display=x===m?'':'none';
+    document.getElementById('gmode-'+x).classList.toggle('active',x===m);
+  });
+}
+async function sendGroqChat(){
+  const inp=document.getElementById('groq-chat-input');
+  const msg=inp.value.trim();if(!msg)return;
+  const btn=document.getElementById('gchat-btn');btn.disabled=true;inp.value='';
+  addChatBubble('user',msg);_chatHist.push({role:'user',content:msg});
+  try{
+    const sys=`Tu es assistant du CQP Toulouse (quartiers: Mirail, Empalot, Reynerie, Bagatelle, Bellefontaine, Basso Cambo). Tu generes du contenu pour les habitants. Quand tu as assez d'infos, propose de transformer en actu/annonce/evenement. Si tu generes du contenu reponds avec JSON: {"action":"generer","type":"actu|annonce|evenement","titre":"...","contenu":"...","categorie":"..."} sinon reponds normalement.`;
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_KEY}`},body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'system',content:sys},..._chatHist],temperature:0.7,max_tokens:800})});
+    if(!r.ok)throw new Error(r.statusText);
+    const d=await r.json();const reply=d.choices[0].message.content;
+    _chatHist.push({role:'assistant',content:reply});
+    try{const j=JSON.parse(reply.replace(/```json?|```/g,'').trim());if(j.action==='generer'&&j.titre){addChatBubble('ai','Contenu genere! Voir ci-dessous.');showGroqResult(j.type||'actu',j.titre,j.contenu||'',j.categorie||'Social');}else addChatBubble('ai',reply);}
+    catch{addChatBubble('ai',reply);}
+  }catch(e){addChatBubble('ai','Erreur: '+String(e));}
+  btn.disabled=false;
+}
+function addChatBubble(role,text){
+  const h=document.getElementById('groq-chat-hist');
+  const d=document.createElement('div');
+  d.style.cssText=`padding:8px 12px;border-radius:8px;font-size:.85rem;line-height:1.5;max-width:90%;align-self:${role==='user'?'flex-end':'flex-start'};background:${role==='user'?'rgba(124,58,237,.3)':'rgba(255,255,255,.08)'};color:${role==='user'?'#e0d4ff':'rgba(255,255,255,.9)'};`;
+  d.textContent=text;h.appendChild(d);h.scrollTop=h.scrollHeight;
+}
+async function groqTransform(type){
+  const text=document.getElementById('groq-paste-text').value.trim();
+  if(!text){document.getElementById('groq-msg').textContent='Collez un texte.';return;}
+  const lbl={actu:'actualite',annonce:'annonce',evenement:'evenement'}[type];
+  document.getElementById('groq-msg').textContent='Transformation...';
+  try{
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_KEY}`},body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'user',content:`Transforme ce texte en ${lbl} pour les quartiers populaires de Toulouse. Texte: "${text.slice(0,2000)}"\nJSON UNIQUEMENT: {"titre":"[max 10 mots]","contenu":"[150-250 mots]","categorie":"[Politique|Logement|Social|Culture|Emploi|Securite]"}`}],temperature:0.6,max_tokens:700})});
+    if(!r.ok)throw new Error(r.statusText);
+    const d=await r.json();const j=JSON.parse(d.choices[0].message.content.replace(/```json?|```/g,'').trim());
+    showGroqResult(type,j.titre,j.contenu,j.categorie);document.getElementById('groq-msg').textContent='';
+  }catch(e){document.getElementById('groq-msg').textContent='Erreur: '+String(e);}
+}
+function previewGroqImg(inp){
+  _groqImgFile=inp.files[0]||null;const p=document.getElementById('groq-img-prev');
+  if(_groqImgFile){p.src=URL.createObjectURL(_groqImgFile);p.style.display='block';}else p.style.display='none';
+}
+async function groqFromImg(type){
+  if(!_groqImgFile){document.getElementById('groq-msg').textContent='Uploadez une image.';return;}
+  const ctx=document.getElementById('groq-img-context').value.trim();
+  const lbl={actu:'actualite',annonce:'annonce',evenement:'evenement'}[type];
+  document.getElementById('groq-msg').textContent='Analyse...';
+  try{
+    const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(_groqImgFile);});
+    const prompt=`Analyse cette image${ctx?' (contexte: '+ctx+')':''} et genere une ${lbl} pour les quartiers populaires de Toulouse. JSON UNIQUEMENT: {"titre":"[max 10 mots]","contenu":"[150-250 mots]","categorie":"[Politique|Logement|Social|Culture|Emploi|Securite]"}`;
+    let j=null;
+    // Essayer avec vision d'abord
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_KEY}`},body:JSON.stringify({model:'meta-llama/llama-4-scout-17b-16e-instruct',messages:[{role:'user',content:[{type:'text',text:prompt},{type:'image_url',image_url:{url:`data:${_groqImgFile.type};base64,${b64}`}}]}],temperature:0.6,max_tokens:700})}).catch(()=>null);
+    if(r&&r.ok){const d=await r.json();try{j=JSON.parse(d.choices[0].message.content.replace(/```json?|```/g,'').trim());}catch{}}
+    if(!j){
+      // Fallback texte
+      const r2=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_KEY}`},body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'user',content:`Genere une ${lbl} sur${ctx?' "'+ctx+'"':' ce sujet'} pour les quartiers populaires de Toulouse. JSON UNIQUEMENT: {"titre":"[max 10 mots]","contenu":"[150-250 mots]","categorie":"[Politique|Logement|Social|Culture|Emploi|Securite]"}`}],temperature:0.6,max_tokens:700})});
+      if(!r2.ok)throw new Error(r2.statusText);
+      const d2=await r2.json();j=JSON.parse(d2.choices[0].message.content.replace(/```json?|```/g,'').trim());
+    }
+    showGroqResult(type,j.titre,j.contenu,j.categorie);document.getElementById('groq-msg').textContent='';
+  }catch(e){document.getElementById('groq-msg').textContent='Erreur: '+String(e);}
+}
+function showGroqResult(type,titre,contenu,categorie){
+  groqResult={titre,contenu,cat:categorie||'Social',type};
+  const lbl={actu:'Actualite',annonce:'Annonce',evenement:'Evenement'};
+  document.getElementById('groq-result-type').textContent=lbl[type]||'Contenu';
+  document.getElementById('groq-titre').textContent=titre;
+  document.getElementById('groq-body').textContent=contenu;
+  document.getElementById('groq-result').classList.add('visible');
+}
+async function pubGroqContent(){
+  const{titre,contenu,cat,type}=groqResult;if(!titre)return;
+  try{
+    if(type==='actu')await sb.from('actus').insert({titre,contenu,categorie:cat,visible:true,date_publication:new Date().toISOString()});
+    else if(type==='annonce')await sb.from('annonces').insert({titre,description:contenu,categorie:cat,validee:false,prenom:'Admin CQP',nom:'',email:'admin@cqp-toulouse.fr'});
+    else if(type==='evenement')await sb.from('evenements').insert({titre,description:contenu,categorie:cat,visible:true,validee:true,date_debut:new Date(Date.now()+7*86400000).toISOString()});
+    document.getElementById('groq-msg').textContent='Publie!';document.getElementById('groq-msg').style.color='var(--green)';
+    document.getElementById('groq-result').classList.remove('visible');
+    loaded.actus=false;loadTab('actus');loadStats();
+    setTimeout(()=>document.getElementById('groq-msg').textContent='',3000);
+  }catch(e){document.getElementById('groq-msg').textContent='Erreur: '+String(e);}
+}
+async function pubGroqActu(){groqResult.type='actu';return pubGroqContent();}
+
 // GROQ
-let groqResult={titre:'',contenu:'',cat:''};
+let _groqResultLegacy={titre:'',contenu:'',cat:''};
+// GROQ_COMPAT
+let groqResult_={titre:'',contenu:'',cat:''};
 async function genGroq(){
   const topic=document.getElementById('groq-topic').value.trim();
   const cat=document.getElementById('groq-cat').value;
@@ -558,7 +693,8 @@ Format JSON strict (UNIQUEMENT du JSON, pas de texte avant ou après) :
     msg.textContent='Erreur Groq — vérifiez la clé API.';
   }finally{btn.disabled=false;btn.textContent='✨ Générer';}
 }
-async function pubGroqActu(){
+async function pubGroqActu(){groqResult.type="actu";return pubGroqContent();}
+async function _pubGroqActuLegacy(){
   if(!groqResult.titre)return;
   try{
     await sb.from('actus').insert({titre:groqResult.titre,contenu:groqResult.contenu,categorie:groqResult.cat,visible:true,date_publication:new Date().toISOString()});
