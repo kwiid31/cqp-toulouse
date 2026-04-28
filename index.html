@@ -509,7 +509,6 @@ const sb=supabase.createClient(SBU,SBK);
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
 // IDENTITÉ PERMANENTE : code 4 chiffres du profil
 const getCode=()=>localStorage.getItem('cqp_code')||null;
-const getPrenom=()=>localStorage.getItem('cqp_prenom')||'';
 // session_id : juste pour nommer les fichiers storage
 const getSid=()=>{try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Date.now();}};
 const savePrenom=v=>{try{if(v.trim())localStorage.setItem('cqp_prenom',v.trim());}catch{}};
