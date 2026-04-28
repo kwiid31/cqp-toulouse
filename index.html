@@ -1236,33 +1236,39 @@ async function submitEvtPub(){
 //  INIT
 // ═══════════════════════════════════════════════════════════
 async function init(){
-  // ── VÉRIFICATION CONNEXION ────────────────────────────────────────────────
+  // ── VÉRIFICATION CONNEXION (localStorage = instantané) ──────────────────
   const _pCode=localStorage.getItem('cqp_code');
   if(!_pCode){window.location.href='profil.html';return;}
 
-  // ── CHARGEMENT PROFIL depuis BDD (source de vérité) ─────────────────────
-  const{data:_pd}=await sb.from('profils').select('*').eq('code',_pCode).limit(1);
-  if(!_pd?.length){localStorage.removeItem('cqp_code');localStorage.removeItem('cqp_prenom');window.location.href='profil.html';return;}
-  window._profil=_pd[0];
-  const _prenom=_pd[0].prenom||'';
-  localStorage.setItem('cqp_prenom',_prenom);
-
-  // ── VERROUILLER TOUS LES CHAMPS PRÉNOM (source = profil BDD) ───────────
-  const _lockAll=()=>{
+  // ── CHARGER LE FEED IMMÉDIATEMENT (pas d'attente BDD) ───────────────────
+  // Utiliser le prénom en cache localStorage pour ne pas bloquer
+  const _prenomCache=localStorage.getItem('cqp_prenom')||'';
+  const _lockAll=(prenom)=>{
     ['sp-prenom','an-prenom','pe-prenom','sheet-prenom','pub-prenom','post-prenom','story-prenom'].forEach(id=>{
       const el=document.getElementById(id);
-      if(el){el.value=_prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;pointer-events:none;';}
+      if(el&&prenom){el.value=prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;pointer-events:none;';}
     });
   };
-  _lockAll();
-  document.addEventListener('click',()=>setTimeout(_lockAll,80));
+  if(_prenomCache)_lockAll(_prenomCache);
+  document.addEventListener('click',()=>setTimeout(()=>_lockAll(localStorage.getItem('cqp_prenom')||''),80));
 
-  // ── AVATAR COMPOSER ──────────────────────────────────────────────────────
-  const _av=document.getElementById('composer-av');
-  if(_av){
-    if(_pd[0].photo_url)_av.innerHTML=`<img src="${_pd[0].photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-    else _av.textContent=(_prenom||'?')[0].toUpperCase();
-  }
+  // ── CHARGER PROFIL EN ARRIÈRE-PLAN (sans bloquer l'affichage) ───────────
+  sb.from('profils').select('*').eq('code',_pCode).limit(1).then(({data:_pd})=>{
+    if(!_pd?.length){
+      // Code invalide → déco silencieuse (ne pas bloquer si pb réseau)
+      return;
+    }
+    window._profil=_pd[0];
+    const _prenom=_pd[0].prenom||'';
+    localStorage.setItem('cqp_prenom',_prenom);
+    _lockAll(_prenom);
+    // Avatar composer
+    const _av=document.getElementById('composer-av');
+    if(_av){
+      if(_pd[0].photo_url)_av.innerHTML=`<img src="${_pd[0].photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      else _av.textContent=(_prenom||'?')[0].toUpperCase();
+    }
+  }).catch(()=>{});
   // Charger le profil et verrouiller le prénom
   sb.from('profils').select('prenom,quartier,photo_url,session_id').eq('code',_pCode).limit(1).then(({data})=>{
     if(data?.length){
