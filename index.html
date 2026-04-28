@@ -373,7 +373,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
     <button class="c-trigger" onclick="openComposer()">Quoi de neuf dans ton quartier ?</button>
   </div>
   <div class="composer-expand" id="c-expand">
-    <input class="c-name" id="c-name" placeholder="Votre prénom" maxlength="30" oninput="updateCAv(this.value)">
+    <input class="c-name" id="c-name" placeholder="Votre prénom" maxlength="30" readonly style="pointer-events:none;background:var(--bg3);color:var(--txt2);" oninput="updateCAv(this.value)">
     <textarea class="c-text" id="c-text" rows="3" placeholder="Partagez une info, une question…"></textarea>
     <img id="c-photo-prev" class="c-photo-prev">
     <div class="c-foot">
@@ -934,7 +934,7 @@ function togglePub(e){
   if(!code){e?.preventDefault();window.location.href='profil.html';return;}
   // Pré-remplir le prénom depuis le profil (verrouillé)
   const prenom=localStorage.getItem('cqp_prenom')||'';
-  ['pub-prenom','post-prenom','story-prenom'].forEach(id=>{
+  ['c-name','pub-prenom','post-prenom','story-prenom'].forEach(id=>{
     const inp=document.getElementById(id);
     if(inp){inp.value=prenom;inp.readOnly=true;inp.style.cssText='background:var(--bg3);color:var(--txt3);cursor:default;';}
   });
@@ -1243,7 +1243,7 @@ async function init(){
   // Utiliser le prénom en cache localStorage pour ne pas bloquer
   const _prenomCache=localStorage.getItem('cqp_prenom')||'';
   const _lockAll=(prenom)=>{
-    ['sp-prenom','an-prenom','pe-prenom','sheet-prenom','pub-prenom','post-prenom','story-prenom'].forEach(id=>{
+    ['c-name','sp-prenom','an-prenom','pe-prenom','sheet-prenom','pub-prenom','post-prenom','story-prenom'].forEach(id=>{
       const el=document.getElementById(id);
       if(el&&prenom){el.value=prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;pointer-events:none;';}
     });
@@ -1275,7 +1275,7 @@ async function init(){
       const prenom=data[0].prenom||'';
       localStorage.setItem('cqp_prenom',prenom);
       // Pré-remplir et verrouiller TOUS les champs prénom
-      ['sp-prenom','an-prenom','pe-prenom','sheet-prenom','pub-prenom','post-prenom'].forEach(id=>{
+      ['c-name','sp-prenom','an-prenom','pe-prenom','sheet-prenom','pub-prenom','post-prenom'].forEach(id=>{
         const el=document.getElementById(id);
         if(el){el.value=prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;border-color:var(--border,#CED0D4);';}
       });

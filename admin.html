@@ -556,8 +556,21 @@ async function loadGroqLog(){
 }
 
 
+
+// Appel Groq via Edge Function Supabase (clé sécurisée côté serveur)
+const EFN='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/groq-auto';
+async function groqViaEF(messages,prompt){
+  const body={};
+  if(messages&&messages.length)body.messages=messages;
+  if(prompt)body.prompt=prompt;
+  const r=await fetch(EFN+'?mode=chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error('EF erreur '+r.status);
+  const d=await r.json();
+  if(!d.ok)throw new Error(d.error||'Erreur inconnue');
+  return d.reply;
+}
 // GROQ STUDIO
-const GROQ_KEY=atob('Z3NrX2xxaWk1aDJlaWNQYk5POU5ubUFHV0dkeWIzRllFZDlPMDBBeXk0SWpRR0xJbml6TzA5TXc=');
+// GROQ_KEY supprimée - appels via Edge Function Supabase
 let groqResult={titre:'',contenu:'',cat:'',type:'actu'};
 let _chatHist=[];
 let _groqImgFile=null;
@@ -572,16 +585,19 @@ async function sendGroqChat(){
   const inp=document.getElementById('groq-chat-input');
   const msg=inp.value.trim();if(!msg)return;
   const btn=document.getElementById('gchat-btn');btn.disabled=true;inp.value='';
-  addChatBubble('user',msg);_chatHist.push({role:'user',content:msg});
+  addChatBubble('user',msg);
+  const sys=`Tu es assistant du CQP Toulouse (quartiers: Mirail, Empalot, Reynerie, Bagatelle, Bellefontaine, Basso Cambo). Tu generes du contenu pour les habitants. Quand tu generes du contenu reponds UNIQUEMENT avec JSON: {"action":"generer","type":"actu|annonce|evenement","titre":"...","contenu":"...","categorie":"..."} sinon reponds normalement en francais.`;
+  _chatHist.push({role:'user',content:msg});
   try{
-    const sys=`Tu es assistant du CQP Toulouse (quartiers: Mirail, Empalot, Reynerie, Bagatelle, Bellefontaine, Basso Cambo). Tu generes du contenu pour les habitants. Quand tu as assez d'infos, propose de transformer en actu/annonce/evenement. Si tu generes du contenu reponds avec JSON: {"action":"generer","type":"actu|annonce|evenement","titre":"...","contenu":"...","categorie":"..."} sinon reponds normalement.`;
-    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_KEY}`},body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'system',content:sys},..._chatHist],temperature:0.7,max_tokens:800})});
-    if(!r.ok)throw new Error(r.statusText);
-    const d=await r.json();const reply=d.choices[0].message.content;
+    const allMsgs=[{role:'system',content:sys},..._chatHist];
+    const reply=await groqViaEF(allMsgs);
     _chatHist.push({role:'assistant',content:reply});
-    try{const j=JSON.parse(reply.replace(/```json?|```/g,'').trim());if(j.action==='generer'&&j.titre){addChatBubble('ai','Contenu genere! Voir ci-dessous.');showGroqResult(j.type||'actu',j.titre,j.contenu||'',j.categorie||'Social');}else addChatBubble('ai',reply);}
-    catch{addChatBubble('ai',reply);}
-  }catch(e){addChatBubble('ai','Erreur: '+String(e));}
+    try{
+      const j=JSON.parse(reply.replace(/```json?|```/g,'').trim());
+      if(j.action==='generer'&&j.titre){addChatBubble('ai','✅ Contenu généré ! Voir ci-dessous.');showGroqResult(j.type||'actu',j.titre,j.contenu||'',j.categorie||'Social');}
+      else addChatBubble('ai',reply);
+    }catch{addChatBubble('ai',reply);}
+  }catch(e){addChatBubble('ai','❌ Erreur: '+String(e));}
   btn.disabled=false;
 }
 function addChatBubble(role,text){
@@ -594,12 +610,13 @@ async function groqTransform(type){
   const text=document.getElementById('groq-paste-text').value.trim();
   if(!text){document.getElementById('groq-msg').textContent='Collez un texte.';return;}
   const lbl={actu:'actualite',annonce:'annonce',evenement:'evenement'}[type];
-  document.getElementById('groq-msg').textContent='Transformation...';
+  document.getElementById('groq-msg').textContent='Transformation en cours...';
   try{
-    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_KEY}`},body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'user',content:`Transforme ce texte en ${lbl} pour les quartiers populaires de Toulouse. Texte: "${text.slice(0,2000)}"\nJSON UNIQUEMENT: {"titre":"[max 10 mots]","contenu":"[150-250 mots]","categorie":"[Politique|Logement|Social|Culture|Emploi|Securite]"}`}],temperature:0.6,max_tokens:700})});
-    if(!r.ok)throw new Error(r.statusText);
-    const d=await r.json();const j=JSON.parse(d.choices[0].message.content.replace(/```json?|```/g,'').trim());
-    showGroqResult(type,j.titre,j.contenu,j.categorie);document.getElementById('groq-msg').textContent='';
+    const prompt=`Transforme ce texte en ${lbl} pour les habitants des quartiers populaires de Toulouse. Ton accessible et militant.\nTexte: "${text.slice(0,2000)}"\nJSON UNIQUEMENT: {"titre":"[max 10 mots]","contenu":"[150-250 mots]","categorie":"[Politique|Logement|Social|Culture|Emploi|Securite]"}`;
+    const reply=await groqViaEF(null,prompt);
+    const j=JSON.parse(reply.replace(/```json?|```/g,'').trim());
+    showGroqResult(type,j.titre,j.contenu,j.categorie);
+    document.getElementById('groq-msg').textContent='';
   }catch(e){document.getElementById('groq-msg').textContent='Erreur: '+String(e);}
 }
 function previewGroqImg(inp){
@@ -651,6 +668,202 @@ async function pubGroqActu(){groqResult.type='actu';return pubGroqContent();}
 
 // GROQ
 let _groqResultLegacy={titre:'',contenu:'',cat:''};
+async function loadActus(){
+  const{data}=await sb.from('actus').select('*').order('date_publication',{ascending:false}).limit(50);
+  const el=document.getElementById('list-actus');
+  if(!data?.length){el.innerHTML='<div class="load">Aucune actualité</div>';return;}
+  el.innerHTML=data.map(a=>`
+    <div class="item">
+      ${a.photo_url?`<img class="item-thumb" src="${esc(a.photo_url)}" loading="lazy">`:'<div class="item-thumb"></div>'}
+      <div class="item-info">
+        <div class="item-title">${esc(a.titre)}</div>
+        <div class="item-meta">
+          <span class="badge ${a.visible?'on':'off'}">${a.visible?'Publié':'Masqué'}</span>
+          <span>${esc(a.categorie||'')}</span>
+          <span>${timeAgo(a.date_publication)}</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act ${a.visible?'act-hide':'act-pub'}" onclick="toggleVis('actus','visible',${a.id},${a.visible})">${a.visible?'Masquer':'Publier'}</button>
+        <button class="act act-del" onclick="delItem('actus',${a.id},'actus')">Supprimer</button>
+      </div>
+    </div>`).join('');
+}
+async function saveActu(){
+  const titre=document.getElementById('fa-titre').value.trim();
+  const contenu=document.getElementById('fa-contenu').value.trim();
+  const cat=document.getElementById('fa-cat').value;
+  const dateVal=document.getElementById('fa-date').value;
+  const visible=document.getElementById('fa-vis').value==='true';
+  const photo=document.getElementById('fa-photo').files[0];
+  const msg=document.getElementById('fa-msg');
+  if(!titre||!contenu){msg.textContent='Titre et contenu obligatoires.';msg.style.color='#ff4444';return;}
+  msg.textContent='Publication…';msg.style.color='var(--txt3)';
+  try{
+    const photo_url=photo?await uploadImg(photo,'site-photos'):null;
+    await sb.from('actus').insert({titre,contenu,categorie:cat,date_publication:dateVal?new Date(dateVal).toISOString():new Date().toISOString(),visible,...(photo_url&&{photo_url})});
+    msg.textContent='✅ Publié !';msg.style.color='#42B72A';
+    setTimeout(()=>{togglePanel('fp-actu');loaded.actus=false;loadTab('actus');loadStats();msg.textContent='';},1500);
+  }catch(e){msg.textContent='Erreur : '+e.message;msg.style.color='#ff4444';}
+}
+
+// ÉVÉNEMENTS
+async function loadEvts(){
+  const{data}=await sb.from('evenements').select('*').order('date_debut',{ascending:false}).limit(50);
+  const el=document.getElementById('list-evts');
+  if(!data?.length){el.innerHTML='<div class="load">Aucun événement</div>';return;}
+  el.innerHTML=data.map(e=>{
+    const d=new Date(e.date_debut);
+    return `<div class="item">
+      ${e.photo_url?`<img class="item-thumb" src="${esc(e.photo_url)}" loading="lazy">`:'<div class="item-thumb"></div>'}
+      <div class="item-info">
+        <div class="item-title">${esc(e.titre)}</div>
+        <div class="item-meta">
+          <span class="badge ${e.validee?'on':'wait'}">${e.validee?'Visible':'En attente'}</span>
+          <span>${d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})}</span>
+          <span>${esc(e.lieu||'')}</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act ${e.validee?'act-hide':'act-val'}" onclick="toggleVis('evenements','validee',${e.id},${e.validee})">${e.validee?'Masquer':'Valider'}</button>
+        <button class="act act-del" onclick="delItem('evenements',${e.id},'evts')">Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function saveEvt(){
+  const titre=document.getElementById('fe-titre').value.trim();
+  const debut=document.getElementById('fe-debut').value;
+  const fin=document.getElementById('fe-fin').value;
+  const lieu=document.getElementById('fe-lieu').value.trim();
+  const cat=document.getElementById('fe-cat').value;
+  const desc=document.getElementById('fe-desc').value.trim();
+  const places=parseInt(document.getElementById('fe-places').value)||0;
+  const org=document.getElementById('fe-org').value.trim();
+  const photo=document.getElementById('fe-photo').files[0];
+  const msg=document.getElementById('fe-msg');
+  if(!titre||!debut){msg.textContent='Titre et date obligatoires.';msg.style.color='#ff4444';return;}
+  msg.textContent='Création…';msg.style.color='var(--txt3)';
+  try{
+    const photo_url=photo?await uploadImg(photo,'site-photos'):null;
+    await sb.from('evenements').insert({titre,description:desc||'',lieu:lieu||'',date_debut:new Date(debut).toISOString(),date_fin:fin?new Date(fin).toISOString():null,categorie:cat,places_max:places,propose_par:org||null,visible:true,validee:true,...(photo_url&&{photo_url})});
+    msg.textContent='✅ Créé !';msg.style.color='#42B72A';
+    setTimeout(()=>{togglePanel('fp-evt');loaded.evts=false;loadTab('evts');loadStats();msg.textContent='';},1500);
+  }catch(e){msg.textContent='Erreur : '+e.message;msg.style.color='#ff4444';}
+}
+
+// ANNONCES
+async function loadAnn(){
+  const{data}=await sb.from('annonces').select('*').order('date_depot',{ascending:false}).limit(60);
+  const el=document.getElementById('list-ann');
+  if(!data?.length){el.innerHTML='<div class="load">Aucune annonce</div>';return;}
+  el.innerHTML=data.map(a=>`
+    <div class="item">
+      <div class="item-info">
+        <div class="item-title">${esc(a.titre)}</div>
+        <div class="item-meta">
+          <span class="badge ${a.validee?'on':'wait'}">${a.validee?'Validée':'En attente'}</span>
+          <span>${esc(a.prenom||'')} · ${esc(a.quartier||'')}</span>
+          <span>${timeAgo(a.date_depot)}</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act ${a.validee?'act-hide':'act-val'}" onclick="toggleVis('annonces','validee',${a.id},${a.validee})">${a.validee?'Masquer':'Valider'}</button>
+        <button class="act act-del" onclick="delItem('annonces',${a.id},'ann')">Supprimer</button>
+      </div>
+    </div>`).join('');
+}
+
+// POSTS
+async function loadPosts(){
+  const{data}=await sb.from('posts').select('*').order('created_at',{ascending:false}).limit(60);
+  const el=document.getElementById('list-posts');
+  if(!data?.length){el.innerHTML='<div class="load">Aucun post</div>';return;}
+  el.innerHTML=data.map(p=>`
+    <div class="item">
+      ${p.photo_url?`<img class="item-thumb" src="${esc(p.photo_url)}" loading="lazy">`:''}
+      <div class="item-info">
+        <div class="item-title">${esc((p.contenu||'Photo').substring(0,80))}${(p.contenu||'').length>80?'…':''}</div>
+        <div class="item-meta">
+          <span class="badge ${p.visible?'on':'off'}">${p.visible?'Visible':'Masqué'}</span>
+          <span>${esc(p.prenom||'Anonyme')}</span>
+          <span>${timeAgo(p.created_at)}</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act ${p.visible?'act-hide':'act-pub'}" onclick="toggleVis('posts','visible',${p.id},${p.visible})">${p.visible?'Masquer':'Montrer'}</button>
+        <button class="act act-del" onclick="delItem('posts',${p.id},'posts')">Supprimer</button>
+      </div>
+    </div>`).join('');
+}
+
+// STORIES
+async function loadStories(){
+  const{data}=await sb.from('stories').select('*').order('created_at',{ascending:false}).limit(50);
+  const el=document.getElementById('list-stories');
+  if(!data?.length){el.innerHTML='<div class="load">Aucune story</div>';return;}
+  el.innerHTML=data.map(s=>`
+    <div class="item">
+      ${s.photo_url?`<img class="item-thumb story" src="${esc(s.photo_url)}" loading="lazy">`:'<div class="item-thumb story"></div>'}
+      <div class="item-info">
+        <div class="item-title">${esc(s.prenom||'Anonyme')} · ${s.media_type==='video'?'🎬 Vidéo':'📷 Photo'}</div>
+        <div class="item-meta">
+          <span class="badge ${s.visible?'on':'off'}">${s.visible?'Visible':'Masquée'}</span>
+          <span>${timeAgo(s.created_at)}</span>
+          ${s.views?`<span>${s.views} vues</span>`:''}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act ${s.visible?'act-hide':'act-pub'}" onclick="toggleVis('stories','visible',${s.id},${s.visible})">${s.visible?'Masquer':'Valider'}</button>
+        <button class="act act-del" onclick="delItem('stories',${s.id},'stories')">Supprimer</button>
+      </div>
+    </div>`).join('');
+}
+
+// ADHÉRENTS
+async function loadAdh(){
+  const{data}=await sb.from('adherents').select('*').order('date_inscription',{ascending:false}).limit(100);
+  const el=document.getElementById('list-adh');
+  if(!data?.length){el.innerHTML='<div class="load">Aucun adhérent</div>';return;}
+  el.innerHTML=data.map(a=>`
+    <div class="item">
+      <div class="item-info">
+        <div class="item-title">${esc(a.prenom||'')} ${esc(a.nom||'')}</div>
+        <div class="item-meta"><span>${esc(a.email||'')}</span><span>${esc(a.quartier||'')}</span><span>${timeAgo(a.date_inscription)}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+// À PROPOS
+async function loadApropos(){
+  try{
+    const{data}=await sb.from('site_config').select('value').eq('key','apropos').single();
+    if(data)document.getElementById('ap-text').value=data.value||'';
+  }catch{}
+}
+async function saveApropos(){
+  const val=document.getElementById('ap-text').value.trim();
+  const msg=document.getElementById('ap-msg');
+  if(!val){msg.textContent='Contenu vide.';msg.style.color='#ff4444';return;}
+  try{
+    await sb.from('site_config').upsert({key:'apropos',value:val,updated_at:new Date().toISOString()},{onConflict:'key'});
+    msg.textContent='✅ Mis à jour !';msg.style.color='#42B72A';
+    setTimeout(()=>msg.textContent='',3000);
+  }catch(e){msg.textContent='Erreur.';msg.style.color='#ff4444';}
+}
+
+// TOGGLE / DELETE
+async function toggleVis(table,col,id,current){
+  await sb.from(table).update({[col]:!current}).eq('id',id);
+  const tab=table==='evenements'?'evts':table==='annonces'?'ann':table==='adherents'?'adh':table;
+  loaded[tab]=false;loadTab(tab);loadStats();
+}
+async function delItem(table,id,tab){
+  if(!confirm('Supprimer définitivement ?'))return;
+  await sb.from(table).delete().eq('id',id);
+  loaded[tab]=false;loadTab(tab);loadStats();
+}
+
 function init(){
   loaded.actus=true;loadActus();
   loadStats();setInterval(loadStats,30000);
