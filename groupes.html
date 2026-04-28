@@ -210,12 +210,11 @@ let allGroupes=[],curFilter='',curGroupe=null,mesGroupes=new Set(),_msgPhoto=nul
 async function loadGroupes(){
   const{data}=await sb.from('groupes').select('*').eq('visible',true).order('membres_count',{ascending:false});
   allGroupes=data||[];
-  // Charger mes groupes via code profil (priorité) ou session_id
+  // Charger mes groupes par profil_code (identité permanente)
   const pCode=getProfilCode();
-  let mbrQuery=pCode
-    ? sb.from('groupe_membres').select('groupe_id').eq('profil_code',pCode)
-    : sb.from('groupe_membres').select('groupe_id').eq('session_id',getSid());
-  const{data:mbr}=await mbrQuery;
+  const{data:mbr}=pCode
+    ? await sb.from('groupe_membres').select('groupe_id').eq('profil_code',pCode)
+    : {data:[]};
   mesGroupes=new Set((mbr||[]).map(m=>m.groupe_id));
   renderGroupes(allGroupes);
 }
@@ -268,9 +267,12 @@ async function toggleMembre(groupeId,nom){
     } else {
       // upsert pour éviter doublon
       const pCode=getProfilCode();
-    const memberData={groupe_id:groupeId,session_id:sid,prenom};
-    if(pCode)memberData.profil_code=pCode;
-    await sb.from('groupe_membres').upsert(memberData,{onConflict:'groupe_id,session_id'});
+    if(!pCode){alert('Connecte-toi d\'abord depuis la page Profil.');return;}
+    // Upsert par profil_code — la contrainte unique est sur (groupe_id, profil_code)
+    await sb.from('groupe_membres').upsert(
+      {groupe_id:groupeId,profil_code:pCode,session_id:sid,prenom},
+      {onConflict:'groupe_id,session_id'}
+    );
       mesGroupes.add(groupeId);
       const g=allGroupes.find(x=>x.id===groupeId);
       if(g){g.membres_count=(g.membres_count||1)+1;await sb.from('groupes').update({membres_count:g.membres_count}).eq('id',groupeId);}
@@ -310,9 +312,10 @@ async function createGroupe(){
     const{data,error}=await sb.from('groupes').insert({nom,categorie:cat,quartier:quartier||null,description:desc||null,created_by:getSid(),created_by_prenom:prenom,membres_count:1}).select().single();
     if(error)throw error;
     const pcCreate=getProfilCode();
-    const newMbr={groupe_id:data.id,session_id:getSid(),prenom};
-    if(pcCreate)newMbr.profil_code=pcCreate;
-    await sb.from('groupe_membres').insert(newMbr).catch(()=>{});
+    await sb.from('groupe_membres').insert({
+      groupe_id:data.id,session_id:getSid(),prenom,
+      profil_code:pcCreate||null
+    }).catch(()=>{});
     mesGroupes.add(data.id);
     try{localStorage.setItem('cqp_prenom',prenom);}catch{}
     msg.textContent='✅ Groupe créé !';msg.style.color='var(--green)';
@@ -385,7 +388,13 @@ async function doOpenGroupe(id,profil){
   document.getElementById('gv-members').textContent=`${EMOJIS[g.categorie]||'💬'} ${g.membres_count||1} membre${(g.membres_count||1)>1?'s':''}`;
   document.getElementById('gv').classList.add('open');
   document.body.style.overflow='hidden';
-  const isMembre=mesGroupes.has(id);
+  // Vérifier membership en BDD (pas juste en mémoire)
+  const pCode=getProfilCode();
+  let isMembre=mesGroupes.has(id);
+  if(pCode&&!isMembre){
+    const{data:chk}=await sb.from('groupe_membres').select('id').eq('groupe_id',id).eq('profil_code',pCode).limit(1);
+    if(chk?.length){isMembre=true;mesGroupes.add(id);}
+  }
   document.getElementById('gv-footer').style.display=isMembre?'':'none';
   loadMessages(id,profil);
   // Realtime — messages instantanés
@@ -419,7 +428,9 @@ async function loadMessages(groupeId,profil){
   el.scrollTop=el.scrollHeight;
 }
 function renderMsg(m,sid){
-  const mine=m.session_id===sid;
+  // Mine si même profil_code OU même session_id (fallback)
+  const myCode=getProfilCode();
+  const mine=myCode?(m.profil_code===myCode):(m.session_id===sid);
   const av=m.photo_profil?`<img src="${esc(m.photo_profil)}">`:(m.prenom||'?')[0].toUpperCase();
   const img=m.photo_url?`<img class="msg-img" src="${esc(m.photo_url)}" loading="lazy">`:'';
   const txt=m.contenu?`<div class="msg-text">${esc(m.contenu)}</div>`:'';
@@ -471,7 +482,7 @@ async function sendMessage(){
   input.value='';
   document.getElementById('gv-photo-prev').style.display='none';
   document.getElementById('gv-photo-file').value='';_msgPhoto=null;
-  await sb.from('groupe_messages').insert({groupe_id:curGroupe.id,session_id:sid,prenom,contenu:contenu||null,photo_url,photo_profil,visible:true});
+  await sb.from('groupe_messages').insert({groupe_id:curGroupe.id,session_id:sid,prenom,contenu:contenu||null,photo_url,photo_profil,profil_code:getProfilCode(),visible:true});
   try{localStorage.setItem('cqp_prenom',prenom);}catch{}
 }
 async function joinAndRefresh(){

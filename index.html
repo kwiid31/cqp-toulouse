@@ -350,7 +350,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
   </div>
   <div class="sp-caption"><input id="sp-caption" placeholder="Ajouter une légende…" maxlength="80"></div>
   <div class="sp-bottom">
-    <input id="sp-prenom" placeholder="Votre prénom" maxlength="30"
+    <input id="sp-prenom" placeholder="Votre prénom" maxlength="30" readonly
       style="width:100%;padding:11px 16px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.4);border-radius:24px;color:#fff;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;margin-bottom:10px;backdrop-filter:blur(4px)"
       autocomplete="off">
     <button class="sp-publish" id="sp-btn" onclick="publishStory()">
@@ -447,7 +447,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
       </div>
       <div class="fg"><label>Description *</label><textarea id="an-desc" rows="4" placeholder="Décrivez votre annonce…"></textarea></div>
       <div class="fg-row">
-        <div class="fg"><label>Prénom *</label><input type="text" id="an-prenom" placeholder="Marie"></div>
+        <div class="fg"><label>Prénom *</label><input type="text" id="an-prenom" placeholder="Marie" readonly></div>
         <div class="fg"><label>Email *</label><input type="email" id="an-email" placeholder="marie@…"></div>
       </div>
       <div class="fg"><label>Téléphone</label><input type="tel" id="an-tel" placeholder="06 xx xx xx xx"></div>
@@ -470,7 +470,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
       </div>
       <div class="fg"><label>Lieu</label><input type="text" id="pe-lieu" placeholder="Adresse ou salle"></div>
       <div class="fg"><label>Description</label><textarea id="pe-desc" rows="3" placeholder="Décrivez l'événement…"></textarea></div>
-      <div class="fg"><label>Votre prénom *</label><input type="text" id="pe-prenom" placeholder="Karim"></div>
+      <div class="fg"><label>Votre prénom *</label><input type="text" id="pe-prenom" placeholder="Karim" readonly></div>
       <button class="btn-primary" onclick="submitEvtPub()">📅 Proposer l'événement</button>
       <div class="form-msg" id="pe-msg"></div>
     </div>
@@ -487,7 +487,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
   </div>
   <div class="sheet-body" id="sheet-body"></div>
   <div class="sheet-foot">
-    <input class="sheet-name" id="sheet-prenom" placeholder="Votre prénom" oninput="savePrenom(this.value)">
+    <input class="sheet-name" id="sheet-prenom" placeholder="Votre prénom" readonly oninput="savePrenom(this.value)">
     <div class="sheet-name-input">
       <input class="sheet-input" id="sheet-msg" placeholder="Votre commentaire…" onkeydown="if(event.key==='Enter')sendCmt()">
       <button class="sheet-send" onclick="sendCmt()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
@@ -507,6 +507,10 @@ const sb=supabase.createClient(SBU,SBK);
 //  UTILS
 // ═══════════════════════════════════════════════════════════
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
+// IDENTITÉ PERMANENTE : code 4 chiffres du profil
+const getCode=()=>localStorage.getItem('cqp_code')||null;
+const getPrenom=()=>localStorage.getItem('cqp_prenom')||'';
+// session_id : juste pour nommer les fichiers storage
 const getSid=()=>{try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Date.now();}};
 const savePrenom=v=>{try{if(v.trim())localStorage.setItem('cqp_prenom',v.trim());}catch{}};
 const getPrenom=()=>{try{return localStorage.getItem('cqp_prenom')||'';}catch{return '';}};
@@ -751,7 +755,7 @@ async function publishStory(){
     const expiresAt=new Date(Date.now()+24*3600*1000).toISOString();
     const{error:ie}=await sb.from('stories').insert({
       prenom,photo_url:pub,media_type:isV?'video':'image',visible:true,
-      expires_at:expiresAt
+      profil_code:getCode(),expires_at:expiresAt
     });
     if(ie)throw ie;
     msg.textContent='✅ Story publiée !';
@@ -802,7 +806,7 @@ async function publishPost(){
       if(!ue)photo_url=sb.storage.from('posts-photos').getPublicUrl(name).data?.publicUrl
         ||`${SBU}/storage/v1/object/public/posts-photos/${name}`;
     }
-    const{error}=await sb.from('posts').insert({prenom,contenu:text||null,photo_url,visible:true,session_id:getSid()});
+    const{error}=await sb.from('posts').insert({prenom,contenu:text||null,photo_url,visible:true,session_id:getSid(),profil_code:getCode()});
     if(error)throw error;
     document.getElementById('c-text').value='';
     document.getElementById('c-photo-prev').style.display='none';
@@ -842,15 +846,15 @@ function applyLikeUI(type,id){
   if(sl)sl.textContent=`${d.count} j'aime`;
 }
 async function toggleLike(type,id,el){
-  const sid=getSid();const k=`${type}-${id}`;
+  const sid=getCode()||getSid();const k=`${type}-${id}`;
   const d=likesCache[k]||{count:0,liked:false};
   // optimistic
   d.liked=!d.liked;d.count+=d.liked?1:-1;likesCache[k]=d;applyLikeUI(type,id);
   // heart burst
   if(d.liked&&el)heartBurst(el);
   // DB
-  if(d.liked)await sb.from('likes').insert({item_type:type,item_id:id,session_id:sid}).then(()=>{});
-  else await sb.from('likes').delete().eq('item_type',type).eq('item_id',id).eq('session_id',sid).then(()=>{});
+  if(d.liked)await sb.from('likes').insert({item_type:type,item_id:id,profil_code:sid,session_id:sid}).then(()=>{});
+  else await sb.from('likes').delete().eq('item_type',type).eq('item_id',id).eq('profil_code',sid).then(()=>{});
 }
 function heartBurst(el){
   try{
@@ -1232,22 +1236,49 @@ async function submitEvtPub(){
 //  INIT
 // ═══════════════════════════════════════════════════════════
 async function init(){
-  // Vérifier si l'utilisateur est connecté (a un code profil)
+  // ── VÉRIFICATION CONNEXION ────────────────────────────────────────────────
   const _pCode=localStorage.getItem('cqp_code');
-  if(!_pCode){
-    window.location.href='profil.html';
-    return;
+  if(!_pCode){window.location.href='profil.html';return;}
+
+  // ── CHARGEMENT PROFIL depuis BDD (source de vérité) ─────────────────────
+  const{data:_pd}=await sb.from('profils').select('*').eq('code',_pCode).limit(1);
+  if(!_pd?.length){localStorage.removeItem('cqp_code');localStorage.removeItem('cqp_prenom');window.location.href='profil.html';return;}
+  window._profil=_pd[0];
+  const _prenom=_pd[0].prenom||'';
+  localStorage.setItem('cqp_prenom',_prenom);
+
+  // ── VERROUILLER TOUS LES CHAMPS PRÉNOM (source = profil BDD) ───────────
+  const _lockAll=()=>{
+    ['sp-prenom','an-prenom','pe-prenom','sheet-prenom','pub-prenom','post-prenom','story-prenom'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){el.value=_prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;pointer-events:none;';}
+    });
+  };
+  _lockAll();
+  document.addEventListener('click',()=>setTimeout(_lockAll,80));
+
+  // ── AVATAR COMPOSER ──────────────────────────────────────────────────────
+  const _av=document.getElementById('composer-av');
+  if(_av){
+    if(_pd[0].photo_url)_av.innerHTML=`<img src="${_pd[0].photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    else _av.textContent=(_prenom||'?')[0].toUpperCase();
   }
   // Charger le profil et verrouiller le prénom
-  sb.from('profils').select('prenom,quartier,photo_url').eq('code',_pCode).limit(1).then(({data})=>{
+  sb.from('profils').select('prenom,quartier,photo_url,session_id').eq('code',_pCode).limit(1).then(({data})=>{
     if(data?.length){
       window._profil=data[0];
-      localStorage.setItem('cqp_prenom',data[0].prenom||'');
+      const prenom=data[0].prenom||'';
+      localStorage.setItem('cqp_prenom',prenom);
+      // Pré-remplir et verrouiller TOUS les champs prénom
+      ['sp-prenom','an-prenom','pe-prenom','sheet-prenom','pub-prenom','post-prenom'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.value=prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;border-color:var(--border,#CED0D4);';}
+      });
       // Avatar composer
       const av=document.getElementById('composer-av');
       if(av){
         if(data[0].photo_url)av.innerHTML=`<img src="${data[0].photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-        else av.textContent=(data[0].prenom||'?')[0].toUpperCase();
+        else av.textContent=(prenom||'?')[0].toUpperCase();
       }
     }
   });

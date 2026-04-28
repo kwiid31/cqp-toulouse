@@ -287,26 +287,36 @@ async function createProfil(){
   saveCode(code);
   try{localStorage.setItem('cqp_prenom',prenom);}catch{}
   err.textContent='';
-  showCodeModal(code,()=>showApp(data));
+  window._pendingProfil=data;
+  showCodeModal(code);
 }
 
 // ── MODAL CODE ──
-function showCodeModal(code,cb){
+function showCodeModal(code){
+  // Stocker le profil pending dans window pour accès depuis le bouton
   const ov=document.createElement('div');
-  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  ov.id='code-modal-ov';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
   ov.innerHTML=`
-    <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:320px;width:100%;text-align:center;">
-      <div style="font-size:2rem;margin-bottom:8px;">🎉</div>
-      <div style="font-family:Bebas Neue,sans-serif;font-size:1.4rem;margin-bottom:4px;">Profil créé !</div>
-      <p style="font-size:.85rem;color:#65676B;margin-bottom:16px;line-height:1.6">Note bien ton code de connexion — c'est le seul moyen de retrouver ton profil :</p>
-      <div style="background:#F0F2F5;border-radius:10px;padding:16px;margin-bottom:16px;">
-        <div style="font-family:Barlow Condensed,sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:#8A8D91;margin-bottom:4px;">Ton code</div>
-        <div style="font-family:Bebas Neue,sans-serif;font-size:3rem;letter-spacing:12px;color:#C8102E">${code}</div>
+    <div style="background:#fff;border-radius:20px;padding:32px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+      <div style="font-size:2.5rem;margin-bottom:10px;">🎉</div>
+      <div style="font-family:Bebas Neue,sans-serif;font-size:1.6rem;letter-spacing:.5px;margin-bottom:6px;">Profil créé !</div>
+      <p style="font-size:.85rem;color:#65676B;margin-bottom:20px;line-height:1.6">Ton code secret à 4 chiffres — <strong>note-le</strong>, c'est le seul moyen de retrouver ton compte :</p>
+      <div style="background:#F0F2F5;border-radius:14px;padding:20px;margin-bottom:20px;">
+        <div style="font-family:Barlow Condensed,sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:#8A8D91;margin-bottom:8px;">MON CODE SECRET</div>
+        <div style="font-family:Bebas Neue,sans-serif;font-size:3.5rem;letter-spacing:14px;color:#C8102E;padding-left:14px;">${code}</div>
       </div>
-      <p style="font-size:.78rem;color:#8A8D91;margin-bottom:16px;">📌 Fais une capture d'écran pour ne pas l'oublier !</p>
-      <button onclick="this.closest('div[style]').remove();(${cb.toString()})()" style="width:100%;padding:13px;background:#C8102E;border:none;border-radius:8px;color:#fff;font-family:Barlow Condensed,sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">J'ai noté mon code ✓</button>
+      <p style="font-size:.78rem;color:#8A8D91;margin-bottom:20px;">📸 Fais une capture d'écran maintenant !</p>
+      <button onclick="document.getElementById('code-modal-ov').remove();afterCodeModal();" style="width:100%;padding:14px;background:#C8102E;border:none;border-radius:10px;color:#fff;font-family:Barlow Condensed,sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">J'ai noté mon code ✓</button>
     </div>`;
   document.body.appendChild(ov);
+}
+
+function afterCodeModal(){
+  if(window._pendingProfil){
+    showApp(window._pendingProfil);
+    window._pendingProfil=null;
+  }
 }
 
 // ── SESSION ID local ──
@@ -329,11 +339,6 @@ function showApp(p){
   renderAv(p);
   loadStats();
   loadMesPosts();
-  // Si on vient du site (pas de ?nored), rediriger vers l'accueil après 1.5s
-  // Sauf si l'URL contient ?stay pour rester sur le profil
-  if(!window.location.search.includes('stay')){
-    // On reste sur la page profil — l'user peut naviguer via la nav
-  }
 }
 
 function renderAv(p){
@@ -356,21 +361,21 @@ function logout(){
 async function loadStats(){
   if(!_profil)return;
   const code=_profil.code;
-  // Récupérer tous les session_ids liés à ce profil (code) → utiliser code comme clé
-  const[{count:cp},{count:cs},{count:cg}]=await Promise.all([
-    sb.from('posts').select('*',{count:'exact',head:true}).eq('session_id',_profil.session_id),
-    sb.from('stories').select('*',{count:'exact',head:true}).eq('session_id',_profil.session_id),
+  // TOUT par profil_code — source unique de vérité
+  const[rp,rs,rg]=await Promise.all([
+    sb.from('posts').select('*',{count:'exact',head:true}).eq('profil_code',code).eq('visible',true),
+    sb.from('stories').select('*',{count:'exact',head:true}).eq('profil_code',code).eq('visible',true),
     sb.from('groupe_membres').select('*',{count:'exact',head:true}).eq('profil_code',code)
   ]);
-  document.getElementById('ps-posts').textContent=cp||0;
-  document.getElementById('ps-stories').textContent=cs||0;
-  document.getElementById('ps-groupes').textContent=cg||0;
+  document.getElementById('ps-posts').textContent=rp.count||0;
+  document.getElementById('ps-stories').textContent=rs.count||0;
+  document.getElementById('ps-groupes').textContent=rg.count||0;
 }
 
 // ── MES POSTS ──
 async function loadMesPosts(){
   if(!_profil)return;
-  const{data}=await sb.from('posts').select('*').eq('session_id',_profil.session_id).eq('visible',true).order('created_at',{ascending:false}).limit(20);
+  const{data}=await sb.from('posts').select('*').eq('profil_code',_profil.code).eq('visible',true).order('created_at',{ascending:false}).limit(20);
   const el=document.getElementById('mes-posts');
   if(!data?.length){el.innerHTML='<div class="empty">Aucune publication pour l\'instant</div>';return;}
   el.innerHTML=data.map(p=>`<div class="post-row">${p.photo_url?`<img class="post-thumb" src="${esc(p.photo_url)}" loading="lazy">`:'<div class="post-thumb"></div>'}<div style="flex:1"><div class="post-txt">${esc((p.contenu||'Photo').substring(0,120))}</div><div class="post-date">${timeAgo(p.created_at)}</div></div></div>`).join('');
