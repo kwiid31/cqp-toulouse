@@ -9,14 +9,44 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--rouge:#C8102E;--green:#42B72A;--purple:#7C3AED;--txt:#050505;--txt2:#65676B;--txt3:#8A8D91;--bg:#F0F2F5;--bg3:#E4E6EB;--border:#CED0D4;--shadow:0 1px 2px rgba(0,0,0,.1);--r:10px;--nav:56px;}
+:root{--rouge:#C8102E;--green:#42B72A;--purple:#7C3AED;--blue:#1877F2;
+  --txt:#050505;--txt2:#65676B;--txt3:#8A8D91;--bg:#F0F2F5;--bg3:#E4E6EB;--border:#CED0D4;
+  --shadow:0 1px 2px rgba(0,0,0,.1);--r:10px;--nav:56px;}
 html,body{font-size:15px;background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh;}
 body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 8px);}
 button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:#fff;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:20px;}
+#login-screen.gone{display:none;}
+.ls-logo{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--rouge);letter-spacing:2px;}
+.ls-sub{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--txt3);margin-top:-14px;}
+.ls-card{width:100%;max-width:360px;background:#fff;border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,.1);padding:28px 24px;display:flex;flex-direction:column;gap:16px;}
+.ls-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.5px;text-align:center;}
+.ls-sep{display:flex;align-items:center;gap:12px;color:var(--txt3);font-size:.78rem;}
+.ls-sep::before,.ls-sep::after{content:'';flex:1;height:1px;background:var(--border);}
+.ls-tabs{display:flex;gap:0;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
+.ls-tab{flex:1;padding:10px;background:none;border:none;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);transition:all .15s;}
+.ls-tab.active{background:var(--rouge);color:#fff;}
+.ls-input{width:100%;padding:12px 16px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.95rem;outline:none;transition:border .15s;}
+.ls-input:focus{border-color:var(--rouge);}
+/* Code 4 chiffres */
+.code-inputs{display:flex;gap:10px;justify-content:center;}
+.code-input{width:64px;height:68px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0;background:var(--bg3);border:2px solid var(--border);border-radius:10px;color:var(--txt);outline:none;transition:border .15s;}
+.code-input:focus{border-color:var(--rouge);}
+.ls-btn{width:100%;padding:14px;background:var(--rouge);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;}
+.ls-btn:active{opacity:.85;}
+.ls-hint{font-size:.8rem;color:var(--txt3);text-align:center;line-height:1.6;}
+.ls-err{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;color:var(--rouge);text-align:center;min-height:18px;}
+
+/* ── TOPBAR ── */
 .topbar{position:sticky;top:0;z-index:100;height:var(--nav);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;box-shadow:var(--shadow);}
 .back-btn{width:36px;height:36px;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;flex-shrink:0;}
 .back-btn svg{width:20px;height:20px;stroke:var(--txt);fill:none;stroke-width:2;stroke-linecap:round;}
 .topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.5px;flex:1;}
+.logout-btn{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);}
+
+/* ── HERO PROFIL ── */
 .profil-hero{background:#fff;padding:28px 16px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
 .profil-av-wrap{position:relative;width:90px;height:90px;}
 .profil-av{width:90px;height:90px;border-radius:50%;background:var(--rouge);border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#fff;overflow:hidden;}
@@ -27,10 +57,16 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 .profil-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.5px;}
 .profil-sub{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);}
 .profil-bio{font-size:.88rem;color:var(--txt2);text-align:center;line-height:1.6;max-width:300px;}
+.profil-code{background:var(--bg3);border-radius:8px;padding:8px 16px;display:flex;align-items:center;gap:8px;}
+.profil-code-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);}
+.profil-code-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:6px;color:var(--rouge);}
+.profil-code-hint{font-size:.72rem;color:var(--txt3);text-align:center;line-height:1.5;}
 .profil-stats{display:flex;gap:28px;margin-top:4px;}
 .pstat{text-align:center;}
 .pstat-n{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--rouge);}
 .pstat-l{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);}
+
+/* ── SECTION ── */
 .section{background:#fff;margin-top:10px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
 .sec-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;}
 .sec-head h3{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt2);font-weight:700;}
@@ -49,6 +85,8 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 .post-txt{font-size:.88rem;color:var(--txt2);line-height:1.5;flex:1;}
 .post-date{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;color:var(--txt3);margin-top:3px;}
 .empty{padding:32px 16px;text-align:center;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;background:#fff;border-top:1px solid var(--border);}
+
+/* ── NAV ── */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:#fff;border-top:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -1px 8px rgba(0,0,0,.06);}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;padding:6px 0;}
 .nav-item.active,.nav-item:hover{color:var(--rouge);}
@@ -59,46 +97,105 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 </style>
 </head>
 <body>
-<header class="topbar">
-  <button class="back-btn" onclick="history.length>1?history.back():location.href='index.html'"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-  <span class="topbar-title">Mon Profil</span>
-</header>
-<div class="profil-hero">
-  <div class="profil-av-wrap">
-    <div class="profil-av" id="pav">?</div>
-    <label class="av-cam"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><input type="file" id="av-file" accept="image/*" onchange="uploadAvatar(this)"></label>
-  </div>
-  <div class="profil-name" id="pnom">—</div>
-  <div class="profil-sub" id="pquartier"></div>
-  <div class="profil-bio" id="pbio"></div>
-  <div class="profil-stats">
-    <div class="pstat"><div class="pstat-n" id="ps-posts">0</div><div class="pstat-l">Posts</div></div>
-    <div class="pstat"><div class="pstat-n" id="ps-stories">0</div><div class="pstat-l">Stories</div></div>
-    <div class="pstat"><div class="pstat-n" id="ps-groupes">0</div><div class="pstat-l">Groupes</div></div>
-  </div>
-</div>
-<div class="section">
-  <div class="sec-head" onclick="this.classList.toggle('open');document.getElementById('eform').classList.toggle('open')">
-    <h3>✏️ Modifier mon profil</h3>
-    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-  </div>
-  <div class="sec-body" id="eform">
-    <div class="fg"><label>Prénom *</label><input type="text" id="e-prenom" placeholder="Votre prénom" maxlength="30"></div>
-    <div class="fg"><label>Quartier</label>
-      <select id="e-quartier">
-        <option value="">— Votre quartier —</option>
-        <option>Mirail</option><option>Bellefontaine</option><option>Reynerie</option><option>Bagatelle</option>
-        <option>La Faourette</option><option>Empalot</option><option>Rangueil</option><option>Basso Cambo</option>
-        <option>Borderouge</option><option>Izards</option><option>Sept Deniers</option><option>Autre</option>
-      </select>
+
+<!-- ── ÉCRAN DE CONNEXION ── -->
+<div id="login-screen">
+  <div class="ls-logo">CQP</div>
+  <div class="ls-sub">Quartiers Populaires · Toulouse</div>
+  <div class="ls-card">
+    <div class="ls-title">Mon espace</div>
+    <!-- Tabs -->
+    <div class="ls-tabs">
+      <button class="ls-tab active" id="tab-login" onclick="switchTab('login')">J'ai un code</button>
+      <button class="ls-tab" id="tab-create" onclick="switchTab('create')">Créer mon profil</button>
     </div>
-    <div class="fg"><label>Bio</label><textarea id="e-bio" rows="2" placeholder="Quelques mots…" maxlength="160"></textarea></div>
-    <button class="btn-save" onclick="saveProfil()">💾 Enregistrer</button>
-    <div class="save-msg" id="smsg"></div>
+
+    <!-- CONNEXION PAR CODE -->
+    <div id="panel-login">
+      <p class="ls-hint">Entre ton code à 4 chiffres pour retrouver ton profil</p>
+      <div class="code-inputs">
+        <input class="code-input" id="c0" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="codeNext(this,0)">
+        <input class="code-input" id="c1" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="codeNext(this,1)">
+        <input class="code-input" id="c2" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="codeNext(this,2)">
+        <input class="code-input" id="c3" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="codeNext(this,3)">
+      </div>
+      <button class="ls-btn" onclick="loginWithCode()">🔑 Me connecter</button>
+      <div class="ls-err" id="login-err"></div>
+    </div>
+
+    <!-- CRÉER UN PROFIL -->
+    <div id="panel-create" style="display:none;flex-direction:column;gap:12px;">
+      <input class="ls-input" id="new-prenom" placeholder="Votre prénom *" maxlength="30">
+      <select class="ls-input" id="new-quartier">
+        <option value="">— Votre quartier (optionnel) —</option>
+        <option>Mirail</option><option>Bellefontaine</option><option>Reynerie</option>
+        <option>Bagatelle</option><option>La Faourette</option><option>Empalot</option>
+        <option>Rangueil</option><option>Basso Cambo</option><option>Borderouge</option>
+        <option>Izards</option><option>Sept Deniers</option><option>Autre</option>
+      </select>
+      <button class="ls-btn" style="background:var(--purple)" onclick="createProfil()">✨ Créer mon profil</button>
+      <div class="ls-err" id="create-err"></div>
+    </div>
   </div>
 </div>
-<div class="sec-title">📝 Mes publications</div>
-<div id="mes-posts"><div class="empty">Chargement…</div></div>
+
+<!-- ── APP PROFIL ── -->
+<div id="app-profil" style="display:none">
+  <header class="topbar">
+    <button class="back-btn" onclick="history.length>1?history.back():location.href='index.html'"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="topbar-title">Mon Profil</span>
+    <button class="logout-btn" onclick="logout()">Déconnexion</button>
+  </header>
+
+  <div class="profil-hero">
+    <div class="profil-av-wrap">
+      <div class="profil-av" id="pav">?</div>
+      <label class="av-cam"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><input type="file" id="av-file" accept="image/*" onchange="uploadAvatar(this)"></label>
+    </div>
+    <div class="profil-name" id="pnom">—</div>
+    <div class="profil-sub" id="pquartier"></div>
+    <div class="profil-bio" id="pbio"></div>
+    <!-- CODE 4 CHIFFRES -->
+    <div class="profil-code">
+      <div>
+        <div class="profil-code-label">Mon code de connexion</div>
+        <div class="profil-code-val" id="pcode">····</div>
+      </div>
+    </div>
+    <div class="profil-code-hint">📌 Note ce code pour te reconnecter<br>sur n'importe quel téléphone</div>
+    <div class="profil-stats">
+      <div class="pstat"><div class="pstat-n" id="ps-posts">0</div><div class="pstat-l">Posts</div></div>
+      <div class="pstat"><div class="pstat-n" id="ps-stories">0</div><div class="pstat-l">Stories</div></div>
+      <div class="pstat"><div class="pstat-n" id="ps-groupes">0</div><div class="pstat-l">Groupes</div></div>
+    </div>
+  </div>
+
+  <!-- MODIFIER -->
+  <div class="section">
+    <div class="sec-head" onclick="this.classList.toggle('open');document.getElementById('eform').classList.toggle('open')">
+      <h3>✏️ Modifier mon profil</h3>
+      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sec-body" id="eform">
+      <div class="fg"><label>Prénom *</label><input type="text" id="e-prenom" maxlength="30"></div>
+      <div class="fg"><label>Quartier</label>
+        <select id="e-quartier">
+          <option value="">— Votre quartier —</option>
+          <option>Mirail</option><option>Bellefontaine</option><option>Reynerie</option><option>Bagatelle</option>
+          <option>La Faourette</option><option>Empalot</option><option>Rangueil</option><option>Basso Cambo</option>
+          <option>Borderouge</option><option>Izards</option><option>Sept Deniers</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="fg"><label>Bio</label><textarea id="e-bio" rows="2" maxlength="160"></textarea></div>
+      <button class="btn-save" onclick="saveProfil()">💾 Enregistrer</button>
+      <div class="save-msg" id="smsg"></div>
+    </div>
+  </div>
+
+  <div class="sec-title">📝 Mes publications</div>
+  <div id="mes-posts"><div class="empty">Chargement…</div></div>
+</div>
+
 <nav class="bottom-nav">
   <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
   <a class="nav-item" href="groupes.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Groupes</a>
@@ -106,46 +203,205 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
   <a class="nav-item" href="actus.html"><svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>Actus</a>
   <a class="nav-item active" href="profil.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
 </nav>
+
 <script>
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co',SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
-const getSid=()=>{try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Date.now();}};
 const timeAgo=d=>{if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});};
+
 let _profil=null;
-function renderAv(p){const av=document.getElementById('pav');if(p?.photo_url)av.innerHTML=`<img src="${esc(p.photo_url)}">`;else av.textContent=(p?.prenom||'?')[0].toUpperCase();}
-async function loadProfil(){
-  const sid=getSid();
-  const{data:rows}=await sb.from('profils').select('*').eq('session_id',sid).limit(1);
-  const data=rows&&rows.length>0?rows[0]:null;
-  if(data){_profil=data;document.getElementById('pnom').textContent=data.prenom;document.getElementById('pquartier').textContent=data.quartier?'📍 '+data.quartier:'';document.getElementById('pbio').textContent=data.bio||'';document.getElementById('e-prenom').value=data.prenom||'';document.getElementById('e-quartier').value=data.quartier||'';document.getElementById('e-bio').value=data.bio||'';renderAv(data);}
-  else{try{const p=localStorage.getItem('cqp_prenom');if(p)document.getElementById('e-prenom').value=p;}catch{}}
-  const[{count:cp},{count:cs},{count:cg}]=await Promise.all([sb.from('posts').select('*',{count:'exact',head:true}).eq('session_id',sid),sb.from('stories').select('*',{count:'exact',head:true}).eq('session_id',sid),sb.from('groupe_membres').select('*',{count:'exact',head:true}).eq('session_id',sid)]);
-  document.getElementById('ps-posts').textContent=cp||0;document.getElementById('ps-stories').textContent=cs||0;document.getElementById('ps-groupes').textContent=cg||0;
-  const{data:posts}=await sb.from('posts').select('*').eq('session_id',sid).eq('visible',true).order('created_at',{ascending:false}).limit(20);
+
+// ── SESSION ──
+function getCode(){return localStorage.getItem('cqp_code')||null;}
+function saveCode(c){localStorage.setItem('cqp_code',c);}
+function clearCode(){localStorage.removeItem('cqp_code');}
+
+// ── TABS LOGIN ──
+function switchTab(t){
+  document.getElementById('tab-login').classList.toggle('active',t==='login');
+  document.getElementById('tab-create').classList.toggle('active',t==='create');
+  document.getElementById('panel-login').style.display=t==='login'?'':'none';
+  document.getElementById('panel-create').style.display=t==='create'?'flex':'none';
+}
+
+// ── CODE INPUT : auto-focus suivant ──
+function codeNext(el,idx){
+  el.value=el.value.replace(/\D/g,'');
+  if(el.value.length===1&&idx<3)document.getElementById('c'+(idx+1)).focus();
+  if(el.value.length===1&&idx===3)loginWithCode();
+}
+
+// ── CONNEXION PAR CODE ──
+async function loginWithCode(){
+  const code=[0,1,2,3].map(i=>document.getElementById('c'+i).value).join('');
+  if(code.length<4){document.getElementById('login-err').textContent='Entre les 4 chiffres de ton code.';return;}
+  document.getElementById('login-err').textContent='';
+  const{data:rows}=await sb.from('profils').select('*').eq('code',code).limit(1);
+  if(!rows?.length){document.getElementById('login-err').textContent='Code inconnu. Vérifie ou crée un profil.';return;}
+  const p=rows[0];
+  saveCode(code);
+  // Mettre à jour le session_id local
+  try{localStorage.setItem('cqp_prenom',p.prenom);}catch{}
+  // Mettre à jour session_id en BDD avec l'actuel
+  const sid=getOrCreateSid();
+  await sb.from('profils').update({session_id:sid,updated_at:new Date().toISOString()}).eq('code',code);
+  showApp(p);
+}
+
+// ── CRÉER PROFIL ──
+async function createProfil(){
+  const prenom=document.getElementById('new-prenom').value.trim();
+  const quartier=document.getElementById('new-quartier').value;
+  const err=document.getElementById('create-err');
+  if(!prenom){err.textContent='Le prénom est obligatoire.';return;}
+  err.textContent='Création en cours…';
+  const sid=getOrCreateSid();
+  // Générer un code unique
+  const{data:fn}=await sb.rpc('generate_unique_code');
+  const code=fn;
+  const{data,error}=await sb.from('profils').insert({
+    session_id:sid,prenom,quartier:quartier||null,code,created_at:new Date().toISOString(),updated_at:new Date().toISOString()
+  }).select().single();
+  if(error){err.textContent='Erreur : '+error.message;return;}
+  saveCode(code);
+  try{localStorage.setItem('cqp_prenom',prenom);}catch{}
+  err.textContent='';
+  // Afficher le code avant de continuer
+  showCodeModal(code,()=>showApp(data));
+}
+
+// ── MODAL CODE ──
+function showCodeModal(code,cb){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  ov.innerHTML=`
+    <div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:320px;width:100%;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:8px;">🎉</div>
+      <div style="font-family:Bebas Neue,sans-serif;font-size:1.4rem;margin-bottom:4px;">Profil créé !</div>
+      <p style="font-size:.85rem;color:#65676B;margin-bottom:16px;line-height:1.6">Note bien ton code de connexion — c'est le seul moyen de retrouver ton profil :</p>
+      <div style="background:#F0F2F5;border-radius:10px;padding:16px;margin-bottom:16px;">
+        <div style="font-family:Barlow Condensed,sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:#8A8D91;margin-bottom:4px;">Ton code</div>
+        <div style="font-family:Bebas Neue,sans-serif;font-size:3rem;letter-spacing:12px;color:#C8102E">${code}</div>
+      </div>
+      <p style="font-size:.78rem;color:#8A8D91;margin-bottom:16px;">📌 Fais une capture d'écran pour ne pas l'oublier !</p>
+      <button onclick="this.closest('div[style]').remove();(${cb.toString()})()" style="width:100%;padding:13px;background:#C8102E;border:none;border-radius:8px;color:#fff;font-family:Barlow Condensed,sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">J'ai noté mon code ✓</button>
+    </div>`;
+  document.body.appendChild(ov);
+}
+
+// ── SESSION ID local ──
+function getOrCreateSid(){
+  try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Date.now();}
+}
+
+// ── AFFICHER L'APP ──
+function showApp(p){
+  _profil=p;
+  document.getElementById('login-screen').classList.add('gone');
+  document.getElementById('app-profil').style.display='';
+  document.getElementById('pnom').textContent=p.prenom||'—';
+  document.getElementById('pquartier').textContent=p.quartier?'📍 '+p.quartier:'';
+  document.getElementById('pbio').textContent=p.bio||'';
+  document.getElementById('pcode').textContent=p.code||'····';
+  document.getElementById('e-prenom').value=p.prenom||'';
+  document.getElementById('e-quartier').value=p.quartier||'';
+  document.getElementById('e-bio').value=p.bio||'';
+  renderAv(p);
+  loadStats();
+  loadMesPosts();
+}
+
+function renderAv(p){
+  const av=document.getElementById('pav');
+  if(p?.photo_url)av.innerHTML=`<img src="${esc(p.photo_url)}">`;
+  else av.textContent=(p?.prenom||'?')[0].toUpperCase();
+}
+
+function logout(){
+  clearCode();
+  _profil=null;
+  document.getElementById('app-profil').style.display='none';
+  document.getElementById('login-screen').classList.remove('gone');
+  // Reset code inputs
+  [0,1,2,3].forEach(i=>{const el=document.getElementById('c'+i);if(el)el.value='';});
+  switchTab('login');
+}
+
+// ── STATS ──
+async function loadStats(){
+  if(!_profil)return;
+  const code=_profil.code;
+  // Récupérer tous les session_ids liés à ce profil (code) → utiliser code comme clé
+  const[{count:cp},{count:cs},{count:cg}]=await Promise.all([
+    sb.from('posts').select('*',{count:'exact',head:true}).eq('session_id',_profil.session_id),
+    sb.from('stories').select('*',{count:'exact',head:true}).eq('session_id',_profil.session_id),
+    sb.from('groupe_membres').select('*',{count:'exact',head:true}).eq('profil_code',code)
+  ]);
+  document.getElementById('ps-posts').textContent=cp||0;
+  document.getElementById('ps-stories').textContent=cs||0;
+  document.getElementById('ps-groupes').textContent=cg||0;
+}
+
+// ── MES POSTS ──
+async function loadMesPosts(){
+  if(!_profil)return;
+  const{data}=await sb.from('posts').select('*').eq('session_id',_profil.session_id).eq('visible',true).order('created_at',{ascending:false}).limit(20);
   const el=document.getElementById('mes-posts');
-  if(!posts?.length){el.innerHTML='<div class="empty">Aucune publication pour l\'instant</div>';return;}
-  el.innerHTML=posts.map(p=>`<div class="post-row">${p.photo_url?`<img class="post-thumb" src="${esc(p.photo_url)}" loading="lazy">`:'<div class="post-thumb"></div>'}<div style="flex:1"><div class="post-txt">${esc((p.contenu||'Photo').substring(0,120))}</div><div class="post-date">${timeAgo(p.created_at)}</div></div></div>`).join('');
+  if(!data?.length){el.innerHTML='<div class="empty">Aucune publication pour l\'instant</div>';return;}
+  el.innerHTML=data.map(p=>`<div class="post-row">${p.photo_url?`<img class="post-thumb" src="${esc(p.photo_url)}" loading="lazy">`:'<div class="post-thumb"></div>'}<div style="flex:1"><div class="post-txt">${esc((p.contenu||'Photo').substring(0,120))}</div><div class="post-date">${timeAgo(p.created_at)}</div></div></div>`).join('');
 }
+
+// ── SAUVEGARDER ──
 async function saveProfil(){
-  const prenom=document.getElementById('e-prenom').value.trim();const quartier=document.getElementById('e-quartier').value;const bio=document.getElementById('e-bio').value.trim();const msg=document.getElementById('smsg');
+  const prenom=document.getElementById('e-prenom').value.trim();
+  const quartier=document.getElementById('e-quartier').value;
+  const bio=document.getElementById('e-bio').value.trim();
+  const msg=document.getElementById('smsg');
   if(!prenom){msg.textContent='Prénom obligatoire.';msg.style.color='var(--rouge)';return;}
-  const{data,error}=await sb.from('profils').upsert({session_id:getSid(),prenom,quartier:quartier||null,bio:bio||null,photo_url:_profil?.photo_url||null,updated_at:new Date().toISOString()},{onConflict:'session_id'}).select().single();
+  const{data,error}=await sb.from('profils').update({prenom,quartier:quartier||null,bio:bio||null,updated_at:new Date().toISOString()}).eq('code',_profil.code).select().single();
   if(error){msg.textContent='Erreur.';msg.style.color='var(--rouge)';return;}
-  _profil=data;try{localStorage.setItem('cqp_prenom',prenom);}catch{}
-  document.getElementById('pnom').textContent=prenom;document.getElementById('pquartier').textContent=quartier?'📍 '+quartier:'';document.getElementById('pbio').textContent=bio;renderAv(data);
-  msg.textContent='✅ Profil mis à jour !';msg.style.color='var(--green)';setTimeout(()=>msg.textContent='',3000);
+  _profil={..._profil,...data};
+  try{localStorage.setItem('cqp_prenom',prenom);}catch{}
+  document.getElementById('pnom').textContent=prenom;
+  document.getElementById('pquartier').textContent=quartier?'📍 '+quartier:'';
+  document.getElementById('pbio').textContent=bio;
+  renderAv(_profil);
+  msg.textContent='✅ Profil mis à jour !';msg.style.color='var(--green)';
+  setTimeout(()=>msg.textContent='',3000);
 }
+
+// ── UPLOAD AVATAR ──
 async function uploadAvatar(inp){
-  if(!inp.files[0])return;const f=inp.files[0];const name=`av-${getSid()}-${Date.now()}.${f.name.split('.').pop()||'jpg'}`;
+  if(!inp.files[0]||!_profil)return;
+  const f=inp.files[0];
+  const name=`av-${_profil.code}-${Date.now()}.${f.name.split('.').pop()||'jpg'}`;
   const{error}=await sb.storage.from('site-photos').upload(name,f,{contentType:f.type,upsert:true});
-  if(error){alert('Erreur upload photo');return;}
+  if(error){alert('Erreur upload');return;}
   const url=sb.storage.from('site-photos').getPublicUrl(name).data.publicUrl;
-  await sb.from('profils').upsert({session_id:getSid(),photo_url:url,prenom:_profil?.prenom||'Anonyme'},{onConflict:'session_id'});
-  if(!_profil)_profil={};_profil.photo_url=url;
+  await sb.from('profils').update({photo_url:url,updated_at:new Date().toISOString()}).eq('code',_profil.code);
+  _profil.photo_url=url;
   document.getElementById('pav').innerHTML=`<img src="${url}">`;
 }
-loadProfil();
+
+// ── BOOT ──
+async function boot(){
+  const code=getCode();
+  if(code){
+    const{data:rows}=await sb.from('profils').select('*').eq('code',code).limit(1);
+    if(rows?.length){
+      // Mettre à jour session_id
+      const sid=getOrCreateSid();
+      await sb.from('profils').update({session_id:sid}).eq('code',code);
+      showApp({...rows[0],session_id:sid});
+      return;
+    }
+    clearCode();
+  }
+  // Pas de code → afficher écran de connexion
+  document.getElementById('login-screen').classList.remove('gone');
+}
+boot();
 </script>
 </body>
 </html>
