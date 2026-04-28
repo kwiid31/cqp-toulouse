@@ -925,7 +925,17 @@ async function sendCmt(){
 // ═══════════════════════════════════════════════════════════
 function openDr(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
 function closeDr(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
-function togglePub(e){e.stopPropagation();document.getElementById('pub-menu').classList.toggle('open');document.getElementById('pub-overlay').classList.toggle('open');}
+function togglePub(e){
+  // Vérifier connexion
+  const code=localStorage.getItem('cqp_code');
+  if(!code){e?.preventDefault();window.location.href='profil.html';return;}
+  // Pré-remplir le prénom depuis le profil (verrouillé)
+  const prenom=localStorage.getItem('cqp_prenom')||'';
+  ['pub-prenom','post-prenom','story-prenom'].forEach(id=>{
+    const inp=document.getElementById(id);
+    if(inp){inp.value=prenom;inp.readOnly=true;inp.style.cssText='background:var(--bg3);color:var(--txt3);cursor:default;';}
+  });
+e.stopPropagation();document.getElementById('pub-menu').classList.toggle('open');document.getElementById('pub-overlay').classList.toggle('open');}
 function closePub(){document.getElementById('pub-menu').classList.remove('open');document.getElementById('pub-overlay').classList.remove('open');}
 document.addEventListener('click',()=>closePub());
 
@@ -1222,6 +1232,25 @@ async function submitEvtPub(){
 //  INIT
 // ═══════════════════════════════════════════════════════════
 async function init(){
+  // Vérifier si l'utilisateur est connecté (a un code profil)
+  const _pCode=localStorage.getItem('cqp_code');
+  if(!_pCode){
+    window.location.href='profil.html';
+    return;
+  }
+  // Charger le profil et verrouiller le prénom
+  sb.from('profils').select('prenom,quartier,photo_url').eq('code',_pCode).limit(1).then(({data})=>{
+    if(data?.length){
+      window._profil=data[0];
+      localStorage.setItem('cqp_prenom',data[0].prenom||'');
+      // Avatar composer
+      const av=document.getElementById('composer-av');
+      if(av){
+        if(data[0].photo_url)av.innerHTML=`<img src="${data[0].photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        else av.textContent=(data[0].prenom||'?')[0].toUpperCase();
+      }
+    }
+  });
   // Récupérer actus pour le drawer
   sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).then(({data})=>{_actus=data||[];});
   loadTicker();setInterval(loadTicker,60000);

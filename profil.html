@@ -276,7 +276,9 @@ async function createProfil(){
   const{data:existing}=await sb.from('profils').select('id').eq('code',code).limit(1);
   if(existing?.length){err.textContent='Ce code est déjà utilisé. Choisis-en un autre.';return;}
   err.textContent='Création en cours…';
-  const sid=getOrCreateSid();
+  // Générer un sid unique pour ce nouveau profil
+  const sid=crypto.randomUUID?.()??('u'+Date.now()+Math.random().toString(36).slice(2));
+  localStorage.setItem('cqp_sid',sid);
   const{data,error}=await sb.from('profils').insert({
     session_id:sid,prenom,quartier:quartier||null,code,
     created_at:new Date().toISOString(),updated_at:new Date().toISOString()
@@ -327,6 +329,11 @@ function showApp(p){
   renderAv(p);
   loadStats();
   loadMesPosts();
+  // Si on vient du site (pas de ?nored), rediriger vers l'accueil après 1.5s
+  // Sauf si l'URL contient ?stay pour rester sur le profil
+  if(!window.location.search.includes('stay')){
+    // On reste sur la page profil — l'user peut naviguer via la nav
+  }
 }
 
 function renderAv(p){
