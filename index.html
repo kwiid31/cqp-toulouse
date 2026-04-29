@@ -1247,7 +1247,6 @@ async function init(){
 
   // ── CHARGER LE FEED IMMÉDIATEMENT (pas d'attente BDD) ───────────────────
   // Utiliser le prénom en cache localStorage pour ne pas bloquer
-  const _prenomCache=localStorage.getItem('cqp_prenom')||'';
   const _prenomCache=getPrenom();
   if(_prenomCache)lockPrenom(_prenomCache);
   document.addEventListener('click',()=>setTimeout(()=>lockPrenom(getPrenom()),80));
