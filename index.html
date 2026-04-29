@@ -14,6 +14,7 @@
 <title>CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/cqp-toulouse/js/cqp-core.js"></script>
 <style>
 /* ── RESET & VARS ──────────────────────────────────────── */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1246,23 +1247,19 @@ async function submitEvtPub(){
 // ═══════════════════════════════════════════════════════════
 async function init(){
   // ── VÉRIFICATION CONNEXION (localStorage = instantané) ──────────────────
-  const _pCode=localStorage.getItem('cqp_code');
+  // Vérification via core (source de vérité = BDD)
+  const _pCode=getCode();
   if(!_pCode){window.location.href='profil.html';return;}
 
   // ── CHARGER LE FEED IMMÉDIATEMENT (pas d'attente BDD) ───────────────────
   // Utiliser le prénom en cache localStorage pour ne pas bloquer
   const _prenomCache=localStorage.getItem('cqp_prenom')||'';
-  const _lockAll=(prenom)=>{
-    ['c-name','sp-prenom','an-prenom','pe-prenom','sheet-prenom','pub-prenom','post-prenom','story-prenom'].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el&&prenom){el.value=prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;pointer-events:none;';}
-    });
-  };
-  if(_prenomCache)_lockAll(_prenomCache);
-  document.addEventListener('click',()=>setTimeout(()=>_lockAll(localStorage.getItem('cqp_prenom')||''),80));
+  const _prenomCache=getPrenom();
+  if(_prenomCache)lockPrenom(_prenomCache);
+  document.addEventListener('click',()=>setTimeout(()=>lockPrenom(getPrenom()),80));
 
   // ── TRACKER LA VISITE ────────────────────────────────────────────────────
-  sb.from('page_views').insert({page:'accueil',profil_code:_pCode}).catch(()=>{});
+  trackVisit('accueil');
 
   // ── CHARGER PROFIL EN ARRIÈRE-PLAN (sans bloquer l'affichage) ───────────
   sb.from('profils').select('*').eq('code',_pCode).limit(1).then(({data:_pd})=>{
@@ -1305,7 +1302,11 @@ async function init(){
   loadTicker();setInterval(loadTicker,60000);
   loadStories();
   loadFeed();
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('/cqp-toulouse/sw.js').catch(()=>{});
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('/cqp-toulouse/sw.js')
+      .then(r=>console.log('SW ok',r.scope))
+      .catch(e=>console.warn('SW',e));
+  }
 }
 init();
 </script>

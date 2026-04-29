@@ -14,6 +14,7 @@
 <title>Admin — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/cqp-toulouse/js/cqp-core.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -906,6 +907,24 @@ async function loadMessages_admin(){
       </div>
       <button class="del-btn" onclick="deleteItem('groupe_messages',${m.id},'msg-${m.id}')">🗑 Sup.</button>
     </div>`).join('');
+}
+
+// ── EXPORTS CSV ────────────────────────────────────────────────────────────
+async function exportAdh(){
+  const{data}=await sb.from('adherents').select('*').order('created_at',{ascending:false});
+  exportCSV(data,'adherents-cqp.csv');
+}
+async function exportProfils(){
+  const{data}=await sb.from('profils').select('code,prenom,quartier,bio,created_at');
+  exportCSV(data,'profils-cqp.csv');
+}
+async function exportStats(){
+  const{data}=await sb.from('v_stats_admin').select('*');
+  exportCSV(data,'stats-cqp.csv');
+}
+async function exportMembres(){
+  const{data}=await sb.from('groupe_membres').select('profil_code,prenom,groupe_id,created_at');
+  exportCSV(data,'membres-groupes-cqp.csv');
 }
 function init(){
   loaded.actus=true;loadActus();

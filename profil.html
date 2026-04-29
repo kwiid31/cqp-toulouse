@@ -14,6 +14,7 @@
 <title>Mon Profil — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/cqp-toulouse/js/cqp-core.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--rouge:#C8102E;--green:#42B72A;--purple:#7C3AED;--blue:#1877F2;
@@ -295,8 +296,7 @@ async function createProfil(){
     created_at:new Date().toISOString(),updated_at:new Date().toISOString()
   }).select().single();
   if(error){err.textContent='Erreur : '+error.message;return;}
-  saveCode(code);
-  try{localStorage.setItem('cqp_prenom',prenom);}catch{}
+  saveSession({code,prenom,photo_url:null});
   err.textContent='';
   window._pendingProfil=data;
   showCodeModal(code);
@@ -371,16 +371,13 @@ function logout(){
 // ── STATS ──
 async function loadStats(){
   if(!_profil)return;
-  const code=_profil.code;
-  // TOUT par profil_code — source unique de vérité
-  const[rp,rs,rg]=await Promise.all([
-    sb.from('posts').select('*',{count:'exact',head:true}).eq('profil_code',code).eq('visible',true),
-    sb.from('stories').select('*',{count:'exact',head:true}).eq('profil_code',code).eq('visible',true),
-    sb.from('groupe_membres').select('*',{count:'exact',head:true}).eq('profil_code',code)
-  ]);
-  document.getElementById('ps-posts').textContent=rp.count||0;
-  document.getElementById('ps-stories').textContent=rs.count||0;
-  document.getElementById('ps-groupes').textContent=rg.count||0;
+  // Vue BDD complète : tout rattaché au code
+  const{data:vs}=await sb.from('v_profil_stats').select('*').eq('code',_profil.code).single();
+  if(vs){
+    document.getElementById('ps-posts').textContent=vs.nb_posts||0;
+    document.getElementById('ps-stories').textContent=vs.nb_stories||0;
+    document.getElementById('ps-groupes').textContent=vs.nb_groupes||0;
+  }
 }
 
 // ── MES POSTS ──
