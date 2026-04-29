@@ -14,7 +14,6 @@
 <title>Mon Profil — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/cqp-toulouse/js/cqp-core.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--rouge:#C8102E;--green:#42B72A;--purple:#7C3AED;--blue:#1877F2;
@@ -229,10 +228,13 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 <script>
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co',SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
+const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
+const timeAgo=d=>{if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});};
 
 let _profil=null;
 
 // ── SESSION ──
+function getCode(){return localStorage.getItem('cqp_code')||null;}
 function saveCode(c){localStorage.setItem('cqp_code',c);}
 function clearCode(){localStorage.removeItem('cqp_code');}
 
@@ -293,7 +295,8 @@ async function createProfil(){
     created_at:new Date().toISOString(),updated_at:new Date().toISOString()
   }).select().single();
   if(error){err.textContent='Erreur : '+error.message;return;}
-  saveSession({code,prenom,photo_url:null});
+  saveCode(code);
+  try{localStorage.setItem('cqp_prenom',prenom);}catch{}
   err.textContent='';
   window._pendingProfil=data;
   showCodeModal(code);
@@ -368,13 +371,16 @@ function logout(){
 // ── STATS ──
 async function loadStats(){
   if(!_profil)return;
-  // Vue BDD complète : tout rattaché au code
-  const{data:vs}=await sb.from('v_profil_stats').select('*').eq('code',_profil.code).single();
-  if(vs){
-    document.getElementById('ps-posts').textContent=vs.nb_posts||0;
-    document.getElementById('ps-stories').textContent=vs.nb_stories||0;
-    document.getElementById('ps-groupes').textContent=vs.nb_groupes||0;
-  }
+  const code=_profil.code;
+  // TOUT par profil_code — source unique de vérité
+  const[rp,rs,rg]=await Promise.all([
+    sb.from('posts').select('*',{count:'exact',head:true}).eq('profil_code',code).eq('visible',true),
+    sb.from('stories').select('*',{count:'exact',head:true}).eq('profil_code',code).eq('visible',true),
+    sb.from('groupe_membres').select('*',{count:'exact',head:true}).eq('profil_code',code)
+  ]);
+  document.getElementById('ps-posts').textContent=rp.count||0;
+  document.getElementById('ps-stories').textContent=rs.count||0;
+  document.getElementById('ps-groupes').textContent=rg.count||0;
 }
 
 // ── MES POSTS ──
