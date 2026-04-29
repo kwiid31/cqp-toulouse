@@ -256,7 +256,7 @@ function renderGroupes(list){
 }
 
 // ── REJOINDRE / QUITTER ──
-async function toggleMembre(groupeId,nom){
+async async function toggleMembre(groupeId,nom){
   const sid=getSid();
   const prenom=getPrenom()||'Anonyme';
   const btn=document.getElementById(`mbr-btn-${groupeId}`);
