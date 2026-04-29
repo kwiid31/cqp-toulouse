@@ -183,6 +183,8 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
       <input class="code-input" id="gcp1" maxlength="1" inputmode="numeric" style="width:60px;height:64px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:1.8rem;background:#F0F2F5;border:2px solid #CED0D4;border-radius:10px;outline:none;" oninput="gcpNext(this,1)">
       <input class="code-input" id="gcp2" maxlength="1" inputmode="numeric" style="width:60px;height:64px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:1.8rem;background:#F0F2F5;border:2px solid #CED0D4;border-radius:10px;outline:none;" oninput="gcpNext(this,2)">
       <input class="code-input" id="gcp3" maxlength="1" inputmode="numeric" style="width:60px;height:64px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:1.8rem;background:#F0F2F5;border:2px solid #CED0D4;border-radius:10px;outline:none;" oninput="gcpNext(this,3)">
+      <input class="code-input" id="gcp4" maxlength="1" inputmode="numeric" style="width:60px;height:64px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:1.8rem;background:#F0F2F5;border:2px solid #CED0D4;border-radius:10px;outline:none;" oninput="gcpNext(this,4)">
+      <input class="code-input" id="gcp5" maxlength="1" inputmode="numeric" style="width:60px;height:64px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:1.8rem;background:#F0F2F5;border:2px solid #CED0D4;border-radius:10px;outline:none;" maxlength="1" inputmode="numeric" style="width:60px;height:64px;text-align:center;font-family:Bebas Neue,sans-serif;font-size:1.8rem;background:#F0F2F5;border:2px solid #CED0D4;border-radius:10px;outline:none;" oninput="gcpNext(this,3)">
     </div>
     <div id="popup-err" style="font-family:Barlow Condensed,sans-serif;font-size:.78rem;letter-spacing:1px;color:#C8102E;min-height:18px;margin-bottom:10px;"></div>
     <button onclick="confirmCodeGroupe()" style="width:100%;padding:13px;background:#7C3AED;border:none;border-radius:8px;color:#fff;font-family:Barlow Condensed,sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:8px;">Confirmer</button>
@@ -338,19 +340,19 @@ let _pendingGroupeId=null;
 
 function gcpNext(el,idx){
   el.value=el.value.replace(/\D/g,'');
-  if(el.value.length===1&&idx<3)document.getElementById('gcp'+(idx+1)).focus();
-  if(el.value.length===1&&idx===3)confirmCodeGroupe();
+  if(el.value.length===1&&idx<5)document.getElementById('gcp'+(idx+1)).focus();
+  if(el.value.length===1&&idx===5)confirmCodeGroupe();
 }
 function closeCodePopup(){
   document.getElementById('code-ov').style.display='none';
   document.body.style.overflow='';
-  [0,1,2,3].forEach(i=>{const el=document.getElementById('gcp'+i);if(el)el.value='';});
+  [0,1,2,3,4,5].forEach(i=>{const el=document.getElementById('gcp'+i);if(el)el.value='';})
   _pendingGroupeId=null;
 }
 async function confirmCodeGroupe(){
-  const code=[0,1,2,3].map(i=>document.getElementById('gcp'+i).value).join('');
+  const code=[0,1,2,3,4,5].map(i=>document.getElementById('gcp'+i).value).join('');
   const err=document.getElementById('popup-err');
-  if(code.length<4){err.textContent='Entre les 4 chiffres de ton code.';return;}
+  if(code.length<6){err.textContent='Entre les 6 chiffres de ton code.';return;}
   err.textContent='Vérification…';
   const{data:rows}=await sb.from('profils').select('*').eq('code',code).limit(1);
   if(!rows?.length){err.textContent='Code inconnu. Crée ton profil dabord.';return;}
@@ -375,7 +377,7 @@ async function openGroupe(id){
     _pendingGroupeId=id;
     document.getElementById('popup-groupe-nom').textContent=g.nom;
     document.getElementById('popup-err').textContent='';
-    [0,1,2,3].forEach(i=>{const el=document.getElementById('gcp'+i);if(el)el.value='';});
+    [0,1,2,3,4,5].forEach(i=>{const el=document.getElementById('gcp'+i);if(el)el.value='';})
     document.getElementById('code-ov').style.display='flex';
     document.body.style.overflow='hidden';
     setTimeout(()=>document.getElementById('gcp0')?.focus(),200);

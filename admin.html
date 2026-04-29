@@ -154,6 +154,11 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 
 /* LOAD */
 .load{text-align:center;padding:32px;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;}
+.del-btn{padding:4px 10px;background:rgba(200,16,46,.12);border:1px solid rgba(200,16,46,.3);border-radius:6px;color:#C8102E;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;flex-shrink:0;}
+.del-btn:hover{background:rgba(200,16,46,.28);}
+.content-row{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--border2);}
+.content-row:last-child{border-bottom:none;}
+.content-body{flex:1;min-width:0;}
 </style>
 </head>
 <body>
@@ -442,6 +447,7 @@ function switchTab(name,el){
 }
 function loadTab(n){
   if(n==='actus')loadActus();
+  else if(n==='messages')loadMessages_admin();
   else if(n==='evts')loadEvts();
   else if(n==='ann')loadAnn();
   else if(n==='posts')loadPosts();
@@ -691,26 +697,26 @@ async function pubGroqActu(){groqResult.type='actu';return pubGroqContent();}
 // GROQ
 let _groqResultLegacy={titre:'',contenu:'',cat:''};
 async function loadActus(){
-  const{data}=await sb.from('actus').select('*').order('date_publication',{ascending:false}).limit(50);
+  const{data,error}=await sb.from('actus').select('*').order('date_publication',{ascending:false}).limit(50);
   const el=document.getElementById('list-actus');
-  if(!data?.length){el.innerHTML='<div class="load">Aucune actualité</div>';return;}
+  if(error||!data?.length){el.innerHTML='<div class="load">Aucune actu</div>';return;}
   el.innerHTML=data.map(a=>`
-    <div class="item">
-      ${a.photo_url?`<img class="item-thumb" src="${esc(a.photo_url)}" loading="lazy">`:'<div class="item-thumb"></div>'}
-      <div class="item-info">
-        <div class="item-title">${esc(a.titre)}</div>
-        <div class="item-meta">
-          <span class="badge ${a.visible?'on':'off'}">${a.visible?'Publié':'Masqué'}</span>
-          <span>${esc(a.categorie||'')}</span>
-          <span>${timeAgo(a.date_publication)}</span>
+    <div class="content-row" id="actu-${a.id}">
+      <div class="content-body">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);margin-bottom:3px;">${a.categorie||''} · ${a.date_publication?new Date(a.date_publication).toLocaleDateString('fr-FR'):''}${a.source?' · '+a.source:''}</div>
+        <div style="font-weight:600;margin-bottom:4px;">${a.titre}</div>
+        <div style="font-size:.82rem;color:var(--txt2);line-height:1.5;">${(a.contenu||'').slice(0,120)}…</div>
+        <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
+          <label style="display:flex;align-items:center;gap:4px;font-size:.75rem;cursor:pointer;">
+            <input type="checkbox" ${a.visible?'checked':''} onchange="sb.from('actus').update({visible:this.checked}).eq('id',${a.id})">
+            Visible
+          </label>
         </div>
       </div>
-      <div class="item-actions">
-        <button class="act ${a.visible?'act-hide':'act-pub'}" onclick="toggleVis('actus','visible',${a.id},${a.visible})">${a.visible?'Masquer':'Publier'}</button>
-        <button class="act act-del" onclick="delItem('actus',${a.id},'actus')">Supprimer</button>
-      </div>
+      <button class="del-btn" onclick="deleteItem('actus',${a.id},'actu-${a.id}')">🗑 Sup.</button>
     </div>`).join('');
 }
+
 async function saveActu(){
   const titre=document.getElementById('fa-titre').value.trim();
   const contenu=document.getElementById('fa-contenu').value.trim();
@@ -731,28 +737,23 @@ async function saveActu(){
 
 // ÉVÉNEMENTS
 async function loadEvts(){
-  const{data}=await sb.from('evenements').select('*').order('date_debut',{ascending:false}).limit(50);
+  const{data}=await sb.from('evenements').select('*').order('date_debut',{ascending:true}).limit(30);
   const el=document.getElementById('list-evts');
   if(!data?.length){el.innerHTML='<div class="load">Aucun événement</div>';return;}
-  el.innerHTML=data.map(e=>{
-    const d=new Date(e.date_debut);
-    return `<div class="item">
-      ${e.photo_url?`<img class="item-thumb" src="${esc(e.photo_url)}" loading="lazy">`:'<div class="item-thumb"></div>'}
-      <div class="item-info">
-        <div class="item-title">${esc(e.titre)}</div>
-        <div class="item-meta">
-          <span class="badge ${e.validee?'on':'wait'}">${e.validee?'Visible':'En attente'}</span>
-          <span>${d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'})}</span>
-          <span>${esc(e.lieu||'')}</span>
-        </div>
+  el.innerHTML=data.map(e=>`
+    <div class="content-row" id="evt-${e.id}">
+      <div class="content-body">
+        <div style="font-size:.68rem;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;">${e.categorie||''} · ${e.date_debut?new Date(e.date_debut).toLocaleDateString('fr-FR'):''}</div>
+        <div style="font-weight:600;">${e.titre}</div>
+        <div style="font-size:.82rem;color:var(--txt2);">${(e.description||'').slice(0,100)}</div>
+        <label style="font-size:.72rem;display:flex;align-items:center;gap:4px;margin-top:4px;cursor:pointer;">
+          <input type="checkbox" ${e.visible?'checked':''} onchange="sb.from('evenements').update({visible:this.checked}).eq('id',${e.id})"> Visible
+        </label>
       </div>
-      <div class="item-actions">
-        <button class="act ${e.validee?'act-hide':'act-val'}" onclick="toggleVis('evenements','validee',${e.id},${e.validee})">${e.validee?'Masquer':'Valider'}</button>
-        <button class="act act-del" onclick="delItem('evenements',${e.id},'evts')">Supprimer</button>
-      </div>
-    </div>`;
-  }).join('');
+      <button class="del-btn" onclick="deleteItem('evenements',${e.id},'evt-${e.id}')">🗑 Sup.</button>
+    </div>`).join('');
 }
+
 async function saveEvt(){
   const titre=document.getElementById('fe-titre').value.trim();
   const debut=document.getElementById('fe-debut').value;
@@ -798,51 +799,38 @@ async function loadAnn(){
 
 // POSTS
 async function loadPosts(){
-  const{data}=await sb.from('posts').select('*').order('created_at',{ascending:false}).limit(60);
+  const{data}=await sb.from('posts').select('*,profils!profil_code(prenom,photo_url)').order('created_at',{ascending:false}).limit(50);
   const el=document.getElementById('list-posts');
   if(!data?.length){el.innerHTML='<div class="load">Aucun post</div>';return;}
   el.innerHTML=data.map(p=>`
-    <div class="item">
-      ${p.photo_url?`<img class="item-thumb" src="${esc(p.photo_url)}" loading="lazy">`:''}
-      <div class="item-info">
-        <div class="item-title">${esc((p.contenu||'Photo').substring(0,80))}${(p.contenu||'').length>80?'…':''}</div>
-        <div class="item-meta">
-          <span class="badge ${p.visible?'on':'off'}">${p.visible?'Visible':'Masqué'}</span>
-          <span>${esc(p.prenom||'Anonyme')}</span>
-          <span>${timeAgo(p.created_at)}</span>
+    <div class="content-row" id="post-${p.id}">
+      <div class="content-body">
+        <div style="font-size:.72rem;color:var(--txt3);margin-bottom:3px;">
+          <strong>${p.prenom||'Anonyme'}</strong> · ${p.quartier||''} · ${new Date(p.created_at).toLocaleDateString('fr-FR')}
+          ${p.profil_code?'<span style="background:var(--bg3);border-radius:4px;padding:1px 5px;font-size:.6rem;">code:'+p.profil_code+'</span>':''}
         </div>
+        ${p.photo_url?`<img src="${p.photo_url}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;margin:4px 0;">`:'' }
+        <div style="font-size:.85rem;color:var(--txt);">${(p.contenu||'').slice(0,150)}</div>
       </div>
-      <div class="item-actions">
-        <button class="act ${p.visible?'act-hide':'act-pub'}" onclick="toggleVis('posts','visible',${p.id},${p.visible})">${p.visible?'Masquer':'Montrer'}</button>
-        <button class="act act-del" onclick="delItem('posts',${p.id},'posts')">Supprimer</button>
-      </div>
+      <button class="del-btn" onclick="deleteItem('posts',${p.id},'post-${p.id}')">🗑 Sup.</button>
     </div>`).join('');
 }
 
-// STORIES
 async function loadStories(){
-  const{data}=await sb.from('stories').select('*').order('created_at',{ascending:false}).limit(50);
+  const{data}=await sb.from('stories').select('*').eq('visible',true).order('created_at',{ascending:false}).limit(30);
   const el=document.getElementById('list-stories');
   if(!data?.length){el.innerHTML='<div class="load">Aucune story</div>';return;}
   el.innerHTML=data.map(s=>`
-    <div class="item">
-      ${s.photo_url?`<img class="item-thumb story" src="${esc(s.photo_url)}" loading="lazy">`:'<div class="item-thumb story"></div>'}
-      <div class="item-info">
-        <div class="item-title">${esc(s.prenom||'Anonyme')} · ${s.media_type==='video'?'🎬 Vidéo':'📷 Photo'}</div>
-        <div class="item-meta">
-          <span class="badge ${s.visible?'on':'off'}">${s.visible?'Visible':'Masquée'}</span>
-          <span>${timeAgo(s.created_at)}</span>
-          ${s.views?`<span>${s.views} vues</span>`:''}
-        </div>
+    <div class="content-row" id="story-${s.id}">
+      <div class="content-body">
+        <div style="font-size:.72rem;color:var(--txt3);margin-bottom:3px;"><strong>${s.prenom||'?'}</strong> · ${new Date(s.created_at).toLocaleDateString('fr-FR')} ${s.profil_code?'· code:'+s.profil_code:''}</div>
+        ${s.photo_url?`<img src="${s.photo_url}" style="width:50px;height:80px;object-fit:cover;border-radius:6px;">`:'' }
+        <div style="font-size:.75rem;color:var(--txt3);">${s.media_type||'image'}</div>
       </div>
-      <div class="item-actions">
-        <button class="act ${s.visible?'act-hide':'act-pub'}" onclick="toggleVis('stories','visible',${s.id},${s.visible})">${s.visible?'Masquer':'Valider'}</button>
-        <button class="act act-del" onclick="delItem('stories',${s.id},'stories')">Supprimer</button>
-      </div>
+      <button class="del-btn" onclick="deleteItem('stories',${s.id},'story-${s.id}')">🗑 Sup.</button>
     </div>`).join('');
 }
 
-// ADHÉRENTS
 async function loadAdh(){
   const{data}=await sb.from('adherents').select('*').order('date_inscription',{ascending:false}).limit(100);
   const el=document.getElementById('list-adh');
@@ -886,6 +874,39 @@ async function delItem(table,id,tab){
   loaded[tab]=false;loadTab(tab);loadStats();
 }
 
+
+// ── MODÉRATION ADMIN ─────────────────────────────────────────────────────
+async function deleteItem(table,id,elId){
+  if(!confirm('Supprimer ce contenu ?'))return;
+  const{error}=await sb.from(table).delete().eq('id',id);
+  if(error){alert('Erreur: '+error.message);return;}
+  const el=document.getElementById(elId);
+  if(el)el.remove();
+  loadStats();
+}
+async function hideItem(table,id,elId){
+  // Masquer sans supprimer (soft delete)
+  await sb.from(table).update({visible:false}).eq('id',id);
+  const el=document.getElementById(elId);
+  if(el)el.style.opacity='0.3';
+}
+
+async function loadMessages_admin(){
+  const{data}=await sb.from('groupe_messages').select('*,groupes(nom)').eq('visible',true).order('created_at',{ascending:false}).limit(60);
+  const el=document.getElementById('list-messages');
+  if(!data?.length){el.innerHTML='<div class="load">Aucun message</div>';return;}
+  el.innerHTML=data.map(m=>`
+    <div class="content-row" id="msg-${m.id}">
+      <div class="content-body">
+        <div style="font-size:.68rem;color:var(--txt3);margin-bottom:3px;">
+          <strong>${m.prenom||'?'}</strong> · ${m.groupes?.nom||'Groupe'} · ${new Date(m.created_at).toLocaleDateString('fr-FR')} ${m.profil_code?'· code:'+m.profil_code:''}
+        </div>
+        ${m.photo_url?`<img src="${m.photo_url}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">`:'' }
+        <div style="font-size:.85rem;">${m.contenu||''}</div>
+      </div>
+      <button class="del-btn" onclick="deleteItem('groupe_messages',${m.id},'msg-${m.id}')">🗑 Sup.</button>
+    </div>`).join('');
+}
 function init(){
   loaded.actus=true;loadActus();
   loadStats();setInterval(loadStats,30000);

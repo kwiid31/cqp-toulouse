@@ -376,7 +376,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
     <button class="c-trigger" onclick="openComposer()">Quoi de neuf dans ton quartier ?</button>
   </div>
   <div class="composer-expand" id="c-expand">
-    <input class="c-name" id="c-name" placeholder="Votre prénom" maxlength="30" readonly style="pointer-events:none;background:var(--bg3);color:var(--txt2);" oninput="updateCAv(this.value)">
+    <input class="c-name" id="c-name" readonly style="pointer-events:none;" placeholder="Votre prénom" maxlength="30" readonly style="pointer-events:none;background:var(--bg3);color:var(--txt2);" oninput="updateCAv(this.value)">
     <textarea class="c-text" id="c-text" rows="3" placeholder="Partagez une info, une question…"></textarea>
     <img id="c-photo-prev" class="c-photo-prev">
     <div class="c-foot">
@@ -710,7 +710,9 @@ function closeSV(){closeSV2();}
 // Story Create
 let _sf=null,_su=null;
 document.getElementById('story-file-input').onchange=e=>{
-  const f=e.target.files[0];if(!f)return;
+  let f=e.target.files[0];if(!f)return;
+      // Compression
+      photo=await compressImage(photo).catch(()=>photo);
   _sf=f;if(_su)URL.revokeObjectURL(_su);_su=URL.createObjectURL(f);
   const isV=f.type.startsWith('video');
   document.getElementById('sp-media').innerHTML=isV
@@ -1099,7 +1101,12 @@ async function loadFeed(reset=false){
 
     feedPage++;
   }catch(e){console.error('feed',e);}
-  finally{feedLoading=false;}
+  finally{
+    feedLoading=false;
+    if(feedPage===0&&!document.getElementById('feed').children.length){
+      document.getElementById('feed').innerHTML='<div class="empty"><p>⚠️ Connexion impossible.</p><button onclick="init()" style="margin-top:10px;padding:8px 18px;background:var(--rouge);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:Barlow,sans-serif;">Réessayer</button></div>';
+    }
+  }
 }
 
 
