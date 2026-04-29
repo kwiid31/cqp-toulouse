@@ -2,10 +2,10 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" type="image/x-icon" href="/cqp-toulouse/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/cqp-toulouse/icons/icon-192.png">
-<link rel="apple-touch-icon" href="/cqp-toulouse/icons/apple-touch-icon.png">
-<link rel="manifest" href="/cqp-toulouse/manifest.json">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#C8102E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1303,7 +1303,7 @@ async function init(){
   loadTicker();setInterval(loadTicker,60000);
   loadStories();
   loadFeed();
-  if('serviceWorker' in navigator)navigator.serviceWorker.register('/cqp-toulouse/sw.js').catch(()=>{});
+  if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
 }
 init();
 </script>
