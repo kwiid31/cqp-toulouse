@@ -534,6 +534,18 @@ async function loadTicker(){
 //  STORIES
 // ═══════════════════════════════════════════════════════════
 let stories=[];
+
+// Compression image avant upload
+async function compressImage(file,maxW=1200,q=0.82){
+  if(!file?.type?.startsWith('image/'))return file;
+  return new Promise(res=>{
+    const img=new Image(),url=URL.createObjectURL(file);
+    img.onload=()=>{let w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(url);
+      cv.toBlob(b=>res(new File([b],file.name,{type:'image/jpeg'})),'image/jpeg',q);};
+    img.onerror=()=>res(file);img.src=url;});
+}
 async function loadStories(){
   try{
     const now=new Date().toISOString();
