@@ -181,6 +181,11 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 
   <!-- STATS -->
   <div class="stats">
+    <div class="stat"><div class="stat-n p" id="s-profils">—</div><div class="stat-l">👤 Profils</div></div>
+    <div class="stat"><div class="stat-n g" id="s-nouveaux">—</div><div class="stat-l">Nouveaux 7j</div></div>
+    <div class="stat"><div class="stat-n g" id="s-visiteurs24">—</div><div class="stat-l">Visiteurs 24h</div></div>
+    <div class="stat"><div class="stat-n b" id="s-visiteurs7">—</div><div class="stat-l">Visiteurs 7j</div></div>
+    <div class="stat"><div class="stat-n o" id="s-vues24">—</div><div class="stat-l">Vues 24h</div></div>
     <div class="stat"><div class="stat-n r" id="s-actus">—</div><div class="stat-l">Actualités</div></div>
     <div class="stat"><div class="stat-n b" id="s-evts">—</div><div class="stat-l">Événements</div></div>
     <div class="stat"><div class="stat-n g" id="s-ann">—</div><div class="stat-l">Annonces</div></div>
@@ -456,7 +461,7 @@ async function loadStats(){
       sb.from('stories').select('*',{count:'exact',head:true}).eq('visible',true),
       sb.from('posts').select('*',{count:'exact',head:true}).eq('visible',true),
       sb.from('adherents').select('*',{count:'exact',head:true}),
-      sb.from('active_sessions').select('session_id').gte('last_seen',new Date(Date.now()-5*60000).toISOString()),
+      sb.from('active_sessions').select('session_id').gte('last_seen',new Date(Date.now()-5*60000).toISOString()).catch(()=>({data:[]})),
       sb.from('likes').select('*',{count:'exact',head:true})
     ]);
     document.getElementById('s-actus').textContent=a||0;
@@ -467,6 +472,16 @@ async function loadStats(){
     document.getElementById('s-adh').textContent=adh||0;
     document.getElementById('s-online').textContent=(online||[]).length;
     document.getElementById('s-likes').textContent=lk||0;
+    // Stats profils + visiteurs depuis la vue BDD
+    sb.from('v_stats_admin').select('*').single().then(({data:vs})=>{
+      if(!vs)return;
+      const el=id=>document.getElementById(id);
+      if(el('s-profils'))el('s-profils').textContent=vs.total_profils||0;
+      if(el('s-nouveaux'))el('s-nouveaux').textContent=vs.nouveaux_7j||0;
+      if(el('s-visiteurs24'))el('s-visiteurs24').textContent=vs.visiteurs_24h||0;
+      if(el('s-visiteurs7'))el('s-visiteurs7').textContent=vs.visiteurs_7j||0;
+      if(el('s-vues24'))el('s-vues24').textContent=vs.vues_24h||0;
+    }).catch(()=>{});
   }catch(err){console.warn('stats',err);}
 }
 
