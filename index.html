@@ -710,10 +710,9 @@ function closeSV(){closeSV2();}
 
 // Story Create
 let _sf=null,_su=null;
-document.getElementById('story-file-input').onchange=e=>{
+document.getElementById('story-file-input').onchange=async e=>{
   let f=e.target.files[0];if(!f)return;
-      // Compression
-      photo=await compressImage(photo).catch(()=>photo);
+  f=await compressImage(f).catch(()=>f);
   _sf=f;if(_su)URL.revokeObjectURL(_su);_su=URL.createObjectURL(f);
   const isV=f.type.startsWith('video');
   document.getElementById('sp-media').innerHTML=isV
