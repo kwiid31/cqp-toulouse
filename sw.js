@@ -2,16 +2,16 @@
 // Cache le shell de l'app pour fonctionnement hors-ligne
 const CACHE = 'cqp-v2';
 const SHELL = [
-  '/cqp-toulouse/',
-  '/cqp-toulouse/index.html',
-  '/cqp-toulouse/profil.html',
-  '/cqp-toulouse/groupes.html',
-  '/cqp-toulouse/actus.html',
-  '/cqp-toulouse/js/cqp-core.js',
-  '/cqp-toulouse/favicon.ico',
-  '/cqp-toulouse/icons/icon-192.png',
-  '/cqp-toulouse/icons/icon-512.png',
-  '/cqp-toulouse/manifest.json',
+  '/',
+  '/index.html',
+  '/profil.html',
+  '/groupes.html',
+  '/actus.html',
+  '/js/cqp-core.js',
+  '/favicon.ico',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/manifest.json',
 ];
 
 self.addEventListener('install', e => {
@@ -49,7 +49,7 @@ self.addEventListener('fetch', e => {
       }).catch(() => {
         // Hors-ligne et pas en cache → page offline générique
         if (e.request.headers.get('accept')?.includes('text/html')) {
-          return caches.match('/cqp-toulouse/index.html');
+          return caches.match('/index.html');
         }
       });
     })
