@@ -426,7 +426,6 @@ function doLogin(){
 function doLogout(){sessionStorage.removeItem('cqp_adm');location.reload();}
 
 // UTILS
-const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
 const timeAgo=d=>{if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});};
 function prevImg(inp,id){const p=document.getElementById(id);if(inp.files[0]){p.src=URL.createObjectURL(inp.files[0]);p.style.display='block';}}
 async function uploadImg(file,bucket){
@@ -588,7 +587,6 @@ async function loadGroqLog(){
 
 // Appel Groq via Edge Function Supabase (clé sécurisée côté serveur)
 const EFN='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/groq-auto';
-async function groqViaEF(messages,prompt){
   const body={};
   if(messages&&messages.length)body.messages=messages;
   if(prompt)body.prompt=prompt;

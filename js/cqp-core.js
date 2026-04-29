@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// CQP TOULOUSE — Core JS partagé v2
-// NE RÉFÉRENCE PAS 'sb' directement — sb est créé dans chaque page.
+// CQP TOULOUSE — Core JS partagé v3
 // Code 6 chiffres = UNIQUE identité permanente de l'utilisateur.
+// Ce fichier est chargé AVANT sb=createClient() donc NE PAS utiliser sb.
 // ═══════════════════════════════════════════════════════════════════════════
 
 const CQP_SBU = 'https://vzfwtyczqfbhbjzotjft.supabase.co';
@@ -12,6 +12,8 @@ const CQP_EFN = 'https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/groq-auto
 const getCode   = () => localStorage.getItem('cqp_code')   || null;
 const getPrenom = () => localStorage.getItem('cqp_prenom') || '';
 const getPhoto  = () => localStorage.getItem('cqp_photo')  || null;
+const getSid    = () => { let s=localStorage.getItem('cqp_sid'); if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);} return s; };
+const esc       = s  => { const d=document.createElement('div');d.textContent=s||'';return d.innerHTML; };
 
 function saveSession(p) {
   localStorage.setItem('cqp_code',   p.code      || '');
@@ -22,14 +24,7 @@ function clearSession() {
   ['cqp_code','cqp_prenom','cqp_photo','cqp_sid'].forEach(k => localStorage.removeItem(k));
 }
 
-// ── Session ID (nommage fichiers storage uniquement) ─────────────────────────
-const getSid = () => {
-  let s = localStorage.getItem('cqp_sid');
-  if (!s) { s = crypto.randomUUID?.() ?? Math.random().toString(36).slice(2); localStorage.setItem('cqp_sid', s); }
-  return s;
-};
-
-// ── Vérification connexion (utilise sb passé en paramètre) ───────────────────
+// ── Vérification connexion (sb passé en paramètre) ───────────────────────────
 async function requireAuth(sb, redirectTo = 'profil.html') {
   const code = getCode();
   if (!code) { window.location.href = redirectTo; return null; }
@@ -39,7 +34,6 @@ async function requireAuth(sb, redirectTo = 'profil.html') {
     saveSession(data[0]);
     return data[0];
   } catch {
-    // Erreur réseau : utiliser le cache sans déconnecter
     return { code: getCode(), prenom: getPrenom(), photo_url: getPhoto() };
   }
 }
@@ -50,18 +44,25 @@ function lockPrenom(prenom) {
   ['c-name','sp-prenom','an-prenom','pe-prenom','sheet-prenom',
    'pub-prenom','post-prenom','story-prenom','comment-prenom'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) {
-      el.value = prenom;
-      el.readOnly = true;
-      el.style.cssText = 'background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;pointer-events:none;';
-    }
+    if (el) { el.value = prenom; el.readOnly = true; el.style.cssText = 'background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;pointer-events:none;'; }
   });
 }
 
-// ── Tracker visite (sb passé en paramètre) ───────────────────────────────────
+// ── Tracker une visite (sb passé en paramètre) ───────────────────────────────
 function trackVisit(sb, page) {
   const code = getCode();
   if (code && sb) sb.from('page_views').insert({ page, profil_code: code }).catch(() => {});
+}
+
+// ── Temps relatif ─────────────────────────────────────────────────────────────
+function timeAgo(d) {
+  if (!d) return '';
+  const s = (Date.now() - new Date(d)) / 1000;
+  if (s < 60) return "À l'instant";
+  if (s < 3600) return `Il y a ${Math.floor(s/60)} min`;
+  if (s < 86400) return `Il y a ${Math.floor(s/3600)} h`;
+  if (s < 604800) return `Il y a ${Math.floor(s/86400)} j`;
+  return new Date(d).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
 }
 
 // ── Compression image ─────────────────────────────────────────────────────────
@@ -81,21 +82,7 @@ async function compressImage(file, maxW = 1200, q = 0.82) {
   });
 }
 
-// ── Temps relatif ─────────────────────────────────────────────────────────────
-function timeAgo(d) {
-  if (!d) return '';
-  const s = (Date.now() - new Date(d)) / 1000;
-  if (s < 60) return "À l'instant";
-  if (s < 3600) return `Il y a ${Math.floor(s/60)} min`;
-  if (s < 86400) return `Il y a ${Math.floor(s/3600)} h`;
-  if (s < 604800) return `Il y a ${Math.floor(s/86400)} j`;
-  return new Date(d).toLocaleDateString('fr-FR', { day:'2-digit', month:'short' });
-}
-
-// ── Escape HTML ───────────────────────────────────────────────────────────────
-const esc = s => { const d = document.createElement('div'); d.textContent = s||''; return d.innerHTML; };
-
-// ── Groq via Edge Function ────────────────────────────────────────────────────
+// ── Groq via Edge Function Supabase ───────────────────────────────────────────
 async function groqViaEF(messages, prompt) {
   const body = {};
   if (messages?.length) body.messages = messages;
