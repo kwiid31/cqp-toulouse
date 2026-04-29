@@ -1,0 +1,30 @@
+{
+  "name": "CQP Toulouse",
+  "short_name": "CQP",
+  "description": "Collectif des Quartiers Populaires de Toulouse",
+  "start_url": "/cqp-toulouse/",
+  "scope": "/cqp-toulouse/",
+  "display": "standalone",
+  "background_color": "#C8102E",
+  "theme_color": "#C8102E",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/cqp-toulouse/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/cqp-toulouse/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/cqp-toulouse/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
