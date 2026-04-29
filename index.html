@@ -1254,6 +1254,9 @@ async function init(){
   if(_prenomCache)_lockAll(_prenomCache);
   document.addEventListener('click',()=>setTimeout(()=>_lockAll(localStorage.getItem('cqp_prenom')||''),80));
 
+  // ── TRACKER LA VISITE ────────────────────────────────────────────────────
+  sb.from('page_views').insert({page:'accueil',profil_code:_pCode}).catch(()=>{});
+
   // ── CHARGER PROFIL EN ARRIÈRE-PLAN (sans bloquer l'affichage) ───────────
   sb.from('profils').select('*').eq('code',_pCode).limit(1).then(({data:_pd})=>{
     if(!_pd?.length){
