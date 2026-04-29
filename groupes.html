@@ -330,7 +330,7 @@ async function createGroupe(){
     try{localStorage.setItem('cqp_prenom',prenom);}catch{}
     msg.textContent='✅ Groupe créé !';msg.style.color='var(--green)';
     setTimeout(()=>{closeCreate();loadGroupes();
-  trackVisit('groupes');msg.textContent='';},1200);
+  trackVisit(sb,'groupes');msg.textContent='';},1200);
   }catch(e){msg.textContent='Erreur.';msg.style.color='var(--rouge)';console.error(e);}
 }
 

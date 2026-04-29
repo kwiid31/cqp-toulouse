@@ -1259,7 +1259,7 @@ async function init(){
   document.addEventListener('click',()=>setTimeout(()=>lockPrenom(getPrenom()),80));
 
   // ── TRACKER LA VISITE ────────────────────────────────────────────────────
-  trackVisit('accueil');
+  trackVisit(sb,'accueil');
 
   // ── CHARGER PROFIL EN ARRIÈRE-PLAN (sans bloquer l'affichage) ───────────
   sb.from('profils').select('*').eq('code',_pCode).limit(1).then(({data:_pd})=>{

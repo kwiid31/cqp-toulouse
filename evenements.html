@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#C8102E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Événements — CQP Toulouse</title>
+<link rel="icon" href="/cqp-toulouse/favicon.ico">
+<link rel="apple-touch-icon" href="/cqp-toulouse/icons/apple-touch-icon.png">
+<link rel="manifest" href="/cqp-toulouse/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/cqp-toulouse/js/cqp-core.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--rouge:#C8102E;--green:#42B72A;--purple:#7C3AED;--blue:#1877F2;--orange:#F97316;
+  --txt:#050505;--txt2:#65676B;--txt3:#8A8D91;--bg:#F0F2F5;--bg3:#E4E6EB;--border:#CED0D4;
+  --shadow:0 1px 2px rgba(0,0,0,.1);--r:10px;--nav:56px;}
+html,body{font-size:15px;background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh;}
+body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 8px);}
+button,label{cursor:pointer;font-family:inherit;}
+
+.topbar{position:sticky;top:0;z-index:100;height:var(--nav);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;box-shadow:var(--shadow);}
+.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:.5px;flex:1;}
+.btn-new{padding:8px 16px;background:var(--rouge);border:none;border-radius:20px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;}
+
+/* CARTE ÉVÉNEMENT */
+.evt-card{background:#fff;border-radius:var(--r);margin:10px 12px;box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--border);}
+.evt-banner{background:linear-gradient(135deg,var(--rouge),#ff4d6d);padding:20px 16px;color:#fff;position:relative;}
+.evt-date-badge{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 10px;text-align:center;}
+.evt-date-day{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1;display:block;}
+.evt-date-month{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;}
+.evt-cat{display:inline-block;background:rgba(255,255,255,.2);border-radius:12px;padding:3px 10px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.evt-titre{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.5px;line-height:1.2;}
+.evt-body{padding:14px;}
+.evt-desc{font-size:.88rem;color:var(--txt2);line-height:1.65;margin-bottom:10px;}
+.evt-infos{display:flex;flex-wrap:wrap;gap:8px;}
+.evt-info{display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;}
+.evt-info svg{width:14px;height:14px;stroke:var(--txt3);fill:none;stroke-width:2;stroke-linecap:round;}
+.evt-footer{padding:10px 14px;border-top:1px solid var(--bg3);display:flex;justify-content:space-between;align-items:center;}
+.evt-auteur{font-size:.75rem;color:var(--txt3);}
+.evt-photo{width:100%;max-height:200px;object-fit:cover;display:block;}
+
+/* MODAL */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;justify-content:center;}
+.modal-ov.open{display:flex;}
+.modal-box{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.5px;margin-bottom:16px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:border .15s;resize:vertical;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--rouge);}
+.field-readonly{background:var(--bg3);color:var(--txt2);pointer-events:none;}
+.btn-submit{width:100%;padding:14px;background:var(--rouge);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.form-msg{text-align:center;font-size:.8rem;min-height:18px;margin-top:8px;}
+.empty{padding:40px 20px;text-align:center;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;}
+
+/* NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:#fff;border-top:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -1px 8px rgba(0,0,0,.06);}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;padding:6px 0;}
+.nav-item.active,.nav-item:hover{color:var(--rouge);}
+.nav-item svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.nav-center{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:4px;}
+.nav-pub{width:50px;height:50px;border-radius:50%;background:var(--rouge);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(200,16,46,.4);margin-top:-14px;}
+.nav-pub svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button onclick="history.back()" style="width:36px;height:36px;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;">
+    <svg viewBox="0 0 24 24" width="20" height="20" style="stroke:var(--txt);fill:none;stroke-width:2;stroke-linecap:round;"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="topbar-title">📅 Événements</span>
+  <button class="btn-new" onclick="openModal()">+ Créer</button>
+</header>
+
+<div id="list-evts"><div class="empty">Chargement…</div></div>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal">
+  <div class="modal-box">
+    <div class="modal-title">Créer un événement</div>
+    <div class="field">
+      <label>Votre prénom</label>
+      <input id="pe-prenom" class="field-readonly" readonly>
+    </div>
+    <div class="field">
+      <label>Titre de l'événement *</label>
+      <input id="pe-titre" placeholder="Ex: Barbecue au Mirail, Réunion CQP…" maxlength="100">
+    </div>
+    <div class="field">
+      <label>Description *</label>
+      <textarea id="pe-desc" rows="3" placeholder="Décrivez l'événement…" maxlength="500"></textarea>
+    </div>
+    <div class="field">
+      <label>Date et heure *</label>
+      <input type="datetime-local" id="pe-date">
+    </div>
+    <div class="field">
+      <label>Lieu</label>
+      <input id="pe-lieu" placeholder="Ex: Parc de la Reynerie, Salle des fêtes…" maxlength="100">
+    </div>
+    <div class="field">
+      <label>Catégorie</label>
+      <select id="pe-cat">
+        <option value="Culturel">Culturel</option>
+        <option value="Sportif">Sportif</option>
+        <option value="Solidarité">Solidarité</option>
+        <option value="Réunion">Réunion</option>
+        <option value="Fête">Fête / Barbecue</option>
+        <option value="Formation">Formation</option>
+        <option value="Autre">Autre</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Photo (optionnel)</label>
+      <input type="file" id="pe-photo" accept="image/*">
+    </div>
+    <button class="btn-submit" onclick="submitEvt()">📅 Créer l'événement</button>
+    <div class="form-msg" id="pe-msg"></div>
+    <button onclick="closeModal()" style="width:100%;padding:12px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;margin-top:8px;">Annuler</button>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
+  <a class="nav-item" href="groupes.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Groupes</a>
+  <div class="nav-center"><button class="nav-pub" onclick="openModal()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
+  <a class="nav-item active" href="evenements.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Événements</a>
+  <a class="nav-item" href="profil.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
+</nav>
+
+<script>
+const SBU=CQP_SBU, SBK=CQP_SBK;
+const sb=supabase.createClient(SBU,SBK);
+let _profil=null;
+
+const MOIS=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+
+async function init(){
+  const code=getCode();
+  if(!code){window.location.href='profil.html';return;}
+  sb.from('profils').select('*').eq('code',code).limit(1).then(({data})=>{
+    if(data?.length){_profil=data[0];saveSession(data[0]);lockPrenom(data[0].prenom);}
+  }).catch(()=>{_profil={code,prenom:getPrenom(),photo_url:getPhoto()};lockPrenom(getPrenom());});
+  trackVisit(sb,'evenements');
+  loadEvts();
+}
+
+async function loadEvts(){
+  const now=new Date().toISOString();
+  const{data,error}=await sb.from('evenements')
+    .select('*,profils!profil_code(prenom,photo_url,quartier)')
+    .gte('date_debut',now)
+    .order('date_debut',{ascending:true})
+    .limit(30);
+  const{data:past}=await sb.from('evenements')
+    .select('*,profils!profil_code(prenom,photo_url,quartier)')
+    .lt('date_debut',now)
+    .order('date_debut',{ascending:false})
+    .limit(10);
+  const el=document.getElementById('list-evts');
+  const all=[...(data||[]),...(past||[])];
+  if(error||!all.length){
+    el.innerHTML='<div class="empty">Aucun événement pour l\'instant.<br>Soyez le premier à créer un événement !</div>';
+    return;
+  }
+  el.innerHTML=all.map(e=>{
+    const d=e.date_debut?new Date(e.date_debut):null;
+    const isPast=d&&d<new Date();
+    const auteur=e.profils?.prenom||'CQP';
+    return `<div class="evt-card" style="${isPast?'opacity:.65;':''}">
+      ${e.photo_url?`<img class="evt-photo" src="${esc(e.photo_url)}" loading="lazy">`:''}
+      <div class="evt-banner">
+        ${d?`<div class="evt-date-badge"><span class="evt-date-day">${d.getDate()}</span><span class="evt-date-month">${MOIS[d.getMonth()]}</span></div>`:''}
+        ${e.categorie?`<div class="evt-cat">${esc(e.categorie)}</div>`:''}
+        <div class="evt-titre">${esc(e.titre||'')}</div>
+      </div>
+      <div class="evt-body">
+        <div class="evt-desc">${esc((e.description||'').slice(0,200))}</div>
+        <div class="evt-infos">
+          ${d?`<div class="evt-info"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${d.toLocaleDateString('fr-FR',{weekday:'short',day:'2-digit',month:'short'})} à ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div>`:''}
+          ${e.lieu?`<div class="evt-info"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(e.lieu)}</div>`:''}
+        </div>
+      </div>
+      <div class="evt-footer">
+        <div class="evt-auteur">Créé par <strong>${esc(auteur)}</strong></div>
+        ${isPast?'<span style="font-family:Barlow Condensed,sans-serif;font-size:.68rem;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;">Passé</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openModal(){if(!getCode()){window.location.href='profil.html';return;}lockPrenom(getPrenom());document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow='';}
+
+async function submitEvt(){
+  const titre=document.getElementById('pe-titre').value.trim();
+  const desc=document.getElementById('pe-desc').value.trim();
+  const dateVal=document.getElementById('pe-date').value;
+  const lieu=document.getElementById('pe-lieu').value.trim();
+  const cat=document.getElementById('pe-cat').value;
+  const msg=document.getElementById('pe-msg');
+  const code=getCode();
+  const prenom=getPrenom();
+  if(!titre||!desc||!dateVal){msg.style.color='var(--rouge)';msg.textContent='Titre, description et date obligatoires.';return;}
+  if(!code){window.location.href='profil.html';return;}
+  msg.style.color='var(--txt3)';msg.textContent='Création…';
+  let photo_url=null;
+  const photoFile=document.getElementById('pe-photo').files[0];
+  if(photoFile){
+    try{
+      const f=await compressImage(photoFile);
+      const ext=f.name.split('.').pop()||'jpg';
+      const name=`evenements/${Date.now()}-${getSid()}.${ext}`;
+      const{error:ue}=await sb.storage.from('site-photos').upload(name,f,{contentType:'image/jpeg',upsert:false});
+      if(!ue)photo_url=sb.storage.from('site-photos').getPublicUrl(name).data.publicUrl;
+    }catch{}
+  }
+  const{error}=await sb.from('evenements').insert({
+    titre,description:desc,categorie:cat,lieu:lieu||null,
+    date_debut:new Date(dateVal).toISOString(),
+    photo_url,profil_code:code,prenom,
+    visible:true,validee:true,
+    created_at:new Date().toISOString()
+  });
+  if(error){msg.style.color='var(--rouge)';msg.textContent='Erreur : '+error.message;return;}
+  closeModal();
+  document.getElementById('pe-titre').value='';
+  document.getElementById('pe-desc').value='';
+  document.getElementById('pe-date').value='';
+  document.getElementById('pe-lieu').value='';
+  loadEvts();
+}
+init();
+</script>
+</body>
+</html>

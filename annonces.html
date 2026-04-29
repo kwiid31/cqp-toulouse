@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#C8102E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Annonces — CQP Toulouse</title>
+<link rel="icon" href="/cqp-toulouse/favicon.ico">
+<link rel="apple-touch-icon" href="/cqp-toulouse/icons/apple-touch-icon.png">
+<link rel="manifest" href="/cqp-toulouse/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/cqp-toulouse/js/cqp-core.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--rouge:#C8102E;--green:#42B72A;--purple:#7C3AED;--blue:#1877F2;--orange:#F97316;
+  --txt:#050505;--txt2:#65676B;--txt3:#8A8D91;--bg:#F0F2F5;--bg3:#E4E6EB;--border:#CED0D4;
+  --shadow:0 1px 2px rgba(0,0,0,.1);--r:10px;--nav:56px;}
+html,body{font-size:15px;background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh;}
+body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 8px);}
+button,label{cursor:pointer;font-family:inherit;}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:100;height:var(--nav);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;box-shadow:var(--shadow);}
+.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:.5px;flex:1;}
+.btn-new{padding:8px 16px;background:var(--rouge);border:none;border-radius:20px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;}
+
+/* CARTE ANNONCE */
+.ann-card{background:#fff;border-radius:var(--r);margin:10px 12px;box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--border);}
+.ann-header{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--bg3);}
+.ann-av{width:40px;height:40px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:#fff;flex-shrink:0;overflow:hidden;}
+.ann-av img{width:100%;height:100%;object-fit:cover;}
+.ann-meta{flex:1;min-width:0;}
+.ann-auteur{font-weight:600;font-size:.88rem;}
+.ann-date{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;color:var(--txt3);letter-spacing:.5px;}
+.ann-cat{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:20px;}
+.ann-body{padding:14px;}
+.ann-titre{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.3px;margin-bottom:6px;}
+.ann-contenu{font-size:.88rem;color:var(--txt2);line-height:1.65;}
+.ann-photo{width:100%;max-height:280px;object-fit:cover;display:block;}
+.ann-footer{padding:10px 14px;display:flex;gap:10px;border-top:1px solid var(--bg3);}
+.ann-contact{font-size:.8rem;color:var(--txt3);}
+.ann-quartier{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;}
+
+/* MODAL */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;justify-content:center;}
+.modal-ov.open{display:flex;}
+.modal-box{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.5px;margin-bottom:16px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:6px;}
+.field input,.field select,.field textarea{width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:border .15s;resize:vertical;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--rouge);}
+.field-readonly{background:var(--bg3);color:var(--txt2);pointer-events:none;}
+.btn-submit{width:100%;padding:14px;background:var(--rouge);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.form-msg{text-align:center;font-size:.8rem;min-height:18px;margin-top:8px;}
+
+/* VIDE / CHARGEMENT */
+.empty{padding:40px 20px;text-align:center;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;}
+
+/* NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:#fff;border-top:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -1px 8px rgba(0,0,0,.06);}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;padding:6px 0;}
+.nav-item.active,.nav-item:hover{color:var(--rouge);}
+.nav-item svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.nav-center{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:4px;}
+.nav-pub{width:50px;height:50px;border-radius:50%;background:var(--rouge);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(200,16,46,.4);margin-top:-14px;}
+.nav-pub svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button onclick="history.back()" style="width:36px;height:36px;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;">
+    <svg viewBox="0 0 24 24" width="20" height="20" style="stroke:var(--txt);fill:none;stroke-width:2;stroke-linecap:round;"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="topbar-title">📋 Annonces</span>
+  <button class="btn-new" onclick="openModal()">+ Publier</button>
+</header>
+
+<div id="list-annonces"><div class="empty">Chargement…</div></div>
+
+<!-- MODAL CRÉER ANNONCE -->
+<div class="modal-ov" id="modal">
+  <div class="modal-box">
+    <div class="modal-title">Publier une annonce</div>
+    <div class="field">
+      <label>Votre prénom</label>
+      <input id="an-prenom" class="field-readonly" readonly>
+    </div>
+    <div class="field">
+      <label>Titre de l'annonce *</label>
+      <input id="an-titre" placeholder="Ex: Vends vélo, Cherche coloc…" maxlength="100">
+    </div>
+    <div class="field">
+      <label>Description *</label>
+      <textarea id="an-contenu" rows="4" placeholder="Décrivez votre annonce…" maxlength="600"></textarea>
+    </div>
+    <div class="field">
+      <label>Catégorie</label>
+      <select id="an-cat">
+        <option value="Général">Général</option>
+        <option value="Vente">Vente / Don</option>
+        <option value="Recherche">Recherche</option>
+        <option value="Logement">Logement</option>
+        <option value="Emploi">Emploi</option>
+        <option value="Services">Services</option>
+        <option value="Événement">Événement associatif</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Photo (optionnel)</label>
+      <input type="file" id="an-photo" accept="image/*">
+    </div>
+    <button class="btn-submit" onclick="submitAnnonce()">📋 Publier l'annonce</button>
+    <div class="form-msg" id="an-msg"></div>
+    <button onclick="closeModal()" style="width:100%;padding:12px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;margin-top:8px;">Annuler</button>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
+  <a class="nav-item" href="groupes.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Groupes</a>
+  <div class="nav-center"><button class="nav-pub" onclick="openModal()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
+  <a class="nav-item active" href="annonces.html"><svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>Annonces</a>
+  <a class="nav-item" href="profil.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
+</nav>
+
+<script>
+const SBU=CQP_SBU, SBK=CQP_SBK;
+const sb=supabase.createClient(SBU,SBK);
+let _profil=null;
+
+async function init(){
+  const code=getCode();
+  if(!code){window.location.href='profil.html';return;}
+  // Charger profil en arrière-plan
+  sb.from('profils').select('*').eq('code',code).limit(1).then(({data})=>{
+    if(data?.length){
+      _profil=data[0];
+      saveSession(data[0]);
+      lockPrenom(data[0].prenom);
+    }
+  }).catch(()=>{
+    _profil={code,prenom:getPrenom(),photo_url:getPhoto()};
+    lockPrenom(getPrenom());
+  });
+  trackVisit(sb,'annonces');
+  loadAnnonces();
+}
+
+async function loadAnnonces(){
+  const{data,error}=await sb.from('annonces').select('*,profils!profil_code(prenom,photo_url,quartier)').eq('visible',true).order('created_at',{ascending:false}).limit(50);
+  const el=document.getElementById('list-annonces');
+  if(error||!data?.length){
+    el.innerHTML='<div class="empty">Aucune annonce pour l\'instant.<br>Soyez le premier à publier !</div>';
+    return;
+  }
+  el.innerHTML=data.map(a=>{
+    const auteur=a.profils?.prenom||a.prenom||'Anonyme';
+    const photo=a.profils?.photo_url||null;
+    const quartier=a.profils?.quartier||'';
+    return `<div class="ann-card">
+      ${a.photo_url?`<img class="ann-photo" src="${esc(a.photo_url)}" loading="lazy">`:''}
+      <div class="ann-header">
+        <div class="ann-av">${photo?`<img src="${esc(photo)}">`:(auteur[0]||'?').toUpperCase()}</div>
+        <div class="ann-meta">
+          <div class="ann-auteur">${esc(auteur)} ${quartier?`<span class="ann-quartier">· ${esc(quartier)}</span>`:''}</div>
+          <div class="ann-date">${timeAgo(a.created_at)}</div>
+        </div>
+        ${a.categorie?`<span class="ann-cat">${esc(a.categorie)}</span>`:''}
+      </div>
+      <div class="ann-body">
+        <div class="ann-titre">${esc(a.titre||'')}</div>
+        <div class="ann-contenu">${esc(a.contenu||a.description||'')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openModal(){
+  if(!getCode()){window.location.href='profil.html';return;}
+  lockPrenom(getPrenom());
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+async function submitAnnonce(){
+  const titre=document.getElementById('an-titre').value.trim();
+  const contenu=document.getElementById('an-contenu').value.trim();
+  const cat=document.getElementById('an-cat').value;
+  const msg=document.getElementById('an-msg');
+  const prenom=getPrenom();
+  const code=getCode();
+  if(!titre||!contenu){msg.style.color='var(--rouge)';msg.textContent='Titre et description obligatoires.';return;}
+  if(!code){window.location.href='profil.html';return;}
+  msg.style.color='var(--txt3)';msg.textContent='Publication…';
+  let photo_url=null;
+  const photoFile=document.getElementById('an-photo').files[0];
+  if(photoFile){
+    try{
+      const f=await compressImage(photoFile);
+      const ext=f.name.split('.').pop()||'jpg';
+      const name=`annonces/${Date.now()}-${getSid()}.${ext}`;
+      const{error:ue}=await sb.storage.from('site-photos').upload(name,f,{contentType:'image/jpeg',upsert:false});
+      if(!ue)photo_url=sb.storage.from('site-photos').getPublicUrl(name).data.publicUrl;
+    }catch{}
+  }
+  const{error}=await sb.from('annonces').insert({
+    titre,contenu,categorie:cat,photo_url,
+    profil_code:code,prenom,visible:true,
+    created_at:new Date().toISOString()
+  });
+  if(error){msg.style.color='var(--rouge)';msg.textContent='Erreur : '+error.message;return;}
+  closeModal();
+  document.getElementById('an-titre').value='';
+  document.getElementById('an-contenu').value='';
+  loadAnnonces();
+}
+init();
+</script>
+</body>
+</html>
