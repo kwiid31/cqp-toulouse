@@ -504,7 +504,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
 // ═══════════════════════════════════════════════════════════
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
-const sb=supabase.createClient(SBU,SBK);
+const sb=supabase.createClient(SBU,SBK,{global:{headers:getAuthHeaders()}});
 
 // ═══════════════════════════════════════════════════════════
 //  UTILS
