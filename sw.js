@@ -31,10 +31,10 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   // Supabase, Groq, fonts → réseau toujours
-  if (url.hostname.includes('supabase') || url.hostname.includes('groq') ||
-      url.hostname.includes('googleapis') || url.hostname.includes('gstatic')) {
-    return;
-  }
+  const _ext = url.hostname.endsWith('.supabase.co') || url.hostname.endsWith('.supabase.in') ||
+             url.hostname === 'api.groq.com' ||
+             url.hostname.endsWith('.googleapis.com') || url.hostname.endsWith('.gstatic.com');
+  if (_ext) { return; }
   // Shell de l'app → cache first, réseau en fallback
   e.respondWith(
     caches.match(e.request).then(cached => {
