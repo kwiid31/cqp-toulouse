@@ -21,7 +21,7 @@ function saveSession(p) {
   localStorage.setItem('cqp_photo',  p.photo_url || '');
 }
 function clearSession() {
-  ['cqp_code','cqp_prenom','cqp_photo','cqp_sid'].forEach(k => localStorage.removeItem(k));
+  ['cqp_code','cqp_prenom','cqp_photo','cqp_sid','cqp_token'].forEach(k => localStorage.removeItem(k));
 }
 
 // ── Vérification connexion (sb passé en paramètre) ───────────────────────────
@@ -113,4 +113,31 @@ async function uploadPhoto(sb, file, folder = 'posts') {
   const { error } = await sb.storage.from('site-photos').upload(name, file, { contentType: 'image/jpeg', upsert: false });
   if (error) throw error;
   return sb.storage.from('site-photos').getPublicUrl(name).data.publicUrl;
+}
+
+// ── Token JWT (auth sécurisée) ───────────────────────────────────────────────
+const getToken   = () => localStorage.getItem('cqp_token') || null;
+const saveToken  = (t) => t ? localStorage.setItem('cqp_token', t) : null;
+const clearToken = () => localStorage.removeItem('cqp_token');
+
+// Headers d'auth pour Supabase (injecte le JWT si disponible)
+function getAuthHeaders() {
+  const t = getToken();
+  return t ? { Authorization: 'Bearer ' + t } : {};
+}
+
+// Client Supabase authentifié (avec JWT si connecté)
+function getAuthSb() {
+  return supabase.createClient(CQP_SBU, CQP_SBK, { global: { headers: getAuthHeaders() } });
+}
+
+// ── Validation URL photo (anti-XSS) ──────────────────────────────────────────
+function safeUrl(url) {
+  if (!url) return '';
+  try {
+    const u = new URL(url);
+    if (u.protocol !== 'https:') return '';
+    if (!u.hostname.endsWith('.supabase.co') && !u.hostname.endsWith('.supabase.in')) return '';
+    return url;
+  } catch { return ''; }
 }
