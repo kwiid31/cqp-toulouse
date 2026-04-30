@@ -271,6 +271,12 @@ async function loginWithCode(){
   // Mettre à jour session_id en BDD avec l'actuel
   const sid=getOrCreateSid();
   await sb.from('profils').update({session_id:sid,updated_at:new Date().toISOString()}).eq('code',code);
+  // Obtenir un JWT signé via la Edge Function
+  try{
+    const _r=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth',{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'login'})});
+    const _d=await _r.json();
+    if(_d.token)saveToken(_d.token);
+  }catch{}
   showApp(p);
 }
 
@@ -295,6 +301,12 @@ async function createProfil(){
     created_at:new Date().toISOString(),updated_at:new Date().toISOString()
   }).select().single();
   if(error){err.textContent='Erreur : '+error.message;return;}
+  // Obtenir un JWT signé via la Edge Function
+  try{
+    const _r=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth',{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'signup'})});
+    const _d=await _r.json();
+    if(_d.token)saveToken(_d.token);
+  }catch{}
   saveCode(code);
   try{localStorage.setItem('cqp_prenom',prenom);}catch{}
   err.textContent='';
@@ -360,6 +372,7 @@ function renderAv(p){
 
 function logout(){
   clearCode();
+  clearToken();
   _profil=null;
   document.getElementById('app-profil').style.display='none';
   document.getElementById('login-screen').classList.remove('gone');
