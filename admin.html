@@ -414,12 +414,15 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
-const PWD='toulouse2026';
+const PWD_HASH='020986c183f52e2e3c211d20bfc7477ee24d4e6ec122b03d8793c2608891a03f';
 
 // AUTH
-function doLogin(){
+async function doLogin(){
   const v=document.getElementById('pwd').value;
-  if(v===PWD){sessionStorage.setItem('cqp_adm','1');document.getElementById('login').classList.add('gone');document.getElementById('app').classList.add('visible');init();}
+  const enc=new TextEncoder();
+  const buf=await crypto.subtle.digest('SHA-256',enc.encode(v));
+  const hex=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(hex===PWD_HASH){sessionStorage.setItem('cqp_adm','1');document.getElementById('login').classList.add('gone');document.getElementById('app').classList.add('visible');init();}
   else document.getElementById('login-err').textContent='Mot de passe incorrect.';
 }
 function doLogout(){sessionStorage.removeItem('cqp_adm');location.reload();}
@@ -912,7 +915,7 @@ function init(){
   loadStats();setInterval(loadStats,30000);
   setTimeout(loadGroqServerConfig,500);
 }
-document.getElementById('pwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('pwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});  // doLogin is async, no await needed for event handler
 if(sessionStorage.getItem('cqp_adm')==='1'){
   document.getElementById('login').classList.add('gone');
   document.getElementById('app').classList.add('visible');
@@ -921,3 +924,4 @@ if(sessionStorage.getItem('cqp_adm')==='1'){
 </script>
 </body>
 </html>
+
