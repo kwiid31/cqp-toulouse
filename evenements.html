@@ -147,11 +147,26 @@ async function compressImage(file,maxW=1200,q=0.82){if(!file?.type?.startsWith('
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
+const _EF='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth';
+let _authDone=false;
+async function ensureAuth(){
+  if(_authDone)return;
+  const code=localStorage.getItem('cqp_code');
+  if(!code)return;
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(session){_authDone=true;return;}
+    const r=await fetch(_EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'login'})});
+    const d=await r.json();
+    if(d.email&&d.password){await sb.auth.signInWithPassword({email:d.email,password:d.password});_authDone=true;}
+  }catch(e){console.warn('ensureAuth:',e);}
+}
 let _profil=null;
 
 const MOIS=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
 
 async function init(){
+  await ensureAuth();
   const code=getCode();
   if(!code){window.location.href='profil.html';return;}
   sb.from('profils').select('*').eq('code',code).limit(1).then(({data})=>{
