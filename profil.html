@@ -270,7 +270,7 @@ async function loginWithCode(){
   try{localStorage.setItem('cqp_prenom',p.prenom);}catch{}
   // Mettre à jour session_id en BDD avec l'actuel
   const sid=getOrCreateSid();
-  await sb.from('profils').update({session_id:sid,updated_at:new Date().toISOString()}).eq('code',code);
+  await sb.from('profils').update({session_id:sid,updated_at:new Date().toISOString()}).eq('code',code).catch(()=>{});
   // Obtenir un JWT signé via la Edge Function
   try{
     const _r=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth',{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'login'})});
@@ -444,15 +444,25 @@ async function boot(){
   if(code){
     const{data:rows}=await sb.from('profils').select('*').eq('code',code).limit(1);
     if(rows?.length){
-      // Mettre à jour session_id
+      // Auto-reconnexion Supabase Auth si pas de session active
+      const{data:{session}}=await sb.auth.getSession();
+      if(!session){
+        try{
+          const _r=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth',{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'login'})});
+          const _d=await _r.json();
+          if(_d.email&&_d.password){
+            const{data:ad}=await sb.auth.signInWithPassword({email:_d.email,password:_d.password});
+            if(ad?.session?.access_token)saveToken(ad.session.access_token);
+          }
+        }catch(e){console.warn('boot auto-auth:',e);}
+      }
       const sid=getOrCreateSid();
-      await sb.from('profils').update({session_id:sid}).eq('code',code);
+      await sb.from('profils').update({session_id:sid}).eq('code',code).catch(()=>{});
       showApp({...rows[0],session_id:sid});
       return;
     }
     clearCode();
   }
-  // Pas de code → afficher écran de connexion
   document.getElementById('login-screen').classList.remove('gone');
 }
 boot();
