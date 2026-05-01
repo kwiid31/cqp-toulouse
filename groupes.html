@@ -203,7 +203,7 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 
 <script>
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co',SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
-const sb=supabase.createClient(SBU,SBK,{global:{headers:getAuthHeaders()}});
+const sb=supabase.createClient(SBU,SBK);
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
 const getSid=()=>{try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Date.now();}};
 const getProfilCode=()=>{try{return localStorage.getItem('cqp_code')||null;}catch{return null;}};
