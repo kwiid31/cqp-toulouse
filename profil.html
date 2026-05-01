@@ -370,7 +370,8 @@ function renderAv(p){
   else av.textContent=(p?.prenom||'?')[0].toUpperCase();
 }
 
-function logout(){
+async function logout(){
+  try{ await sb.auth.signOut(); }catch{}
   clearCode();
   clearToken();
   _profil=null;
