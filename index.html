@@ -765,6 +765,7 @@ function closeSP(){
 }
 async function publishStory(){
   if(!_sf)return;
+  await ensureAuth();
   const btn=document.getElementById('sp-btn');
   const msg=document.getElementById('sp-msg');
   const caption=document.getElementById('sp-caption').value.trim();
@@ -818,6 +819,7 @@ function cPhotoPreview(inp){
   else prev.style.display='none';
 }
 async function publishPost(){
+  await ensureAuth();
   const text=document.getElementById('c-text').value.trim();
   const prenom=document.getElementById('c-name').value.trim()||'Anonyme';
   const msgEl=document.getElementById('c-msg');
@@ -874,6 +876,7 @@ function applyLikeUI(type,id){
   if(sl)sl.textContent=`${d.count} j'aime`;
 }
 async function toggleLike(type,id,el){
+  await ensureAuth();
   const sid=getCode()||getSid();const k=`${type}-${id}`;
   const d=likesCache[k]||{count:0,liked:false};
   // optimistic
@@ -946,9 +949,11 @@ async function sendCmt(){
   const msg=document.getElementById('sheet-msg').value.trim();
   const prenom=document.getElementById('sheet-prenom').value.trim()||'Anonyme';
   if(!msg||!sheetType||!sheetId)return;
+  await ensureAuth();
   savePrenom(prenom);
   document.getElementById('sheet-msg').value='';
-  await sb.from('commentaires').insert({item_type:sheetType,item_id:sheetId,prenom,message:msg,visible:true});
+  const code=localStorage.getItem('cqp_code')||null;
+  await sb.from('commentaires').insert({item_type:sheetType,item_id:sheetId,prenom,message:msg,visible:true,profil_code:code});
   refreshCmts();
 }
 
