@@ -275,7 +275,7 @@ async function loginWithCode(){
   try{
     const _r=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth',{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'login'})});
     const _d=await _r.json();
-    if(_d.token)saveToken(_d.token);
+    if(_d.email&&_d.password){await sb.auth.signInWithPassword({email:_d.email,password:_d.password}).catch(()=>{});}
   }catch{}
   showApp(p);
 }
@@ -305,7 +305,7 @@ async function createProfil(){
   try{
     const _r=await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth',{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'signup'})});
     const _d=await _r.json();
-    if(_d.token)saveToken(_d.token);
+    if(_d.email&&_d.password){await sb.auth.signInWithPassword({email:_d.email,password:_d.password}).catch(()=>{});}
   }catch{}
   saveCode(code);
   try{localStorage.setItem('cqp_prenom',prenom);}catch{}
