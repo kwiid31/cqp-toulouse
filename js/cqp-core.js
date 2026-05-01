@@ -120,16 +120,6 @@ const getToken   = () => localStorage.getItem('cqp_token') || null;
 const saveToken  = (t) => t ? localStorage.setItem('cqp_token', t) : null;
 const clearToken = () => localStorage.removeItem('cqp_token');
 
-// Headers d'auth pour Supabase (injecte le JWT si disponible)
-function getAuthHeaders() {
-  const t = getToken();
-  return t ? { Authorization: 'Bearer ' + t } : {};
-}
-
-// Client Supabase authentifié (avec JWT si connecté)
-function getAuthSb() {
-  return supabase.createClient(CQP_SBU, CQP_SBK, { global: { headers: getAuthHeaders() } });
-}
 
 // ── Validation URL photo (anti-XSS) ──────────────────────────────────────────
 function safeUrl(url) {
