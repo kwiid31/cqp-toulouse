@@ -28,6 +28,27 @@ function clearSession() {
 async function requireAuth(sb, redirectTo = 'profil.html') {
   const code = getCode();
   if (!code) { window.location.href = redirectTo; return null; }
+
+  // Vérifier session Supabase Auth ; si absente → auto-reconnexion transparente
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    try {
+      const _r = await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': CQP_SBK },
+        body: JSON.stringify({ profil_code: code, action: 'login' })
+      });
+      const _d = await _r.json();
+      if (_d.email && _d.password) {
+        const { data: ad } = await sb.auth.signInWithPassword({ email: _d.email, password: _d.password });
+        if (ad?.session?.access_token) saveToken(ad.session.access_token);
+      } else {
+        // Code plus valide en base → déconnexion
+        clearSession(); window.location.href = redirectTo; return null;
+      }
+    } catch { clearSession(); window.location.href = redirectTo; return null; }
+  }
+
   try {
     const { data } = await sb.from('profils').select('*').eq('code', code).limit(1);
     if (!data?.length) { clearSession(); window.location.href = redirectTo; return null; }
