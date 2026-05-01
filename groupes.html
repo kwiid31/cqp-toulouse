@@ -204,6 +204,20 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 <script>
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co',SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
+const _EF='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth';
+let _authDone=false;
+async function ensureAuth(){
+  if(_authDone)return;
+  const code=localStorage.getItem('cqp_code');
+  if(!code)return;
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(session){_authDone=true;return;}
+    const r=await fetch(_EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'login'})});
+    const d=await r.json();
+    if(d.email&&d.password){await sb.auth.signInWithPassword({email:d.email,password:d.password});_authDone=true;}
+  }catch(e){console.warn('ensureAuth:',e);}
+}
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
 const getSid=()=>{try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Date.now();}};
 const getProfilCode=()=>{try{return localStorage.getItem('cqp_code')||null;}catch{return null;}};
@@ -491,6 +505,7 @@ async function sendMessage(){
   input.value='';
   document.getElementById('gv-photo-prev').style.display='none';
   document.getElementById('gv-photo-file').value='';_msgPhoto=null;
+  await ensureAuth();
   await sb.from('groupe_messages').insert({groupe_id:curGroupe.id,session_id:sid,prenom,contenu:contenu||null,photo_url,photo_profil,profil_code:getProfilCode(),visible:true});
   try{localStorage.setItem('cqp_prenom',prenom);}catch{}
 }
@@ -501,6 +516,7 @@ async function joinAndRefresh(){
   loadMessages(curGroupe.id);
 }
 
+ensureAuth().then(()=>{});
 loadGroupes();
 </script>
 </body>
