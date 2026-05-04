@@ -170,8 +170,10 @@ const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d
 const getCode=()=>localStorage.getItem('cqp_code')||null;
 const getPrenom=()=>localStorage.getItem('cqp_prenom')||'';
 const timeAgo=d=>{if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});};
+const _codeToEmail=c=>`code-${c}@cqp-toulouse.fr`;
+const _codeToPass=c=>`cqp-${c}-secret2025`;
 let _authDone=false;
-async function ensureAuth(){if(_authDone)return;const code=localStorage.getItem('cqp_code');if(!code)return;try{const{data:{session}}=await sb.auth.getSession();if(session){_authDone=true;return;}const r=await fetch(_EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'login'})});const d=await r.json();if(d.email&&d.password){await sb.auth.signInWithPassword({email:d.email,password:d.password});_authDone=true;}}catch(e){console.warn(e);}}
+async function ensureAuth(){if(_authDone)return;const code=localStorage.getItem('cqp_code');if(!code)return;try{const{data:{session}}=await sb.auth.getSession();if(session){_authDone=true;return;}const{error}=await sb.auth.signInWithPassword({email:_codeToEmail(code),password:_codeToPass(code)});if(!error){_authDone=true;return;}await sb.auth.signUp({email:_codeToEmail(code),password:_codeToPass(code),options:{data:{profil_code:code}}});await sb.auth.signInWithPassword({email:_codeToEmail(code),password:_codeToPass(code)});_authDone=true;}catch(e){console.warn(e);}}
 
 let groupes=[];let currentGroupe=null;let msgSub=null;
 

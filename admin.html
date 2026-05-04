@@ -176,10 +176,10 @@ a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:inherit;o
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
-const _EF=SBU+'/functions/v1/auth';
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
 const timeAgo=d=>{if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;if(s<604800)return`Il y a ${Math.floor(s/86400)} j`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});};
-
+const _codeToEmail=c=>`code-${c}@cqp-toulouse.fr`;
+const _codeToPass=c=>`cqp-${c}-secret2025`;
 let _isAdmin=false;
 let _authDone=false;
 
@@ -188,9 +188,11 @@ async function ensureAuth(code){
   try{
     const{data:{session}}=await sb.auth.getSession();
     if(session){_authDone=true;return;}
-    const r=await fetch(_EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'login'})});
-    const d=await r.json();
-    if(d.email&&d.password){await sb.auth.signInWithPassword({email:d.email,password:d.password});_authDone=true;}
+    const{error}=await sb.auth.signInWithPassword({email:_codeToEmail(code),password:_codeToPass(code)});
+    if(!error){_authDone=true;return;}
+    await sb.auth.signUp({email:_codeToEmail(code),password:_codeToPass(code),options:{data:{profil_code:code}}});
+    await sb.auth.signInWithPassword({email:_codeToEmail(code),password:_codeToPass(code)});
+    _authDone=true;
   }catch(e){console.warn(e);}
 }
 

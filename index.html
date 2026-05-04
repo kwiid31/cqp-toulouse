@@ -509,6 +509,8 @@ const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6
 const sb=supabase.createClient(SBU,SBK);
 const _EF='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth';
 let _authDone=false;
+const _codeToEmail=c=>`code-${c}@cqp-toulouse.fr`;
+const _codeToPass=c=>`cqp-${c}-secret2025`;
 async function ensureAuth(){
   if(_authDone)return;
   const code=localStorage.getItem('cqp_code');
@@ -516,9 +518,13 @@ async function ensureAuth(){
   try{
     const{data:{session}}=await sb.auth.getSession();
     if(session){_authDone=true;return;}
-    const r=await fetch(_EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'login'})});
-    const d=await r.json();
-    if(d.email&&d.password){await sb.auth.signInWithPassword({email:d.email,password:d.password});_authDone=true;}
+    // Connexion directe — sans Edge Function
+    const{error}=await sb.auth.signInWithPassword({email:_codeToEmail(code),password:_codeToPass(code)});
+    if(!error){_authDone=true;return;}
+    // Fallback : créer le compte si pas encore créé (utilisateur migré)
+    await sb.auth.signUp({email:_codeToEmail(code),password:_codeToPass(code),options:{data:{profil_code:code}}});
+    await sb.auth.signInWithPassword({email:_codeToEmail(code),password:_codeToPass(code)});
+    _authDone=true;
   }catch(e){console.warn('ensureAuth:',e);}
 }
 
@@ -1279,7 +1285,8 @@ async function init(){
   // ── VÉRIFICATION CONNEXION (localStorage = instantané) ──────────────────
   const _pCode=localStorage.getItem('cqp_code');
   if(!_pCode){window.location.href='profil.html';return;}
-  await ensureAuth(); // Restaure la session Supabase Auth silencieusement
+  // Restaurer session Supabase Auth en arrière-plan (sans bloquer l'affichage)
+  ensureAuth().catch(()=>{});
 
   // ── CHARGER LE FEED IMMÉDIATEMENT (pas d'attente BDD) ───────────────────
   // Utiliser le prénom en cache localStorage pour ne pas bloquer
