@@ -1,12 +1,15 @@
 // CQP Toulouse — Service Worker v2
 // Cache le shell de l'app pour fonctionnement hors-ligne
-const CACHE = 'cqp-v1777484214';
+const CACHE = 'cqp-v'+Date.now().toString().slice(0,10)+'2';
 const SHELL = [
   '/',
   '/index.html',
   '/profil.html',
   '/groupes.html',
   '/actus.html',
+  '/evenements.html',
+  '/annonces.html',
+  '/admin.html',
   '/js/cqp-core.js',
   '/favicon.ico',
   '/icons/icon-192.png',

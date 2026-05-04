@@ -318,7 +318,9 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
     <div class="icon-btn notif-dot" style="cursor:default">
       <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     </div>
-    <a href="admin.html" class="icon-btn">
+    <a href="admin.html" class="icon-btn" id="admin-link" style="display:none;">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
+    </a>
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
     </a>
   </div>
@@ -376,7 +378,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
     <button class="c-trigger" onclick="openComposer()">Quoi de neuf dans ton quartier ?</button>
   </div>
   <div class="composer-expand" id="c-expand">
-    <input class="c-name" id="c-name" readonly style="pointer-events:none;" placeholder="Votre prénom" maxlength="30" readonly style="pointer-events:none;background:var(--bg3);color:var(--txt2);" oninput="updateCAv(this.value)">
+    <input class="c-name" id="c-name" readonly placeholder="Votre prénom" maxlength="30" style="background:var(--bg3);color:var(--txt2);cursor:default;pointer-events:none;">
     <textarea class="c-text" id="c-text" rows="3" placeholder="Partagez une info, une question…"></textarea>
     <img id="c-photo-prev" class="c-photo-prev">
     <div class="c-foot">
@@ -1294,42 +1296,23 @@ async function init(){
   // ── TRACKER LA VISITE ────────────────────────────────────────────────────
   sb.from('page_views').insert({page:'accueil',profil_code:_pCode}).catch(()=>{});
 
-  // ── CHARGER PROFIL EN ARRIÈRE-PLAN (sans bloquer l'affichage) ───────────
+  // Charger profil en arrière-plan
   sb.from('profils').select('*').eq('code',_pCode).limit(1).then(({data:_pd})=>{
-    if(!_pd?.length){
-      // Code invalide → déco silencieuse (ne pas bloquer si pb réseau)
-      return;
-    }
+    if(!_pd?.length) return;
     window._profil=_pd[0];
     const _prenom=_pd[0].prenom||'';
     localStorage.setItem('cqp_prenom',_prenom);
     _lockAll(_prenom);
+    // Afficher lien admin si is_admin
+    if(_pd[0].is_admin){const al=document.getElementById('admin-link');if(al)al.style.display='flex';}
     // Avatar composer
-    const _av=document.getElementById('composer-av');
+    const _av=document.getElementById('c-av');
     if(_av){
       if(_pd[0].photo_url)_av.innerHTML=`<img src="${_pd[0].photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
       else _av.textContent=(_prenom||'?')[0].toUpperCase();
     }
   }).catch(()=>{});
-  // Charger le profil et verrouiller le prénom
-  sb.from('profils').select('prenom,quartier,photo_url,session_id').eq('code',_pCode).limit(1).then(({data})=>{
-    if(data?.length){
-      window._profil=data[0];
-      const prenom=data[0].prenom||'';
-      localStorage.setItem('cqp_prenom',prenom);
-      // Pré-remplir et verrouiller TOUS les champs prénom
-      ['c-name','sp-prenom','an-prenom','pe-prenom','sheet-prenom','pub-prenom','post-prenom'].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el){el.value=prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;border-color:var(--border,#CED0D4);';}
-      });
-      // Avatar composer
-      const av=document.getElementById('composer-av');
-      if(av){
-        if(data[0].photo_url)av.innerHTML=`<img src="${data[0].photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-        else av.textContent=(prenom||'?')[0].toUpperCase();
-      }
-    }
-  });
+
   // Récupérer actus pour le drawer
   sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).then(({data})=>{_actus=data||[];});
   loadTicker();setInterval(loadTicker,60000);
