@@ -2,218 +2,219 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#C8102E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CQP Toulouse">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Profil — CQP Toulouse</title>
-<meta name="description" content="Crée ton profil et connecte-toi au réseau CQP Toulouse, le réseau des quartiers populaires de Toulouse.">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://cqp-toulouse.fr/profil.html">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://cqp-toulouse.fr/profil.html">
-<meta property="og:title" content="Profil — CQP Toulouse">
-<meta property="og:description" content="Crée ton profil et connecte-toi au réseau CQP Toulouse, le réseau des quartiers populaires de Toulouse.">
-<meta property="og:image" content="https://cqp-toulouse.fr/icons/icon-512.png">
-<meta property="og:locale" content="fr_FR">
+<title>Mon Profil — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--rouge:#C8102E;--blue:#1877F2;--green:#42B72A;
-  --txt:#050505;--txt2:#65676B;--txt3:#8A8D91;
-  --bg:#F0F2F5;--bg3:#E4E6EB;--border:#CED0D4;
-  --shadow:0 1px 2px rgba(0,0,0,.1);--r:8px;--nav:56px;}
+:root{--rouge:#C8102E;--green:#42B72A;--purple:#7C3AED;--blue:#1877F2;
+  --txt:#050505;--txt2:#65676B;--txt3:#8A8D91;--bg:#F0F2F5;--bg3:#E4E6EB;--border:#CED0D4;
+  --shadow:0 1px 2px rgba(0,0,0,.1);--r:12px;--nav:56px;}
 html,body{font-size:15px;background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh;}
-body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px);}
-a{text-decoration:none;color:inherit}
+body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 8px);}
 button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 
-.topbar{position:sticky;top:0;z-index:100;height:var(--nav);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 14px;box-shadow:var(--shadow);}
-.topbar-logo{display:flex;align-items:center;gap:8px;}
-.logo-pill{background:var(--rouge);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:1px;padding:5px 10px;border-radius:6px;line-height:1;}
-.logo-text{display:flex;flex-direction:column;}
-.logo-name{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.5px;line-height:1;}
-.logo-sub{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);}
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:#fff;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:20px;}
+#login-screen.gone{display:none;}
+.ls-logo{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--rouge);letter-spacing:2px;}
+.ls-sub{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--txt3);margin-top:-14px;}
+.ls-card{width:100%;max-width:360px;background:#fff;border-radius:var(--r);box-shadow:0 4px 24px rgba(0,0,0,.1);padding:28px 24px;display:flex;flex-direction:column;gap:16px;}
+.ls-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.5px;text-align:center;}
+.ls-sep{display:flex;align-items:center;gap:12px;color:var(--txt3);font-size:.78rem;}
+.ls-sep::before,.ls-sep::after{content:'';flex:1;height:1px;background:var(--border);}
+.ls-tabs{display:flex;gap:0;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
+.ls-tab{flex:1;padding:10px;background:none;border:none;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);transition:all .15s;}
+.ls-tab.active{background:var(--rouge);color:#fff;}
+.ls-input{width:100%;padding:12px 16px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.95rem;outline:none;transition:border .15s;}
+.ls-input:focus{border-color:var(--rouge);}
+/* Code 6 chiffres */
+.code-inputs{display:flex;gap:10px;justify-content:center;}
+.code-input{width:48px;height:58px;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0;background:var(--bg3);border:2px solid var(--border);border-radius:10px;color:var(--txt);outline:none;transition:border .15s;}
+.code-input:focus{border-color:var(--rouge);}
+.ls-btn{width:100%;padding:14px;background:var(--rouge);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;}
+.ls-btn:active{opacity:.85;}
+.ls-hint{font-size:.8rem;color:var(--txt3);text-align:center;line-height:1.6;}
+.ls-err{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;color:var(--rouge);text-align:center;min-height:18px;}
 
-/* CONNEXION */
-.connect-wrap{max-width:400px;margin:32px auto;padding:0 16px;}
-.connect-box{background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:28px 24px;}
-.connect-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.5px;margin-bottom:6px;color:var(--txt);}
-.connect-sub{font-size:.85rem;color:var(--txt2);margin-bottom:24px;line-height:1.6;}
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:100;height:var(--nav);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;box-shadow:var(--shadow);}
+.back-btn{width:36px;height:36px;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;flex-shrink:0;}
+.back-btn svg{width:20px;height:20px;stroke:var(--txt);fill:none;stroke-width:2;stroke-linecap:round;}
+.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.5px;flex:1;}
+.logout-btn{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);}
 
-/* CODE INPUTS 6 chiffres */
-.code-inputs{display:flex;gap:8px;justify-content:center;margin-bottom:18px;}
-.code-digit{width:44px;height:54px;border:2px solid var(--border);border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.8rem;text-align:center;color:var(--txt);background:var(--bg3);outline:none;transition:border .15s,background .15s;-webkit-appearance:none;appearance:none;}
-.code-digit:focus{border-color:var(--rouge);background:#fff;}
-.code-digit.filled{border-color:var(--rouge);background:#fff;}
-
-.btn-rouge{width:100%;padding:14px;background:var(--rouge);border:none;border-radius:10px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:2px;text-transform:uppercase;}
-.btn-rouge:active{opacity:.85;}
-.btn-rouge:disabled{opacity:.5;}
-.btn-outline{width:100%;padding:12px;background:none;border:1.5px solid var(--border);border-radius:10px;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;margin-top:10px;}
-.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
-.form-msg{text-align:center;font-family:'Barlow',sans-serif;font-size:.84rem;min-height:20px;margin-top:10px;padding:0 4px;}
-
-/* PROFIL VIEW */
-.profil-hero{background:linear-gradient(135deg,#0d0205 0%,#2a0509 60%,var(--rouge) 100%);padding:28px 16px 20px;}
-.profil-av-wrap{position:relative;width:80px;height:80px;margin-bottom:12px;}
-.profil-av{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.15);border:3px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#fff;overflow:hidden;}
+/* ── HERO PROFIL ── */
+.profil-hero{background:#fff;padding:28px 16px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.profil-av-wrap{position:relative;width:90px;height:90px;}
+.profil-av{width:90px;height:90px;border-radius:50%;background:var(--rouge);border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#fff;overflow:hidden;}
 .profil-av img{width:100%;height:100%;object-fit:cover;}
-.profil-av-edit{position:absolute;bottom:0;right:0;width:26px;height:26px;background:var(--rouge);border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-.profil-av-edit svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;}
-.profil-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;letter-spacing:.5px;line-height:1;}
-.profil-code{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:3px;color:rgba(255,255,255,.55);text-transform:uppercase;margin-top:3px;}
-.profil-quartier{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;color:rgba(255,255,255,.7);margin-top:6px;}
+.av-cam{position:absolute;bottom:0;right:0;width:30px;height:30px;background:var(--rouge);border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;}
+.av-cam svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;}
+.av-cam input{display:none;}
+.profil-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.5px;}
+.profil-sub{font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);}
+.profil-bio{font-size:.88rem;color:var(--txt2);text-align:center;line-height:1.6;max-width:300px;}
+.profil-code{background:var(--bg3);border-radius:8px;padding:8px 16px;display:flex;align-items:center;gap:8px;}
+.profil-code-label{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);}
+.profil-code-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:6px;color:var(--rouge);}
+.profil-code-hint{font-size:.72rem;color:var(--txt3);text-align:center;line-height:1.5;}
+.profil-stats{display:flex;gap:28px;margin-top:4px;}
+.pstat{text-align:center;}
+.pstat-n{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--rouge);}
+.pstat-l{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);}
 
-.profil-stats{display:grid;grid-template-columns:1fr 1fr 1fr;background:#fff;border-bottom:1px solid var(--border);}
-.pstat{padding:14px 0;text-align:center;}
-.pstat-n{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--rouge);line-height:1;}
-.pstat-l{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-top:2px;}
+/* ── SECTION ── */
+.section{background:#fff;margin-top:10px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.sec-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;}
+.sec-head h3{font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt2);font-weight:700;}
+.sec-head svg{width:18px;height:18px;stroke:var(--txt3);fill:none;stroke-width:2;stroke-linecap:round;transition:transform .2s;}
+.sec-head.open svg{transform:rotate(180deg);}
+.sec-body{display:none;padding:0 16px 16px;flex-direction:column;gap:12px;}
+.sec-body.open{display:flex;}
+.fg label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:5px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:border .15s;resize:vertical;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--rouge);}
+.btn-save{width:100%;padding:13px;background:var(--rouge);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;}
+.save-msg{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;min-height:16px;}
+.sec-title{padding:14px 16px 8px;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.5px;background:#fff;border-top:1px solid var(--border);}
+.post-row{padding:12px 16px;border-bottom:1px solid var(--bg3);display:flex;gap:10px;align-items:flex-start;background:#fff;}
+.post-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg3);}
+.post-txt{font-size:.88rem;color:var(--txt2);line-height:1.5;flex:1;}
+.post-date{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;color:var(--txt3);margin-top:3px;}
+.empty{padding:32px 16px;text-align:center;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;background:#fff;border-top:1px solid var(--border);}
 
-.section{max-width:640px;margin:0 auto;padding:12px;}
-.section-title{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--txt3);padding:0 2px 8px;}
-.pcard{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:10px;}
-.pcard-pad{padding:16px;}
-.fg{margin-bottom:12px;}
-.fg label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:5px;}
-.fg input,.fg textarea{width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;transition:border .15s;resize:vertical;}
-.fg input:focus,.fg textarea:focus{border-color:var(--rouge);}
-.prow{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--bg3);}
-.prow:last-child{border-bottom:none;}
-.prow-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.prow-label{flex:1;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;color:var(--txt2);}
-.prow-val{font-size:.88rem;color:var(--txt);font-weight:500;}
-
-#avatar-file{display:none;}
-.spinner-inline{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.empty-posts{text-align:center;padding:24px;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;}
-
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:#fff;border-top:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -1px 8px rgba(0,0,0,.06);}
+/* ── NAV ── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 20px rgba(0,0,0,.06);}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;padding:6px 0;}
 .nav-item.active,.nav-item:hover{color:var(--rouge);}
 .nav-item svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.nav-center{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:4px;}
+.nav-center{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:4px;flex-shrink:0;}
 .nav-pub{width:50px;height:50px;border-radius:50%;background:var(--rouge);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(200,16,46,.4);margin-top:-14px;}
 .nav-pub svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;}
-@media(min-width:700px){.bottom-nav{display:none;}body{padding-bottom:0;}}
 </style>
 </head>
 <body>
 
-<header class="topbar">
-  <div class="topbar-logo">
-    <span class="logo-pill">CQP</span>
-    <div class="logo-text">
-      <span class="logo-name">Toulouse</span>
-      <span class="logo-sub">Quartiers Populaires</span>
+<!-- ── ÉCRAN DE CONNEXION ── -->
+<div id="login-screen">
+  <div class="ls-logo">CQP</div>
+  <div class="ls-sub">Quartiers Populaires · Toulouse</div>
+  <div class="ls-card">
+    <div class="ls-title">Mon espace</div>
+    <!-- Tabs -->
+    <div class="ls-tabs">
+      <button class="ls-tab active" id="tab-login" onclick="switchTab('login')">J'ai un code</button>
+      <button class="ls-tab" id="tab-create" onclick="switchTab('create')">Créer mon profil</button>
     </div>
-  </div>
-  <button id="logout-btn" onclick="doLogout()" style="display:none;padding:7px 14px;background:none;border:1.5px solid var(--border);border-radius:20px;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;">Déconnexion</button>
-</header>
 
-<!-- ═══════════════════ VUE CONNEXION ═══════════════════ -->
-<div id="view-connect">
-  <div class="connect-wrap">
-
-    <!-- LOGIN -->
-    <div id="panel-login" class="connect-box">
-      <div class="connect-title">Mon Code</div>
-      <div class="connect-sub">Entre tes 6 chiffres pour accéder à ton profil CQP.</div>
-      <div class="code-inputs" id="code-inputs">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+    <!-- CONNEXION PAR CODE -->
+    <div id="panel-login">
+      <p class="ls-hint">Entre ton code à 6 chiffres pour retrouver ton profil</p>
+      <div class="code-inputs">
+        <input class="code-input" id="c0" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="codeNext(this,0)">
+        <input class="code-input" id="c1" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="codeNext(this,1)">
+        <input class="code-input" id="c2" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="codeNext(this,2)">
+        <input class="code-input" id="c3" maxlength="1" inputmode="numeric" oninput="codeNext(this,3)">
+        <input class="code-input" id="c4" maxlength="1" inputmode="numeric" oninput="codeNext(this,4)">
+        <input class="code-input" id="c5" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="codeNext(this,3)">
       </div>
-      <button class="btn-rouge" id="login-btn" onclick="loginWithCode()">Accéder à mon profil</button>
-      <div class="form-msg" id="login-msg"></div>
-      <div class="divider">ou</div>
-      <button class="btn-outline" onclick="switchPanel('signup')">Créer un nouveau profil</button>
+      <button class="ls-btn" onclick="loginWithCode()">🔑 Me connecter</button>
+      <div class="ls-err" id="login-err"></div>
     </div>
 
-    <!-- SIGNUP -->
-    <div id="panel-signup" class="connect-box" style="display:none;">
-      <div class="connect-title">Nouveau Profil</div>
-      <div class="connect-sub">Rejoins le réseau CQP Toulouse.</div>
-      <div class="fg"><label>Prénom *</label><input id="s-prenom" placeholder="Ex : Karim" maxlength="30"></div>
-      <div class="fg"><label>Quartier</label><input id="s-quartier" placeholder="Ex : Mirail, Borderouge…" maxlength="40"></div>
-      <div class="fg"><label>Bio (optionnel)</label><textarea id="s-bio" rows="2" placeholder="Dis quelques mots sur toi…" maxlength="200"></textarea></div>
-      <button class="btn-rouge" id="signup-btn" onclick="createProfil()">Créer mon profil</button>
-      <div class="form-msg" id="signup-msg"></div>
-      <div class="divider">ou</div>
-      <button class="btn-outline" onclick="switchPanel('login')">J'ai déjà un code</button>
+    <!-- CRÉER UN PROFIL -->
+    <div id="panel-create" style="display:none;flex-direction:column;gap:12px;">
+      <input class="ls-input" id="new-prenom" placeholder="Votre prénom *" maxlength="30">
+      <select class="ls-input" id="new-quartier">
+        <option value="">— Votre quartier (optionnel) —</option>
+        <option>Mirail</option><option>Bellefontaine</option><option>Reynerie</option>
+        <option>Bagatelle</option><option>La Faourette</option><option>Empalot</option>
+        <option>Rangueil</option><option>Basso Cambo</option><option>Borderouge</option>
+        <option>Izards</option><option>Sept Deniers</option><option>Autre</option>
+      </select>
+      <div>
+        <div style="font-family:Barlow Condensed,sans-serif;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:8px;">Choisis ton code secret à 6 chiffres *</div>
+        <div class="code-inputs">
+          <input class="code-input" id="n0" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="newCodeNext(this,0)">
+          <input class="code-input" id="n1" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="newCodeNext(this,1)">
+          <input class="code-input" id="n2" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="newCodeNext(this,2)">
+          <input class="code-input" id="n3" maxlength="1" inputmode="numeric" oninput="newCodeNext(this,3)">
+          <input class="code-input" id="n4" maxlength="1" inputmode="numeric" oninput="newCodeNext(this,4)">
+          <input class="code-input" id="n5" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="newCodeNext(this,3)">
+        </div>
+        <div style="font-size:.75rem;color:var(--txt3);margin-top:6px;text-align:center;">Ce code te servira à te reconnecter partout</div>
+      </div>
+      <button class="ls-btn" style="background:var(--purple)" onclick="createProfil()">✨ Créer mon profil</button>
+      <div class="ls-err" id="create-err"></div>
     </div>
-
-    <!-- SUCCESS : affichage du code -->
-    <div id="panel-code" class="connect-box" style="display:none;text-align:center;">
-      <div class="connect-title" style="color:var(--green);">✅ Profil créé !</div>
-      <div class="connect-sub">Note bien ton code secret — il te sert à te reconnecter.</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3.2rem;letter-spacing:10px;color:var(--rouge);margin:12px 0;" id="new-code-display">——</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:20px;">Ton code à 6 chiffres</div>
-      <button class="btn-rouge" onclick="goHome()">Accéder à l'accueil →</button>
-    </div>
-
   </div>
 </div>
 
-<!-- ═══════════════════ VUE PROFIL CONNECTÉ ═══════════════════ -->
-<div id="view-profil" style="display:none;">
+<!-- ── APP PROFIL ── -->
+<div id="app-profil" style="display:none">
+  <header class="topbar">
+    <button class="back-btn" onclick="history.length>1?history.back():location.href='index.html'"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="topbar-title">Mon Profil</span>
+    <button class="logout-btn" onclick="logout()">Déconnexion</button>
+  </header>
+
   <div class="profil-hero">
-    <label for="avatar-file" style="cursor:pointer;">
-      <div class="profil-av-wrap">
-        <div class="profil-av" id="profil-av">?</div>
-        <div class="profil-av-edit">
-          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </div>
+    <div class="profil-av-wrap">
+      <div class="profil-av" id="pav">?</div>
+      <label class="av-cam"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><input type="file" id="av-file" accept="image/*" onchange="uploadAvatar(this)"></label>
+    </div>
+    <div class="profil-name" id="pnom">—</div>
+    <div class="profil-sub" id="pquartier"></div>
+    <div class="profil-bio" id="pbio"></div>
+    <!-- CODE 4 CHIFFRES -->
+    <div class="profil-code">
+      <div>
+        <div class="profil-code-label">Mon code de connexion</div>
+        <div class="profil-code-val" id="pcode">····</div>
       </div>
-    </label>
-    <input type="file" id="avatar-file" accept="image/*" onchange="uploadAvatar(this)">
-    <div class="profil-name" id="profil-name">…</div>
-    <div class="profil-code" id="profil-code-disp"></div>
-    <div class="profil-quartier" id="profil-quartier"></div>
+    </div>
+    <div class="profil-code-hint">📌 Note ce code pour te reconnecter<br>sur n'importe quel téléphone</div>
+    <div class="profil-stats">
+      <div class="pstat"><div class="pstat-n" id="ps-posts">0</div><div class="pstat-l">Posts</div></div>
+      <div class="pstat"><div class="pstat-n" id="ps-stories">0</div><div class="pstat-l">Stories</div></div>
+      <div class="pstat"><div class="pstat-n" id="ps-groupes">0</div><div class="pstat-l">Groupes</div></div>
+    </div>
   </div>
 
-  <div class="profil-stats">
-    <div class="pstat"><div class="pstat-n" id="stat-posts">—</div><div class="pstat-l">Posts</div></div>
-    <div class="pstat"><div class="pstat-n" id="stat-likes">—</div><div class="pstat-l">J'aime</div></div>
-    <div class="pstat"><div class="pstat-n" id="stat-cmts">—</div><div class="pstat-l">Comms</div></div>
-  </div>
-
+  <!-- MODIFIER -->
   <div class="section">
-    <div class="section-title">Mon profil</div>
-    <div class="pcard">
-      <div class="prow"><div class="prow-icon" style="background:#fff0f2;"><svg width="18" height="18" viewBox="0 0 24 24" style="stroke:var(--rouge);fill:none;stroke-width:2;stroke-linecap:round;"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg></div><div class="prow-label">Prénom</div><div class="prow-val" id="pv-prenom">—</div></div>
-      <div class="prow"><div class="prow-icon" style="background:#e7f3ff;"><svg width="18" height="18" viewBox="0 0 24 24" style="stroke:var(--blue);fill:none;stroke-width:2;stroke-linecap:round;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div class="prow-label">Quartier</div><div class="prow-val" id="pv-quartier">—</div></div>
-      <div class="prow"><div class="prow-icon" style="background:#f3f0ff;"><svg width="18" height="18" viewBox="0 0 24 24" style="stroke:#7C3AED;fill:none;stroke-width:2;stroke-linecap:round;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="prow-label">Bio</div><div class="prow-val" id="pv-bio" style="font-size:.82rem;color:var(--txt2);">—</div></div>
+    <div class="sec-head" onclick="this.classList.toggle('open');document.getElementById('eform').classList.toggle('open')">
+      <h3>✏️ Modifier mon profil</h3>
+      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
-
-    <div class="section-title">Modifier</div>
-    <div class="pcard pcard-pad">
-      <div class="fg"><label>Prénom</label><input id="e-prenom" maxlength="30"></div>
-      <div class="fg"><label>Quartier</label><input id="e-quartier" maxlength="40"></div>
-      <div class="fg"><label>Bio</label><textarea id="e-bio" rows="2" maxlength="200"></textarea></div>
-      <button class="btn-rouge" onclick="saveProfil()">Enregistrer</button>
-      <div class="form-msg" id="edit-msg"></div>
+    <div class="sec-body" id="eform">
+      <div class="fg"><label>Prénom *</label><input type="text" id="e-prenom" maxlength="30"></div>
+      <div class="fg"><label>Quartier</label>
+        <select id="e-quartier">
+          <option value="">— Votre quartier —</option>
+          <option>Mirail</option><option>Bellefontaine</option><option>Reynerie</option><option>Bagatelle</option>
+          <option>La Faourette</option><option>Empalot</option><option>Rangueil</option><option>Basso Cambo</option>
+          <option>Borderouge</option><option>Izards</option><option>Sept Deniers</option><option>Autre</option>
+        </select>
+      </div>
+      <div class="fg"><label>Bio</label><textarea id="e-bio" rows="2" maxlength="160"></textarea></div>
+      <button class="btn-save" onclick="saveProfil()">💾 Enregistrer</button>
+      <div class="save-msg" id="smsg"></div>
     </div>
-
-    <div class="section-title">Mon code secret</div>
-    <div class="pcard pcard-pad" style="text-align:center;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:8px;color:var(--rouge);" id="code-display">——</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-top:4px;">Note-le pour te reconnecter</div>
-      <button id="copy-btn" onclick="copyCode()" style="margin-top:12px;padding:8px 20px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;color:var(--txt2);">Copier le code</button>
-    </div>
-
-    <div class="section-title">Mes publications</div>
-    <div id="mes-posts"></div>
   </div>
+
+  <div class="sec-title">📝 Mes publications</div>
+  <div id="mes-posts"><div class="empty">Chargement…</div></div>
 </div>
 
 <nav class="bottom-nav">
@@ -225,314 +226,222 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 </nav>
 
 <script>
-const SBU = 'https://vzfwtyczqfbhbjzotjft.supabase.co';
-const SBK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
-const sb = supabase.createClient(SBU, SBK);
+const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co',SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+const sb=supabase.createClient(SBU,SBK);
+const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
+const timeAgo=d=>{if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});};
 
-// ── UTILITAIRES ──────────────────────────────────────────────────
-const esc = s => { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; };
-const getCode = () => localStorage.getItem('cqp_code') || null;
-const getPrenom = () => localStorage.getItem('cqp_prenom') || '';
-const getPhoto = () => localStorage.getItem('cqp_photo') || '';
-const timeAgo = d => { if (!d) return ''; const s = (Date.now() - new Date(d)) / 1000; if (s < 60) return "À l'instant"; if (s < 3600) return `Il y a ${Math.floor(s / 60)} min`; if (s < 86400) return `Il y a ${Math.floor(s / 3600)} h`; return new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }); };
+let _profil=null;
 
-// Auth email/password dérivés du code — même logique que la EF
-const codeToEmail = code => `code-${code}@cqp-toulouse.fr`;
-const codeToPass  = code => `cqp-${code}-secret2025`;
+// ── SESSION ──
+function getCode(){return localStorage.getItem('cqp_code')||null;}
+function saveCode(c){localStorage.setItem('cqp_code',c);}
+function clearCode(){localStorage.removeItem('cqp_code');}
 
-// ── CODE INPUTS ──────────────────────────────────────────────────
-const digits = [...document.querySelectorAll('.code-digit')];
-digits.forEach((inp, i) => {
-  inp.addEventListener('input', e => {
-    const v = e.target.value.replace(/\D/g, '');
-    inp.value = v.slice(-1);
-    if (v) inp.classList.add('filled'); else inp.classList.remove('filled');
-    if (v && i < 5) digits[i + 1].focus();
-  });
-  inp.addEventListener('keydown', e => {
-    if (e.key === 'Backspace' && !inp.value && i > 0) { digits[i - 1].focus(); digits[i - 1].classList.remove('filled'); }
-    if (e.key === 'Enter') loginWithCode();
-  });
-  inp.addEventListener('paste', e => {
-    e.preventDefault();
-    const txt = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
-    digits.forEach((d, j) => { d.value = txt[j] || ''; if (txt[j]) d.classList.add('filled'); else d.classList.remove('filled'); });
-    const next = Math.min(txt.length, 5);
-    digits[next].focus();
-    if (txt.length === 6) loginWithCode();
-  });
-});
-
-const getCodeInput = () => digits.map(d => d.value).join('');
-
-function switchPanel(name) {
-  ['login', 'signup', 'code'].forEach(p => {
-    document.getElementById('panel-' + p).style.display = p === name ? 'block' : 'none';
-  });
+// ── TABS LOGIN ──
+function switchTab(t){
+  document.getElementById('tab-login').classList.toggle('active',t==='login');
+  document.getElementById('tab-create').classList.toggle('active',t==='create');
+  document.getElementById('panel-login').style.display=t==='login'?'':'none';
+  document.getElementById('panel-create').style.display=t==='create'?'flex':'none';
 }
 
-// ── LOGIN : connexion directe Supabase Auth (sans Edge Function) ─
-async function loginWithCode() {
-  const code = getCodeInput();
-  const msg = document.getElementById('login-msg');
-  const btn = document.getElementById('login-btn');
-  if (code.length !== 6) { msg.style.color = 'var(--rouge)'; msg.textContent = 'Entre les 6 chiffres.'; return; }
+// ── CODE INPUT : auto-focus suivant ──
+function newCodeNext(el,idx){
+  el.value=el.value.replace(/\D/g,'');
+  if(el.value.length===1&&idx<5)document.getElementById('n'+(idx+1)).focus();
+}
+function codeNext(el,idx){
+  el.value=el.value.replace(/\D/g,'');
+  if(el.value.length===1&&idx<5)document.getElementById('c'+(idx+1)).focus();
+  if(el.value.length===1&&idx===5)loginWithCode();
+}
 
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-inline"></span>Connexion…';
-  msg.style.color = 'var(--txt3)';
-  msg.textContent = 'Vérification…';
+// ── CONNEXION PAR CODE ──
+async function loginWithCode(){
+  const code=[0,1,2,3,4,5].map(i=>document.getElementById('c'+i).value).join('');
+  if(code.length<6){document.getElementById('login-err').textContent='Entre les 6 chiffres de ton code.';return;}
+  document.getElementById('login-err').textContent='';
+  const{data:rows}=await sb.from('profils').select('*').eq('code',code).limit(1);
+  if(!rows?.length){document.getElementById('login-err').textContent='Code inconnu. Vérifie ou crée un profil.';return;}
+  const p=rows[0];
+  saveCode(code);
+  // Mettre à jour le session_id local
+  try{localStorage.setItem('cqp_prenom',p.prenom);}catch{}
+  // Mettre à jour session_id en BDD avec l'actuel
+  const sid=getOrCreateSid();
+  await sb.from('profils').update({session_id:sid,updated_at:new Date().toISOString()}).eq('code',code);
+  showApp(p);
+}
 
-  try {
-    // 1) Vérifier que le code existe en base (lecture publique, pas besoin d'auth)
-    const { data: profilCheck, error: checkErr } = await sb
-      .from('profils').select('code, prenom, quartier, bio, photo_url, is_admin')
-      .eq('code', code).limit(1);
+// ── CRÉER PROFIL ──
+async function createProfil(){
+  const prenom=document.getElementById('new-prenom').value.trim();
+  const quartier=document.getElementById('new-quartier').value;
+  const code=[0,1,2,3,4,5].map(i=>document.getElementById('n'+i).value).join('');
+  const err=document.getElementById('create-err');
+  if(!prenom){err.textContent='Le prénom est obligatoire.';return;}
+  if(code.length<6||!/^\d{6}$/.test(code)){err.textContent='Choisis ton code à 6 chiffres.';return;}
+  err.textContent='Vérification…';
+  // Vérifier que le code n'est pas déjà pris
+  const{data:existing}=await sb.from('profils').select('id').eq('code',code).limit(1);
+  if(existing?.length){err.textContent='Ce code est déjà utilisé. Choisis-en un autre.';return;}
+  err.textContent='Création en cours…';
+  // Générer un sid unique pour ce nouveau profil
+  const sid=crypto.randomUUID?.()??('u'+Date.now()+Math.random().toString(36).slice(2));
+  localStorage.setItem('cqp_sid',sid);
+  const{data,error}=await sb.from('profils').insert({
+    session_id:sid,prenom,quartier:quartier||null,code,
+    created_at:new Date().toISOString(),updated_at:new Date().toISOString()
+  }).select().single();
+  if(error){err.textContent='Erreur : '+error.message;return;}
+  saveCode(code);
+  try{localStorage.setItem('cqp_prenom',prenom);}catch{}
+  err.textContent='';
+  window._pendingProfil=data;
+  showCodeModal(code);
+}
 
-    if (checkErr || !profilCheck?.length) {
-      msg.style.color = 'var(--rouge)';
-      msg.textContent = '❌ Code introuvable. Vérifie tes chiffres.';
-      btn.disabled = false; btn.textContent = 'Accéder à mon profil';
+// ── MODAL CODE ──
+function showCodeModal(code){
+  // Stocker le profil pending dans window pour accès depuis le bouton
+  const ov=document.createElement('div');
+  ov.id='code-modal-ov';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  ov.innerHTML=`
+    <div style="background:#fff;border-radius:20px;padding:32px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+      <div style="font-size:2.5rem;margin-bottom:10px;">🎉</div>
+      <div style="font-family:Bebas Neue,sans-serif;font-size:1.6rem;letter-spacing:.5px;margin-bottom:6px;">Profil créé !</div>
+      <p style="font-size:.85rem;color:#65676B;margin-bottom:20px;line-height:1.6">Ton code secret à 6 chiffres — <strong>note-le</strong>, c'est le seul moyen de retrouver ton compte :</p>
+      <div style="background:#F0F2F5;border-radius:14px;padding:20px;margin-bottom:20px;">
+        <div style="font-family:Barlow Condensed,sans-serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:#8A8D91;margin-bottom:8px;">MON CODE SECRET</div>
+        <div style="font-family:Bebas Neue,sans-serif;font-size:3.5rem;letter-spacing:14px;color:#C8102E;padding-left:14px;">${code}</div>
+      </div>
+      <p style="font-size:.78rem;color:#8A8D91;margin-bottom:20px;">📸 Fais une capture d'écran maintenant !</p>
+      <button onclick="document.getElementById('code-modal-ov').remove();afterCodeModal();" style="width:100%;padding:14px;background:#C8102E;border:none;border-radius:10px;color:#fff;font-family:Barlow Condensed,sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">J'ai noté mon code ✓</button>
+    </div>`;
+  document.body.appendChild(ov);
+}
+
+function afterCodeModal(){
+  if(window._pendingProfil){
+    showApp(window._pendingProfil);
+    window._pendingProfil=null;
+  }
+}
+
+// ── SESSION ID local ──
+function getOrCreateSid(){
+  try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Date.now();}
+}
+
+// ── AFFICHER L'APP ──
+function showApp(p){
+  _profil=p;
+  document.getElementById('login-screen').classList.add('gone');
+  document.getElementById('app-profil').style.display='';
+  document.getElementById('pnom').textContent=p.prenom||'—';
+  document.getElementById('pquartier').textContent=p.quartier?'📍 '+p.quartier:'';
+  document.getElementById('pbio').textContent=p.bio||'';
+  document.getElementById('pcode').textContent=p.code||'····';
+  document.getElementById('e-prenom').value=p.prenom||'';
+  document.getElementById('e-quartier').value=p.quartier||'';
+  document.getElementById('e-bio').value=p.bio||'';
+  renderAv(p);
+  loadStats();
+  loadMesPosts();
+}
+
+function renderAv(p){
+  const av=document.getElementById('pav');
+  if(p?.photo_url)av.innerHTML=`<img src="${esc(p.photo_url)}">`;
+  else av.textContent=(p?.prenom||'?')[0].toUpperCase();
+}
+
+function logout(){
+  clearCode();
+  _profil=null;
+  document.getElementById('app-profil').style.display='none';
+  document.getElementById('login-screen').classList.remove('gone');
+  // Reset code inputs
+  [0,1,2,3].forEach(i=>{const el=document.getElementById('c'+i);if(el)el.value='';});
+  switchTab('login');
+}
+
+// ── STATS ──
+async function loadStats(){
+  if(!_profil)return;
+  const code=_profil.code;
+  // TOUT par profil_code — source unique de vérité
+  const[rp,rs,rg]=await Promise.all([
+    sb.from('posts').select('*',{count:'exact',head:true}).eq('profil_code',code).eq('visible',true),
+    sb.from('stories').select('*',{count:'exact',head:true}).eq('profil_code',code).eq('visible',true),
+    sb.from('groupe_membres').select('*',{count:'exact',head:true}).eq('profil_code',code)
+  ]);
+  document.getElementById('ps-posts').textContent=rp.count||0;
+  document.getElementById('ps-stories').textContent=rs.count||0;
+  document.getElementById('ps-groupes').textContent=rg.count||0;
+}
+
+// ── MES POSTS ──
+async function loadMesPosts(){
+  if(!_profil)return;
+  const{data}=await sb.from('posts').select('*').eq('profil_code',_profil.code).eq('visible',true).order('created_at',{ascending:false}).limit(20);
+  const el=document.getElementById('mes-posts');
+  if(!data?.length){el.innerHTML='<div class="empty">Aucune publication pour l\'instant</div>';return;}
+  el.innerHTML=data.map(p=>`<div class="post-row">${p.photo_url?`<img class="post-thumb" src="${esc(p.photo_url)}" loading="lazy">`:'<div class="post-thumb"></div>'}<div style="flex:1"><div class="post-txt">${esc((p.contenu||'Photo').substring(0,120))}</div><div class="post-date">${timeAgo(p.created_at)}</div></div></div>`).join('');
+}
+
+// ── SAUVEGARDER ──
+async function saveProfil(){
+  const prenom=document.getElementById('e-prenom').value.trim();
+  const quartier=document.getElementById('e-quartier').value;
+  const bio=document.getElementById('e-bio').value.trim();
+  const msg=document.getElementById('smsg');
+  if(!prenom){msg.textContent='Prénom obligatoire.';msg.style.color='var(--rouge)';return;}
+  const{data,error}=await sb.from('profils').update({prenom,quartier:quartier||null,bio:bio||null,updated_at:new Date().toISOString()}).eq('code',_profil.code).select().single();
+  if(error){msg.textContent='Erreur.';msg.style.color='var(--rouge)';return;}
+  _profil={..._profil,...data};
+  try{localStorage.setItem('cqp_prenom',prenom);}catch{}
+  document.getElementById('pnom').textContent=prenom;
+  document.getElementById('pquartier').textContent=quartier?'📍 '+quartier:'';
+  document.getElementById('pbio').textContent=bio;
+  renderAv(_profil);
+  msg.textContent='✅ Profil mis à jour !';msg.style.color='var(--green)';
+  setTimeout(()=>msg.textContent='',3000);
+}
+
+// ── UPLOAD AVATAR ──
+async function uploadAvatar(inp){
+  if(!inp.files[0]||!_profil)return;
+  const f=inp.files[0];
+  const name=`av-${_profil.code}-${Date.now()}.${f.name.split('.').pop()||'jpg'}`;
+  const{error}=await sb.storage.from('site-photos').upload(name,f,{contentType:f.type,upsert:true});
+  if(error){alert('Erreur upload');return;}
+  const url=sb.storage.from('site-photos').getPublicUrl(name).data.publicUrl;
+  await sb.from('profils').update({photo_url:url,updated_at:new Date().toISOString()}).eq('code',_profil.code);
+  _profil.photo_url=url;
+  document.getElementById('pav').innerHTML=`<img src="${url}">`;
+}
+
+// ── BOOT ──
+async function boot(){
+  const code=getCode();
+  if(code){
+    const{data:rows}=await sb.from('profils').select('*').eq('code',code).limit(1);
+    if(rows?.length){
+      // Mettre à jour session_id
+      const sid=getOrCreateSid();
+      await sb.from('profils').update({session_id:sid}).eq('code',code);
+      showApp({...rows[0],session_id:sid});
       return;
     }
-
-    const profil = profilCheck[0];
-
-    // 2) Se connecter avec email/password dérivés du code
-    const { data: authData, error: authErr } = await sb.auth.signInWithPassword({
-      email: codeToEmail(code),
-      password: codeToPass(code),
-    });
-
-    if (authErr) {
-      // Si pas de compte Auth encore : le créer (migration profil ancien)
-      if (authErr.message.includes('Invalid login') || authErr.message.includes('invalid_credentials')) {
-        const { error: signupErr } = await sb.auth.signUp({
-          email: codeToEmail(code),
-          password: codeToPass(code),
-          options: { data: { profil_code: code } }
-        });
-        if (signupErr && !signupErr.message.includes('already')) {
-          msg.style.color = 'var(--rouge)';
-          msg.textContent = 'Erreur auth : ' + signupErr.message;
-          btn.disabled = false; btn.textContent = 'Accéder à mon profil';
-          return;
-        }
-        // Réessayer la connexion
-        await sb.auth.signInWithPassword({ email: codeToEmail(code), password: codeToPass(code) });
-      }
-    }
-
-    // 3) Sauvegarder en localStorage
-    localStorage.setItem('cqp_code', code);
-    localStorage.setItem('cqp_prenom', profil.prenom || '');
-    localStorage.setItem('cqp_photo', profil.photo_url || '');
-
-    msg.style.color = 'var(--green)';
-    msg.textContent = '✅ Connexion réussie !';
-
-    setTimeout(() => {
-      // Rediriger vers l'accueil
-      window.location.href = 'index.html';
-    }, 600);
-
-  } catch (e) {
-    console.error('loginWithCode:', e);
-    msg.style.color = 'var(--rouge)';
-    msg.textContent = 'Erreur réseau. Réessaie.';
-    btn.disabled = false; btn.textContent = 'Accéder à mon profil';
+    clearCode();
   }
+  // Pas de code → afficher écran de connexion
+  document.getElementById('login-screen').classList.remove('gone');
 }
-
-// ── SIGNUP ───────────────────────────────────────────────────────
-async function createProfil() {
-  const prenom = document.getElementById('s-prenom').value.trim();
-  const quartier = document.getElementById('s-quartier').value.trim();
-  const bio = document.getElementById('s-bio').value.trim();
-  const msg = document.getElementById('signup-msg');
-  const btn = document.getElementById('signup-btn');
-
-  if (!prenom) { msg.style.color = 'var(--rouge)'; msg.textContent = 'Prénom obligatoire.'; return; }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-inline"></span>Création…';
-  msg.style.color = 'var(--txt3)'; msg.textContent = 'Génération du code…';
-
-  try {
-    // Générer code 6 chiffres unique
-    let code, exists = true;
-    let tries = 0;
-    while (exists && tries < 20) {
-      code = String(Math.floor(100000 + Math.random() * 900000));
-      const { data } = await sb.from('profils').select('code').eq('code', code).limit(1);
-      exists = data?.length > 0;
-      tries++;
-    }
-
-    // Créer compte Supabase Auth
-    const { error: authErr } = await sb.auth.signUp({
-      email: codeToEmail(code),
-      password: codeToPass(code),
-      options: { data: { profil_code: code } }
-    });
-    if (authErr && !authErr.message.includes('already')) {
-      throw new Error(authErr.message);
-    }
-
-    // Se connecter
-    await sb.auth.signInWithPassword({ email: codeToEmail(code), password: codeToPass(code) });
-
-    // Insérer profil en base
-    const { error: insertErr } = await sb.from('profils').insert({
-      code, prenom, quartier: quartier || null, bio: bio || null
-    });
-    if (insertErr) throw new Error(insertErr.message);
-
-    // Sauvegarder session
-    localStorage.setItem('cqp_code', code);
-    localStorage.setItem('cqp_prenom', prenom);
-
-    // Afficher le code
-    document.getElementById('new-code-display').textContent = code;
-    switchPanel('code');
-
-  } catch (e) {
-    console.error('createProfil:', e);
-    msg.style.color = 'var(--rouge)';
-    msg.textContent = 'Erreur : ' + e.message;
-    btn.disabled = false; btn.textContent = 'Créer mon profil';
-  }
-}
-
-function goHome() { window.location.href = 'index.html'; }
-
-// ── PROFIL VIEW ──────────────────────────────────────────────────
-function showProfilView(p) {
-  document.getElementById('view-connect').style.display = 'none';
-  document.getElementById('view-profil').style.display = 'block';
-  document.getElementById('logout-btn').style.display = 'block';
-
-  document.getElementById('profil-name').textContent = p.prenom || 'Anonyme';
-  document.getElementById('profil-code-disp').textContent = 'Code : ' + p.code;
-  document.getElementById('profil-quartier').textContent = p.quartier ? '📍 ' + p.quartier : '';
-  document.getElementById('pv-prenom').textContent = p.prenom || '—';
-  document.getElementById('pv-quartier').textContent = p.quartier || '—';
-  document.getElementById('pv-bio').textContent = p.bio || '—';
-  document.getElementById('code-display').textContent = p.code;
-  document.getElementById('e-prenom').value = p.prenom || '';
-  document.getElementById('e-quartier').value = p.quartier || '';
-  document.getElementById('e-bio').value = p.bio || '';
-
-  const av = document.getElementById('profil-av');
-  if (p.photo_url) av.innerHTML = `<img src="${esc(p.photo_url)}" alt="">`;
-  else av.textContent = (p.prenom || '?')[0].toUpperCase();
-
-  loadStats(p.code);
-  loadMesPosts(p.code);
-}
-
-async function saveProfil() {
-  const code = getCode(); if (!code) return;
-  const prenom = document.getElementById('e-prenom').value.trim();
-  const quartier = document.getElementById('e-quartier').value.trim();
-  const bio = document.getElementById('e-bio').value.trim();
-  const msg = document.getElementById('edit-msg');
-  if (!prenom) { msg.style.color = 'var(--rouge)'; msg.textContent = 'Prénom obligatoire.'; return; }
-  msg.style.color = 'var(--txt3)'; msg.textContent = 'Enregistrement…';
-  const { error } = await sb.from('profils').update({ prenom, quartier: quartier || null, bio: bio || null }).eq('code', code);
-  if (error) { msg.style.color = 'var(--rouge)'; msg.textContent = 'Erreur.'; return; }
-  localStorage.setItem('cqp_prenom', prenom);
-  document.getElementById('pv-prenom').textContent = prenom;
-  document.getElementById('pv-quartier').textContent = quartier || '—';
-  document.getElementById('pv-bio').textContent = bio || '—';
-  document.getElementById('profil-name').textContent = prenom;
-  document.getElementById('profil-quartier').textContent = quartier ? '📍 ' + quartier : '';
-  msg.style.color = 'var(--green)'; msg.textContent = '✅ Profil mis à jour !';
-  setTimeout(() => msg.textContent = '', 2500);
-}
-
-async function uploadAvatar(inp) {
-  const file = inp.files[0]; if (!file) return;
-  const code = getCode(); if (!code) return;
-  try {
-    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-    const name = `avatars/${code}-${Date.now()}.${ext}`;
-    const { error: ue } = await sb.storage.from('site-photos').upload(name, file, { contentType: file.type, upsert: true });
-    if (ue) throw ue;
-    const url = sb.storage.from('site-photos').getPublicUrl(name).data.publicUrl;
-    await sb.from('profils').update({ photo_url: url }).eq('code', code);
-    localStorage.setItem('cqp_photo', url);
-    document.getElementById('profil-av').innerHTML = `<img src="${url}" alt="">`;
-  } catch (e) { console.error('uploadAvatar', e); }
-}
-
-function copyCode() {
-  const code = document.getElementById('code-display').textContent;
-  navigator.clipboard?.writeText(code).then(() => {
-    const btn = document.getElementById('copy-btn');
-    btn.textContent = '✅ Copié !';
-    setTimeout(() => btn.textContent = 'Copier le code', 1500);
-  });
-}
-
-async function loadStats(code) {
-  const [{ count: posts }, { count: likes }, { count: cmts }] = await Promise.all([
-    sb.from('posts').select('*', { count: 'exact', head: true }).eq('profil_code', code).eq('visible', true),
-    sb.from('likes').select('*', { count: 'exact', head: true }).eq('profil_code', code),
-    sb.from('commentaires').select('*', { count: 'exact', head: true }).eq('profil_code', code)
-  ]);
-  document.getElementById('stat-posts').textContent = posts || 0;
-  document.getElementById('stat-likes').textContent = likes || 0;
-  document.getElementById('stat-cmts').textContent = cmts || 0;
-}
-
-async function loadMesPosts(code) {
-  const el = document.getElementById('mes-posts');
-  const { data } = await sb.from('posts').select('*').eq('profil_code', code).eq('visible', true).order('created_at', { ascending: false }).limit(10);
-  if (!data?.length) { el.innerHTML = '<div class="empty-posts">Aucune publication pour l\'instant</div>'; return; }
-  el.innerHTML = data.map(p => `
-    <div class="pcard pcard-pad" style="margin-bottom:10px;">
-      <div style="font-size:.88rem;color:var(--txt);line-height:1.65;white-space:pre-wrap;">${esc(p.contenu || '')}</div>
-      ${p.photo_url ? `<img src="${esc(p.photo_url)}" style="width:100%;border-radius:8px;margin-top:10px;max-height:200px;object-fit:cover;" loading="lazy">` : ''}
-      <div style="font-size:.72rem;color:var(--txt3);margin-top:8px;">${timeAgo(p.created_at)}</div>
-    </div>`).join('');
-}
-
-function doLogout() {
-  sb.auth.signOut().catch(() => {});
-  ['cqp_code', 'cqp_prenom', 'cqp_photo', 'cqp_sid', 'cqp_token'].forEach(k => localStorage.removeItem(k));
-  document.getElementById('view-profil').style.display = 'none';
-  document.getElementById('logout-btn').style.display = 'none';
-  document.getElementById('view-connect').style.display = 'block';
-  digits.forEach(d => { d.value = ''; d.classList.remove('filled'); });
-  switchPanel('login');
-}
-
-// ── INIT ─────────────────────────────────────────────────────────
-async function init() {
-  const code = getCode();
-  if (!code) return; // Afficher le panel connexion (déjà visible)
-
-  // Code en localStorage → afficher profil directement
-  document.getElementById('view-connect').style.display = 'none';
-  document.getElementById('view-profil').style.display = 'block';
-  document.getElementById('logout-btn').style.display = 'block';
-
-  // Afficher ce qu'on a en cache immédiatement
-  showProfilView({ code, prenom: getPrenom(), quartier: '', bio: '', photo_url: getPhoto() });
-
-  // Charger le vrai profil depuis Supabase en arrière-plan
-  try {
-    const { data } = await sb.from('profils').select('*').eq('code', code).limit(1);
-    if (data?.length) {
-      localStorage.setItem('cqp_prenom', data[0].prenom || '');
-      localStorage.setItem('cqp_photo', data[0].photo_url || '');
-      showProfilView(data[0]);
-    }
-  } catch (e) { console.warn('loadProfil:', e); }
-}
-
-init();
+boot();
 </script>
 </body>
 </html>

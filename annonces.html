@@ -6,15 +6,6 @@
 <meta name="theme-color" content="#C8102E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Annonces — CQP Toulouse</title>
-<meta name="description" content="Petites annonces des habitants des quartiers populaires de Toulouse : logement, emploi, services, vente et don.">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://cqp-toulouse.fr/annonces.html">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://cqp-toulouse.fr/annonces.html">
-<meta property="og:title" content="Annonces — CQP Toulouse">
-<meta property="og:description" content="Petites annonces des habitants des quartiers populaires de Toulouse : logement, emploi, services, vente et don.">
-<meta property="og:image" content="https://cqp-toulouse.fr/icons/icon-512.png">
-<meta property="og:locale" content="fr_FR">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
@@ -24,7 +15,7 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--rouge:#C8102E;--green:#42B72A;--purple:#7C3AED;--blue:#1877F2;--orange:#F97316;
   --txt:#050505;--txt2:#65676B;--txt3:#8A8D91;--bg:#F0F2F5;--bg3:#E4E6EB;--border:#CED0D4;
-  --shadow:0 1px 2px rgba(0,0,0,.1);--r:10px;--nav:56px;}
+  --shadow:0 1px 2px rgba(0,0,0,.1);--r:12px;--nav:56px;}
 html,body{font-size:15px;background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh;}
 body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 8px);}
 button,label{cursor:pointer;font-family:inherit;}
@@ -68,7 +59,7 @@ button,label{cursor:pointer;font-family:inherit;}
 .empty{padding:40px 20px;text-align:center;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;}
 
 /* NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:#fff;border-top:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -1px 8px rgba(0,0,0,.06);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 20px rgba(0,0,0,.06);}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;padding:6px 0;}
 .nav-item.active,.nav-item:hover{color:var(--rouge);}
 .nav-item svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
@@ -82,7 +73,6 @@ button,label{cursor:pointer;font-family:inherit;}
 const getCode=()=>localStorage.getItem('cqp_code')||null;
 const getPrenom=()=>localStorage.getItem('cqp_prenom')||'';
 const getSid=()=>{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;};
-const getPhoto=()=>localStorage.getItem('cqp_photo')||'';
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
 function saveSession(p){localStorage.setItem('cqp_code',p.code||'');localStorage.setItem('cqp_prenom',p.prenom||'');localStorage.setItem('cqp_photo',p.photo_url||'');}
 function lockPrenom(prenom){if(!prenom)return;['an-prenom','pe-prenom','comment-prenom'].forEach(id=>{const el=document.getElementById(id);if(el){el.value=prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;pointer-events:none;';}});}
@@ -152,24 +142,9 @@ async function compressImage(file,maxW=1200,q=0.82){if(!file?.type?.startsWith('
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
-const _EF='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth';
-let _authDone=false;
-async function ensureAuth(){
-  if(_authDone)return;
-  const code=localStorage.getItem('cqp_code');
-  if(!code)return;
-  try{
-    const{data:{session}}=await sb.auth.getSession();
-    if(session){_authDone=true;return;}
-    const r=await fetch(_EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SBK},body:JSON.stringify({profil_code:code,action:'login'})});
-    const d=await r.json();
-    if(d.email&&d.password){await sb.auth.signInWithPassword({email:d.email,password:d.password});_authDone=true;}
-  }catch(e){console.warn('ensureAuth:',e);}
-}
 let _profil=null;
 
 async function init(){
-  await ensureAuth();
   const code=getCode();
   if(!code){window.location.href='profil.html';return;}
   // Charger profil en arrière-plan
@@ -228,7 +203,6 @@ function closeModal(){
 }
 
 async function submitAnnonce(){
-  await ensureAuth();
   const titre=document.getElementById('an-titre').value.trim();
   const contenu=document.getElementById('an-contenu').value.trim();
   const cat=document.getElementById('an-cat').value;
@@ -250,7 +224,7 @@ async function submitAnnonce(){
     }catch{}
   }
   const{error}=await sb.from('annonces').insert({
-    titre,description:contenu,contenu,categorie:cat,photo_url,
+    titre,contenu,categorie:cat,photo_url,
     profil_code:code,prenom,visible:true,
     created_at:new Date().toISOString()
   });

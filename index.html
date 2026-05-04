@@ -11,29 +11,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CQP Toulouse">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CQP Toulouse — Réseau des Quartiers Populaires</title>
-<meta name="description" content="Le réseau social des habitants des quartiers populaires de Toulouse. Actus, événements, annonces, groupes de quartier — rejoins ta communauté sur CQP Toulouse.">
-<meta name="keywords" content="quartiers populaires toulouse, mirail toulouse, réseau quartier, associations toulouse, actus quartier toulouse, CQP toulouse">
-<meta name="author" content="CQP Toulouse">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://cqp-toulouse.fr/">
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://cqp-toulouse.fr/">
-<meta property="og:title" content="CQP Toulouse — Réseau des Quartiers Populaires">
-<meta property="og:description" content="Le réseau social des habitants des quartiers populaires de Toulouse. Actus, événements, annonces et groupes de quartier.">
-<meta property="og:image" content="https://cqp-toulouse.fr/icons/icon-512.png">
-<meta property="og:locale" content="fr_FR">
-<meta property="og:site_name" content="CQP Toulouse">
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="CQP Toulouse — Réseau des Quartiers Populaires">
-<meta name="twitter:description" content="Le réseau social des habitants des quartiers populaires de Toulouse.">
-<meta name="twitter:image" content="https://cqp-toulouse.fr/icons/icon-512.png">
-<!-- Données structurées JSON-LD pour Google -->
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebSite","name":"CQP Toulouse","url":"https://cqp-toulouse.fr","description":"Réseau des habitants des quartiers populaires de Toulouse","inLanguage":"fr-FR","potentialAction":{"@type":"SearchAction","target":"https://cqp-toulouse.fr/?q={search_term_string}","query-input":"required name=search_term_string"}}
-</script>
+<title>CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -43,9 +21,10 @@
   --rouge:#C8102E;--rouge-dk:#a00d24;--rouge-lt:#fff0f2;
   --blue:#1877F2;--green:#42B72A;--purple:#7C3AED;--orange:#EA580C;
   --txt:#050505;--txt2:#65676B;--txt3:#8A8D91;
-  --bg:#F0F2F5;--bg2:#fff;--bg3:#E4E6EB;--border:#CED0D4;
-  --shadow:0 1px 2px rgba(0,0,0,.1);--shadow-md:0 2px 8px rgba(0,0,0,.12);
-  --r:8px;--nav:56px;
+  --bg:#ECEEF2;--bg2:#fff;--bg3:#E4E6EB;--border:#D8DADF;
+  --shadow:0 1px 3px rgba(0,0,0,.12);--shadow-md:0 4px 16px rgba(0,0,0,.1);
+  --shadow-card:0 2px 8px rgba(0,0,0,.08);
+  --r:12px;--r-sm:8px;--nav:58px;
 }
 html,body{font-size:15px;background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;overscroll-behavior:none;}
 body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px);min-height:100vh;}
@@ -58,22 +37,23 @@ img{max-width:100%;display:block}
   position:sticky;top:0;z-index:100;height:var(--nav);
   background:#fff;border-bottom:1px solid var(--border);
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 14px;box-shadow:var(--shadow);
+  padding:0 16px;box-shadow:0 1px 0 var(--border);
 }
-.topbar-logo{display:flex;align-items:center;gap:8px;}
+.topbar-logo{display:flex;align-items:center;gap:10px;}
 .logo-pill{background:var(--rouge);color:#fff;font-family:'Bebas Neue',sans-serif;
-  font-size:.95rem;letter-spacing:1px;padding:5px 10px;border-radius:6px;line-height:1;}
+  font-size:1rem;letter-spacing:1.5px;padding:6px 12px;border-radius:8px;line-height:1;
+  box-shadow:0 2px 8px rgba(200,16,46,.35);}
 .logo-text{display:flex;flex-direction:column;}
-.logo-name{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.5px;line-height:1;}
-.logo-sub{font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);}
-.topbar-right{display:flex;align-items:center;gap:4px;}
+.logo-name{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.5px;line-height:1;}
+.logo-sub{font-family:'Barlow Condensed',sans-serif;font-size:.52rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--txt3);}
+.topbar-right{display:flex;align-items:center;gap:6px;}
 .icon-btn{width:38px;height:38px;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;transition:background .15s;}
 .icon-btn:active{background:#d0d2d7;}
 .icon-btn svg{width:20px;height:20px;stroke:var(--txt);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:var(--rouge);border-radius:50%;border:2px solid #fff;}
+.notif-dot{position:absolute;top:5px;right:5px;width:9px;height:9px;background:var(--rouge);border-radius:50%;border:2px solid #fff;}
 
 /* ── LIVE TICKER ───────────────────────────────────────── */
-.ticker{display:flex;align-items:center;gap:8px;padding:7px 14px;background:#fff;
+.ticker{display:flex;align-items:center;gap:8px;padding:7px 14px;background:linear-gradient(90deg,#fff 0%,#fff8f8 100%);
   border-bottom:1px solid var(--border);overflow:hidden;position:sticky;top:var(--nav);z-index:99;}
 .ticker-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
@@ -155,7 +135,7 @@ img{max-width:100%;display:block}
 
 /* ── COMPOSER (quoi de neuf) ───────────────────────────── */
 .composer{background:#fff;margin:8px 0 0;padding:14px;}
-@media(min-width:600px){.composer{border-radius:var(--r);margin:8px 8px 0;box-shadow:var(--shadow);}}
+@media(min-width:600px){.composer{border-radius:var(--r);margin:8px 8px 0;box-shadow:var(--shadow-card);}}
 .composer-top{display:flex;align-items:center;gap:10px;}
 .c-av{width:40px;height:40px;min-width:40px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:#fff;flex-shrink:0;}
 .c-trigger{flex:1;background:var(--bg3);border:none;border-radius:22px;padding:10px 16px;color:var(--txt3);font-family:'Barlow',sans-serif;font-size:.9rem;text-align:left;cursor:pointer;}
@@ -178,7 +158,8 @@ img{max-width:100%;display:block}
 
 /* ── CARD BASE ─────────────────────────────────────────── */
 .card{background:#fff;margin:8px 0 0;overflow:hidden;position:relative;}
-@media(min-width:600px){.card{border-radius:var(--r);margin:8px 8px 0;box-shadow:var(--shadow);}}
+@media(min-width:600px){.card{border-radius:var(--r);margin:8px 8px 0;box-shadow:var(--shadow-card);}}
+@media(max-width:599px){.card{border-radius:0;box-shadow:none;border-top:1px solid var(--border);}}
 .card-head{display:flex;align-items:center;gap:10px;padding:12px 14px 6px;}
 .card-av{width:42px;height:42px;min-width:42px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:#fff;overflow:hidden;flex-shrink:0;}
 .card-av img{width:100%;height:100%;object-fit:cover;}
@@ -192,12 +173,12 @@ img{max-width:100%;display:block}
 .card-badge.post{background:var(--purple);}
 
 /* cover gradient si pas de photo */
-.card-cover{min-height:140px;display:flex;flex-direction:column;justify-content:flex-end;padding:18px;position:relative;overflow:hidden;}
-.card-cover::before{content:'';position:absolute;inset:0;opacity:.95;}
-.cv-rouge::before{background:linear-gradient(135deg,#1a0508 0%,#4a0b16 60%,var(--rouge) 100%);}
-.cv-blue::before{background:linear-gradient(135deg,#050a1a 0%,#0e2472 60%,var(--blue) 100%);}
-.cv-green::before{background:linear-gradient(135deg,#061008 0%,#1a4a1f 60%,var(--green) 100%);}
-.cv-purple::before{background:linear-gradient(135deg,#0d0518 0%,#3b1a6e 60%,var(--purple) 100%);}
+.card-cover{min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;padding:20px;position:relative;overflow:hidden;}
+.card-cover::before{content:'';position:absolute;inset:0;opacity:.97;}
+.cv-rouge::before{background:linear-gradient(135deg,#0d0205 0%,#3a0810 50%,var(--rouge) 100%);}
+.cv-blue::before{background:linear-gradient(135deg,#020510 0%,#081a5e 50%,var(--blue) 100%);}
+.cv-green::before{background:linear-gradient(135deg,#020803 0%,#0e3012 50%,var(--green) 100%);}
+.cv-purple::before{background:linear-gradient(135deg,#060210 0%,#280f50 50%,var(--purple) 100%);}
 .card-cover-cat{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.6);position:relative;z-index:1;margin-bottom:5px;}
 .card-cover-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#fff;line-height:1.1;position:relative;z-index:1;}
 .card-cover-date{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:#fff;line-height:1;position:relative;z-index:1;}
@@ -220,8 +201,8 @@ img{max-width:100%;display:block}
 /* ── ACTION BAR (Facebook) ─────────────────────────────── */
 .card-stats{display:flex;justify-content:space-between;padding:6px 14px;border-top:1px solid var(--bg3);font-size:.77rem;color:var(--txt3);}
 .card-actions{display:flex;align-items:center;border-top:1px solid var(--bg3);}
-.action-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px 4px;background:none;border:none;font-family:'Barlow',sans-serif;font-size:.82rem;font-weight:600;color:var(--txt2);border-radius:6px;transition:background .15s;}
-.action-btn:active{background:var(--bg3);}
+.action-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 4px;background:none;border:none;font-family:'Barlow',sans-serif;font-size:.82rem;font-weight:600;color:var(--txt2);border-radius:8px;transition:all .15s;}
+.action-btn:active{background:var(--bg3);transform:scale(.97);}
 .action-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
 .action-btn.liked{color:var(--rouge);}
 .action-btn.liked svg{stroke:var(--rouge);fill:var(--rouge);}
@@ -262,14 +243,15 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
 .sheet-send svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;}
 
 /* ── BOTTOM NAV ────────────────────────────────────────── */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:#fff;border-top:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -1px 8px rgba(0,0,0,.06);}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;padding:6px 0;}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;align-items:stretch;height:var(--nav);padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 20px rgba(0,0,0,.06);}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.5rem;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;padding:6px 0;transition:color .15s;}
 .nav-item.active,.nav-item:hover{color:var(--rouge);}
-.nav-item svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.nav-item svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s;}
 .nav-item.active svg{stroke:var(--rouge);}
+.nav-item:active svg{transform:scale(.88);}
 .nav-center{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:4px;flex-shrink:0;}
-.nav-pub{width:50px;height:50px;border-radius:50%;background:var(--rouge);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(200,16,46,.4);margin-top:-14px;transition:transform .15s;}
-.nav-pub:active{transform:scale(.9);}
+.nav-pub{width:52px;height:52px;border-radius:50%;background:var(--rouge);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(200,16,46,.45);margin-top:-16px;transition:transform .15s,box-shadow .15s;}
+.nav-pub:active{transform:scale(.88);box-shadow:0 2px 8px rgba(200,16,46,.3);}
 .nav-pub svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;}
 
 /* ── PUB MENU ──────────────────────────────────────────── */
@@ -340,9 +322,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
     <div class="icon-btn notif-dot" style="cursor:default">
       <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
     </div>
-    <a href="admin.html" class="icon-btn" id="admin-link" style="display:none;">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
-    </a>
+    <a href="admin.html" class="icon-btn">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20v-1a6 6 0 0 1 12 0v1"/></svg>
     </a>
   </div>
@@ -400,7 +380,7 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
     <button class="c-trigger" onclick="openComposer()">Quoi de neuf dans ton quartier ?</button>
   </div>
   <div class="composer-expand" id="c-expand">
-    <input class="c-name" id="c-name" readonly placeholder="Votre prénom" maxlength="30" style="background:var(--bg3);color:var(--txt2);cursor:default;pointer-events:none;">
+    <input class="c-name" id="c-name" readonly style="pointer-events:none;" placeholder="Votre prénom" maxlength="30" readonly style="pointer-events:none;background:var(--bg3);color:var(--txt2);" oninput="updateCAv(this.value)">
     <textarea class="c-text" id="c-text" rows="3" placeholder="Partagez une info, une question…"></textarea>
     <img id="c-photo-prev" class="c-photo-prev">
     <div class="c-foot">
@@ -529,26 +509,6 @@ input.sheet-input:focus,input.sheet-name:focus{border-color:var(--rouge);}
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
-const _EF='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth';
-let _authDone=false;
-const _codeToEmail=c=>`code-${c}@cqp-toulouse.fr`;
-const _codeToPass=c=>`cqp-${c}-secret2025`;
-async function ensureAuth(){
-  if(_authDone)return;
-  const code=localStorage.getItem('cqp_code');
-  if(!code)return;
-  try{
-    const{data:{session}}=await sb.auth.getSession();
-    if(session){_authDone=true;return;}
-    // Connexion directe — sans Edge Function
-    const{error}=await sb.auth.signInWithPassword({email:_codeToEmail(code),password:_codeToPass(code)});
-    if(!error){_authDone=true;return;}
-    // Fallback : créer le compte si pas encore créé (utilisateur migré)
-    await sb.auth.signUp({email:_codeToEmail(code),password:_codeToPass(code),options:{data:{profil_code:code}}});
-    await sb.auth.signInWithPassword({email:_codeToEmail(code),password:_codeToPass(code)});
-    _authDone=true;
-  }catch(e){console.warn('ensureAuth:',e);}
-}
 
 // ═══════════════════════════════════════════════════════════
 //  UTILS
@@ -795,7 +755,6 @@ function closeSP(){
 }
 async function publishStory(){
   if(!_sf)return;
-  await ensureAuth();
   const btn=document.getElementById('sp-btn');
   const msg=document.getElementById('sp-msg');
   const caption=document.getElementById('sp-caption').value.trim();
@@ -849,7 +808,6 @@ function cPhotoPreview(inp){
   else prev.style.display='none';
 }
 async function publishPost(){
-  await ensureAuth();
   const text=document.getElementById('c-text').value.trim();
   const prenom=document.getElementById('c-name').value.trim()||'Anonyme';
   const msgEl=document.getElementById('c-msg');
@@ -906,7 +864,6 @@ function applyLikeUI(type,id){
   if(sl)sl.textContent=`${d.count} j'aime`;
 }
 async function toggleLike(type,id,el){
-  await ensureAuth();
   const sid=getCode()||getSid();const k=`${type}-${id}`;
   const d=likesCache[k]||{count:0,liked:false};
   // optimistic
@@ -979,11 +936,9 @@ async function sendCmt(){
   const msg=document.getElementById('sheet-msg').value.trim();
   const prenom=document.getElementById('sheet-prenom').value.trim()||'Anonyme';
   if(!msg||!sheetType||!sheetId)return;
-  await ensureAuth();
   savePrenom(prenom);
   document.getElementById('sheet-msg').value='';
-  const code=localStorage.getItem('cqp_code')||null;
-  await sb.from('commentaires').insert({item_type:sheetType,item_id:sheetId,prenom,message:msg,visible:true,profil_code:code});
+  await sb.from('commentaires').insert({item_type:sheetType,item_id:sheetId,prenom,message:msg,visible:true});
   refreshCmts();
 }
 
@@ -1307,8 +1262,6 @@ async function init(){
   // ── VÉRIFICATION CONNEXION (localStorage = instantané) ──────────────────
   const _pCode=localStorage.getItem('cqp_code');
   if(!_pCode){window.location.href='profil.html';return;}
-  // Restaurer session Supabase Auth en arrière-plan (sans bloquer l'affichage)
-  ensureAuth().catch(()=>{});
 
   // ── CHARGER LE FEED IMMÉDIATEMENT (pas d'attente BDD) ───────────────────
   // Utiliser le prénom en cache localStorage pour ne pas bloquer
@@ -1325,15 +1278,16 @@ async function init(){
   // ── TRACKER LA VISITE ────────────────────────────────────────────────────
   sb.from('page_views').insert({page:'accueil',profil_code:_pCode}).catch(()=>{});
 
-  // Charger profil en arrière-plan
+  // ── CHARGER PROFIL EN ARRIÈRE-PLAN (sans bloquer l'affichage) ───────────
   sb.from('profils').select('*').eq('code',_pCode).limit(1).then(({data:_pd})=>{
-    if(!_pd?.length) return;
+    if(!_pd?.length){
+      // Code invalide → déco silencieuse (ne pas bloquer si pb réseau)
+      return;
+    }
     window._profil=_pd[0];
     const _prenom=_pd[0].prenom||'';
     localStorage.setItem('cqp_prenom',_prenom);
     _lockAll(_prenom);
-    // Afficher lien admin si is_admin
-    if(_pd[0].is_admin){const al=document.getElementById('admin-link');if(al)al.style.display='flex';}
     // Avatar composer
     const _av=document.getElementById('c-av');
     if(_av){
@@ -1341,7 +1295,25 @@ async function init(){
       else _av.textContent=(_prenom||'?')[0].toUpperCase();
     }
   }).catch(()=>{});
-
+  // Charger le profil et verrouiller le prénom
+  sb.from('profils').select('prenom,quartier,photo_url,session_id').eq('code',_pCode).limit(1).then(({data})=>{
+    if(data?.length){
+      window._profil=data[0];
+      const prenom=data[0].prenom||'';
+      localStorage.setItem('cqp_prenom',prenom);
+      // Pré-remplir et verrouiller TOUS les champs prénom
+      ['c-name','sp-prenom','an-prenom','pe-prenom','sheet-prenom','pub-prenom','post-prenom'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){el.value=prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;border-color:var(--border,#CED0D4);';}
+      });
+      // Avatar composer
+      const av=document.getElementById('c-av');
+      if(av){
+        if(data[0].photo_url)av.innerHTML=`<img src="${data[0].photo_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        else av.textContent=(prenom||'?')[0].toUpperCase();
+      }
+    }
+  });
   // Récupérer actus pour le drawer
   sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).then(({data})=>{_actus=data||[];});
   loadTicker();setInterval(loadTicker,60000);

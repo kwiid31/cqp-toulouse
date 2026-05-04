@@ -21,34 +21,13 @@ function saveSession(p) {
   localStorage.setItem('cqp_photo',  p.photo_url || '');
 }
 function clearSession() {
-  ['cqp_code','cqp_prenom','cqp_photo','cqp_sid','cqp_token'].forEach(k => localStorage.removeItem(k));
+  ['cqp_code','cqp_prenom','cqp_photo','cqp_sid'].forEach(k => localStorage.removeItem(k));
 }
 
 // ── Vérification connexion (sb passé en paramètre) ───────────────────────────
 async function requireAuth(sb, redirectTo = 'profil.html') {
   const code = getCode();
   if (!code) { window.location.href = redirectTo; return null; }
-
-  // Vérifier session Supabase Auth ; si absente → auto-reconnexion transparente
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    try {
-      const _r = await fetch('https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'apikey': CQP_SBK },
-        body: JSON.stringify({ profil_code: code, action: 'login' })
-      });
-      const _d = await _r.json();
-      if (_d.email && _d.password) {
-        const { data: ad } = await sb.auth.signInWithPassword({ email: _d.email, password: _d.password });
-        if (ad?.session?.access_token) saveToken(ad.session.access_token);
-      } else {
-        // Code plus valide en base → déconnexion
-        clearSession(); window.location.href = redirectTo; return null;
-      }
-    } catch { clearSession(); window.location.href = redirectTo; return null; }
-  }
-
   try {
     const { data } = await sb.from('profils').select('*').eq('code', code).limit(1);
     if (!data?.length) { clearSession(); window.location.href = redirectTo; return null; }
@@ -134,21 +113,4 @@ async function uploadPhoto(sb, file, folder = 'posts') {
   const { error } = await sb.storage.from('site-photos').upload(name, file, { contentType: 'image/jpeg', upsert: false });
   if (error) throw error;
   return sb.storage.from('site-photos').getPublicUrl(name).data.publicUrl;
-}
-
-// ── Token JWT (auth sécurisée) ───────────────────────────────────────────────
-const getToken   = () => localStorage.getItem('cqp_token') || null;
-const saveToken  = (t) => t ? localStorage.setItem('cqp_token', t) : null;
-const clearToken = () => localStorage.removeItem('cqp_token');
-
-
-// ── Validation URL photo (anti-XSS) ──────────────────────────────────────────
-function safeUrl(url) {
-  if (!url) return '';
-  try {
-    const u = new URL(url);
-    if (u.protocol !== 'https:') return '';
-    if (!u.hostname.endsWith('.supabase.co') && !u.hostname.endsWith('.supabase.in')) return '';
-    return url;
-  } catch { return ''; }
 }

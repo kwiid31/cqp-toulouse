@@ -2,173 +2,411 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-192.png">
 <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#C8102E">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CQP Toulouse">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Admin — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--rouge:#C8102E;--blue:#1877F2;--green:#42B72A;--orange:#EA580C;--purple:#7C3AED;
-  --txt:#050505;--txt2:#65676B;--txt3:#8A8D91;
-  --bg:#F0F2F5;--bg3:#E4E6EB;--border:#CED0D4;
-  --shadow:0 1px 2px rgba(0,0,0,.1);--r:8px;--nav:56px;}
+:root{
+  --rouge:#C8102E;--blue:#1877F2;--green:#42B72A;--purple:#7C3AED;--orange:#EA580C;
+  --bg:#111;--bg2:#1a1a1a;--bg3:#252525;--bg4:#2e2e2e;
+  --border:#333;--txt:#f0f0f0;--txt2:rgba(255,255,255,.65);--txt3:rgba(255,255,255,.35);
+  --r:10px;--nav:60px;
+}
 html,body{font-size:15px;background:var(--bg);color:var(--txt);font-family:'Barlow',sans-serif;min-height:100vh;}
-a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:inherit;outline:none;border:none;}
+a{text-decoration:none;color:inherit}
+button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 
-.topbar{position:sticky;top:0;z-index:100;height:var(--nav);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 14px;box-shadow:var(--shadow);}
-.topbar-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.5px;flex:1;}
-.badge-admin{background:var(--orange);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;padding:3px 9px;border-radius:4px;}
+/* LOGIN */
+#login{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:24px;z-index:999;}
+#login.gone{display:none;}
+.login-logo{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--rouge);letter-spacing:2px;}
+.login-sub{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:var(--txt3);margin-top:-14px;}
+.login-box{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;}
+.login-input{width:100%;padding:14px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);color:var(--txt);font-size:.95rem;outline:none;transition:border .15s;}
+.login-input:focus{border-color:var(--rouge);}
+.login-btn{padding:14px;background:var(--rouge);border:none;border-radius:var(--r);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;}
+.login-err{color:var(--rouge);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;text-align:center;}
 
-.admin-wrap{max-width:760px;margin:0 auto;padding:12px;}
+/* APP */
+#app{display:none;}
+#app.visible{display:block;}
 
-/* STATS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:12px;}
-.stat-card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:14px 16px;}
-.stat-n{font-family:'Bebas Neue',sans-serif;font-size:2rem;line-height:1;}
+/* TOPBAR */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);height:var(--nav);display:flex;align-items:center;gap:12px;padding:0 16px;position:sticky;top:0;z-index:100;}
+.tb-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:1px;color:var(--rouge);}
+.tb-sep{width:1px;height:20px;background:var(--border);}
+.tb-title{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);flex:1;}
+.tb-back{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt2);}
+.tb-logout{background:transparent;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);}
+
+/* STATS GRID */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px;}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr);}}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;}
+.stat-n{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;}
+.stat-n.r{color:var(--rouge);}.stat-n.b{color:var(--blue);}.stat-n.g{color:var(--green);}.stat-n.o{color:var(--orange);}.stat-n.p{color:var(--purple);}
 .stat-l{font-family:'Barlow Condensed',sans-serif;font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-top:2px;}
+.online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-right:5px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
 /* TABS */
-.tabs{display:flex;gap:0;background:#fff;border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px;}
-.tab-btn{flex:1;padding:12px 6px;background:none;border:none;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);border-bottom:2px solid transparent;transition:all .15s;}
-.tab-btn.active{color:var(--rouge);border-bottom-color:var(--rouge);}
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--bg2);scrollbar-width:none;position:sticky;top:var(--nav);z-index:90;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{background:none;border:none;padding:14px 16px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .15s;}
+.tab.active{color:var(--txt);border-bottom-color:var(--rouge);}
 
-/* TABLE */
-.table-wrap{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;}
-.table-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);}
-.table-head-title{font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);flex:1;}
-.table-row{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-bottom:1px solid var(--bg3);}
-.table-row:last-child{border-bottom:none;}
-.row-av{width:36px;height:36px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.9rem;color:#fff;flex-shrink:0;overflow:hidden;}
-.row-av img{width:100%;height:100%;object-fit:cover;}
-.row-main{flex:1;min-width:0;}
-.row-title{font-family:'Barlow',sans-serif;font-weight:600;font-size:.88rem;line-height:1.3;}
-.row-sub{font-size:.78rem;color:var(--txt3);margin-top:2px;}
-.row-actions{display:flex;gap:6px;flex-shrink:0;}
-.btn-sm{padding:5px 12px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;}
-.btn-ok{background:var(--green);color:#fff;}
-.btn-del{background:#fff;border:1.5px solid var(--border);color:var(--rouge);}
-.btn-del:hover{background:#fff0f2;}
+/* CONTENT */
+.content{display:none;padding:14px;max-width:860px;margin:0 auto;}
+.content.active{display:block;}
 
-/* ACTU FORM */
-.actu-form{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;}
-.actu-form-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;margin-bottom:14px;}
+/* SECTION HEAD */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.5px;}
+.btn-new{background:var(--rouge);border:none;color:#fff;padding:10px 18px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.btn-new.blue{background:var(--blue);}
+.btn-new.green{background:var(--green);}
+.btn-new.purple{background:var(--purple);}
+
+/* FORM PANEL */
+.fpanel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;display:none;}
+.fpanel.open{display:block;}
+.fpanel-title{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.5px;margin-bottom:14px;color:var(--rouge);}
+.fpanel-title.blue{color:var(--blue);}
+.fpanel-title.green{color:var(--green);}
+.fpanel-title.purple{color:var(--purple);}
 .fg{margin-bottom:12px;}
-.fg label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:5px;}
-.fg input,.fg select,.fg textarea{width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;resize:vertical;}
+.fg label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:.67rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 13px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;transition:border .15s;resize:vertical;}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--rouge);}
+.fg select option{background:var(--bg3);}
 .fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.btn-rouge{width:100%;padding:13px;background:var(--rouge);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;}
-.form-msg{text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;min-height:18px;margin-top:8px;}
+@media(max-width:480px){.fg-row{grid-template-columns:1fr;}}
+.file-lbl{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--bg3);border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;color:var(--txt2);font-size:.85rem;transition:border .15s;}
+.file-lbl:hover{border-color:var(--rouge);}
+.file-lbl input{display:none;}
+.file-prev{width:100%;height:100px;object-fit:cover;border-radius:8px;margin-top:8px;display:none;}
+.fp-foot{display:flex;gap:10px;margin-top:4px;}
+.btn-save{flex:1;padding:11px;background:var(--rouge);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;}
+.btn-save.blue{background:var(--blue);}
+.btn-cancel{padding:11px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;}
+.fp-msg{margin-top:10px;font-family:'Barlow Condensed',sans-serif;font-size:.76rem;letter-spacing:1px;text-align:center;}
 
-.spinner{display:flex;align-items:center;justify-content:center;gap:8px;padding:24px;}
-.spinner-dot{width:7px;height:7px;border-radius:50%;background:var(--rouge);animation:bounce .9s infinite;}
-.spinner-dot:nth-child(2){animation-delay:.15s;}.spinner-dot:nth-child(3){animation-delay:.3s;}
-@keyframes bounce{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
-.empty{text-align:center;padding:28px;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;}
+/* GROQ PANEL */
+.groq-panel{background:linear-gradient(135deg,#1a0a2e,#2d1a4e);border:1px solid rgba(124,58,237,.3);border-radius:var(--r);padding:18px;margin-bottom:16px;}
+.groq-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.5px;margin-bottom:4px;color:#a78bfa;}
+.groq-sub{font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:rgba(167,139,250,.6);margin-bottom:14px;}
+.groq-input-row{display:flex;gap:10px;}
+.groq-topic{flex:1;padding:10px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;}
+.groq-topic:focus{border-color:#a78bfa;}
+.groq-cat{padding:10px 13px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;min-width:130px;}
+.groq-cat option{background:#1a1a2e;}
+.groq-btn{padding:10px 18px;background:#7C3AED;border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;transition:opacity .15s;}
+.groq-btn:disabled{opacity:.5;}
+.groq-result{margin-top:14px;background:rgba(255,255,255,.05);border:1px solid rgba(124,58,237,.2);border-radius:8px;padding:14px;display:none;}
+.groq-result.visible{display:block;}
+.groq-result-titre{font-family:'Barlow',sans-serif;font-weight:600;font-size:.95rem;color:#fff;margin-bottom:8px;}
+.groq-result-body{font-size:.85rem;color:rgba(255,255,255,.7);line-height:1.7;white-space:pre-wrap;max-height:200px;overflow-y:auto;}
+.groq-pub-btn{padding:11px 20px;background:var(--green);border:none;border-radius:8px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
+.groq-mode-btn{flex:1;padding:10px;background:none;border:none;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:rgba(167,139,250,.7);cursor:pointer;transition:all .15s;}
+.groq-mode-btn.active{background:rgba(124,58,237,.4);color:#fff;}
+.groq-tf-btn{padding:9px 16px;background:rgba(124,58,237,.3);border:1px solid rgba(124,58,237,.5);border-radius:8px;color:#a78bfa;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .15s;}
+.groq-tf-btn:hover{background:rgba(124,58,237,.5);color:#fff;}
+.chat-msg{padding:8px 12px;border-radius:8px;font-size:.85rem;line-height:1.5;max-width:90%;}
+.chat-user{background:rgba(124,58,237,.3);color:#e0d4ff;align-self:flex-end;border-radius:8px 0 8px 8px;}
+.chat-ai{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);align-self:flex-start;border-radius:0 8px 8px 8px;}
+.groq-msg{margin-top:8px;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:rgba(167,139,250,.7);text-align:center;}
 
-/* GATE */
-#gate{max-width:400px;margin:60px auto;padding:0 16px;}
-.gate-box{background:#fff;border-radius:12px;box-shadow:var(--shadow);padding:24px;text-align:center;}
-.gate-box h2{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;margin-bottom:8px;}
-.gate-box p{font-size:.85rem;color:var(--txt2);margin-bottom:20px;}
-#gate-input{width:100%;padding:12px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-size:1.2rem;letter-spacing:6px;text-align:center;outline:none;font-family:'Bebas Neue',sans-serif;color:var(--txt);}
-#gate-input:focus{border-color:var(--rouge);}
+/* ITEMS LIST */
+.item-list{display:flex;flex-direction:column;gap:8px;}
+.item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:12px;}
+.item-thumb{width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--bg3);}
+.item-thumb.story{width:46px;height:46px;border-radius:50%;border:2px solid var(--rouge);}
+.item-info{flex:1;min-width:0;}
+.item-title{font-family:'Barlow',sans-serif;font-weight:600;font-size:.88rem;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+.item-meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center;font-size:.76rem;color:var(--txt3);}
+.badge{font-family:'Barlow Condensed',sans-serif;font-size:.58rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:4px;}
+.badge.on{background:rgba(66,183,42,.15);color:#42B72A;border:1px solid rgba(66,183,42,.3);}
+.badge.off{background:rgba(255,255,255,.06);color:var(--txt3);border:1px solid var(--border);}
+.badge.wait{background:rgba(234,88,12,.12);color:#EA580C;border:1px solid rgba(234,88,12,.3);}
+.item-actions{display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
+.act{padding:6px 12px;border-radius:6px;font-family:'Barlow Condensed',sans-serif;font-size:.66rem;letter-spacing:1px;text-transform:uppercase;border:none;cursor:pointer;white-space:nowrap;}
+.act-pub{background:var(--rouge);color:#fff;}
+.act-hide{background:var(--bg3);color:var(--txt2);border:1px solid var(--border);}
+.act-val{background:var(--green);color:#fff;}
+.act-del{background:transparent;color:rgba(255,80,80,.7);border:1px solid rgba(255,80,80,.2);}
+
+/* APROPOS EDITOR */
+.apropos-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;}
+.apropos-wrap h4{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.5px;margin-bottom:12px;color:#a78bfa;}
+.apropos-ta{width:100%;min-height:300px;padding:14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;line-height:1.8;resize:vertical;}
+.apropos-ta:focus{border-color:#a78bfa;}
+.apropos-hint{font-size:.78rem;color:var(--txt3);margin-top:8px;line-height:1.6;}
+
+/* LOAD */
+.load{text-align:center;padding:32px;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;}
+.del-btn{padding:4px 10px;background:rgba(200,16,46,.12);border:1px solid rgba(200,16,46,.3);border-radius:6px;color:#C8102E;font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;flex-shrink:0;}
+.del-btn:hover{background:rgba(200,16,46,.28);}
+.content-row{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--border2);}
+.content-row:last-child{border-bottom:none;}
+.content-body{flex:1;min-width:0;}
 </style>
 </head>
 <body>
 
-<header class="topbar">
-  <button onclick="history.length>1?history.back():location.href='index.html'" style="width:36px;height:36px;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;">
-    <svg viewBox="0 0 24 24" width="20" height="20" style="stroke:var(--txt);fill:none;stroke-width:2;stroke-linecap:round;"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
-  <div class="topbar-title">Admin</div>
-  <span class="badge-admin">Admin</span>
-</header>
-
-<!-- GATE (vérification admin) -->
-<div id="gate">
-  <div class="gate-box">
-    <h2>🔐 Accès Admin</h2>
-    <p>Entre ton code profil pour vérifier tes droits admin.</p>
-    <input id="gate-input" type="password" inputmode="numeric" placeholder="••••••" maxlength="6">
-    <button class="btn-rouge" style="margin-top:12px;" onclick="checkAdmin()">Vérifier</button>
-    <div class="form-msg" id="gate-msg"></div>
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-logo">CQP</div>
+  <div class="login-sub">Espace Administration</div>
+  <div class="login-box">
+    <input class="login-input" type="password" id="pwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Accéder au dashboard</button>
+    <div class="login-err" id="login-err"></div>
   </div>
 </div>
 
-<!-- PANNEAU ADMIN -->
-<div id="admin-panel" style="display:none;">
-  <div class="admin-wrap">
+<!-- APP -->
+<div id="app">
+  <header class="topbar">
+    <span class="tb-logo">CQP</span>
+    <div class="tb-sep"></div>
+    <span class="tb-title">Dashboard Admin</span>
+    <a href="index.html" class="tb-back">← Site</a>
+    <button class="tb-logout" onclick="doLogout()">Déconnexion</button>
+  </header>
 
-    <!-- STATS -->
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-n" id="s-profils" style="color:var(--purple)">—</div><div class="stat-l">Profils</div></div>
-      <div class="stat-card"><div class="stat-n" id="s-posts" style="color:var(--blue)">—</div><div class="stat-l">Posts</div></div>
-      <div class="stat-card"><div class="stat-n" id="s-stories" style="color:var(--orange)">—</div><div class="stat-l">Stories</div></div>
-      <div class="stat-card"><div class="stat-n" id="s-annonces" style="color:var(--green)">—</div><div class="stat-l">Annonces</div></div>
-      <div class="stat-card"><div class="stat-n" id="s-evts" style="color:var(--rouge)">—</div><div class="stat-l">Événements</div></div>
-      <div class="stat-card"><div class="stat-n" id="s-views" style="color:var(--txt2)">—</div><div class="stat-l">Visites</div></div>
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="stat-n p" id="s-profils">—</div><div class="stat-l">👤 Profils</div></div>
+    <div class="stat"><div class="stat-n g" id="s-nouveaux">—</div><div class="stat-l">Nouveaux 7j</div></div>
+    <div class="stat"><div class="stat-n g" id="s-visiteurs24">—</div><div class="stat-l">Visiteurs 24h</div></div>
+    <div class="stat"><div class="stat-n b" id="s-visiteurs7">—</div><div class="stat-l">Visiteurs 7j</div></div>
+    <div class="stat"><div class="stat-n o" id="s-vues24">—</div><div class="stat-l">Vues 24h</div></div>
+    <div class="stat"><div class="stat-n r" id="s-actus">—</div><div class="stat-l">Actualités</div></div>
+    <div class="stat"><div class="stat-n b" id="s-evts">—</div><div class="stat-l">Événements</div></div>
+    <div class="stat"><div class="stat-n g" id="s-ann">—</div><div class="stat-l">Annonces</div></div>
+    <div class="stat"><div class="stat-n o" id="s-stories">—</div><div class="stat-l">Stories</div></div>
+    <div class="stat"><div class="stat-n p" id="s-posts">—</div><div class="stat-l">Posts mur</div></div>
+    <div class="stat"><div class="stat-n" id="s-adh">—</div><div class="stat-l">Adhérents</div></div>
+    <div class="stat"><div class="stat-n g" id="s-online">—</div><div class="stat-l"><span class="online-dot"></span>Connectés</div></div>
+    <div class="stat"><div class="stat-n" id="s-likes">—</div><div class="stat-l">J'aime total</div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('actus',this)">📰 Actus</button>
+    <button class="tab" onclick="switchTab('evts',this)">📅 Événements</button>
+    <button class="tab" onclick="switchTab('ann',this)">📋 Annonces</button>
+    <button class="tab" onclick="switchTab('posts',this)">💬 Posts</button>
+    <button class="tab" onclick="switchTab('stories',this)">📸 Stories</button>
+    <button class="tab" onclick="switchTab('adh',this)">👥 Adhérents</button>
+    <button class="tab" onclick="switchTab('apropos',this)">✏️ À propos</button>
+  </div>
+
+  <!-- ══ ACTUS ══ -->
+  <div class="content active" id="ct-actus">
+    <div class="sec-head">
+      <span class="sec-title">Actualités</span>
+      <button class="btn-new" onclick="togglePanel('fp-actu')">+ Nouvelle actu</button>
     </div>
 
-    <!-- TABS -->
-    <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('actus',this)">Actus</button>
-      <button class="tab-btn" onclick="switchTab('moderation',this)">Modération</button>
-      <button class="tab-btn" onclick="switchTab('evts',this)">Évts</button>
-      <button class="tab-btn" onclick="switchTab('profils',this)">Profils</button>
-    </div>
-
-    <!-- TAB ACTUS -->
-    <div id="tab-actus">
-      <div class="actu-form">
-        <div class="actu-form-title">✍️ Publier une actualité</div>
-        <div class="fg"><label>Titre *</label><input id="a-titre" placeholder="Titre de l'article"></div>
-        <div class="fg-row">
-          <div class="fg"><label>Catégorie</label><select id="a-cat"><option>Quartier</option><option>Politique</option><option>Culture</option><option>Social</option><option>Sport</option><option>Général</option></select></div>
-          <div class="fg"><label>Date de publication</label><input type="datetime-local" id="a-date"></div>
+    <!-- GROQ STUDIO -->
+    <div class="groq-panel">
+      <div class="groq-title">🤖 Studio IA — Groq</div>
+      <div class="groq-sub">Parle a Groq | Colle un article | Depose une image</div>
+      <div style="display:flex;gap:0;border:1.5px solid rgba(124,58,237,.4);border-radius:8px;overflow:hidden;margin-bottom:14px;">
+        <button class="groq-mode-btn active" id="gmode-chat" onclick="setGroqMode('chat')">💬 Chat</button>
+        <button class="groq-mode-btn" id="gmode-text" onclick="setGroqMode('text')" style="border-left:1px solid rgba(124,58,237,.4);">📋 Texte</button>
+        <button class="groq-mode-btn" id="gmode-img" onclick="setGroqMode('img')" style="border-left:1px solid rgba(124,58,237,.4);">🖼️ Image</button>
+      </div>
+      <div id="gm-chat">
+        <div id="groq-chat-hist" style="min-height:60px;max-height:200px;overflow-y:auto;background:rgba(0,0,0,.2);border-radius:8px;padding:10px;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;font-size:.85rem;"></div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <textarea id="groq-chat-input" placeholder="Ex: J'ai assiste a une reunion sur le logement au Mirail..." style="flex:1;padding:10px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:Barlow,sans-serif;font-size:.88rem;outline:none;resize:none;min-height:70px;line-height:1.5;"></textarea>
+          <button onclick="sendGroqChat()" id="gchat-btn" style="width:42px;height:42px;background:#7C3AED;border:none;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;align-self:flex-end;flex-shrink:0;"><svg viewBox="0 0 24 24" width="18" height="18" style="stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
         </div>
-        <div class="fg"><label>Contenu *</label><textarea id="a-contenu" rows="5" placeholder="Corps de l'article…"></textarea></div>
-        <div class="fg"><label>URL photo</label><input id="a-photo" placeholder="https://…" type="url"></div>
-        <button class="btn-rouge" onclick="publishActu()">Publier l'actualité</button>
-        <div class="form-msg" id="a-msg"></div>
       </div>
-      <div class="table-wrap" id="actus-list">
-        <div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>
+      <div id="gm-text" style="display:none;">
+        <textarea id="groq-paste-text" placeholder="Colle ici un article, un communique, le texte d'un prospectus..." style="width:100%;padding:12px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:Barlow,sans-serif;font-size:.88rem;outline:none;resize:vertical;min-height:120px;line-height:1.5;margin-bottom:10px;"></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+          <button onclick="groqTransform('actu')" class="groq-tf-btn">📰 Actu</button>
+          <button onclick="groqTransform('annonce')" class="groq-tf-btn">📋 Annonce</button>
+          <button onclick="groqTransform('evenement')" class="groq-tf-btn">📅 Evenement</button>
+        </div>
       </div>
+      <div id="gm-img" style="display:none;">
+        <label style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px;background:rgba(255,255,255,.05);border:2px dashed rgba(124,58,237,.4);border-radius:8px;cursor:pointer;margin-bottom:10px;">
+          <svg viewBox="0 0 24 24" width="32" height="32" style="stroke:rgba(167,139,250,.7);fill:none;stroke-width:1.5;stroke-linecap:round;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span style="font-family:Barlow Condensed,sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(167,139,250,.7);">Photo, prospectus, affiche...</span>
+          <input type="file" id="groq-img-file" accept="image/*" style="display:none;" onchange="previewGroqImg(this)">
+        </label>
+        <img id="groq-img-prev" style="width:100%;max-height:150px;object-fit:cover;border-radius:8px;display:none;margin-bottom:10px;">
+        <input id="groq-img-context" placeholder="Contexte optionnel..." style="width:100%;padding:10px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:Barlow,sans-serif;font-size:.88rem;outline:none;margin-bottom:10px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="groqFromImg('actu')" class="groq-tf-btn">📰 Actu</button>
+          <button onclick="groqFromImg('annonce')" class="groq-tf-btn">📋 Annonce</button>
+          <button onclick="groqFromImg('evenement')" class="groq-tf-btn">📅 Evenement</button>
+        </div>
+      </div>
+      <div class="groq-result" id="groq-result" style="margin-top:14px;">
+        <div id="groq-result-type" style="font-family:Barlow Condensed,sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(167,139,250,.7);margin-bottom:6px;"></div>
+        <div class="groq-result-titre" id="groq-titre"></div>
+        <div class="groq-result-body" id="groq-body"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;">
+          <button class="groq-pub-btn" onclick="pubGroqContent()">Publier</button>
+          <button onclick="document.getElementById('groq-result').classList.remove('visible')" style="padding:10px 16px;background:rgba(255,255,255,.1);border:none;border-radius:8px;color:rgba(255,255,255,.6);font-family:Barlow Condensed,sans-serif;font-size:.75rem;cursor:pointer;">Annuler</button>
+        </div>
+      </div>
+      <div class="groq-msg" id="groq-msg"></div>
     </div>
 
-    <!-- TAB MODERATION (posts/annonces à valider) -->
-    <div id="tab-moderation" style="display:none;">
-      <div class="table-wrap" style="margin-bottom:12px;">
-        <div class="table-head"><div class="table-head-title">Posts à modérer</div></div>
-        <div id="mod-posts"><div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div></div>
+    <!-- FORM NOUVELLE ACTU -->
+    <div class="fpanel" id="fp-actu">
+      <div class="fpanel-title">📰 Nouvelle actualité</div>
+      <div class="fg"><label>Titre *</label><input type="text" id="fa-titre" placeholder="Titre de l'article"></div>
+      <div class="fg-row">
+        <div class="fg"><label>Catégorie</label><select id="fa-cat"><option>Politique</option><option>Logement</option><option>Culture</option><option>Social</option><option>Emploi</option><option>Sécurité</option><option>Général</option></select></div>
+        <div class="fg"><label>Date</label><input type="datetime-local" id="fa-date"></div>
       </div>
-      <div class="table-wrap">
-        <div class="table-head"><div class="table-head-title">Annonces à valider</div></div>
-        <div id="mod-annonces"><div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div></div>
+      <div class="fg"><label>Contenu *</label><textarea id="fa-contenu" rows="6" placeholder="Corps de l'article…"></textarea></div>
+      <div class="fg">
+        <label>Photo</label>
+        <label class="file-lbl"><input type="file" id="fa-photo" accept="image/*" onchange="prevImg(this,'fa-prev')">📷 Choisir une image</label>
+        <img id="fa-prev" class="file-prev">
       </div>
+      <div class="fg"><label>Visible immédiatement</label><select id="fa-vis"><option value="true">Oui — publié</option><option value="false">Non — brouillon</option></select></div>
+      <div class="fp-foot">
+        <button class="btn-save" onclick="saveActu()">Publier</button>
+        <button class="btn-cancel" onclick="togglePanel('fp-actu')">Annuler</button>
+      </div>
+      <div class="fp-msg" id="fa-msg"></div>
     </div>
 
-    <!-- TAB EVTS -->
-    <div id="tab-evts" style="display:none;">
-      <div class="table-wrap">
-        <div class="table-head"><div class="table-head-title">Événements à valider</div></div>
-        <div id="mod-evts"><div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div></div>
-      </div>
-    </div>
 
-    <!-- TAB PROFILS -->
-    <div id="tab-profils" style="display:none;">
-      <div class="table-wrap">
-        <div class="table-head"><div class="table-head-title">Derniers inscrits</div></div>
-        <div id="profils-list"><div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div></div>
+      <!-- AUTO GROQ SERVEUR -->
+      <div style="background:linear-gradient(135deg,#1a0a2e,#2d1a4e);border:1px solid rgba(124,58,237,.3);border-radius:10px;padding:20px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+          <span style="font-family:Bebas Neue,sans-serif;font-size:1.1rem;letter-spacing:.5px;color:#a78bfa;">⚡ Auto-génération côté serveur</span>
+          <span id="groq-server-badge" style="font-family:Barlow Condensed,sans-serif;font-size:.6rem;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);">Chargement…</span>
+        </div>
+        <div style="font-family:Barlow Condensed,sans-serif;font-size:.7rem;letter-spacing:1px;color:rgba(167,139,250,.6);margin-bottom:14px;">
+          Groq scrape La Dépêche + actu.fr puis rédige une actu QPV. Fonctionne même téléphone éteint.
+        </div>
+        <!-- Ligne ON/OFF + fréquence -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;color:rgba(255,255,255,.85);font-family:Barlow,sans-serif;font-size:.9rem;">
+            <div id="groq-toggle" onclick="toggleGroqServer()" style="width:48px;height:26px;border-radius:13px;background:#333;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;">
+              <div id="groq-toggle-knob" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;"></div>
+            </div>
+            <span id="groq-toggle-label">Activé / Désactivé</span>
+          </label>
+          <select id="groq-freq" onchange="saveGroqServerConfig()" style="padding:8px 12px;background:rgba(255,255,255,.08);border:1.5px solid rgba(124,58,237,.4);border-radius:8px;color:#fff;font-family:Barlow,sans-serif;font-size:.85rem;outline:none;">
+            <option value="1">Toutes les heures</option>
+            <option value="3">Toutes les 3h</option>
+            <option value="6" selected>Toutes les 6h</option>
+            <option value="12">Toutes les 12h</option>
+            <option value="24">1× par jour</option>
+          </select>
+        </div>
+        <!-- Statut dernière/prochaine génération -->
+        <div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-family:Barlow Condensed,sans-serif;font-size:.75rem;color:rgba(255,255,255,.6);">
+          <div id="groq-last-run">Dernière génération : —</div>
+          <div id="groq-next-run">Prochaine génération : —</div>
+        </div>
+        <!-- Bouton test immédiat -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button onclick="testGroqNow()" id="groq-test-btn" style="flex:1;padding:11px;background:#7C3AED;border:none;border-radius:8px;color:#fff;font-family:Barlow Condensed,sans-serif;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;min-width:160px;">
+            🧪 Générer une actu maintenant
+          </button>
+        </div>
+        <div id="groq-test-msg" style="margin-top:10px;font-family:Barlow Condensed,sans-serif;font-size:.75rem;letter-spacing:1px;text-align:center;min-height:16px;"></div>
+        <!-- Log -->
+        <div id="groq-server-log" style="margin-top:12px;max-height:100px;overflow-y:auto;"></div>
       </div>
-    </div>
+    <div class="item-list" id="list-actus"><div class="load">Chargement…</div></div>
+  </div>
 
+  <!-- ══ ÉVÉNEMENTS ══ -->
+  <div class="content" id="ct-evts">
+    <div class="sec-head">
+      <span class="sec-title">Événements</span>
+      <button class="btn-new blue" onclick="togglePanel('fp-evt')">+ Nouvel événement</button>
+    </div>
+    <div class="fpanel" id="fp-evt">
+      <div class="fpanel-title blue">📅 Nouvel événement</div>
+      <div class="fg"><label>Titre *</label><input type="text" id="fe-titre" placeholder="Nom de l'événement"></div>
+      <div class="fg-row">
+        <div class="fg"><label>Date début *</label><input type="datetime-local" id="fe-debut"></div>
+        <div class="fg"><label>Date fin</label><input type="datetime-local" id="fe-fin"></div>
+      </div>
+      <div class="fg-row">
+        <div class="fg"><label>Lieu</label><input type="text" id="fe-lieu" placeholder="Adresse ou salle"></div>
+        <div class="fg"><label>Catégorie</label><select id="fe-cat"><option>Réunion</option><option>Manifestation</option><option>Culture</option><option>Solidarité</option><option>Sport</option><option>Autre</option></select></div>
+      </div>
+      <div class="fg"><label>Description</label><textarea id="fe-desc" rows="4" placeholder="Description…"></textarea></div>
+      <div class="fg-row">
+        <div class="fg"><label>Places max (0=illimité)</label><input type="number" id="fe-places" value="0" min="0"></div>
+        <div class="fg"><label>Organisateur</label><input type="text" id="fe-org" placeholder="CQP Toulouse"></div>
+      </div>
+      <div class="fg">
+        <label>Photo</label>
+        <label class="file-lbl"><input type="file" id="fe-photo" accept="image/*" onchange="prevImg(this,'fe-prev')">📷 Choisir une image</label>
+        <img id="fe-prev" class="file-prev">
+      </div>
+      <div class="fp-foot">
+        <button class="btn-save blue" onclick="saveEvt()">Créer l'événement</button>
+        <button class="btn-cancel" onclick="togglePanel('fp-evt')">Annuler</button>
+      </div>
+      <div class="fp-msg" id="fe-msg"></div>
+    </div>
+    <div class="item-list" id="list-evts"><div class="load">Chargement…</div></div>
+  </div>
+
+  <!-- ══ ANNONCES ══ -->
+  <div class="content" id="ct-ann">
+    <div class="sec-head"><span class="sec-title">Annonces</span></div>
+    <div class="item-list" id="list-ann"><div class="load">Chargement…</div></div>
+  </div>
+
+  <!-- ══ POSTS ══ -->
+  <div class="content" id="ct-posts">
+    <div class="sec-head"><span class="sec-title">Posts du mur</span></div>
+    <div class="item-list" id="list-posts"><div class="load">Chargement…</div></div>
+  </div>
+
+  <!-- ══ STORIES ══ -->
+  <div class="content" id="ct-stories">
+    <div class="sec-head"><span class="sec-title">Stories</span></div>
+    <div class="item-list" id="list-stories"><div class="load">Chargement…</div></div>
+  </div>
+
+  <!-- ══ ADHÉRENTS ══ -->
+  <div class="content" id="ct-adh">
+    <div class="sec-head"><span class="sec-title">Adhérents</span></div>
+    <div class="item-list" id="list-adh"><div class="load">Chargement…</div></div>
+  </div>
+
+  <!-- ══ À PROPOS ══ -->
+  <div class="content" id="ct-apropos">
+    <div class="sec-head"><span class="sec-title">Page À propos</span></div>
+    <div class="apropos-wrap">
+      <h4>✏️ Modifier le contenu</h4>
+      <textarea class="apropos-ta" id="ap-text" placeholder="Contenu de la page à propos…"></textarea>
+      <div class="apropos-hint">Le texte sera affiché tel quel sur la page publique. Utilisez des sauts de ligne pour la mise en page.</div>
+      <div class="fp-foot" style="margin-top:14px">
+        <button class="btn-save" style="background:var(--purple);max-width:260px" onclick="saveApropos()">💾 Enregistrer</button>
+      </div>
+      <div class="fp-msg" id="ap-msg"></div>
+    </div>
   </div>
 </div>
 
@@ -176,190 +414,514 @@ a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:inherit;o
 const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
 const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
 const sb=supabase.createClient(SBU,SBK);
+const PWD_HASH='020986c183f52e2e3c211d20bfc7477ee24d4e6ec122b03d8793c2608891a03f';
+
+// AUTH
+async function doLogin(){
+  const v=document.getElementById('pwd').value;
+  const enc=new TextEncoder();
+  const buf=await crypto.subtle.digest('SHA-256',enc.encode(v));
+  const hex=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(hex===PWD_HASH){sessionStorage.setItem('cqp_adm','1');document.getElementById('login').classList.add('gone');document.getElementById('app').classList.add('visible');init();}
+  else document.getElementById('login-err').textContent='Mot de passe incorrect.';
+}
+function doLogout(){sessionStorage.removeItem('cqp_adm');location.reload();}
+
+// UTILS
 const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
-const timeAgo=d=>{if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;if(s<604800)return`Il y a ${Math.floor(s/86400)} j`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});};
-const _codeToEmail=c=>`code-${c}@cqp-toulouse.fr`;
-const _codeToPass=c=>`cqp-${c}-secret2025`;
-let _isAdmin=false;
-let _authDone=false;
-
-async function ensureAuth(code){
-  if(_authDone)return;
-  try{
-    const{data:{session}}=await sb.auth.getSession();
-    if(session){_authDone=true;return;}
-    const{error}=await sb.auth.signInWithPassword({email:_codeToEmail(code),password:_codeToPass(code)});
-    if(!error){_authDone=true;return;}
-    await sb.auth.signUp({email:_codeToEmail(code),password:_codeToPass(code),options:{data:{profil_code:code}}});
-    await sb.auth.signInWithPassword({email:_codeToEmail(code),password:_codeToPass(code)});
-    _authDone=true;
-  }catch(e){console.warn(e);}
+const timeAgo=d=>{if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});};
+function prevImg(inp,id){const p=document.getElementById(id);if(inp.files[0]){p.src=URL.createObjectURL(inp.files[0]);p.style.display='block';}}
+async function uploadImg(file,bucket){
+  if(!file)return null;
+  const name=`${Date.now()}.${file.name.split('.').pop()||'jpg'}`;
+  const{error}=await sb.storage.from(bucket).upload(name,file,{contentType:file.type,upsert:false});
+  if(error)throw error;
+  return sb.storage.from(bucket).getPublicUrl(name).data?.publicUrl||`${SBU}/storage/v1/object/public/${bucket}/${name}`;
 }
 
-async function checkAdmin(){
-  const code=document.getElementById('gate-input').value.trim();
-  const msg=document.getElementById('gate-msg');
-  if(code.length!==6){msg.style.color='var(--rouge)';msg.textContent='Code 6 chiffres requis.';return;}
-  msg.style.color='var(--txt3)';msg.textContent='Vérification…';
-  await ensureAuth(code);
-  try{
-    const{data}=await sb.from('profils').select('is_admin,prenom').eq('code',code).limit(1);
-    if(!data?.length||!data[0].is_admin){msg.style.color='var(--rouge)';msg.textContent='Accès refusé.';return;}
-    _isAdmin=true;
-    document.getElementById('gate').style.display='none';
-    document.getElementById('admin-panel').style.display='block';
-    loadAll();
-  }catch(e){msg.style.color='var(--rouge)';msg.textContent='Erreur.';console.error(e);}
+// TABS
+const loaded={};
+function switchTab(name,el){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('ct-'+name).classList.add('active');
+  if(!loaded[name]){loaded[name]=true;loadTab(name);}
 }
-
-function switchTab(name,btn){
-  ['actus','moderation','evts','profils'].forEach(t=>{document.getElementById('tab-'+t).style.display=t===name?'block':'none';});
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+function loadTab(n){
+  if(n==='actus')loadActus();
+  else if(n==='messages')loadMessages_admin();
+  else if(n==='evts')loadEvts();
+  else if(n==='ann')loadAnn();
+  else if(n==='posts')loadPosts();
+  else if(n==='stories')loadStories();
+  else if(n==='adh')loadAdh();
+  else if(n==='apropos')loadApropos();
 }
+function togglePanel(id){document.getElementById(id).classList.toggle('open');}
 
-async function loadAll(){
-  loadStats();loadActusList();loadModPosts();loadModAnnonces();loadModEvts();loadProfils();
-}
-
+// STATS
 async function loadStats(){
-  const tables=['profils','posts','stories','annonces','evenements','page_views'];
-  const counts=await Promise.all(tables.map(t=>sb.from(t).select('*',{count:'exact',head:true})));
-  ['s-profils','s-posts','s-stories','s-annonces','s-evts','s-views'].forEach((id,i)=>{
-    const el=document.getElementById(id);if(el)el.textContent=counts[i].count??'—';
+  try{
+    const[{count:a},{count:e},{count:an},{count:s},{count:p},{count:adh},{data:online},{count:lk}]=await Promise.all([
+      sb.from('actus').select('*',{count:'exact',head:true}).eq('visible',true),
+      sb.from('evenements').select('*',{count:'exact',head:true}).eq('validee',true),
+      sb.from('annonces').select('*',{count:'exact',head:true}).eq('validee',true),
+      sb.from('stories').select('*',{count:'exact',head:true}).eq('visible',true),
+      sb.from('posts').select('*',{count:'exact',head:true}).eq('visible',true),
+      sb.from('adherents').select('*',{count:'exact',head:true}),
+      sb.from('active_sessions').select('session_id').gte('last_seen',new Date(Date.now()-5*60000).toISOString()).catch(()=>({data:[]})),
+      sb.from('likes').select('*',{count:'exact',head:true})
+    ]);
+    document.getElementById('s-actus').textContent=a||0;
+    document.getElementById('s-evts').textContent=e||0;
+    document.getElementById('s-ann').textContent=an||0;
+    document.getElementById('s-stories').textContent=s||0;
+    document.getElementById('s-posts').textContent=p||0;
+    document.getElementById('s-adh').textContent=adh||0;
+    document.getElementById('s-online').textContent=(online||[]).length;
+    document.getElementById('s-likes').textContent=lk||0;
+    // Stats profils + visiteurs depuis la vue BDD
+    sb.from('v_stats_admin').select('*').single().then(({data:vs})=>{
+      if(!vs)return;
+      const el=id=>document.getElementById(id);
+      if(el('s-profils'))el('s-profils').textContent=vs.total_profils||0;
+      if(el('s-nouveaux'))el('s-nouveaux').textContent=vs.nouveaux_7j||0;
+      if(el('s-visiteurs24'))el('s-visiteurs24').textContent=vs.visiteurs_24h||0;
+      if(el('s-visiteurs7'))el('s-visiteurs7').textContent=vs.visiteurs_7j||0;
+      if(el('s-vues24'))el('s-vues24').textContent=vs.vues_24h||0;
+    }).catch(()=>{});
+  }catch(err){console.warn('stats',err);}
+}
+
+
+// ── AUTO GROQ SERVEUR ──────────────────────────────
+const EFN_URL = 'https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/groq-auto';
+let _groqEnabled = false;
+
+async function loadGroqServerConfig(){
+  try{
+    const rows = await(await sb.from('site_config').select('key,value').in('key',['groq_auto_enabled','groq_auto_interval_hours','groq_auto_last_run'])).data;
+    const map = Object.fromEntries((rows||[]).map(r=>[r.key,r.value]));
+    _groqEnabled = map.groq_auto_enabled === 'true';
+    const freq = map.groq_auto_interval_hours || '6';
+    if(document.getElementById('groq-freq')) document.getElementById('groq-freq').value = freq;
+    updateGroqToggleUI(_groqEnabled);
+    // Last run
+    const last = map.groq_auto_last_run;
+    if(last){
+      const d = new Date(last);
+      document.getElementById('groq-last-run').textContent = 'Dernière génération : ' + d.toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      const h = parseInt(freq)||6;
+      const next = new Date(d.getTime() + h*3600*1000);
+      document.getElementById('groq-next-run').textContent = 'Prochaine génération (serveur) : ' + next.toLocaleString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+    }
+    // Badge
+    const badge = document.getElementById('groq-server-badge');
+    if(badge){
+      badge.textContent = _groqEnabled ? '● Actif' : '○ Inactif';
+      badge.style.background = _groqEnabled ? 'rgba(66,183,42,.2)' : 'rgba(255,255,255,.08)';
+      badge.style.color = _groqEnabled ? '#42B72A' : 'rgba(255,255,255,.4)';
+    }
+    // Log
+    loadGroqLog();
+  }catch(e){console.warn('groq config',e);}
+}
+function updateGroqToggleUI(on){
+  const t=document.getElementById('groq-toggle');
+  const k=document.getElementById('groq-toggle-knob');
+  const l=document.getElementById('groq-toggle-label');
+  if(!t)return;
+  t.style.background = on ? '#7C3AED' : '#333';
+  k.style.left = on ? '25px' : '3px';
+  if(l) l.textContent = on ? 'Activé — Groq génère automatiquement' : 'Désactivé';
+}
+async function toggleGroqServer(){
+  _groqEnabled = !_groqEnabled;
+  updateGroqToggleUI(_groqEnabled);
+  await saveGroqServerConfig();
+}
+async function saveGroqServerConfig(){
+  const freq = document.getElementById('groq-freq')?.value || '6';
+  await sb.from('site_config').upsert({key:'groq_auto_enabled',value:String(_groqEnabled)},{onConflict:'key'});
+  await sb.from('site_config').upsert({key:'groq_auto_interval_hours',value:freq},{onConflict:'key'});
+  const badge=document.getElementById('groq-server-badge');
+  if(badge){
+    badge.textContent=_groqEnabled?'● Actif':'○ Inactif';
+    badge.style.background=_groqEnabled?'rgba(66,183,42,.2)':'rgba(255,255,255,.08)';
+    badge.style.color=_groqEnabled?'#42B72A':'rgba(255,255,255,.4)';
+  }
+}
+async function testGroqNow(){
+  const btn=document.getElementById('groq-test-btn');
+  const msg=document.getElementById('groq-test-msg');
+  btn.disabled=true;btn.textContent='⏳ Génération en cours…';msg.textContent='';msg.style.color='rgba(167,139,250,.8)';
+  try{
+    const r = await fetch(EFN_URL+'?force=true',{method:'GET'});
+    const d = await r.json();
+    if(d.ok){
+      msg.textContent='✅ Publié : "'+d.titre+'" (source: '+d.source+')';
+      msg.style.color='#42B72A';
+      loaded.actus=false;loadTab('actus');loadStats();
+      setTimeout(()=>loadGroqLog(),1000);
+    } else {
+      msg.textContent='❌ Erreur : '+(d.error||d.msg||'Inconnue — vérifier la clé API Groq');
+      msg.style.color='#ff6b6b';
+    }
+  }catch(e){
+    msg.textContent='❌ Connexion impossible : '+String(e);
+    msg.style.color='#ff6b6b';
+  }
+  btn.disabled=false;btn.textContent='🧪 Générer une actu maintenant';
+}
+async function loadGroqLog(){
+  const {data} = await sb.from('groq_log').select('*').order('created_at',{ascending:false}).limit(5);
+  const el=document.getElementById('groq-server-log');if(!el||!data)return;
+  el.innerHTML=data.map(r=>{
+    const d=new Date(r.created_at);
+    const t=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const icon=r.status==='success'?'✅':'❌';
+    const txt=r.status==='success'?r.actu_titre:r.message;
+    return `<div style="font-family:Barlow Condensed,sans-serif;font-size:.68rem;color:rgba(255,255,255,.5);padding:2px 0;border-top:1px solid rgba(255,255,255,.05);margin-top:4px;">${icon} [${t}] ${esc(txt||'')}</div>`;
+  }).join('');
+}
+
+
+
+// Appel Groq via Edge Function Supabase (clé sécurisée côté serveur)
+const EFN='https://vzfwtyczqfbhbjzotjft.supabase.co/functions/v1/groq-auto';
+async function groqViaEF(messages,prompt){
+  const body={};
+  if(messages&&messages.length)body.messages=messages;
+  if(prompt)body.prompt=prompt;
+  const r=await fetch(EFN+'?mode=chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok)throw new Error('EF erreur '+r.status);
+  const d=await r.json();
+  if(!d.ok)throw new Error(d.error||'Erreur inconnue');
+  return d.reply;
+}
+// GROQ STUDIO
+// GROQ_KEY supprimée - appels via Edge Function Supabase
+let groqResult={titre:'',contenu:'',cat:'',type:'actu'};
+let _chatHist=[];
+let _groqImgFile=null;
+
+function setGroqMode(m){
+  ['chat','text','img'].forEach(x=>{
+    document.getElementById('gm-'+x).style.display=x===m?'':'none';
+    document.getElementById('gmode-'+x).classList.toggle('active',x===m);
   });
 }
+async function sendGroqChat(){
+  const inp=document.getElementById('groq-chat-input');
+  const msg=inp.value.trim();if(!msg)return;
+  const btn=document.getElementById('gchat-btn');btn.disabled=true;inp.value='';
+  addChatBubble('user',msg);
+  const sys=`Tu es assistant du CQP Toulouse (quartiers: Mirail, Empalot, Reynerie, Bagatelle, Bellefontaine, Basso Cambo). Tu generes du contenu pour les habitants. Quand tu generes du contenu reponds UNIQUEMENT avec JSON: {"action":"generer","type":"actu|annonce|evenement","titre":"...","contenu":"...","categorie":"..."} sinon reponds normalement en francais.`;
+  _chatHist.push({role:'user',content:msg});
+  try{
+    const allMsgs=[{role:'system',content:sys},..._chatHist];
+    const reply=await groqViaEF(allMsgs);
+    _chatHist.push({role:'assistant',content:reply});
+    try{
+      const j=JSON.parse(reply.replace(/```json?|```/g,'').trim());
+      if(j.action==='generer'&&j.titre){addChatBubble('ai','✅ Contenu généré ! Voir ci-dessous.');showGroqResult(j.type||'actu',j.titre,j.contenu||'',j.categorie||'Social');}
+      else addChatBubble('ai',reply);
+    }catch{addChatBubble('ai',reply);}
+  }catch(e){addChatBubble('ai','❌ Erreur: '+String(e));}
+  btn.disabled=false;
+}
+function addChatBubble(role,text){
+  const h=document.getElementById('groq-chat-hist');
+  const d=document.createElement('div');
+  d.style.cssText=`padding:8px 12px;border-radius:8px;font-size:.85rem;line-height:1.5;max-width:90%;align-self:${role==='user'?'flex-end':'flex-start'};background:${role==='user'?'rgba(124,58,237,.3)':'rgba(255,255,255,.08)'};color:${role==='user'?'#e0d4ff':'rgba(255,255,255,.9)'};`;
+  d.textContent=text;h.appendChild(d);h.scrollTop=h.scrollHeight;
+}
+async function groqTransform(type){
+  const text=document.getElementById('groq-paste-text').value.trim();
+  if(!text){document.getElementById('groq-msg').textContent='Collez un texte.';return;}
+  const lbl={actu:'actualite',annonce:'annonce',evenement:'evenement'}[type];
+  document.getElementById('groq-msg').textContent='Transformation en cours...';
+  try{
+    const prompt=`Transforme ce texte en ${lbl} pour les habitants des quartiers populaires de Toulouse. Ton accessible et militant.\nTexte: "${text.slice(0,2000)}"\nJSON UNIQUEMENT: {"titre":"[max 10 mots]","contenu":"[150-250 mots]","categorie":"[Politique|Logement|Social|Culture|Emploi|Securite]"}`;
+    const reply=await groqViaEF(null,prompt);
+    const j=JSON.parse(reply.replace(/```json?|```/g,'').trim());
+    showGroqResult(type,j.titre,j.contenu,j.categorie);
+    document.getElementById('groq-msg').textContent='';
+  }catch(e){document.getElementById('groq-msg').textContent='Erreur: '+String(e);}
+}
+function previewGroqImg(inp){
+  _groqImgFile=inp.files[0]||null;const p=document.getElementById('groq-img-prev');
+  if(_groqImgFile){p.src=URL.createObjectURL(_groqImgFile);p.style.display='block';}else p.style.display='none';
+}
+async function groqFromImg(type){
+  if(!_groqImgFile){document.getElementById('groq-msg').textContent='Uploadez une image.';return;}
+  const ctx=document.getElementById('groq-img-context').value.trim();
+  const lbl={actu:'actualite',annonce:'annonce',evenement:'evenement'}[type];
+  document.getElementById('groq-msg').textContent='Analyse...';
+  try{
+    const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(_groqImgFile);});
+    const prompt=`Analyse cette image${ctx?' (contexte: '+ctx+')':''} et genere une ${lbl} pour les quartiers populaires de Toulouse. JSON UNIQUEMENT: {"titre":"[max 10 mots]","contenu":"[150-250 mots]","categorie":"[Politique|Logement|Social|Culture|Emploi|Securite]"}`;
+    let j=null;
+    // Essayer avec vision d'abord
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_KEY}`},body:JSON.stringify({model:'meta-llama/llama-4-scout-17b-16e-instruct',messages:[{role:'user',content:[{type:'text',text:prompt},{type:'image_url',image_url:{url:`data:${_groqImgFile.type};base64,${b64}`}}]}],temperature:0.6,max_tokens:700})}).catch(()=>null);
+    if(r&&r.ok){const d=await r.json();try{j=JSON.parse(d.choices[0].message.content.replace(/```json?|```/g,'').trim());}catch{}}
+    if(!j){
+      // Fallback texte
+      const r2=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${GROQ_KEY}`},body:JSON.stringify({model:'llama-3.1-8b-instant',messages:[{role:'user',content:`Genere une ${lbl} sur${ctx?' "'+ctx+'"':' ce sujet'} pour les quartiers populaires de Toulouse. JSON UNIQUEMENT: {"titre":"[max 10 mots]","contenu":"[150-250 mots]","categorie":"[Politique|Logement|Social|Culture|Emploi|Securite]"}`}],temperature:0.6,max_tokens:700})});
+      if(!r2.ok)throw new Error(r2.statusText);
+      const d2=await r2.json();j=JSON.parse(d2.choices[0].message.content.replace(/```json?|```/g,'').trim());
+    }
+    showGroqResult(type,j.titre,j.contenu,j.categorie);document.getElementById('groq-msg').textContent='';
+  }catch(e){document.getElementById('groq-msg').textContent='Erreur: '+String(e);}
+}
+function showGroqResult(type,titre,contenu,categorie){
+  groqResult={titre,contenu,cat:categorie||'Social',type};
+  const lbl={actu:'Actualite',annonce:'Annonce',evenement:'Evenement'};
+  document.getElementById('groq-result-type').textContent=lbl[type]||'Contenu';
+  document.getElementById('groq-titre').textContent=titre;
+  document.getElementById('groq-body').textContent=contenu;
+  document.getElementById('groq-result').classList.add('visible');
+}
+async function pubGroqContent(){
+  const{titre,contenu,cat,type}=groqResult;if(!titre)return;
+  try{
+    if(type==='actu')await sb.from('actus').insert({titre,contenu,categorie:cat,visible:true,date_publication:new Date().toISOString()});
+    else if(type==='annonce')await sb.from('annonces').insert({titre,description:contenu,categorie:cat,validee:false,prenom:'Admin CQP',nom:'',email:'admin@cqp-toulouse.fr'});
+    else if(type==='evenement')await sb.from('evenements').insert({titre,description:contenu,categorie:cat,visible:true,validee:true,date_debut:new Date(Date.now()+7*86400000).toISOString()});
+    document.getElementById('groq-msg').textContent='Publie!';document.getElementById('groq-msg').style.color='var(--green)';
+    document.getElementById('groq-result').classList.remove('visible');
+    loaded.actus=false;loadTab('actus');loadStats();
+    setTimeout(()=>document.getElementById('groq-msg').textContent='',3000);
+  }catch(e){document.getElementById('groq-msg').textContent='Erreur: '+String(e);}
+}
+async function pubGroqActu(){groqResult.type='actu';return pubGroqContent();}
 
-async function loadActusList(){
-  const el=document.getElementById('actus-list');
-  const{data}=await sb.from('actus').select('*').order('date_publication',{ascending:false}).limit(20);
-  if(!data?.length){el.innerHTML='<div class="empty">Aucune actu.</div>';return;}
-  el.innerHTML='<div class="table-head"><div class="table-head-title">Actus publiées</div></div>'+
-    data.map(a=>`<div class="table-row">
-      <div class="row-main">
-        <div class="row-title">${esc(a.titre)}</div>
-        <div class="row-sub">${esc(a.categorie||'')} · ${timeAgo(a.date_publication)}</div>
+// GROQ
+let _groqResultLegacy={titre:'',contenu:'',cat:''};
+async function loadActus(){
+  const{data,error}=await sb.from('actus').select('*').order('date_publication',{ascending:false}).limit(50);
+  const el=document.getElementById('list-actus');
+  if(error||!data?.length){el.innerHTML='<div class="load">Aucune actu</div>';return;}
+  el.innerHTML=data.map(a=>`
+    <div class="content-row" id="actu-${a.id}">
+      <div class="content-body">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);margin-bottom:3px;">${a.categorie||''} · ${a.date_publication?new Date(a.date_publication).toLocaleDateString('fr-FR'):''}${a.source?' · '+a.source:''}</div>
+        <div style="font-weight:600;margin-bottom:4px;">${a.titre}</div>
+        <div style="font-size:.82rem;color:var(--txt2);line-height:1.5;">${(a.contenu||'').slice(0,120)}…</div>
+        <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
+          <label style="display:flex;align-items:center;gap:4px;font-size:.75rem;cursor:pointer;">
+            <input type="checkbox" ${a.visible?'checked':''} onchange="sb.from('actus').update({visible:this.checked}).eq('id',${a.id})">
+            Visible
+          </label>
+        </div>
       </div>
-      <div class="row-actions">
-        <button class="btn-sm btn-del" onclick="deleteActu(${a.id})">Suppr.</button>
+      <button class="del-btn" onclick="deleteItem('actus',${a.id},'actu-${a.id}')">🗑 Sup.</button>
+    </div>`).join('');
+}
+
+async function saveActu(){
+  const titre=document.getElementById('fa-titre').value.trim();
+  const contenu=document.getElementById('fa-contenu').value.trim();
+  const cat=document.getElementById('fa-cat').value;
+  const dateVal=document.getElementById('fa-date').value;
+  const visible=document.getElementById('fa-vis').value==='true';
+  const photo=document.getElementById('fa-photo').files[0];
+  const msg=document.getElementById('fa-msg');
+  if(!titre||!contenu){msg.textContent='Titre et contenu obligatoires.';msg.style.color='#ff4444';return;}
+  msg.textContent='Publication…';msg.style.color='var(--txt3)';
+  try{
+    const photo_url=photo?await uploadImg(photo,'site-photos'):null;
+    await sb.from('actus').insert({titre,contenu,categorie:cat,date_publication:dateVal?new Date(dateVal).toISOString():new Date().toISOString(),visible,...(photo_url&&{photo_url})});
+    msg.textContent='✅ Publié !';msg.style.color='#42B72A';
+    setTimeout(()=>{togglePanel('fp-actu');loaded.actus=false;loadTab('actus');loadStats();msg.textContent='';},1500);
+  }catch(e){msg.textContent='Erreur : '+e.message;msg.style.color='#ff4444';}
+}
+
+// ÉVÉNEMENTS
+async function loadEvts(){
+  const{data}=await sb.from('evenements').select('*').order('date_debut',{ascending:true}).limit(30);
+  const el=document.getElementById('list-evts');
+  if(!data?.length){el.innerHTML='<div class="load">Aucun événement</div>';return;}
+  el.innerHTML=data.map(e=>`
+    <div class="content-row" id="evt-${e.id}">
+      <div class="content-body">
+        <div style="font-size:.68rem;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;">${e.categorie||''} · ${e.date_debut?new Date(e.date_debut).toLocaleDateString('fr-FR'):''}</div>
+        <div style="font-weight:600;">${e.titre}</div>
+        <div style="font-size:.82rem;color:var(--txt2);">${(e.description||'').slice(0,100)}</div>
+        <label style="font-size:.72rem;display:flex;align-items:center;gap:4px;margin-top:4px;cursor:pointer;">
+          <input type="checkbox" ${e.visible?'checked':''} onchange="sb.from('evenements').update({visible:this.checked}).eq('id',${e.id})"> Visible
+        </label>
+      </div>
+      <button class="del-btn" onclick="deleteItem('evenements',${e.id},'evt-${e.id}')">🗑 Sup.</button>
+    </div>`).join('');
+}
+
+async function saveEvt(){
+  const titre=document.getElementById('fe-titre').value.trim();
+  const debut=document.getElementById('fe-debut').value;
+  const fin=document.getElementById('fe-fin').value;
+  const lieu=document.getElementById('fe-lieu').value.trim();
+  const cat=document.getElementById('fe-cat').value;
+  const desc=document.getElementById('fe-desc').value.trim();
+  const places=parseInt(document.getElementById('fe-places').value)||0;
+  const org=document.getElementById('fe-org').value.trim();
+  const photo=document.getElementById('fe-photo').files[0];
+  const msg=document.getElementById('fe-msg');
+  if(!titre||!debut){msg.textContent='Titre et date obligatoires.';msg.style.color='#ff4444';return;}
+  msg.textContent='Création…';msg.style.color='var(--txt3)';
+  try{
+    const photo_url=photo?await uploadImg(photo,'site-photos'):null;
+    await sb.from('evenements').insert({titre,description:desc||'',lieu:lieu||'',date_debut:new Date(debut).toISOString(),date_fin:fin?new Date(fin).toISOString():null,categorie:cat,places_max:places,propose_par:org||null,visible:true,validee:true,...(photo_url&&{photo_url})});
+    msg.textContent='✅ Créé !';msg.style.color='#42B72A';
+    setTimeout(()=>{togglePanel('fp-evt');loaded.evts=false;loadTab('evts');loadStats();msg.textContent='';},1500);
+  }catch(e){msg.textContent='Erreur : '+e.message;msg.style.color='#ff4444';}
+}
+
+// ANNONCES
+async function loadAnn(){
+  const{data}=await sb.from('annonces').select('*').order('date_depot',{ascending:false}).limit(60);
+  const el=document.getElementById('list-ann');
+  if(!data?.length){el.innerHTML='<div class="load">Aucune annonce</div>';return;}
+  el.innerHTML=data.map(a=>`
+    <div class="item">
+      <div class="item-info">
+        <div class="item-title">${esc(a.titre)}</div>
+        <div class="item-meta">
+          <span class="badge ${a.validee?'on':'wait'}">${a.validee?'Validée':'En attente'}</span>
+          <span>${esc(a.prenom||'')} · ${esc(a.quartier||'')}</span>
+          <span>${timeAgo(a.date_depot)}</span>
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="act ${a.validee?'act-hide':'act-val'}" onclick="toggleVis('annonces','validee',${a.id},${a.validee})">${a.validee?'Masquer':'Valider'}</button>
+        <button class="act act-del" onclick="delItem('annonces',${a.id},'ann')">Supprimer</button>
       </div>
     </div>`).join('');
 }
 
-async function publishActu(){
-  const titre=document.getElementById('a-titre').value.trim();
-  const contenu=document.getElementById('a-contenu').value.trim();
-  const cat=document.getElementById('a-cat').value;
-  const dateVal=document.getElementById('a-date').value;
-  const photo=document.getElementById('a-photo').value.trim();
-  const msg=document.getElementById('a-msg');
-  if(!titre||!contenu){msg.style.color='var(--rouge)';msg.textContent='Titre et contenu obligatoires.';return;}
-  msg.style.color='var(--txt3)';msg.textContent='Publication…';
-  const{error}=await sb.from('actus').insert({titre,contenu,categorie:cat,date_publication:dateVal?new Date(dateVal).toISOString():new Date().toISOString(),photo_url:photo||null,visible:true});
-  if(error){msg.style.color='var(--rouge)';msg.textContent='Erreur: '+error.message;return;}
-  msg.style.color='var(--green)';msg.textContent='✅ Actu publiée !';
-  document.getElementById('a-titre').value='';document.getElementById('a-contenu').value='';document.getElementById('a-photo').value='';
-  setTimeout(()=>msg.textContent='',2000);
-  loadActusList();loadStats();
+// POSTS
+async function loadPosts(){
+  const{data}=await sb.from('posts').select('*,profils!profil_code(prenom,photo_url)').order('created_at',{ascending:false}).limit(50);
+  const el=document.getElementById('list-posts');
+  if(!data?.length){el.innerHTML='<div class="load">Aucun post</div>';return;}
+  el.innerHTML=data.map(p=>`
+    <div class="content-row" id="post-${p.id}">
+      <div class="content-body">
+        <div style="font-size:.72rem;color:var(--txt3);margin-bottom:3px;">
+          <strong>${p.prenom||'Anonyme'}</strong> · ${p.quartier||''} · ${new Date(p.created_at).toLocaleDateString('fr-FR')}
+          ${p.profil_code?'<span style="background:var(--bg3);border-radius:4px;padding:1px 5px;font-size:.6rem;">code:'+p.profil_code+'</span>':''}
+        </div>
+        ${p.photo_url?`<img src="${p.photo_url}" style="width:60px;height:60px;object-fit:cover;border-radius:6px;margin:4px 0;">`:'' }
+        <div style="font-size:.85rem;color:var(--txt);">${(p.contenu||'').slice(0,150)}</div>
+      </div>
+      <button class="del-btn" onclick="deleteItem('posts',${p.id},'post-${p.id}')">🗑 Sup.</button>
+    </div>`).join('');
 }
 
-async function deleteActu(id){
-  if(!confirm('Supprimer cette actu ?'))return;
-  await sb.from('actus').update({visible:false}).eq('id',id);
-  loadActusList();loadStats();
+async function loadStories(){
+  const{data}=await sb.from('stories').select('*').eq('visible',true).order('created_at',{ascending:false}).limit(30);
+  const el=document.getElementById('list-stories');
+  if(!data?.length){el.innerHTML='<div class="load">Aucune story</div>';return;}
+  el.innerHTML=data.map(s=>`
+    <div class="content-row" id="story-${s.id}">
+      <div class="content-body">
+        <div style="font-size:.72rem;color:var(--txt3);margin-bottom:3px;"><strong>${s.prenom||'?'}</strong> · ${new Date(s.created_at).toLocaleDateString('fr-FR')} ${s.profil_code?'· code:'+s.profil_code:''}</div>
+        ${s.photo_url?`<img src="${s.photo_url}" style="width:50px;height:80px;object-fit:cover;border-radius:6px;">`:'' }
+        <div style="font-size:.75rem;color:var(--txt3);">${s.media_type||'image'}</div>
+      </div>
+      <button class="del-btn" onclick="deleteItem('stories',${s.id},'story-${s.id}')">🗑 Sup.</button>
+    </div>`).join('');
 }
 
-async function loadModPosts(){
-  const el=document.getElementById('mod-posts');
-  const{data}=await sb.from('posts').select('*').eq('visible',true).order('created_at',{ascending:false}).limit(30);
-  if(!data?.length){el.innerHTML='<div class="empty">Aucun post.</div>';return;}
-  el.innerHTML=data.map(p=>`<div class="table-row">
-    <div class="row-av">${(p.prenom||'?')[0].toUpperCase()}</div>
-    <div class="row-main">
-      <div class="row-title">${esc(p.prenom||'Anonyme')}</div>
-      <div class="row-sub">${esc((p.contenu||'').substring(0,80))} · ${timeAgo(p.created_at)}</div>
-    </div>
-    <div class="row-actions">
-      <button class="btn-sm btn-del" onclick="hidePost(${p.id})">Masquer</button>
-    </div>
-  </div>`).join('');
-}
-async function hidePost(id){await sb.from('posts').update({visible:false}).eq('id',id);loadModPosts();}
-
-async function loadModAnnonces(){
-  const el=document.getElementById('mod-annonces');
-  const{data}=await sb.from('annonces').select('*').order('created_at',{ascending:false}).limit(30);
-  if(!data?.length){el.innerHTML='<div class="empty">Aucune annonce.</div>';return;}
-  el.innerHTML=data.map(a=>`<div class="table-row">
-    <div class="row-av" style="background:var(--green)">${(a.prenom||'A')[0].toUpperCase()}</div>
-    <div class="row-main">
-      <div class="row-title">${esc(a.titre)}</div>
-      <div class="row-sub">${esc(a.prenom||'')} · ${timeAgo(a.created_at)} · ${a.visible?'✅ Visible':'⏳ En attente'}</div>
-    </div>
-    <div class="row-actions">
-      ${!a.visible?`<button class="btn-sm btn-ok" onclick="approveAnnonce(${a.id})">Valider</button>`:''}
-      <button class="btn-sm btn-del" onclick="hideAnnonce(${a.id})">Masquer</button>
-    </div>
-  </div>`).join('');
-}
-async function approveAnnonce(id){await sb.from('annonces').update({visible:true,validee:true}).eq('id',id);loadModAnnonces();}
-async function hideAnnonce(id){await sb.from('annonces').update({visible:false}).eq('id',id);loadModAnnonces();}
-
-async function loadModEvts(){
-  const el=document.getElementById('mod-evts');
-  const{data}=await sb.from('evenements').select('*').order('created_at',{ascending:false}).limit(30);
-  if(!data?.length){el.innerHTML='<div class="empty">Aucun événement.</div>';return;}
-  el.innerHTML=data.map(e=>`<div class="table-row">
-    <div class="row-av" style="background:var(--blue)">ÉVT</div>
-    <div class="row-main">
-      <div class="row-title">${esc(e.titre)}</div>
-      <div class="row-sub">${new Date(e.date_debut).toLocaleDateString('fr-FR')} · ${esc(e.propose_par||'')} · ${e.validee?'✅ Validé':'⏳ En attente'}</div>
-    </div>
-    <div class="row-actions">
-      ${!e.validee?`<button class="btn-sm btn-ok" onclick="approveEvt(${e.id})">Valider</button>`:''}
-      <button class="btn-sm btn-del" onclick="hideEvt(${e.id})">Masquer</button>
-    </div>
-  </div>`).join('');
-}
-async function approveEvt(id){await sb.from('evenements').update({validee:true,visible:true}).eq('id',id);loadModEvts();}
-async function hideEvt(id){await sb.from('evenements').update({visible:false}).eq('id',id);loadModEvts();}
-
-async function loadProfils(){
-  const el=document.getElementById('profils-list');
-  const{data}=await sb.from('profils').select('*').order('created_at',{ascending:false}).limit(50);
-  if(!data?.length){el.innerHTML='<div class="empty">Aucun profil.</div>';return;}
-  el.innerHTML=data.map(p=>`<div class="table-row">
-    <div class="row-av">${p.photo_url?`<img src="${esc(p.photo_url)}">`:(p.prenom||'?')[0].toUpperCase()}</div>
-    <div class="row-main">
-      <div class="row-title">${esc(p.prenom||'Anonyme')} ${p.is_admin?'<span style="font-size:.65rem;background:var(--orange);color:#fff;padding:2px 6px;border-radius:4px;margin-left:4px;">Admin</span>':''}</div>
-      <div class="row-sub">Code: ${esc(p.code)} · ${esc(p.quartier||'—')} · ${timeAgo(p.created_at)}</div>
-    </div>
-    <div class="row-actions">
-      <button class="btn-sm btn-del" onclick="toggleAdminRole('${p.code}',${!p.is_admin})">${p.is_admin?'Retirer admin':'Rendre admin'}</button>
-    </div>
-  </div>`).join('');
-}
-async function toggleAdminRole(code,makeAdmin){
-  await sb.from('profils').update({is_admin:makeAdmin}).eq('code',code);
-  loadProfils();
+async function loadAdh(){
+  const{data}=await sb.from('adherents').select('*').order('date_inscription',{ascending:false}).limit(100);
+  const el=document.getElementById('list-adh');
+  if(!data?.length){el.innerHTML='<div class="load">Aucun adhérent</div>';return;}
+  el.innerHTML=data.map(a=>`
+    <div class="item">
+      <div class="item-info">
+        <div class="item-title">${esc(a.prenom||'')} ${esc(a.nom||'')}</div>
+        <div class="item-meta"><span>${esc(a.email||'')}</span><span>${esc(a.quartier||'')}</span><span>${timeAgo(a.date_inscription)}</span></div>
+      </div>
+    </div>`).join('');
 }
 
-// Auto-check si déjà admin en localStorage
-async function autoCheck(){
-  const code=localStorage.getItem('cqp_code');
-  if(!code)return;
-  await ensureAuth(code);
+// À PROPOS
+async function loadApropos(){
   try{
-    const{data}=await sb.from('profils').select('is_admin').eq('code',code).limit(1);
-    if(data?.[0]?.is_admin){
-      _isAdmin=true;
-      document.getElementById('gate').style.display='none';
-      document.getElementById('admin-panel').style.display='block';
-      loadAll();
-    }
+    const{data}=await sb.from('site_config').select('value').eq('key','apropos').single();
+    if(data)document.getElementById('ap-text').value=data.value||'';
   }catch{}
 }
-autoCheck();
+async function saveApropos(){
+  const val=document.getElementById('ap-text').value.trim();
+  const msg=document.getElementById('ap-msg');
+  if(!val){msg.textContent='Contenu vide.';msg.style.color='#ff4444';return;}
+  try{
+    await sb.from('site_config').upsert({key:'apropos',value:val,updated_at:new Date().toISOString()},{onConflict:'key'});
+    msg.textContent='✅ Mis à jour !';msg.style.color='#42B72A';
+    setTimeout(()=>msg.textContent='',3000);
+  }catch(e){msg.textContent='Erreur.';msg.style.color='#ff4444';}
+}
+
+// TOGGLE / DELETE
+async function toggleVis(table,col,id,current){
+  await sb.from(table).update({[col]:!current}).eq('id',id);
+  const tab=table==='evenements'?'evts':table==='annonces'?'ann':table==='adherents'?'adh':table;
+  loaded[tab]=false;loadTab(tab);loadStats();
+}
+async function delItem(table,id,tab){
+  if(!confirm('Supprimer définitivement ?'))return;
+  await sb.from(table).delete().eq('id',id);
+  loaded[tab]=false;loadTab(tab);loadStats();
+}
+
+
+// ── MODÉRATION ADMIN ─────────────────────────────────────────────────────
+async function deleteItem(table,id,elId){
+  if(!confirm('Supprimer ce contenu ?'))return;
+  const{error}=await sb.from(table).delete().eq('id',id);
+  if(error){alert('Erreur: '+error.message);return;}
+  const el=document.getElementById(elId);
+  if(el)el.remove();
+  loadStats();
+}
+async function hideItem(table,id,elId){
+  // Masquer sans supprimer (soft delete)
+  await sb.from(table).update({visible:false}).eq('id',id);
+  const el=document.getElementById(elId);
+  if(el)el.style.opacity='0.3';
+}
+
+async function loadMessages_admin(){
+  const{data}=await sb.from('groupe_messages').select('*,groupes(nom)').eq('visible',true).order('created_at',{ascending:false}).limit(60);
+  const el=document.getElementById('list-messages');
+  if(!data?.length){el.innerHTML='<div class="load">Aucun message</div>';return;}
+  el.innerHTML=data.map(m=>`
+    <div class="content-row" id="msg-${m.id}">
+      <div class="content-body">
+        <div style="font-size:.68rem;color:var(--txt3);margin-bottom:3px;">
+          <strong>${m.prenom||'?'}</strong> · ${m.groupes?.nom||'Groupe'} · ${new Date(m.created_at).toLocaleDateString('fr-FR')} ${m.profil_code?'· code:'+m.profil_code:''}
+        </div>
+        ${m.photo_url?`<img src="${m.photo_url}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">`:'' }
+        <div style="font-size:.85rem;">${m.contenu||''}</div>
+      </div>
+      <button class="del-btn" onclick="deleteItem('groupe_messages',${m.id},'msg-${m.id}')">🗑 Sup.</button>
+    </div>`).join('');
+}
+function init(){
+  loaded.actus=true;loadActus();
+  loadStats();setInterval(loadStats,30000);
+  setTimeout(loadGroqServerConfig,500);
+}
+document.getElementById('pwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});  // doLogin is async, no await needed for event handler
+if(sessionStorage.getItem('cqp_adm')==='1'){
+  document.getElementById('login').classList.add('gone');
+  document.getElementById('app').classList.add('visible');
+  init();
+}
 </script>
 </body>
 </html>
+
