@@ -416,8 +416,13 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 </div>
 
 <script>
-const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
-const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
+
+const getCode   = () => Auth.getCode();
+const getPrenom = () => Auth.getPrenom();
+const getSid    = () => Auth.getSid();
+const timeAgo   = (d) => Utils.timeAgo(d);
+const esc       = (s) => Utils.esc(s);
+
 const sb=supabase.createClient(SBU,SBK);
 const PWD_HASH='020986c183f52e2e3c211d20bfc7477ee24d4e6ec122b03d8793c2608891a03f';
 

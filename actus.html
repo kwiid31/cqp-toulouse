@@ -260,7 +260,13 @@ input.cmt-input:focus{border-color:var(--rouge)}
 </div>
 
 <script>
-const sb = window._sb || supabase.createClient(CQP.SBU, CQP.SBK); window._sb = sb;
+
+const getCode   = () => Auth.getCode();
+const getPrenom = () => Auth.getPrenom();
+const getSid    = () => Auth.getSid();
+const timeAgo   = (d) => Utils.timeAgo(d);
+const esc       = (s) => Utils.esc(s);
+
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function getSid(){try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Math.random().toString(36).slice(2);}}
 function savePrenomLocal(v){try{if(v.trim())localStorage.setItem('cqp_prenom',v.trim());}catch{}}

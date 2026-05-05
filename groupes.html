@@ -207,12 +207,17 @@ button,label{cursor:pointer;font-family:inherit;outline:none;border:none;}
 </nav>
 
 <script>
-const sb = supabase.createClient(CQP.SBU, CQP.SBK); window._sb = sb;
+
+const getCode   = () => Auth.getCode();
+const getPrenom = () => Auth.getPrenom();
+const getSid    = () => Auth.getSid();
+const timeAgo   = (d) => Utils.timeAgo(d);
+const esc       = (s) => Utils.esc(s);
+
 const esc = s => { const d = document.createElement('div'); d.textContent=s||''; return d.innerHTML; };
 if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Date.now();}};
 const getProfilCode=()=>{try{return localStorage.getItem('cqp_code')||null;}catch{return null;}};
 }catch{return '';}};
-const timeAgo = d => { if(!d)return''; const s=(Date.now()-new Date(d))/1000; if(s<60)return"À l'instant"; if(s<3600)return`Il y a ${Math.floor(s/60)} min`; if(s<86400)return`Il y a ${Math.floor(s/3600)} h`; return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}); };
 
 const EMOJIS={Quartier:'🏘️',Emploi:'💼',Logement:'🏠',Solidarité:'✊',Culture:'🎭',Sport:'⚽',Général:'💬'};
 const BADGE={Quartier:'badge-q',Emploi:'badge-e',Logement:'badge-l',Solidarité:'badge-s'};
