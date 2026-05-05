@@ -88,7 +88,7 @@ const esc=s=>Utils.esc(s),timeAgo=d=>Utils.timeAgo(d)
 let _groupes=[],_currentGr=null,_msgSub=null
 async function load(){
   const el=document.getElementById('gr-list')
-  const[{data:gData},{data:mData}]=await Promise.all([Api.getGroupes(),Api.getMesGroupes(Auth.getCode()||'__none__')])
+  const[{data:gData},{data:mData}]=await Promise.all([Api.getGroupes(),Api.getMesGroupes()])
   _groupes=gData||[]
   const myGr=new Set((mData||[]).map(m=>m.groupe_id))
   if(!_groupes.length){el.innerHTML='<div class="empty">Aucun groupe pour l\'instant.<br>Créez le premier !</div>';return}
@@ -115,8 +115,8 @@ async function load(){
 async function toggleMembre(gId,btn){
   if(!Auth.getCode()){window.location.href='profil.html';return}
   const joined=btn.classList.contains('btn-rouge')
-  if(!joined){btn.classList.replace('btn-outline','btn-rouge');btn.textContent='✅ Membre';Api.joinGroupe(gId,Auth.getCode()).catch(()=>{})}
-  else{btn.classList.replace('btn-rouge','btn-outline');btn.textContent='Rejoindre';Api.leaveGroupe(gId,Auth.getCode()).catch(()=>{})}
+  if(!joined){btn.classList.replace('btn-outline','btn-rouge');btn.textContent='✅ Membre';Api.joinGroupe(gId).catch(()=>{})}
+  else{btn.classList.replace('btn-rouge','btn-outline');btn.textContent='Rejoindre';Api.leaveGroupe(gId).catch(()=>{})}
 }
 async function openChat(gId){
   _currentGr=_groupes.find(g=>g.id===gId);if(!_currentGr)return
@@ -157,7 +157,7 @@ async function sendMsg(){
   if(!contenu||!_currentGr)return
   if(!Auth.getCode()){window.location.href='profil.html';return}
   inp.value=''
-  await Api.sendMessage({groupe_id:_currentGr.id,profil_code:Auth.getCode(),prenom:Auth.getPrenom(),contenu})
+  await Api.sendMessage({groupe_id:_currentGr.id,contenu})
 }
 function openCreateModal(){
   if(!Auth.getCode()){window.location.href='profil.html';return}
@@ -174,7 +174,7 @@ async function createGroupe(){
   msg.style.color='var(--txt3)';msg.textContent='Création…'
   const{data,error}=await Api.createGroupe({nom,description:desc||null,emoji,couleur,profil_code:Auth.getCode()||null})
   if(error){msg.style.color='var(--rouge)';msg.textContent='Erreur: '+error.message;return}
-  await Api.joinGroupe(data.id,Auth.getCode()).catch(()=>{})
+  await Api.joinGroupe(data.id).catch(()=>{})
   closeCreateModal();load()
 }
 load();Api.trackView('groupes')

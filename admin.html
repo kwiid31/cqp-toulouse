@@ -206,7 +206,7 @@ async function deleteActu(id){
 
 async function loadModPosts(){
   const el=document.getElementById('mod-posts')
-  const{data}=await Api.getAllPosts(30)
+  const{data}=await sb.from('posts').select('*').eq('visible',true).order('created_at',{ascending:false}).limit(30)
   if(!data?.length){el.innerHTML='<div class="empty">Aucun post.</div>';return}
   el.innerHTML=data.map(p=>`<div class="tbl-row">
     <div class="c-av c-av-36 c-av-init">${esc((p.prenom||'?')[0].toUpperCase())}</div>
@@ -218,7 +218,7 @@ async function hidePost(id){await Api.hidePostAdmin(id);loadModPosts();loadStats
 
 async function loadModAnnonces(){
   const el=document.getElementById('mod-annonces')
-  const{data}=await Api.getPendingAnnonces()
+  const{data}=await sb.from('annonces').select('*').order('created_at',{ascending:false}).limit(50)
   if(!data?.length){el.innerHTML='<div class="empty">Aucune annonce en attente.</div>';return}
   el.innerHTML=data.map(a=>`<div class="tbl-row">
     <div class="c-av c-av-36 c-av-init" style="background:var(--green);">${esc((a.prenom||'A')[0].toUpperCase())}</div>
@@ -229,12 +229,12 @@ async function loadModAnnonces(){
     </div>
   </div>`).join('')
 }
-async function approveAnnonce(id){await Api.approveAnnonce(id);loadModAnnonces();loadStats()}
-async function rejectAnnonce(id){await Api.rejectAnnonce(id);loadModAnnonces()}
+async function approveAnnonce(id){await Api.approveAnnonce(id);loadModAnnonces();}
+async function rejectAnnonce(id){await Api.rejectAnnonce(id);loadModAnnonces();}
 
 async function loadModEvts(){
   const el=document.getElementById('mod-evts')
-  const{data}=await Api.getPendingEvenements()
+  const{data}=await sb.from('evenements').select('*').order('created_at',{ascending:false}).limit(50)
   if(!data?.length){el.innerHTML='<div class="empty">Aucun événement en attente.</div>';return}
   el.innerHTML=data.map(e=>`<div class="tbl-row">
     <div class="c-av c-av-36 c-av-init" style="background:var(--blue);">ÉVT</div>
@@ -245,12 +245,12 @@ async function loadModEvts(){
     </div>
   </div>`).join('')
 }
-async function approveEvt(id){await Api.approveEvenement(id);loadModEvts()}
-async function rejectEvt(id){await Api.rejectEvenement(id);loadModEvts()}
+async function approveEvt(id){await Api.approveEvenement(id);loadModEvts();}
+async function rejectEvt(id){await Api.rejectEvenement(id);loadModEvts();}
 
 async function loadProfils(){
   const el=document.getElementById('profils-list')
-  const{data}=await Api.getAllProfils(50)
+  const{data}=await sb.from('profils').select('*').order('created_at',{ascending:false}).limit(50)
   if(!data?.length){el.innerHTML='<div class="empty">Aucun profil.</div>';return}
   el.innerHTML=data.map(p=>`<div class="tbl-row">
     <div class="c-av c-av-36 c-av-init">${p.photo_url?`<img src="${esc(p.photo_url)}" alt="">`:esc((p.prenom||'?')[0].toUpperCase())}</div>
@@ -261,7 +261,7 @@ async function loadProfils(){
     <div class="tbl-actions"><button class="btn-del" onclick="toggleAdmin('${p.code}',${!p.is_admin})">${p.is_admin?'Retirer admin':'Rendre admin'}</button></div>
   </div>`).join('')
 }
-async function toggleAdmin(code,val){await Api.setAdmin(code,val);loadProfils()}
+async function toggleAdmin(code,val){await sb.from('profils').update({is_admin:val}).eq('code',code);loadProfils();}
 
 // Auto-login si déjà authentifié
 if(sessionStorage.getItem('cqp_adm')==='1'){

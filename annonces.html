@@ -53,14 +53,16 @@
 <div class="modal-ov" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal-box">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:16px;">📋 Déposer une annonce</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Votre prénom *</label><input id="an-prenom" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+      <div class="fg"><label>Quartier *</label><input id="an-quartier" placeholder="Ex: Mirail" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+    </div>
     <div class="fg"><label>Titre *</label><input id="an-titre" placeholder="Ex: Cherche baby-sitter" maxlength="100" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <div class="fg"><label>Catégorie</label><select id="an-cat" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"><option>Vente</option><option>Don</option><option>Service</option><option>Logement</option><option>Emploi</option><option>Autre</option></select></div>
-      <div class="fg"><label>Prix (€)</label><input id="an-prix" type="number" placeholder="0 = gratuit" min="0" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+      <div class="fg"><label>Catégorie *</label><select id="an-cat" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"><option>Vente</option><option>Don</option><option>Service</option><option>Logement</option><option>Emploi</option><option>Autre</option></select></div>
+      <div class="fg"><label>Téléphone</label><input id="an-tel" type="tel" placeholder="06 XX XX XX XX" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
     </div>
     <div class="fg"><label>Description *</label><textarea id="an-desc" rows="3" placeholder="Décrivez votre annonce…" maxlength="1000" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;resize:vertical;"></textarea></div>
-    <div class="fg"><label>Téléphone</label><input id="an-tel" type="tel" placeholder="06 XX XX XX XX" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-    <div class="fg"><label>Votre prénom *</label><input id="an-prenom" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
     <button class="btn-rouge" onclick="submitAnnonce()">📋 Déposer l'annonce</button>
     <div class="form-msg" id="an-msg"></div>
     <button onclick="closeModal()" style="width:100%;padding:12px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;margin-top:4px;cursor:pointer;">Annuler</button>
@@ -117,16 +119,20 @@ function openModal(){
 }
 function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow=''}
 async function submitAnnonce(){
+  const prenom=document.getElementById('an-prenom').value.trim()||Auth.getPrenom()
+  const quartier=document.getElementById('an-quartier').value.trim()
   const titre=document.getElementById('an-titre').value.trim()
   const cat=document.getElementById('an-cat').value
-  const desc=document.getElementById('an-desc').value.trim()
-  const prix=document.getElementById('an-prix').value
   const tel=document.getElementById('an-tel').value.trim()
-  const prenom=document.getElementById('an-prenom').value.trim()||Auth.getPrenom()
+  const desc=document.getElementById('an-desc').value.trim()
   const msg=document.getElementById('an-msg')
-  if(!titre||!desc||!prenom){msg.style.color='var(--rouge)';msg.textContent='Titre, description et prénom obligatoires.';return}
+  if(!prenom||!titre||!desc){msg.style.color='var(--rouge)';msg.textContent='Prénom, titre et description obligatoires.';return}
   msg.style.color='var(--txt3)';msg.textContent='Envoi…'
-  const{error}=await Api.createAnnonce({titre,contenu:desc,categorie:cat,prix:prix?parseFloat(prix):null,telephone:tel||null,profil_code:Auth.getCode()||null,prenom})
+  // ⚠️ nom/email/quartier/categorie/description sont NOT NULL en DB
+  const{error}=await Api.createAnnonce({
+    prenom, nom:'', email:'', quartier:quartier||'Non précisé',
+    categorie:cat, titre, description:desc, contenu:desc, telephone:tel||null
+  })
   if(error){msg.style.color='var(--rouge)';msg.textContent='Erreur: '+error.message;return}
   msg.style.color='var(--green)';msg.textContent='✅ Annonce soumise — validation sous 24h.'
   setTimeout(closeModal,2000)

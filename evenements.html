@@ -42,6 +42,23 @@
     <button onclick="closeModal()" style="width:100%;padding:12px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;margin-top:4px;cursor:pointer;">Annuler</button>
   </div>
 </div>
+<!-- MODAL INSCRIPTION -->
+<div class="modal-ov" id="modal-ins" onclick="if(event.target===this)closeInsModal()">
+  <div class="modal-box">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:4px;">S'inscrire</div>
+    <div style="font-size:.85rem;color:var(--txt2);margin-bottom:16px;" id="ins-titre-display"></div>
+    <div class="fg"><label>Prénom *</label><input id="ins-prenom" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Nom *</label><input id="ins-nom" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+      <div class="fg"><label>Email *</label><input id="ins-email" type="email" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+    </div>
+    <div class="fg"><label>Téléphone</label><input id="ins-tel" type="tel" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+    <button class="btn-rouge" onclick="submitInscription()">Confirmer mon inscription</button>
+    <div class="form-msg" id="ins-msg"></div>
+    <button onclick="closeInsModal()" style="width:100%;padding:10px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;cursor:pointer;margin-top:4px;">Annuler</button>
+  </div>
+</div>
+
 <nav class="bottom-nav">
   <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
   <a class="nav-item" href="groupes.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Groupes</a>
