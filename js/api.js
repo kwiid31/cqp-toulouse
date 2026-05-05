@@ -71,7 +71,7 @@ const Api = (() => {
   const getPendingAnnonces = () =>
     sb.from('annonces').select('*').eq('validee', false)
       .order('created_at', { ascending: false });
-  const createAnnonce  = (f) => sb.from('annonces').insert({ visible: false, validee: false, ...f });
+  const createAnnonce  = (f) => sb.from('annonces').insert({ visible: false, validee: false, description: f.contenu || null, ...f });
   const approveAnnonce = (id) => sb.from('annonces').update({ visible: true, validee: true }).eq('id', id);
   const rejectAnnonce  = (id) => sb.from('annonces').update({ visible: false }).eq('id', id);
 
@@ -86,11 +86,11 @@ const Api = (() => {
   const approveEvenement = (id) => sb.from('evenements').update({ visible: true, validee: true }).eq('id', id);
   const rejectEvenement  = (id) => sb.from('evenements').update({ visible: false }).eq('id', id);
   const getInscriptions  = (code) =>
-    sb.from('event_inscriptions').select('evenement_id').eq('profil_code', code);
+    sb.from('inscriptions_evenements').select('evenement_id').eq('profil_code', code);
   const addInscription   = (evtId, code) =>
-    sb.from('event_inscriptions').insert({ evenement_id: evtId, profil_code: code });
+    sb.from('inscriptions_evenements').insert({ evenement_id: evtId, profil_code: code });
   const removeInscription = (evtId, code) =>
-    sb.from('event_inscriptions').delete().eq('evenement_id', evtId).eq('profil_code', code);
+    sb.from('inscriptions_evenements').delete().eq('evenement_id', evtId).eq('profil_code', code);
 
   // ── GROUPES ───────────────────────────────────────────────────
   const getGroupes    = ()           => sb.from('groupes').select('*').eq('visible', true).order('created_at', { ascending: false });
@@ -113,7 +113,7 @@ const Api = (() => {
   const createNotif   = (f)    => sb.from('notifications').insert(f);
 
   // ── ADMIN ─────────────────────────────────────────────────────
-  const getStats      = ()          => sb.from('v_stats_admin').select('*').single();
+  const getStats = () => sb.from('v_stats_admin').select('*').single();
   const getAllProfils  = (lim = 100) => sb.from('profils').select('*').order('created_at', { ascending: false }).limit(lim);
   const getAllPosts    = (lim = 50)  => sb.from('posts').select('*').eq('visible', true).order('created_at', { ascending: false }).limit(lim);
   const setAdmin      = (code, val) => sb.from('profils').update({ is_admin: val }).eq('code', code);

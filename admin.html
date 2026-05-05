@@ -68,12 +68,12 @@
 
     <!-- STATS -->
     <div class="stat-grid" id="stats-grid">
-      <div class="stat-card"><div class="stat-n" style="color:var(--purple)">—</div><div class="stat-l">Profils</div></div>
-      <div class="stat-card"><div class="stat-n" style="color:var(--blue)">—</div><div class="stat-l">Posts</div></div>
-      <div class="stat-card"><div class="stat-n" style="color:var(--green)">—</div><div class="stat-l">Likes</div></div>
-      <div class="stat-card"><div class="stat-n" style="color:var(--orange)">—</div><div class="stat-l">Stories</div></div>
-      <div class="stat-card"><div class="stat-n" style="color:var(--rouge)">—</div><div class="stat-l">Annonces att.</div></div>
-      <div class="stat-card"><div class="stat-n" style="color:var(--txt2)">—</div><div class="stat-l">Vues 7j</div></div>
+      <div class="stat-card"><div class="stat-n" id="st-profils" style="color:var(--purple)">—</div><div class="stat-l">Profils</div></div>
+      <div class="stat-card"><div class="stat-n" id="st-posts" style="color:var(--blue)">—</div><div class="stat-l">Posts</div></div>
+      <div class="stat-card"><div class="stat-n" id="st-annonces" style="color:var(--green)">—</div><div class="stat-l">Annonces</div></div>
+      <div class="stat-card"><div class="stat-n" id="st-evts" style="color:var(--orange)">—</div><div class="stat-l">Événements</div></div>
+      <div class="stat-card"><div class="stat-n" id="st-new7j" style="color:var(--rouge)">—</div><div class="stat-l">Nouveaux 7j</div></div>
+      <div class="stat-card"><div class="stat-n" id="st-vues" style="color:var(--txt2)">—</div><div class="stat-l">Visites 7j</div></div>
     </div>
 
     <!-- TABS -->
@@ -168,16 +168,15 @@ function switchTab(name,btn){
 async function loadAll(){loadStats();loadActusList()}
 
 async function loadStats(){
-  const{data}=await Api.getStats()
-  if(!data)return
-  const grid=document.getElementById('stats-grid')
-  const vals=[data.nb_profils,data.nb_posts,data.nb_likes,data.nb_stories,data.nb_annonces_pending,data.views_7j]
-  grid.querySelectorAll('.stat-n').forEach((el,i)=>el.textContent=vals[i]??'—')
+  const{data:{data:d}}=await sb.from('v_stats_admin').select('*').single()
+  if(!d)return
+  const m={'st-profils':d.total_profils,'st-posts':d.total_posts,'st-annonces':d.total_annonces,'st-evts':d.total_evenements,'st-new7j':d.nouveaux_7j,'st-vues':d.visiteurs_7j}
+  Object.entries(m).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val??'—'})
 }
 
 async function loadActusList(){
   const el=document.getElementById('actus-list')
-  const{data}=await Api.getActus(null,20)
+  const{data}=await sb.from('actus').select('*').eq('visible',true).order('date_publication',{ascending:false}).limit(20)
   if(!data?.length){el.innerHTML='<div class="empty">Aucune actu.</div>';return}
   el.innerHTML='<div class="tbl-head"><div class="tbl-title">Actus publiées</div></div>'+
     data.map(a=>`<div class="tbl-row">
@@ -194,7 +193,7 @@ async function publishActu(){
   const msg=document.getElementById('a-msg')
   if(!titre||!contenu){msg.style.color='var(--rouge)';msg.textContent='Titre et contenu obligatoires.';return}
   msg.style.color='var(--txt3)';msg.textContent='Publication…'
-  const{error}=await Api.createActu({titre,contenu,categorie:cat,date_publication:dateVal?new Date(dateVal).toISOString():new Date().toISOString(),photo_url:photo||null})
+  const{error}=await sb.from('actus').insert({titre,contenu,categorie:cat,date_publication:dateVal?new Date(dateVal).toISOString():new Date().toISOString(),photo_url:photo||null,visible:true})
   if(error){msg.style.color='var(--rouge)';msg.textContent='Erreur: '+error.message;return}
   msg.style.color='var(--green)';msg.textContent='✅ Actu publiée !'
   document.getElementById('a-titre').value='';document.getElementById('a-contenu').value='';document.getElementById('a-photo').value=''
@@ -202,7 +201,7 @@ async function publishActu(){
 }
 async function deleteActu(id){
   if(!confirm('Supprimer cette actu ?'))return
-  await Api.deleteActu(id);loadActusList();loadStats()
+  await sb.from('actus').update({visible:false}).eq('id',id);loadActusList();loadStats()
 }
 
 async function loadModPosts(){

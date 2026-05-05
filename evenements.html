@@ -82,8 +82,8 @@ async function load(){
 async function toggleIns(id,btn){
   if(!Auth.getCode()){window.location.href='profil.html';return}
   const ins=_inscrits.has(id)
-  if(!ins){_inscrits.add(id);btn.textContent='✅ Inscrit';btn.style.background='var(--green)';Api.addInscription(id,Auth.getCode()).catch(()=>{})}
-  else{_inscrits.delete(id);btn.textContent="S'inscrire";btn.style.background='var(--blue)';Api.removeInscription(id,Auth.getCode()).catch(()=>{})}
+  if(!ins){_inscrits.add(id);btn.textContent='✅ Inscrit';btn.style.background='var(--green)';sb.from('inscriptions_evenements').insert({evenement_id:id,profil_code:Auth.getCode()}).catch(()=>{})}
+  else{_inscrits.delete(id);btn.textContent="S'inscrire";btn.style.background='var(--blue)';sb.from('inscriptions_evenements').delete().eq('evenement_id',id).eq('profil_code',Auth.getCode()).catch(()=>{})}
   localStorage.setItem('cqp_inscriptions',JSON.stringify([..._inscrits]))
 }
 function openModal(){
