@@ -273,12 +273,13 @@ const Api = (() => {
   }
 
   // ── PAGE VIEW ─────────────────────────────────────────────────
-  const trackView = page =>
+  const trackView = page => {
     sb.from('page_views').insert({
       session_id: sid(),
       profil_code: Auth.getCode() || null,
       page,
-    }).catch(() => {})
+    }).then(() => {}).catch(() => {})
+  }
 
   return {
     sid,
