@@ -76,7 +76,9 @@ button,label{cursor:pointer;font-family:inherit;}
 <script>
 // Utilitaires CQP (inline pour éviter les dépendances)
 if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;};
-d.textContent=s||'';return d.innerHTML;};
+const sb = supabase.createClient(CQP.SBU, CQP.SBK); window._sb = sb;
+const esc = s => { const d = document.createElement('div'); d.textContent=s||''; return d.innerHTML; };
+const timeAgo = d => { if(!d)return''; const s=(Date.now()-new Date(d))/1000; if(s<60)return"À l'instant"; if(s<3600)return`Il y a ${Math.floor(s/60)} min`; if(s<86400)return`Il y a ${Math.floor(s/3600)} h`; return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}); };
 function saveSession(p){localStorage.setItem('cqp_code',p.code||'');localStorage.setItem('cqp_prenom',p.prenom||'');localStorage.setItem('cqp_photo',p.photo_url||'');}
 function lockPrenom(prenom){if(!prenom)return;['an-prenom','pe-prenom','comment-prenom'].forEach(id=>{const el=document.getElementById(id);if(el){el.value=prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;pointer-events:none;';}});}
 function timeAgo(d){if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});}
