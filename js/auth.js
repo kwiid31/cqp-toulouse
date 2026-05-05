@@ -78,8 +78,10 @@ const Auth = (() => {
       const { data } = await sb.from('profils').select('code').eq('code', code).limit(1);
       exists = !!data?.length;
     }
+    // session_id requis (NOT NULL) — on utilise le code comme session_id
+    const session_id = code;
     const { data, error } = await sb.from('profils')
-      .insert({ code, prenom: prenom.trim(), quartier: quartier?.trim() || null, bio: bio?.trim() || null })
+      .insert({ code, session_id, prenom: prenom.trim(), quartier: quartier?.trim() || null, bio: bio?.trim() || null })
       .select().single();
     if (error) throw error;
     save(data);
