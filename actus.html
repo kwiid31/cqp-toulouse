@@ -9,6 +9,10 @@
 <title>Actualités — CQP Toulouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/config.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -192,6 +196,7 @@ input.cmt-input:focus{border-color:var(--rouge)}
     </div>
   </div>
   <style>@keyframes pul{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}</style>
+<link rel="stylesheet" href="/css/main.css">
   <div id="actus-list"></div>
 </main>
 
@@ -255,9 +260,7 @@ input.cmt-input:focus{border-color:var(--rouge)}
 </div>
 
 <script>
-const SBU='https://vzfwtyczqfbhbjzotjft.supabase.co';
-const SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk';
-const sb=supabase.createClient(SBU,SBK);
+const sb = window._sb || supabase.createClient(CQP.SBU, CQP.SBK); window._sb = sb;
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
 function getSid(){try{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;}catch{return 'x'+Math.random().toString(36).slice(2);}}
 function savePrenomLocal(v){try{if(v.trim())localStorage.setItem('cqp_prenom',v.trim());}catch{}}

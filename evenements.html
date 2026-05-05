@@ -11,6 +11,10 @@
 <link rel="manifest" href="/manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/config.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/auth.js"></script>
+<script src="/js/api.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--rouge:#C8102E;--green:#42B72A;--purple:#7C3AED;--blue:#1877F2;--orange:#F97316;
@@ -64,13 +68,12 @@ button,label{cursor:pointer;font-family:inherit;}
 .nav-pub{width:50px;height:50px;border-radius:50%;background:var(--rouge);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 14px rgba(200,16,46,.4);margin-top:-14px;}
 .nav-pub svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;}
 </style>
+<link rel="stylesheet" href="/css/main.css">
 
 <script>
 // Utilitaires CQP (inline pour éviter les dépendances)
-const getCode=()=>localStorage.getItem('cqp_code')||null;
-const getPrenom=()=>localStorage.getItem('cqp_prenom')||'';
-const getSid=()=>{let s=localStorage.getItem('cqp_sid');if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;};
-const esc=s=>{const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;};
+if(!s){s=crypto.randomUUID?.()??Math.random().toString(36).slice(2);localStorage.setItem('cqp_sid',s);}return s;};
+d.textContent=s||'';return d.innerHTML;};
 function saveSession(p){localStorage.setItem('cqp_code',p.code||'');localStorage.setItem('cqp_prenom',p.prenom||'');localStorage.setItem('cqp_photo',p.photo_url||'');}
 function lockPrenom(prenom){if(!prenom)return;['an-prenom','pe-prenom','comment-prenom'].forEach(id=>{const el=document.getElementById(id);if(el){el.value=prenom;el.readOnly=true;el.style.cssText='background:var(--bg3,#E4E6EB);color:var(--txt2,#65676B);cursor:default;pointer-events:none;';}});}
 function timeAgo(d){if(!d)return'';const s=(Date.now()-new Date(d))/1000;if(s<60)return"À l'instant";if(s<3600)return`Il y a ${Math.floor(s/60)} min`;if(s<86400)return`Il y a ${Math.floor(s/3600)} h`;return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});}

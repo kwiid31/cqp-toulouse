@@ -1,60 +1,29 @@
-// CQP Toulouse — Service Worker v2
-// Cache le shell de l'app pour fonctionnement hors-ligne
-const CACHE = 'cqp-v'+Date.now().toString().slice(0,10)+'2';
+/* CQP Toulouse — Service Worker v4 */
+const CACHE = 'cqp-v4';
 const SHELL = [
-  '/',
-  '/index.html',
-  '/profil.html',
-  '/groupes.html',
-  '/actus.html',
-  '/evenements.html',
-  '/annonces.html',
-  '/admin.html',
+  '/','/index.html','/profil.html','/admin.html',
+  '/actus.html','/evenements.html','/annonces.html','/groupes.html','/a-propos.html',
+  '/css/main.css',
+  '/js/config.js','/js/auth.js','/js/api.js','/js/utils.js',
+  '/js/ui.js','/js/feed.js','/js/stories.js',
   '/js/cqp-core.js',
-  '/favicon.ico',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/manifest.json',
+  '/manifest.json','/favicon.ico',
+  '/icons/icon-192.png','/icons/icon-512.png',
 ];
 
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())
-  );
-});
-
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
-  );
-});
-
+self.addEventListener('install',  e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL))); self.skipWaiting(); });
+self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))); self.clients.claim(); });
 self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
-  // Supabase, Groq, fonts → réseau toujours
-  const _ext = url.hostname.endsWith('.supabase.co') || url.hostname.endsWith('.supabase.in') ||
-             url.hostname === 'api.groq.com' ||
-             url.hostname.endsWith('.googleapis.com') || url.hostname.endsWith('.gstatic.com');
-  if (_ext) { return; }
-  // Shell de l'app → cache first, réseau en fallback
+  if (url.origin.includes('supabase')) return; // Jamais cacher les appels API
   e.respondWith(
     caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(res => {
-        // Mettre en cache les nouvelles ressources statiques
-        if (res.ok && e.request.method === 'GET') {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-        }
-        return res;
-      }).catch(() => {
-        // Hors-ligne et pas en cache → page offline générique
-        if (e.request.headers.get('accept')?.includes('text/html')) {
-          return caches.match('/index.html');
-        }
-      });
+      const fresh = fetch(e.request).then(r => {
+        if (r.ok) caches.open(CACHE).then(c => c.put(e.request, r.clone()));
+        return r;
+      }).catch(() => cached);
+      return cached || fresh;
     })
   );
 });
