@@ -96,12 +96,30 @@ async function load(){
     </div>`
   }).join('')
 }
-async function toggleIns(id,btn){
-  if(!Auth.getCode()){window.location.href='profil.html';return}
-  const ins=_inscrits.has(id)
-  if(!ins){_inscrits.add(id);btn.textContent='✅ Inscrit';btn.style.background='var(--green)';sb.from('inscriptions_evenements').insert({evenement_id:id,profil_code:Auth.getCode()}).catch(()=>{})}
-  else{_inscrits.delete(id);btn.textContent="S'inscrire";btn.style.background='var(--blue)';sb.from('inscriptions_evenements').delete().eq('evenement_id',id).eq('profil_code',Auth.getCode()).catch(()=>{})}
+let _currentInsEvtId=null
+function openInscription(id,titre){
+  _currentInsEvtId=id
+  const el=document.getElementById('ins-titre-display');if(el)el.textContent=titre||''
+  const p=Auth.getPrenom();if(p){const inp=document.getElementById('ins-prenom');if(inp)inp.value=p}
+  document.getElementById('modal-ins').classList.add('open');document.body.style.overflow='hidden'
+}
+function closeInsModal(){document.getElementById('modal-ins').classList.remove('open');document.body.style.overflow=''}
+async function submitInscription(){
+  const prenom=document.getElementById('ins-prenom').value.trim()
+  const nom=document.getElementById('ins-nom').value.trim()
+  const email=document.getElementById('ins-email').value.trim()
+  const tel=document.getElementById('ins-tel')?.value.trim()
+  const msg=document.getElementById('ins-msg')
+  if(!prenom||!nom||!email){msg.style.color='var(--rouge)';msg.textContent='Prénom, nom et email obligatoires.';return}
+  msg.style.color='var(--txt3)';msg.textContent='Inscription en cours…'
+  const{error}=await Api.createInscription({evenement_id:_currentInsEvtId,prenom,nom,email,telephone:tel||null})
+  if(error){msg.style.color='var(--rouge)';msg.textContent='Erreur: '+error.message;return}
+  _inscrits.add(_currentInsEvtId)
   localStorage.setItem('cqp_inscriptions',JSON.stringify([..._inscrits]))
+  const btn=document.getElementById('ins-'+_currentInsEvtId)
+  if(btn){btn.textContent='✅ Inscrit';btn.style.background='var(--green)'}
+  msg.style.color='var(--green)';msg.textContent='✅ Inscription confirmée !'
+  setTimeout(closeInsModal,1500)
 }
 function openModal(){
   const p=Auth.getPrenom();if(p){const el=document.getElementById('pe-prenom');el.value=p;el.readOnly=true;}
