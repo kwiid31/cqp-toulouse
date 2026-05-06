@@ -373,7 +373,7 @@ async function refreshComments() {
       <div class="c-av c-av-28 c-av-init">${esc((c.prenom || '?')[0].toUpperCase())}</div>
       <div class="cmt-bubble">
         <span class="cmt-name">${esc(c.prenom || 'Anonyme')}</span>
-        <span class="cmt-text">${esc(c.contenu || '')}</span>
+        <span class="cmt-text">${esc(c.message || c.contenu || '')}</span>
         <span class="cmt-ts">${timeAgo(c.created_at)}</span>
       </div>
     </div>`).join('')
