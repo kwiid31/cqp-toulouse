@@ -115,8 +115,18 @@ async function load(){
 async function toggleMembre(gId,btn){
   if(!Auth.getCode()){window.location.href='profil.html';return}
   const joined=btn.classList.contains('btn-rouge')
-  if(!joined){btn.classList.replace('btn-outline','btn-rouge');btn.textContent='✅ Membre';Api.joinGroupe(gId).catch(()=>{})}
-  else{btn.classList.replace('btn-rouge','btn-outline');btn.textContent='Rejoindre';Api.leaveGroupe(gId).catch(()=>{})}
+  const mcEl=document.getElementById('mc-'+gId)
+  if(!joined){
+    btn.classList.replace('btn-outline','btn-rouge');btn.textContent='✅ Membre'
+    Api.joinGroupe(gId).then(()=>{
+      if(mcEl){const n=parseInt(mcEl.textContent)||0;mcEl.textContent=`${n+1} membre${n+1>1?'s':''}`}
+    }).catch(()=>{})
+  } else {
+    btn.classList.replace('btn-rouge','btn-outline');btn.textContent='Rejoindre'
+    Api.leaveGroupe(gId).then(()=>{
+      if(mcEl){const n=Math.max(0,(parseInt(mcEl.textContent)||1)-1);mcEl.textContent=`${n} membre${n>1?'s':''}`}
+    }).catch(()=>{})
+  }
 }
 async function openChat(gId){
   _currentGr=_groupes.find(g=>g.id===gId);if(!_currentGr)return
