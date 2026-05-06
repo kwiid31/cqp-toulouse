@@ -168,9 +168,9 @@ function switchTab(name,btn){
 async function loadAll(){loadStats();loadActusList()}
 
 async function loadStats(){
-  const{data:{data:d}}=await sb.from('v_stats_admin').select('*').single()
-  if(!d)return
-  const m={'st-profils':d.total_profils,'st-posts':d.total_posts,'st-annonces':d.total_annonces,'st-evts':d.total_evenements,'st-new7j':d.nouveaux_7j,'st-vues':d.visiteurs_7j}
+  const{data,error}=await sb.from('v_stats_admin').select('*').single()
+  if(error||!data)return
+  const m={'st-profils':data.total_profils,'st-posts':data.total_posts,'st-annonces':data.total_annonces,'st-evts':data.total_evenements,'st-new7j':data.nouveaux_7j,'st-vues':data.visiteurs_7j}
   Object.entries(m).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val??'—'})
 }
 
