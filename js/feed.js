@@ -36,9 +36,11 @@ const Feed = (() => {
         sb.from('commentaires').select('item_id').eq('item_type', 'post').eq('visible', true).in('item_id', ids)
       ])
       const likeCounts = {}, cmtCounts = {}
+      const currentCode = Auth.getCode() || _myCode
+      const currentSid = Auth.getSid() || _mySid
       ;(likesData || []).forEach(l => {
         likeCounts[l.item_id] = (likeCounts[l.item_id] || 0) + 1
-        if (l.session_id === _mySid || l.session_id === _myCode) _myLikes.add(l.item_id)
+        if (l.session_id === currentSid || l.session_id === currentCode) _myLikes.add(l.item_id)
       })
       ;(cmtData || []).forEach(c => {
         cmtCounts[c.item_id] = (cmtCounts[c.item_id] || 0) + 1
@@ -47,7 +49,7 @@ const Feed = (() => {
 
       data.forEach(p => {
         const liked = _myLikes.has(p.id)
-        const isMine = p.profil_code === _myCode || p.session_id === _mySid
+        const isMine = p.profil_code === currentCode || p.session_id === currentSid
         _el.insertAdjacentHTML('beforeend', _card(p, likeCounts[p.id] || 0, cmtCounts[p.id] || 0, liked, isMine))
       })
       _page++
