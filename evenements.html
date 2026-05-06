@@ -91,7 +91,7 @@ async function load(){
       ${e.description?`<div class="evt-body">${esc(e.description.substring(0,160))}${e.description.length>160?'…':''}</div>`:''}
       <div class="evt-footer">
         <span class="tag">${Utils.countdown(e.date_debut)}</span>
-        <button id="ins-${e.id}" onclick="toggleIns(${e.id},this)" style="flex:1;padding:10px;background:${ins?'var(--green)':'var(--blue)'};border:none;border-radius:22px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">${ins?'✅ Inscrit':'S\'inscrire'}</button>
+        <button id="ins-${e.id}" onclick="openInscription(${e.id},'${Utils.esc(e.titre)}')" style="flex:1;padding:10px;background:${_inscrits.has(e.id)?'var(--green)':'var(--blue)'};border:none;border-radius:22px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">${_inscrits.has(e.id)?'✅ Inscrit':"S'inscrire"}</button>
       </div>
     </div>`
   }).join('')
