@@ -126,7 +126,7 @@ async function submitAnnonce(){
   const tel=document.getElementById('an-tel').value.trim()
   const desc=document.getElementById('an-desc').value.trim()
   const msg=document.getElementById('an-msg')
-  if(!prenom||!titre||!desc){msg.style.color='var(--rouge)';msg.textContent='Prénom, titre et description obligatoires.';return}
+  if(!prenom||!titre||!desc||desc.length<3){msg.style.color='var(--rouge)';msg.textContent='Prénom, titre et description (min 3 caractères) obligatoires.';return}
   msg.style.color='var(--txt3)';msg.textContent='Envoi…'
   // ⚠️ nom/email/quartier/categorie/description sont NOT NULL en DB
   const{error}=await Api.createAnnonce({
