@@ -29,7 +29,7 @@
 .mine .msg-text{color:#fff;}
 .msg-ts{font-size:.65rem;color:var(--txt3);display:block;margin-top:3px;text-align:right;}
 .mine .msg-ts{color:rgba(255,255,255,.6);}
-.chat-foot{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;padding-bottom:max(10px,env(safe-area-inset-bottom));}
+.chat-foot{padding:8px 8px 8px 10px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;align-items:center;padding-bottom:max(8px,env(safe-area-inset-bottom));}
 .chat-input{flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:24px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;}
 .chat-input:focus{border-color:var(--purple);}
 .modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;justify-content:center;}
@@ -55,8 +55,8 @@
   </div>
   <div class="chat-body" id="chat-body"></div>
   <div class="chat-foot">
-    <input class="chat-input" id="chat-input" placeholder="Votre message…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}">
-    <button onclick="sendMsg()" style="width:42px;height:42px;background:var(--purple);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    <input class="chat-input" id="chat-input" placeholder="Votre message…" style="min-width:0;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}">
+    <button onclick="sendMsg()" style="width:42px;height:42px;min-width:42px;background:var(--purple);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;"><svg viewBox="0 0 24 24" width="16" height="16" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </div>
 </div>
 

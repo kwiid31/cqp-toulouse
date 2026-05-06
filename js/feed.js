@@ -29,20 +29,26 @@ const Feed = (() => {
       }
       if (!data?.length) { _done = true; return }
 
-      // Charger les likes en batch
+      // Charger likes ET commentaires en batch (parallèle)
       const ids = data.map(p => p.id)
-      const { data: likesData } = await Api.getLikesForFeed(ids)
-      const likeCounts = {}
+      const [{ data: likesData }, { data: cmtData }] = await Promise.all([
+        Api.getLikesForFeed(ids),
+        sb.from('commentaires').select('item_id').eq('item_type', 'post').eq('visible', true).in('item_id', ids)
+      ])
+      const likeCounts = {}, cmtCounts = {}
       ;(likesData || []).forEach(l => {
         likeCounts[l.item_id] = (likeCounts[l.item_id] || 0) + 1
         if (l.session_id === _mySid || l.session_id === _myCode) _myLikes.add(l.item_id)
+      })
+      ;(cmtData || []).forEach(c => {
+        cmtCounts[c.item_id] = (cmtCounts[c.item_id] || 0) + 1
       })
       saveLikes()
 
       data.forEach(p => {
         const liked = _myLikes.has(p.id)
         const isMine = p.profil_code === _myCode || p.session_id === _mySid
-        _el.insertAdjacentHTML('beforeend', _card(p, likeCounts[p.id] || 0, liked, isMine))
+        _el.insertAdjacentHTML('beforeend', _card(p, likeCounts[p.id] || 0, cmtCounts[p.id] || 0, liked, isMine))
       })
       _page++
     } catch (e) {
@@ -51,7 +57,7 @@ const Feed = (() => {
     } finally { _loading = false }
   }
 
-  const _card = (p, likeCount, liked, isMine) => {
+  const _card = (p, likeCount, cmtCount, liked, isMine) => {
     const av = p.photo_url
       ? `<div class="c-av c-av-40"><img src="${Utils.esc(p.photo_url)}" alt=""></div>`
       : `<div class="c-av c-av-40 c-av-init">${Utils.esc((p.prenom||'?')[0].toUpperCase())}</div>`
@@ -76,7 +82,7 @@ const Feed = (() => {
         </button>
         <button class="action-btn" onclick="window.openSheet('post',${p.id})">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span id="cc-${p.id}">0</span>
+          <span id="cc-${p.id}">${cmtCount}</span>
         </button>
         <button class="action-btn" onclick="Feed.share(${p.id})">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -87,9 +93,7 @@ const Feed = (() => {
 
   const prepend = post => {
     if (!_el) return
-    const liked = false
-    const isMine = true
-    _el.insertAdjacentHTML('afterbegin', _card(post, 0, liked, isMine))
+    _el.insertAdjacentHTML('afterbegin', _card(post, 0, 0, false, true))
   }
 
   // ── SCROLL INFINI ─────────────────────────────────────────────

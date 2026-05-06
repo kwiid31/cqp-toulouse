@@ -58,7 +58,7 @@
 .sheet-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
 .sheet-head h3{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;flex:1;margin:0;}
 .sheet-body{flex:1;overflow-y:auto;padding:12px 14px;}
-.sheet-foot{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;padding-bottom:max(12px,env(safe-area-inset-bottom));}
+.sheet-foot{padding:8px 8px 8px 10px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;align-items:center;padding-bottom:max(8px,env(safe-area-inset-bottom));}
 /* ── STORY VIEWER ── */
 #sv{display:none;position:fixed;inset:0;z-index:600;background:#000;flex-direction:column;}
 #sv.open{display:flex;}
@@ -221,7 +221,7 @@
   <div class="sheet-foot">
     <div class="c-av c-av-28 c-av-init" id="sheet-av">?</div>
     <input id="sheet-input" placeholder="Commenter…" style="flex:1;padding:9px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:24px;font-family:'Barlow',sans-serif;font-size:.88rem;color:var(--txt);outline:none;" onkeydown="if(event.key==='Enter')sendComment()">
-    <button onclick="sendComment()" style="width:38px;height:38px;background:var(--rouge);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+    <button onclick="sendComment()" style="width:38px;height:38px;min-width:38px;background:var(--rouge);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
       <svg viewBox="0 0 24 24" width="15" height="15" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     </button>
   </div>
