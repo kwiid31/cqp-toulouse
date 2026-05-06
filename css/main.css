@@ -64,25 +64,25 @@ img { max-width:100%; display:block; }
 }
 .nav-item {
   flex:1; display:flex; flex-direction:column; align-items:center;
-  justify-content:center; gap:3px;
+  justify-content:center; gap:2px;
   background:none; border:none;
   color:var(--txt3); font-family:'Barlow Condensed',sans-serif;
-  font-size:.5rem; letter-spacing:.5px; text-transform:uppercase;
-  text-decoration:none; padding:6px 0; transition:color .15s;
+  font-size:.45rem; letter-spacing:.4px; text-transform:uppercase;
+  text-decoration:none; padding:5px 0; transition:color .15s;
 }
 .nav-item.active, .nav-item:hover { color:var(--rouge); }
-.nav-item svg { width:23px; height:23px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; transition:transform .15s; }
+.nav-item svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; transition:transform .15s; }
 .nav-item.active svg { stroke:var(--rouge); }
 .nav-item:active svg { transform:scale(.88); }
 .nav-center { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:4px; flex-shrink:0; }
 .nav-pub {
-  width:52px; height:52px; border-radius:50%; background:var(--rouge); border:none;
+  width:46px; height:46px; border-radius:50%; background:var(--rouge); border:none;
   display:flex; align-items:center; justify-content:center;
-  box-shadow:0 4px 18px rgba(200,16,46,.45); margin-top:-16px;
-  transition:transform .15s, box-shadow .15s;
+  box-shadow:0 4px 18px rgba(200,16,46,.45); margin-top:-14px;
+  transition:transform .15s, box-shadow .15s; text-decoration:none;
 }
 .nav-pub:active { transform:scale(.88); box-shadow:0 2px 8px rgba(200,16,46,.3); }
-.nav-pub svg { width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; }
+.nav-pub svg { width:20px; height:20px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; }
 @media (min-width:700px) { .bottom-nav { display:none; } body { padding-bottom:0; } }
 
 /* ── Cards ────────────────────────────────────────────────────── */
