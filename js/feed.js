@@ -8,12 +8,12 @@ const Feed = (() => {
   const saveLikes = () => localStorage.setItem('cqp_likes', JSON.stringify([..._myLikes]))
   const spinner = () => `<div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>`
 
-  const init = el => {
+  const init = async el => {
     _el = el; _page = 0; _done = false
-    _loadPromos()
     _myCode = Auth.getCode()
     _mySid = Auth.getSid()
     _el.innerHTML = spinner()
+    await _loadPromos()
     loadMore()
     _setupInfiniteScroll()
   }
@@ -24,18 +24,16 @@ const Feed = (() => {
     try {
       const { data, error } = await Api.getFeed(_page, CQP.FEED_SIZE)
       if (error) throw error
-      if (_page === 0) {
-        _el.innerHTML = ''
-        if (!data?.length) { _el.innerHTML = '<div class="empty">Aucune publication pour l\'instant.</div>'; return }
-      }
       if (!data?.length) {
-        // Scroll circulaire : on repart du début
-        if (_page === 0) { _done = true; return } // vraiment vide
-        _page = 0
-        _loading = false
-        loadMore()
-        return
+        if (_page === 0) {
+          // Vraiment vide : aucun post du tout
+          _el.innerHTML = '<div class="empty">Aucune publication pour l\'instant.</div>'
+          _done = true; return
+        }
+        // Scroll circulaire : on repart du début sans vider
+        _page = 0; _loading = false; loadMore(); return
       }
+      if (_page === 0) _el.innerHTML = ''
 
       // Charger likes ET commentaires en batch (parallèle)
       const ids = data.map(p => p.id)
