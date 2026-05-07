@@ -10,6 +10,7 @@ const Feed = (() => {
 
   const init = el => {
     _el = el; _page = 0; _done = false
+    _loadPromos()
     _myCode = Auth.getCode()
     _mySid = Auth.getSid()
     _el.innerHTML = spinner()
@@ -27,7 +28,14 @@ const Feed = (() => {
         _el.innerHTML = ''
         if (!data?.length) { _el.innerHTML = '<div class="empty">Aucune publication pour l\'instant.</div>'; return }
       }
-      if (!data?.length) { _done = true; return }
+      if (!data?.length) {
+        // Scroll circulaire : on repart du début
+        if (_page === 0) { _done = true; return } // vraiment vide
+        _page = 0
+        _loading = false
+        loadMore()
+        return
+      }
 
       // Charger likes ET commentaires en batch (parallèle)
       const ids = data.map(p => p.id)
@@ -47,10 +55,12 @@ const Feed = (() => {
       })
       saveLikes()
 
-      data.forEach(p => {
+      data.forEach((p, i) => {
         const liked = _myLikes.has(p.id)
         const isMine = p.profil_code === currentCode || p.session_id === currentSid
         _el.insertAdjacentHTML('beforeend', _card(p, likeCounts[p.id] || 0, cmtCounts[p.id] || 0, liked, isMine))
+        // Injecter une annonce/événement toutes les 5 posts
+        if ((i + 1) % 5 === 0) _injectPromo()
       })
       _page++
     } catch (e) {
@@ -99,6 +109,58 @@ const Feed = (() => {
   }
 
   // ── SCROLL INFINI ─────────────────────────────────────────────
+  // ── INJECTION ANNONCES/ÉVÉNEMENTS DANS LE FEED ───────────────
+  let _promoCache = [], _promoIndex = 0
+  const _loadPromos = async () => {
+    try {
+      const [{ data: ann }, { data: evt }] = await Promise.all([
+        Api.getAnnonces(null, 6),
+        Api.getEvenements(4)
+      ])
+      _promoCache = []
+      ;(ann || []).slice(0, 3).forEach(a => _promoCache.push({ type: 'annonce', data: a }))
+      ;(evt || []).slice(0, 2).forEach(e => _promoCache.push({ type: 'evenement', data: e }))
+      // Mélanger
+      _promoCache.sort(() => Math.random() - 0.5)
+    } catch(e) { /* silencieux */ }
+  }
+
+  const _injectPromo = () => {
+    if (!_promoCache.length) return
+    const promo = _promoCache[_promoIndex % _promoCache.length]
+    _promoIndex++
+    if (promo.type === 'annonce') {
+      const a = promo.data
+      _el.insertAdjacentHTML('beforeend', `
+      <article class="card card-promo" onclick="location.href='annonces.html'" style="cursor:pointer;border-left:3px solid var(--rouge);background:linear-gradient(135deg,#fff8f8,#fff);">
+        <div class="card-head">
+          <div class="c-av c-av-40" style="background:#ff6b35;font-size:.8rem;display:flex;align-items:center;justify-content:center;">📋</div>
+          <div class="card-meta">
+            <div style="font-weight:600;font-size:.85rem;">${Utils.esc(a.prenom)} · <span style="color:var(--rouge);font-size:.75rem;font-weight:700;">ANNONCE</span></div>
+            <div style="font-size:.72rem;color:var(--txt3);">${Utils.esc(a.quartier || 'Quartier')}</div>
+          </div>
+        </div>
+        <div class="card-body" style="font-size:.9rem;">${Utils.esc(a.titre)}</div>
+        <div style="padding:0 16px 12px;font-size:.78rem;color:var(--rouge);font-weight:600;">Voir l'annonce →</div>
+      </article>`)
+    } else {
+      const e = promo.data
+      const dateStr = e.date_debut ? new Date(e.date_debut).toLocaleDateString('fr-FR', {day:'numeric',month:'long'}) : ''
+      _el.insertAdjacentHTML('beforeend', `
+      <article class="card card-promo" onclick="location.href='evenements.html'" style="cursor:pointer;border-left:3px solid #1877F2;background:linear-gradient(135deg,#f0f6ff,#fff);">
+        <div class="card-head">
+          <div class="c-av c-av-40" style="background:#1877F2;font-size:.8rem;display:flex;align-items:center;justify-content:center;">📅</div>
+          <div class="card-meta">
+            <div style="font-weight:600;font-size:.85rem;">${Utils.esc(e.prenom || 'Événement')} · <span style="color:#1877F2;font-size:.75rem;font-weight:700;">ÉVÉNEMENT</span></div>
+            <div style="font-size:.72rem;color:var(--txt3);">${dateStr}</div>
+          </div>
+        </div>
+        <div class="card-body" style="font-size:.9rem;">${Utils.esc(e.titre)}</div>
+        <div style="padding:0 16px 12px;font-size:.78rem;color:#1877F2;font-weight:600;">Voir l'agenda →</div>
+      </article>`)
+    }
+  }
+
   const _setupInfiniteScroll = () => {
     const s = document.createElement('div')
     s.style.height = '1px'
