@@ -48,8 +48,79 @@
   <button id="logout-btn" onclick="doLogout()" style="display:none;padding:7px 14px;background:none;border:1.5px solid var(--border);border-radius:20px;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Déconnexion</button>
 </header>
 
+<!-- ÉCRAN D'ACCUEIL — visible uniquement aux nouveaux visiteurs -->
+<div id="view-welcome" style="display:none;">
+  <!-- HERO -->
+  <div style="background:linear-gradient(160deg,#0d0205 0%,#1a0408 50%,#C8102E 100%);padding:48px 24px 36px;text-align:center;color:#fff;">
+    <div style="width:64px;height:64px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.25);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;">CQP</div>
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;margin:0 0 8px;letter-spacing:1px;line-height:1.1;">Le réseau de nos quartiers</h1>
+    <p style="font-size:.95rem;opacity:.85;margin:0 0 24px;line-height:1.6;">Mirail · Bellefontaine · Reynerie · Empalot · Bagatelle · Papus</p>
+    <!-- Fonctionnalités -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:320px;margin:0 auto 28px;">
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 10px;font-size:.8rem;">
+        <div style="font-size:1.4rem;margin-bottom:4px;">📢</div>
+        <div style="font-weight:600;">Publie</div>
+        <div style="opacity:.75;font-size:.75rem;margin-top:2px;">tes infos de quartier</div>
+      </div>
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 10px;font-size:.8rem;">
+        <div style="font-size:1.4rem;margin-bottom:4px;">📅</div>
+        <div style="font-weight:600;">Événements</div>
+        <div style="opacity:.75;font-size:.75rem;margin-top:2px;">propose et inscris-toi</div>
+      </div>
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 10px;font-size:.8rem;">
+        <div style="font-size:1.4rem;margin-bottom:4px;">📋</div>
+        <div style="font-weight:600;">Annonces</div>
+        <div style="opacity:.75;font-size:.75rem;margin-top:2px;">entre voisins, gratuit</div>
+      </div>
+      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 10px;font-size:.8rem;">
+        <div style="font-size:1.4rem;margin-bottom:4px;">👥</div>
+        <div style="font-weight:600;">Groupes</div>
+        <div style="opacity:.75;font-size:.75rem;margin-top:2px;">discute avec tes voisins</div>
+      </div>
+    </div>
+    <button onclick="goConnect()" class="btn-rouge" style="width:100%;max-width:320px;font-size:1rem;padding:14px;">Rejoindre le réseau →</button>
+    <button onclick="goConnect()" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:.8rem;margin-top:12px;cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:underline;">J'ai déjà un code</button>
+  </div>
+
+  <!-- TÉMOIGNAGES/PROFILS -->
+  <div style="background:#f7f7f7;padding:24px 20px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;color:var(--txt2);text-align:center;margin-bottom:16px;">Ils sont déjà là</div>
+    <div style="display:flex;flex-direction:column;gap:10px;max-width:400px;margin:0 auto;">
+      <div style="background:#fff;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.06);">
+        <div style="width:38px;height:38px;background:#C8102E;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;flex-shrink:0;">K</div>
+        <div>
+          <div style="font-size:.85rem;font-weight:600;">Karim · Bellefontaine</div>
+          <div style="font-size:.8rem;color:var(--txt2);margin-top:2px;line-height:1.5;">Coach sportif au city-stade. Venez vous dépenser, tout le monde bienvenu ! ⚽</div>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.06);">
+        <div style="width:38px;height:38px;background:#1877F2;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;flex-shrink:0;">F</div>
+        <div>
+          <div style="font-size:.85rem;font-weight:600;">Fatima · Reynerie</div>
+          <div style="font-size:.8rem;color:var(--txt2);margin-top:2px;line-height:1.5;">Aide-soignante, militante pour les droits des habitants. Quartier fier ! 🌟</div>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.06);">
+        <div style="width:38px;height:38px;background:#7C3AED;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;flex-shrink:0;">J</div>
+        <div>
+          <div style="font-size:.85rem;font-weight:600;">Jean-Paul · Papus</div>
+          <div style="font-size:.8rem;color:var(--txt2);margin-top:2px;line-height:1.5;">Électricien freelance. Si vous avez besoin d'un coup de main dans le quartier, je suis là. 🔧</div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px;">
+      <button onclick="goConnect()" class="btn-rouge" style="padding:12px 32px;">Je rejoins le réseau</button>
+    </div>
+  </div>
+
+  <!-- FOOTER WELCOME -->
+  <div style="padding:16px;text-align:center;font-size:.75rem;color:var(--txt3);">
+    Gratuit · Sans pub · Pour les habitants des quartiers de Toulouse
+  </div>
+</div>
+
 <!-- VUE CONNEXION -->
-<div id="view-connect">
+<div id="view-connect" style="display:none;">
   <div style="max-width:400px;margin:32px auto;padding:0 16px;">
 
     <div id="panel-login" class="connect-box">
@@ -279,9 +350,19 @@ async function loadMesPosts(code) {
 }
 
 // ── INIT ──────────────────────────────────────────────────────
+function goConnect() {
+  document.getElementById('view-welcome').style.display = 'none'
+  document.getElementById('view-connect').style.display = 'block'
+}
+
 async function init() {
   const code = Auth.getCode()
-  if (!code) return
+
+  if (!code) {
+    // Nouveau visiteur → écran d'accueil
+    document.getElementById('view-welcome').style.display = 'block'
+    return
+  }
 
   document.getElementById('view-connect').style.display = 'none'
   document.getElementById('view-profil').style.display = 'block'
