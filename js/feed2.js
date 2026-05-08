@@ -172,20 +172,23 @@ const Feed = (() => {
     _el.parentElement?.appendChild(s)
     new IntersectionObserver(e => {
       if (e[0].isIntersecting && !_loading) loadMore()
-    }, { rootMargin: '300px' }).observe(s)
+    }, { rootMargin: '400px' }).observe(s)
 
-    // Fallback scroll event au cas où le sentinel est hors DOM
-    let _scrollTimer = null
+    // Scroll event
     window.addEventListener('scroll', () => {
-      if (_scrollTimer) return
-      _scrollTimer = setTimeout(() => {
-        _scrollTimer = null
-        if (_loading || _done) return
-        const scrollBottom = window.scrollY + window.innerHeight
-        const docHeight = document.documentElement.scrollHeight
-        if (docHeight - scrollBottom < 500) loadMore()
-      }, 100)
+      if (_loading) return
+      const scrollBottom = window.scrollY + window.innerHeight
+      const docHeight = document.documentElement.scrollHeight
+      if (docHeight - scrollBottom < 600) loadMore()
     }, { passive: true })
+
+    // Polling toutes les 2s quand on est en bas (au cas où scroll event manqué)
+    setInterval(() => {
+      if (_loading) return
+      const scrollBottom = window.scrollY + window.innerHeight
+      const docHeight = document.documentElement.scrollHeight
+      if (docHeight - scrollBottom < 400) loadMore()
+    }, 2000)
   }
 
   // ── LIKES (optimiste) ─────────────────────────────────────────
