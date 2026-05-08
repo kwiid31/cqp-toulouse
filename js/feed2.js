@@ -116,13 +116,15 @@ const Feed = (() => {
   let _promoCache = [], _promoIndex = 0
   const _loadPromos = async () => {
     try {
-      const [{ data: ann }, { data: evt }] = await Promise.all([
+      const [{ data: ann }, { data: evt }, { data: act }] = await Promise.all([
         Api.getAnnonces(null, 6),
-        Api.getEvenements(4)
+        Api.getEvenements(4),
+        Api.getActus(null, 4)
       ])
       _promoCache = []
-      ;(ann || []).slice(0, 3).forEach(a => _promoCache.push({ type: 'annonce', data: a }))
+      ;(ann || []).slice(0, 2).forEach(a => _promoCache.push({ type: 'annonce', data: a }))
       ;(evt || []).slice(0, 2).forEach(e => _promoCache.push({ type: 'evenement', data: e }))
+      ;(act || []).slice(0, 2).forEach(a => _promoCache.push({ type: 'actu', data: a }))
       // Mélanger
       _promoCache.sort(() => Math.random() - 0.5)
     } catch(e) { /* silencieux */ }
@@ -160,6 +162,20 @@ const Feed = (() => {
           <span style="font-size:.72rem;color:#1877F2;font-weight:600;white-space:nowrap;">Voir →</span>
         </div>
         <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">${Utils.esc(e.titre)}</div>
+      </article>`)
+    } else if (promo.type === 'actu') {
+      const a = promo.data
+      _el.insertAdjacentHTML('beforeend', `
+      <article class="card card-promo" onclick="location.href='actus2.html'" style="cursor:pointer;border-left:4px solid #e67e22;background:#fff;">
+        <div class="card-head">
+          <div class="c-av c-av-40" style="background:#e67e22;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📰</div>
+          <div class="card-meta">
+            <div style="font-size:.72rem;color:#e67e22;font-weight:700;letter-spacing:.5px;">ACTU · ${Utils.esc(a.categorie || 'Quartier')}</div>
+            <div style="font-weight:600;font-size:.88rem;margin-top:1px;">${Utils.esc(Utils.timeAgo ? Utils.timeAgo(a.date_publication) : '')}</div>
+          </div>
+          <span style="font-size:.72rem;color:#e67e22;font-weight:600;white-space:nowrap;">Lire →</span>
+        </div>
+        <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">${Utils.esc(a.titre)}</div>
       </article>`)
     }
   }
