@@ -122,9 +122,9 @@ const Feed = (() => {
         Api.getActus(null, 4)
       ])
       _promoCache = []
-      ;(ann || []).slice(0, 2).forEach(a => _promoCache.push({ type: 'annonce', data: a }))
-      ;(evt || []).slice(0, 2).forEach(e => _promoCache.push({ type: 'evenement', data: e }))
-      ;(act || []).slice(0, 2).forEach(a => _promoCache.push({ type: 'actu', data: a }))
+      ;(ann || []).forEach(a => _promoCache.push({ type: 'annonce', data: a }))
+      ;(evt || []).forEach(e => _promoCache.push({ type: 'evenement', data: e }))
+      ;(act || []).forEach(a => _promoCache.push({ type: 'actu', data: a }))
       // Mélanger
       _promoCache.sort(() => Math.random() - 0.5)
     } catch(e) { /* silencieux */ }
