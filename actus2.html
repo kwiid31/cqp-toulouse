@@ -73,7 +73,7 @@
   <a class="nav-item" href="profil.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
 </nav>
 <script>
-const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+const esc=s=>{if(!s)return '';return String(s).replace(/&/g,'&amp;').replace(/\u003c/g,'&lt;').replace(/\u003e/g,'&gt;').replace(/"/g,'&quot;')}
 const timeAgo=d=>Utils?.timeAgo?.(d)||new Date(d).toLocaleDateString('fr-FR')
 let _all=[]
 function filterCat(btn,cat){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render(_all.filter(a=>!cat||a.categorie===cat))}
