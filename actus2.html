@@ -87,17 +87,13 @@ async function load(){
 function render(actus){
   const el=document.getElementById('actu-list')
   if(!actus.length){el.innerHTML='<div class="empty">Aucune actu dans cette catégorie.</div>';return}
-  el.innerHTML=actus.map(a=>`<div class="actu-card">
-    ${a.photo_url?`<img class="actu-img" src="${esc(a.photo_url)}" loading="lazy" alt="">`:`<div class="card-cover cv-rouge"><div class="card-cover-cat">${esc(a.categorie||'Actualité')}</div><div class="card-cover-title">${esc(a.titre)}</div></div>`}
-    <div class="actu-head">
-      <div class="c-av c-av-36 c-av-init" style="background:var(--rouge);">CQP</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:.88rem;">CQP Toulouse</div><div style="font-size:.72rem;color:var(--txt3);">🌐 ${timeAgo(a.date_publication)}</div></div>
-      <span class="badge badge-rouge">${esc(a.categorie||'Actu')}</span>
-    </div>
-    <div class="actu-title">${esc(a.titre)}</div>
-    <div class="actu-excerpt">${esc((a.contenu||'').substring(0,200))}${(a.contenu||'').length>200?'…':''}</div>
-    <button class="card-read-more" onclick="openActu(${a.id})">Lire l'article →</button>
-  </div>`).join('')
+  el.innerHTML=actus.map(a=>{
+    const cover=a.photo_url
+      ? '<img class="actu-img" src="'+esc(a.photo_url)+'" loading="lazy" alt="">'
+      : '<div class="card-cover cv-rouge"><div class="card-cover-cat">'+esc(a.categorie||'Actualité')+'</div><div class="card-cover-title">'+esc(a.titre)+'</div></div>'
+    const excerpt=esc((a.contenu||'').substring(0,200))+((a.contenu||'').length>200?'…':'')
+    return '<div class="actu-card">'+cover+'<div class="actu-head"><div class="c-av c-av-36 c-av-init" style="background:var(--rouge);">CQP</div><div style="flex:1"><div style="font-weight:600;font-size:.88rem;">CQP Toulouse</div><div style="font-size:.72rem;color:var(--txt3);">🌐 '+timeAgo(a.date_publication)+'</div></div><span class="badge badge-rouge">'+esc(a.categorie||'Actu')+'</span></div><div class="actu-title">'+esc(a.titre)+'</div><div class="actu-excerpt">'+excerpt+'</div><button class="card-read-more" onclick="openActu('+a.id+')">Lire l\'article →</button></div>'
+  }).join('')
 }
 function openActu(id){
   const a=_all.find(x=>x.id===id);if(!a)return
