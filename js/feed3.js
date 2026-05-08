@@ -165,18 +165,21 @@ const Feed = (() => {
       </article>`)
     } else if (promo.type === 'actu') {
       const a = promo.data
-      _el.insertAdjacentHTML('beforeend', `
-      <article class="card card-promo" onclick="location.href='actus2.html'" style="cursor:pointer;border-left:4px solid #e67e22;background:#fff;">
-        <div class="card-head">
-          <div class="c-av c-av-40" style="background:#e67e22;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📰</div>
-          <div class="card-meta">
-            <div style="font-size:.72rem;color:#e67e22;font-weight:700;letter-spacing:.5px;">ACTU · ${Utils.esc(a.categorie || 'Quartier')}</div>
-            <div style="font-weight:600;font-size:.88rem;margin-top:1px;">${Utils.esc(Utils.timeAgo ? Utils.timeAgo(a.date_publication) : '')}</div>
-          </div>
-          <span style="font-size:.72rem;color:#e67e22;font-weight:600;white-space:nowrap;">Lire →</span>
-        </div>
-        <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">${Utils.esc(a.titre)}</div>
-      </article>`)
+      const timeStr = a.date_publication ? Utils.timeAgo(a.date_publication) : ''
+      const catStr = Utils.esc(a.categorie || 'Quartier')
+      const titreStr = Utils.esc(a.titre)
+      const html = '<article class="card card-promo" onclick="location.href=\'actus2.html\'" style="cursor:pointer;border-left:4px solid #e67e22;background:#fff;">'
+        + '<div class="card-head">'
+        + '<div class="c-av c-av-40" style="background:#e67e22;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📰</div>'
+        + '<div class="card-meta">'
+        + '<div style="font-size:.72rem;color:#e67e22;font-weight:700;letter-spacing:.5px;">ACTU \xB7 ' + catStr + '</div>'
+        + '<div style="font-weight:600;font-size:.88rem;margin-top:1px;">' + timeStr + '</div>'
+        + '</div>'
+        + '<span style="font-size:.72rem;color:#e67e22;font-weight:600;white-space:nowrap;">Lire \u2192</span>'
+        + '</div>'
+        + '<div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">' + titreStr + '</div>'
+        + '</article>'
+      _el.insertAdjacentHTML('beforeend', html)
     }
   }
 
