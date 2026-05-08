@@ -24,16 +24,21 @@ const Feed = (() => {
     try {
       const { data, error } = await Api.getFeed(_page, CQP.FEED_SIZE)
       if (error) throw error
+
       if (!data?.length) {
         if (_page === 0) {
-          // Vraiment vide : aucun post du tout
+          // Vraiment vide : aucun post
           _el.innerHTML = '<div class="empty">Aucune publication pour l\'instant.</div>'
-          _done = true; return
+          _done = true
+          return
         }
-        // Scroll circulaire : on repart du début sans vider
-        _page = 0; _loading = false; loadMore(); return
+        // Fin des posts — repart du début (scroll circulaire)
+        _page = 0
+        return // finally remet _loading=false, le prochain scroll relancera
       }
-      if (_page === 0) _el.innerHTML = ''
+
+      // Première page : vider le DOM
+      if (_page === 0 && _el.children.length === 0) _el.innerHTML = ''
 
       // Charger likes ET commentaires en batch (parallèle)
       const ids = data.map(p => p.id)
