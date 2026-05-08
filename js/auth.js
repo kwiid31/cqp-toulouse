@@ -69,24 +69,37 @@ const Auth = (() => {
   };
 
   // ── Créer un nouveau profil ─────────────────────────────────────
-  const signup = async ({ prenom, quartier, bio }) => {
+  const signup = async ({ prenom, quartier, bio, code, email }) => {
     if (!prenom?.trim()) throw new Error('Prénom obligatoire');
-    // Générer un code unique
-    let code, tries = 0, exists = true;
-    while (exists && tries++ < 30) {
-      code = String(Math.floor(100000 + Math.random() * 900000));
-      const { data } = await sb.from('profils').select('code').eq('code', code).limit(1);
-      exists = !!data?.length;
-    }
-    // session_id requis (NOT NULL) — on utilise le code comme session_id
+    if (!code || !/^\d{6}$/.test(code)) throw new Error('Code invalide');
+
+    // Vérifier que le code n'est pas déjà pris
+    const { data: existing } = await sb.from('profils').select('code').eq('code', code).limit(1);
+    if (existing?.length) throw new Error('Ce code est déjà utilisé, choisis-en un autre.');
+
     const session_id = code;
+    const insertData = { code, session_id, prenom: prenom.trim(), quartier: quartier?.trim() || null, bio: bio?.trim() || null };
+    if (email?.trim()) insertData.email = email.trim().toLowerCase();
+
     const { data, error } = await sb.from('profils')
-      .insert({ code, session_id, prenom: prenom.trim(), quartier: quartier?.trim() || null, bio: bio?.trim() || null })
+      .insert(insertData)
       .select().single();
     if (error) throw error;
     save(data);
     return data;
   };
+
+  // ── Récupérer son code par email ────────────────────────────────
+  const recoverByEmail = async (email) => {
+    if (!email?.trim()) throw new Error('Email obligatoire');
+    const { data, error } = await sb.from('profils')
+      .select('code, prenom, email')
+      .eq('email', email.trim().toLowerCase())
+      .limit(1).single();
+    if (error || !data) throw new Error('Aucun compte trouvé avec cet email.');
+    return data;
+  };
+
 
   // ── Logout ─────────────────────────────────────────────────────
   const logout = () => { clear(); window.location.href = 'profil.html'; };
@@ -105,5 +118,5 @@ const Auth = (() => {
     });
   };
 
-  return { getCode, getPrenom, getPhoto, isAdmin, getSid, save, clear, requireAuth, login, signup, logout, lockPrenomFields };
+  return { getCode, getPrenom, getPhoto, isAdmin, getSid, save, clear, requireAuth, login, signup, logout, lockPrenomFields, recoverByEmail };
 })();

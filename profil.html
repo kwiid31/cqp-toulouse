@@ -136,6 +136,9 @@
       </div>
       <button class="btn-rouge" id="login-btn" onclick="doLogin()">Accéder à mon profil</button>
       <div class="form-msg" id="login-msg"></div>
+      <div style="text-align:center;margin-top:10px;">
+        <button onclick="doForgotCode()" style="background:none;border:none;color:var(--txt3);font-size:.78rem;cursor:pointer;text-decoration:underline;font-family:'Barlow',sans-serif;">Code oublié ? Retrouve-le par email</button>
+      </div>
       <div class="divider">ou</div>
       <button class="btn-outline" onclick="switchPanel('signup')">Créer un nouveau profil</button>
     </div>
@@ -144,8 +147,20 @@
       <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:6px;">Nouveau Profil</div>
       <div style="font-size:.85rem;color:var(--txt2);margin-bottom:20px;">Rejoins le réseau CQP Toulouse.</div>
       <div class="fg"><label>Prénom *</label><input id="s-prenom" placeholder="Ex : Karim" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <div class="fg"><label>Quartier</label><input id="s-quartier" placeholder="Ex : Mirail, Borderouge…" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <div class="fg"><label>Bio</label><textarea id="s-bio" rows="2" placeholder="Quelques mots sur toi…" maxlength="200" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;resize:none;"></textarea></div>
+      <div class="fg"><label>Quartier</label><input id="s-quartier" placeholder="Ex : Mirail, Bellefontaine…" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+      <div class="fg">
+        <label>Choisis ton code secret à 6 chiffres *</label>
+        <div class="code-inputs" id="signup-code-inputs">
+          <input class="code-digit" id="sc0" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+          <input class="code-digit" id="sc1" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+          <input class="code-digit" id="sc2" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+          <input class="code-digit" id="sc3" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+          <input class="code-digit" id="sc4" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+          <input class="code-digit" id="sc5" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
+        </div>
+        <div style="font-size:.75rem;color:var(--txt3);margin-top:4px;">⚠️ Note-le bien — c'est ta seule façon de te reconnecter.</div>
+      </div>
+      <div class="fg"><label>Email <span style="color:var(--txt3);font-weight:400;">(optionnel — pour retrouver ton code si oublié)</span></label><input id="s-email" type="email" placeholder="ton@email.fr" maxlength="100" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
       <button class="btn-rouge" id="signup-btn" onclick="doSignup()">Créer mon profil</button>
       <div class="form-msg" id="signup-msg"></div>
       <div class="divider">ou</div>
@@ -154,8 +169,9 @@
 
     <div id="panel-code" class="connect-box" style="display:none;text-align:center;">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--green);margin-bottom:8px;">✅ Profil créé !</div>
-      <div style="font-size:.85rem;color:var(--txt2);margin-bottom:16px;">Note bien ton code — il te sert à te reconnecter.</div>
+      <div style="font-size:.85rem;color:var(--txt2);margin-bottom:4px;">Ton code secret :</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:10px;color:var(--rouge);margin:12px 0;" id="new-code"></div>
+      <div style="font-size:.8rem;color:var(--txt3);margin-bottom:16px;">📸 Fais une capture d'écran ou note-le — c'est la seule façon de te reconnecter.</div>
       <button class="btn-rouge" onclick="window.location.href='index.html'">Accéder à l'accueil →</button>
     </div>
   </div>
@@ -190,6 +206,7 @@
       <div class="fg"><label>Prénom</label><input id="e-prenom" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
       <div class="fg"><label>Quartier</label><input id="e-quartier" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
       <div class="fg"><label>Bio</label><textarea id="e-bio" rows="2" maxlength="200" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;resize:none;"></textarea></div>
+      <div class="fg"><label>Email <span style="color:var(--txt3);font-weight:400;">(pour retrouver ton code si oublié)</span></label><input id="e-email" type="email" maxlength="100" placeholder="ton@email.fr" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
       <button class="btn-rouge" onclick="saveProfil()">Enregistrer</button>
       <div class="form-msg" id="edit-msg"></div>
     </div>
@@ -221,7 +238,8 @@ const esc = s => Utils.esc(s)
 const timeAgo = d => Utils.timeAgo(d)
 
 // ── CODE INPUTS ──────────────────────────────────────────────
-const digits = [...document.querySelectorAll('.code-digit')]
+// Login digits
+const digits = [...document.querySelectorAll('#code-inputs .code-digit')]
 digits.forEach((inp, i) => {
   inp.addEventListener('input', e => {
     const v = e.target.value.replace(/\D/g, '')
@@ -239,7 +257,34 @@ digits.forEach((inp, i) => {
     if (txt.length === 6) doLogin()
   })
 })
+
+// Signup digits
+const signupDigits = [...document.querySelectorAll('#signup-code-inputs .code-digit')]
+signupDigits.forEach((inp, i) => {
+  inp.addEventListener('input', e => {
+    const v = e.target.value.replace(/\D/g, '')
+    inp.value = v.slice(-1)
+    if (v && i < 5) signupDigits[i + 1].focus()
+  })
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Backspace' && !inp.value && i > 0) signupDigits[i - 1].focus()
+    if (e.key === 'Enter') doSignup()
+  })
+})
+
 const getCodeInput = () => digits.map(d => d.value).join('')
+
+// ── CODE OUBLIÉ ───────────────────────────────────────────────
+async function doForgotCode() {
+  const email = prompt('Entre ton adresse email pour recevoir ton code :')
+  if (!email) return
+  try {
+    const data = await Auth.recoverByEmail(email)
+    alert(`Bonjour ${data.prenom} ! Ton code est : ${data.code}\n\nNote-le bien !`)
+  } catch(e) {
+    alert(e.message)
+  }
+}
 
 function switchPanel(name) {
   ['login', 'signup', 'code'].forEach(p => document.getElementById(`panel-${p}`).style.display = p === name ? 'block' : 'none')
@@ -265,13 +310,21 @@ async function doLogin() {
 async function doSignup() {
   const prenom = document.getElementById('s-prenom').value.trim()
   const quartier = document.getElementById('s-quartier').value.trim()
-  const bio = document.getElementById('s-bio').value.trim()
+  const email = document.getElementById('s-email').value.trim()
   const msg = document.getElementById('signup-msg')
   const btn = document.getElementById('signup-btn')
+
+  // Récupérer le code choisi
+  const digits = ['sc0','sc1','sc2','sc3','sc4','sc5'].map(id => document.getElementById(id).value)
+  const code = digits.join('')
+
+  if (!prenom) { msg.style.color='var(--rouge)'; msg.textContent='Prénom obligatoire.'; return }
+  if (code.length !== 6 || !/^\d{6}$/.test(code)) { msg.style.color='var(--rouge)'; msg.textContent='Choisis un code à 6 chiffres.'; return }
+
   btn.disabled = true; btn.textContent = '…'
   msg.style.color = 'var(--txt3)'; msg.textContent = 'Création…'
   try {
-    const data = await Auth.signup({ prenom, quartier, bio })
+    const data = await Auth.signup({ prenom, quartier, bio: '', code, email })
     document.getElementById('new-code').textContent = data.code
     switchPanel('code')
   } catch (e) {
@@ -304,9 +357,12 @@ async function saveProfil() {
   const prenom = document.getElementById('e-prenom').value.trim()
   const quartier = document.getElementById('e-quartier').value.trim()
   const bio = document.getElementById('e-bio').value.trim()
+  const email = document.getElementById('e-email').value.trim()
   const msg = document.getElementById('edit-msg')
   if (!prenom) { msg.style.color = 'var(--rouge)'; msg.textContent = 'Prénom obligatoire.'; return }
-  const { error } = await Api.updateProfil(code, { prenom, quartier: quartier || null, bio: bio || null })
+  const updateData = { prenom, quartier: quartier || null, bio: bio || null }
+  if (email) updateData.email = email.toLowerCase()
+  const { error } = await Api.updateProfil(code, updateData)
   if (error) { msg.style.color = 'var(--rouge)'; msg.textContent = 'Erreur.'; return }
   Auth.save({ code, prenom, photo_url: Auth.getPhoto() })
   document.getElementById('p-name').textContent = prenom
