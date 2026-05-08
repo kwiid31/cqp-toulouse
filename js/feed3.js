@@ -1,81 +1,145 @@
-// CQP Toulouse — feed.js (logique feed paginée + likes + commentaires)
+// CQP Toulouse — feed3.js
+// Charge TOUT le contenu (posts + actus + annonces) en une fois
+// Mélange intelligemment et fait scroll circulaire quand tout est lu
+
 const Feed = (() => {
-  let _el = null, _page = 0, _done = false, _loading = false
-  let _myCode = null
-  let _mySid = null
+  let _el = null
+  let _allItems = []   // Tous les items mélangés
+  let _index = 0       // Position courante dans la liste
+  let _loading = false
   let _myLikes = new Set(JSON.parse(localStorage.getItem('cqp_likes') || '[]'))
+  let _myCode = null, _mySid = null
 
   const saveLikes = () => localStorage.setItem('cqp_likes', JSON.stringify([..._myLikes]))
   const spinner = () => `<div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>`
+  const CHUNK = 10  // Nombre d'items affichés par scroll
 
+  // ── INIT ─────────────────────────────────────────────────────
   const init = async el => {
-    _el = el; _page = 0; _done = false
+    _el = el
     _myCode = Auth.getCode()
     _mySid = Auth.getSid()
     _el.innerHTML = spinner()
-    await _loadPromos()
-    loadMore()
-    _setupInfiniteScroll()
-  }
 
-  const loadMore = async () => {
-    if (_loading || _done) return
-    _loading = true
+    // Charger tout en parallèle
     try {
-      const { data, error } = await Api.getFeed(_page, CQP.FEED_SIZE)
-      if (error) throw error
+      const [postsRes, actusRes, annoncesRes] = await Promise.all([
+        Api.getFeed(0, 100),
+        Api.getActus(null, 20),
+        Api.getAnnonces(null, 20)
+      ])
 
-      if (!data?.length) {
-        if (_page === 0) {
-          // Vraiment vide : aucun post
-          _el.innerHTML = '<div class="empty">Aucune publication pour l\'instant.</div>'
-          _done = true
-          return
-        }
-        // Fin des posts — repart du début (scroll circulaire)
-        _page = 0
-        return // finally remet _loading=false, le prochain scroll relancera
+      const posts = (postsRes.data || []).map(p => ({ _type: 'post', _data: p }))
+      const actus = (actusRes.data || []).map(a => ({ _type: 'actu', _data: a }))
+      const annonces = (annoncesRes.data || []).map(a => ({ _type: 'annonce', _data: a }))
+
+      if (!posts.length) {
+        _el.innerHTML = '<div class="empty">Aucune publication pour l\'instant.</div>'
+        return
       }
 
-      // Première page : vider le DOM
-      if (_page === 0 && _el.children.length === 0) _el.innerHTML = ''
+      // Mélanger : 1 actu toutes les 4 posts, 1 annonce toutes les 6 posts
+      _allItems = _buildFeed(posts, actus, annonces)
+      _index = 0
+      _el.innerHTML = ''
 
-      // Charger likes ET commentaires en batch (parallèle)
-      const ids = data.map(p => p.id)
+      // Charger les likes une seule fois
+      const ids = posts.map(p => p._data.id)
       const [{ data: likesData }, { data: cmtData }] = await Promise.all([
         Api.getLikesForFeed(ids),
-        sb.from('commentaires').select('item_id').eq('item_type', 'post').eq('visible', true).in('item_id', ids)
+        sb.from('commentaires').select('item_id').eq('item_type','post').eq('visible',true).in('item_id', ids)
       ])
       const likeCounts = {}, cmtCounts = {}
-      const currentCode = Auth.getCode() || _myCode
-      const currentSid = Auth.getSid() || _mySid
       ;(likesData || []).forEach(l => {
         likeCounts[l.item_id] = (likeCounts[l.item_id] || 0) + 1
-        if (l.session_id === currentSid || l.session_id === currentCode) _myLikes.add(l.item_id)
+        if (l.session_id === _mySid || l.session_id === _myCode) _myLikes.add(l.item_id)
       })
-      ;(cmtData || []).forEach(c => {
-        cmtCounts[c.item_id] = (cmtCounts[c.item_id] || 0) + 1
-      })
+      ;(cmtData || []).forEach(c => { cmtCounts[c.item_id] = (cmtCounts[c.item_id] || 0) + 1 })
       saveLikes()
 
-      data.forEach((p, i) => {
-        const liked = _myLikes.has(p.id)
-        const isMine = p.profil_code === currentCode || p.session_id === currentSid
-        _el.insertAdjacentHTML('beforeend', _card(p, likeCounts[p.id] || 0, cmtCounts[p.id] || 0, liked, isMine))
-        // Injecter une annonce/événement toutes les 5 posts
-        if ((i + 1) % 5 === 0) _injectPromo()
+      // Stocker les counts sur les items
+      _allItems.forEach(item => {
+        if (item._type === 'post') {
+          item._likes = likeCounts[item._data.id] || 0
+          item._cmts = cmtCounts[item._data.id] || 0
+          item._liked = _myLikes.has(item._data.id)
+        }
       })
-      _page++
-    } catch (e) {
-      console.error('Feed:', e)
-      if (_page === 0) _el.innerHTML = '<div class="empty">⚠️ Connexion impossible.</div>'
-    } finally { _loading = false }
+
+      _renderChunk()
+      _setupInfiniteScroll()
+
+    } catch(e) {
+      console.error('Feed init:', e)
+      _el.innerHTML = '<div class="empty">⚠️ Connexion impossible.</div>'
+    }
   }
 
-  const _card = (p, likeCount, cmtCount, liked, isMine) => {
+  // ── CONSTRUCTION DU FEED MIXTE ────────────────────────────────
+  const _buildFeed = (posts, actus, annonces) => {
+    const result = []
+    let aIdx = 0, anIdx = 0
+
+    posts.forEach((p, i) => {
+      result.push(p)
+      // Toutes les 4 posts → une actu
+      if ((i + 1) % 4 === 0 && aIdx < actus.length) {
+        result.push(actus[aIdx++])
+      }
+      // Toutes les 6 posts → une annonce
+      if ((i + 1) % 6 === 0 && anIdx < annonces.length) {
+        result.push(annonces[anIdx++])
+      }
+    })
+
+    // Ajouter les actus et annonces restantes à la fin
+    while (aIdx < actus.length) result.push(actus[aIdx++])
+    while (anIdx < annonces.length) result.push(annonces[anIdx++])
+
+    return result
+  }
+
+  // ── RENDER UN CHUNK ──────────────────────────────────────────
+  const _renderChunk = () => {
+    if (_loading) return
+    _loading = true
+
+    const total = _allItems.length
+    if (!total) { _loading = false; return }
+
+    // Si on a tout vu → repart du début
+    if (_index >= total) {
+      _index = 0
+      // Séparateur visuel
+      _el.insertAdjacentHTML('beforeend',
+        '<div style="text-align:center;padding:20px;color:var(--txt3);font-size:.8rem;border-top:1px solid var(--border);">— Tout vu ! On repart du début —</div>'
+      )
+    }
+
+    const chunk = _allItems.slice(_index, _index + CHUNK)
+    _index += CHUNK
+
+    chunk.forEach(item => {
+      if (item._type === 'post') {
+        _el.insertAdjacentHTML('beforeend', _cardPost(item._data, item._likes, item._cmts, item._liked))
+      } else if (item._type === 'actu') {
+        _el.insertAdjacentHTML('beforeend', _cardActu(item._data))
+      } else if (item._type === 'annonce') {
+        _el.insertAdjacentHTML('beforeend', _cardAnnonce(item._data))
+      }
+    })
+
+    _loading = false
+  }
+
+  // ── CARDS ────────────────────────────────────────────────────
+  const _cardPost = (p, likeCount, cmtCount, liked) => {
+    const isMine = p.profil_code === _myCode || p.session_id === _mySid
     const av = p.photo_url
       ? `<div class="c-av c-av-40"><img src="${Utils.esc(p.photo_url)}" alt=""></div>`
       : `<div class="c-av c-av-40 c-av-init">${Utils.esc((p.prenom||'?')[0].toUpperCase())}</div>`
+    const img = p.photo_url && p.photo_url.includes('post')
+      ? `<div class="card-img-wrap"><img class="card-img" src="${Utils.esc(p.photo_url)}" loading="lazy"></div>` : ''
     return `
     <article class="card" id="card-${p.id}">
       <div class="card-head">
@@ -84,18 +148,16 @@ const Feed = (() => {
           <div class="card-author">${Utils.esc(p.prenom||'Anonyme')}</div>
           <div class="card-ts">${Utils.timeAgo(p.created_at)}</div>
         </div>
-        ${isMine ? `<button class="card-more" onclick="Feed.deletePost(${p.id})" aria-label="Supprimer">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
-        </button>` : ''}
+        ${isMine ? `<button class="card-more" onclick="Feed.deletePost(${p.id},this)"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>` : ''}
       </div>
-      ${p.contenu ? `<p class="card-text">${Utils.esc(p.contenu)}</p>` : ''}
-      ${p.photo_url ? `<div class="card-img-wrap"><img class="card-img" src="${Utils.esc(p.photo_url)}" loading="lazy" alt=""></div>` : ''}
+      ${p.contenu ? `<div class="card-text">${Utils.esc(p.contenu)}</div>` : ''}
+      ${img}
       <div class="card-actions">
-        <button class="action-btn ${liked?'liked':''}" id="like-${p.id}" onclick="Feed.toggleLike(${p.id}, this)">
+        <button class="action-btn ${liked?'liked':''}" id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="${liked?'currentColor':'none'}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span id="lc-${p.id}">${likeCount}</span>
         </button>
-        <button class="action-btn" onclick="window.openSheet('post',${p.id})">
+        <button class="action-btn" onclick="openComments(${p.id})">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           <span id="cc-${p.id}">${cmtCount}</span>
         </button>
@@ -106,140 +168,78 @@ const Feed = (() => {
     </article>`
   }
 
-  const prepend = post => {
-    if (!_el) return
-    _el.insertAdjacentHTML('afterbegin', _card(post, 0, 0, false, true))
+  const _cardActu = a => {
+    const cat = Utils.esc(a.categorie || 'Actu')
+    const titre = Utils.esc(a.titre)
+    const time = Utils.timeAgo(a.date_publication)
+    return '<article class="card card-promo" onclick="location.href=\'actus2.html\'" style="cursor:pointer;border-left:4px solid #e67e22;background:#fff;">'
+      + '<div class="card-head">'
+      + '<div class="c-av c-av-40" style="background:#e67e22;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📰</div>'
+      + '<div class="card-meta">'
+      + '<div style="font-size:.72rem;color:#e67e22;font-weight:700;letter-spacing:.5px;">ACTU \xB7 ' + cat + '</div>'
+      + '<div style="font-weight:600;font-size:.88rem;margin-top:1px;">' + time + '</div>'
+      + '</div>'
+      + '<span style="font-size:.72rem;color:#e67e22;font-weight:600;white-space:nowrap;">Lire \u2192</span>'
+      + '</div>'
+      + '<div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:600;">' + titre + '</div>'
+      + '</article>'
+  }
+
+  const _cardAnnonce = a => {
+    const qrt = Utils.esc(a.quartier || '')
+    const prenom = Utils.esc(a.prenom)
+    const titre = Utils.esc(a.titre)
+    return `<article class="card card-promo" onclick="location.href='annonces.html'" style="cursor:pointer;border-left:4px solid var(--rouge);background:#fff;">
+      <div class="card-head">
+        <div class="c-av c-av-40" style="background:#C8102E;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📋</div>
+        <div class="card-meta">
+          <div style="font-size:.72rem;color:var(--rouge);font-weight:700;letter-spacing:.5px;">ANNONCE · ${qrt}</div>
+          <div style="font-weight:600;font-size:.88rem;margin-top:1px;">${prenom}</div>
+        </div>
+        <span style="font-size:.72rem;color:var(--rouge);font-weight:600;white-space:nowrap;">Voir →</span>
+      </div>
+      <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:600;">${titre}</div>
+    </article>`
   }
 
   // ── SCROLL INFINI ─────────────────────────────────────────────
-  // ── INJECTION ANNONCES/ÉVÉNEMENTS DANS LE FEED ───────────────
-  let _promoCache = [], _promoIndex = 0
-  const _loadPromos = async () => {
-    try {
-      const [{ data: ann }, { data: evt }, { data: act }] = await Promise.all([
-        Api.getAnnonces(null, 6),
-        Api.getEvenements(4),
-        Api.getActus(null, 4)
-      ])
-      _promoCache = []
-      ;(ann || []).forEach(a => _promoCache.push({ type: 'annonce', data: a }))
-      ;(evt || []).forEach(e => _promoCache.push({ type: 'evenement', data: e }))
-      ;(act || []).forEach(a => _promoCache.push({ type: 'actu', data: a }))
-      // Mélanger
-      _promoCache.sort(() => Math.random() - 0.5)
-    } catch(e) { /* silencieux */ }
-  }
-
-  const _injectPromo = () => {
-    if (!_promoCache.length) return
-    const promo = _promoCache[_promoIndex % _promoCache.length]
-    _promoIndex++
-    if (promo.type === 'annonce') {
-      const a = promo.data
-      _el.insertAdjacentHTML('beforeend', `
-      <article class="card card-promo" onclick="location.href='annonces.html'" style="cursor:pointer;border-left:4px solid var(--rouge);background:#fff;">
-        <div class="card-head">
-          <div class="c-av c-av-40" style="background:#C8102E;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📋</div>
-          <div class="card-meta">
-            <div style="font-size:.72rem;color:var(--rouge);font-weight:700;letter-spacing:.5px;">ANNONCE · ${Utils.esc(a.quartier || '')}</div>
-            <div style="font-weight:600;font-size:.88rem;margin-top:1px;">${Utils.esc(a.prenom)}</div>
-          </div>
-          <span style="font-size:.72rem;color:var(--rouge);font-weight:600;white-space:nowrap;">Voir →</span>
-        </div>
-        <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">${Utils.esc(a.titre)}</div>
-      </article>`)
-    } else if (promo.type === 'actu') {
-      const a = promo.data
-      const timeStr = a.date_publication ? Utils.timeAgo(a.date_publication) : ''
-      const catStr = Utils.esc(a.categorie || 'Quartier')
-      const titreStr = Utils.esc(a.titre)
-      const html = '<article class="card card-promo" onclick="location.href=\'actus2.html\'" style="cursor:pointer;border-left:4px solid #e67e22;background:#fff;">'
-        + '<div class="card-head">'
-        + '<div class="c-av c-av-40" style="background:#e67e22;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📰</div>'
-        + '<div class="card-meta">'
-        + '<div style="font-size:.72rem;color:#e67e22;font-weight:700;letter-spacing:.5px;">ACTU \xB7 ' + catStr + '</div>'
-        + '<div style="font-weight:600;font-size:.88rem;margin-top:1px;">' + timeStr + '</div>'
-        + '</div>'
-        + '<span style="font-size:.72rem;color:#e67e22;font-weight:600;white-space:nowrap;">Lire \u2192</span>'
-        + '</div>'
-        + '<div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">' + titreStr + '</div>'
-        + '</article>'
-      _el.insertAdjacentHTML('beforeend', html)
-    } else {
-      const e = promo.data
-      const dateStr = e.date_debut ? new Date(e.date_debut).toLocaleDateString('fr-FR', {day:'numeric',month:'long'}) : ''
-      _el.insertAdjacentHTML('beforeend', `
-      <article class="card card-promo" onclick="location.href='evenements.html'" style="cursor:pointer;border-left:4px solid #1877F2;background:#fff;">
-        <div class="card-head">
-          <div class="c-av c-av-40" style="background:#1877F2;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📅</div>
-          <div class="card-meta">
-            <div style="font-size:.72rem;color:#1877F2;font-weight:700;letter-spacing:.5px;">ÉVÉNEMENT · ${dateStr}</div>
-            <div style="font-weight:600;font-size:.88rem;margin-top:1px;">${Utils.esc(e.prenom || '')}</div>
-          </div>
-          <span style="font-size:.72rem;color:#1877F2;font-weight:600;white-space:nowrap;">Voir →</span>
-        </div>
-        <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">${Utils.esc(e.titre)}</div>
-      </article>`)
-    }
-  }
-
   const _setupInfiniteScroll = () => {
-    // Sentinel IntersectionObserver
     const s = document.createElement('div')
-    s.id = 'feed-sentinel'
     s.style.height = '20px'
     _el.parentElement?.appendChild(s)
     new IntersectionObserver(e => {
-      if (e[0].isIntersecting && !_loading) loadMore()
+      if (e[0].isIntersecting && !_loading) _renderChunk()
     }, { rootMargin: '400px' }).observe(s)
 
-    // Scroll event
     window.addEventListener('scroll', () => {
       if (_loading) return
-      const scrollBottom = window.scrollY + window.innerHeight
-      const docHeight = document.documentElement.scrollHeight
-      if (docHeight - scrollBottom < 600) loadMore()
+      const bottom = window.scrollY + window.innerHeight
+      if (document.documentElement.scrollHeight - bottom < 500) _renderChunk()
     }, { passive: true })
-
-    // Polling toutes les 2s quand on est en bas (au cas où scroll event manqué)
-    setInterval(() => {
-      if (_loading) return
-      const scrollBottom = window.scrollY + window.innerHeight
-      const docHeight = document.documentElement.scrollHeight
-      if (docHeight - scrollBottom < 400) loadMore()
-    }, 2000)
   }
 
-  // ── LIKES (optimiste) ─────────────────────────────────────────
+  // ── LIKES ────────────────────────────────────────────────────
   const toggleLike = async (postId, btn) => {
     const liked = _myLikes.has(postId)
     const countEl = document.getElementById(`lc-${postId}`)
     const svg = btn.querySelector('svg')
     if (!liked) {
-      // Optimiste : like immédiat
       _myLikes.add(postId); btn.classList.add('liked')
       if (svg) svg.setAttribute('fill', 'currentColor')
       if (countEl) countEl.textContent = parseInt(countEl.textContent||0) + 1
       saveLikes()
-      try {
-        await Api.addLike(postId)
-      } catch(e) {
-        // Rollback si erreur
+      try { await Api.addLike(postId) } catch(e) {
         _myLikes.delete(postId); btn.classList.remove('liked')
         if (svg) svg.setAttribute('fill', 'none')
         if (countEl) countEl.textContent = Math.max(0, parseInt(countEl.textContent)-1)
         saveLikes()
       }
     } else {
-      // Optimiste : unlike immédiat
       _myLikes.delete(postId); btn.classList.remove('liked')
       if (svg) svg.setAttribute('fill', 'none')
       if (countEl) countEl.textContent = Math.max(0, parseInt(countEl.textContent||0)-1)
       saveLikes()
-      try {
-        await Api.removeLike(postId)
-      } catch(e) {
-        // Rollback si erreur
+      try { await Api.removeLike(postId) } catch(e) {
         _myLikes.add(postId); btn.classList.add('liked')
         if (svg) svg.setAttribute('fill', 'currentColor')
         if (countEl) countEl.textContent = parseInt(countEl.textContent) + 1
@@ -248,67 +248,68 @@ const Feed = (() => {
     }
   }
 
-  // ── DOUBLE TAP ────────────────────────────────────────────────
+  // ── DOUBLE TAP LIKE ───────────────────────────────────────────
   const setupDoubleTap = container => {
-    let last = 0
+    let _lastTap = 0, _lastId = null
     container.addEventListener('touchend', e => {
-      const card = e.target.closest('.card')
+      const card = e.target.closest('.card[id^="card-"]')
       if (!card) return
+      const id = parseInt(card.id.split('-')[1])
       const now = Date.now()
-      if (now - last < 300) {
-        const id = parseInt(card.id.replace('card-',''))
-        if (!_myLikes.has(id)) {
-          const btn = document.getElementById(`like-${id}`)
-          if (btn) {
-            toggleLike(id, btn)
-            const h = document.createElement('div')
-            h.textContent = '❤️'
-            h.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:3rem;pointer-events:none;z-index:10;transition:transform .3s,opacity .3s .2s;'
-            card.style.position = 'relative'; card.appendChild(h)
-            requestAnimationFrame(() => h.style.transform = 'translate(-50%,-50%) scale(1)')
-            setTimeout(() => { h.style.opacity='0'; setTimeout(()=>h.remove(),300) }, 400)
-          }
-        }
+      if (now - _lastTap < 350 && _lastId === id) {
+        const btn = document.getElementById(`like-${id}`)
+        if (btn && !_myLikes.has(id)) toggleLike(id, btn)
+        e.preventDefault()
       }
-      last = now
-    })
+      _lastTap = now; _lastId = id
+    }, { passive: false })
   }
 
-  // ── DELETE ────────────────────────────────────────────────────
-  const deletePost = async id => {
-    if (!confirm('Supprimer cette publication ?')) return
-    await Api.hidePost(id)
-    document.getElementById(`card-${id}`)?.remove()
-    Utils.toast('Publication supprimée', 'success')
+  // ── DELETE POST ───────────────────────────────────────────────
+  const deletePost = async (postId, btn) => {
+    if (!confirm('Supprimer ce post ?')) return
+    const { error } = await Api.hidePost(postId)
+    if (!error) {
+      document.getElementById(`card-${postId}`)?.remove()
+      // Retirer de la liste
+      _allItems = _allItems.filter(i => !(i._type==='post' && i._data.id===postId))
+    }
   }
 
-  // ── SHARE ─────────────────────────────────────────────────────
-  const share = id => {
-    const url = `${location.origin}/?p=${id}`
-    if (navigator.share) navigator.share({ url }).catch(()=>{})
-    else Utils.copy(url).then(() => Utils.toast('Lien copié !', 'success'))
+  // ── SHARE ────────────────────────────────────────────────────
+  const share = postId => {
+    const url = `${location.origin}/index.html#card-${postId}`
+    if (navigator.share) navigator.share({ url })
+    else { navigator.clipboard?.writeText(url); Utils.toast('Lien copié !') }
+  }
+
+  // ── PREPEND (nouveau post) ────────────────────────────────────
+  const prepend = post => {
+    if (!_el) return
+    const item = { _type:'post', _data:post, _likes:0, _cmts:0, _liked:false }
+    _allItems.unshift(item)
+    _el.insertAdjacentHTML('afterbegin', _cardPost(post, 0, 0, false))
   }
 
   // ── PULL TO REFRESH ───────────────────────────────────────────
-  const setupPullToRefresh = () => {
+  const setupPullToRefresh = container => {
     let startY = 0, pulling = false
-    const ind = document.getElementById('ptr')
-    document.addEventListener('touchstart', e => { startY = e.touches[0].clientY }, { passive:true })
-    document.addEventListener('touchmove', e => {
-      if (window.scrollY > 0 || pulling) return
-      if (e.touches[0].clientY - startY > 60) { pulling=true; if(ind) ind.style.display='flex' }
-    }, { passive:true })
-    document.addEventListener('touchend', () => {
-      if (!pulling) return
-      pulling = false; if(ind) ind.style.display='none'
-      refresh()
-    })
+    container.addEventListener('touchstart', e => {
+      if (window.scrollY === 0) { startY = e.touches[0].clientY; pulling = true }
+    }, { passive: true })
+    container.addEventListener('touchend', e => {
+      if (pulling && e.changedTouches[0].clientY - startY > 80) refresh()
+      pulling = false
+    }, { passive: true })
   }
 
-  const refresh = () => {
-    if (!_el) return
-    _page=0; _done=false; _el.innerHTML = spinner(); loadMore()
+  const refresh = async () => {
+    _el.innerHTML = spinner()
+    _allItems = []; _index = 0; _myLikes = new Set(JSON.parse(localStorage.getItem('cqp_likes')||'[]'))
+    await init(_el)
   }
+
+  const loadMore = () => _renderChunk()
 
   return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, share, setupPullToRefresh, refresh }
 })()
