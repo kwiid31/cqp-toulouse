@@ -130,40 +130,57 @@ const Feed = (() => {
     if (promo.type === 'annonce') {
       const a = promo.data
       _el.insertAdjacentHTML('beforeend', `
-      <article class="card card-promo" onclick="location.href='annonces.html'" style="cursor:pointer;border-left:3px solid var(--rouge);background:linear-gradient(135deg,#fff8f8,#fff);">
+      <article class="card card-promo" onclick="location.href='annonces.html'" style="cursor:pointer;border-left:4px solid var(--rouge);background:#fff;">
         <div class="card-head">
-          <div class="c-av c-av-40" style="background:#ff6b35;font-size:.8rem;display:flex;align-items:center;justify-content:center;">📋</div>
+          <div class="c-av c-av-40" style="background:#C8102E;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📋</div>
           <div class="card-meta">
-            <div style="font-weight:600;font-size:.85rem;">${Utils.esc(a.prenom)} · <span style="color:var(--rouge);font-size:.75rem;font-weight:700;">ANNONCE</span></div>
-            <div style="font-size:.72rem;color:var(--txt3);">${Utils.esc(a.quartier || 'Quartier')}</div>
+            <div style="font-size:.72rem;color:var(--rouge);font-weight:700;letter-spacing:.5px;">ANNONCE · ${Utils.esc(a.quartier || '')}</div>
+            <div style="font-weight:600;font-size:.88rem;margin-top:1px;">${Utils.esc(a.prenom)}</div>
           </div>
+          <span style="font-size:.72rem;color:var(--rouge);font-weight:600;white-space:nowrap;">Voir →</span>
         </div>
-        <div class="card-body" style="font-size:.9rem;">${Utils.esc(a.titre)}</div>
-        <div style="padding:0 16px 12px;font-size:.78rem;color:var(--rouge);font-weight:600;">Voir l'annonce →</div>
+        <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">${Utils.esc(a.titre)}</div>
       </article>`)
     } else {
       const e = promo.data
       const dateStr = e.date_debut ? new Date(e.date_debut).toLocaleDateString('fr-FR', {day:'numeric',month:'long'}) : ''
       _el.insertAdjacentHTML('beforeend', `
-      <article class="card card-promo" onclick="location.href='evenements.html'" style="cursor:pointer;border-left:3px solid #1877F2;background:linear-gradient(135deg,#f0f6ff,#fff);">
+      <article class="card card-promo" onclick="location.href='evenements.html'" style="cursor:pointer;border-left:4px solid #1877F2;background:#fff;">
         <div class="card-head">
-          <div class="c-av c-av-40" style="background:#1877F2;font-size:.8rem;display:flex;align-items:center;justify-content:center;">📅</div>
+          <div class="c-av c-av-40" style="background:#1877F2;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📅</div>
           <div class="card-meta">
-            <div style="font-weight:600;font-size:.85rem;">${Utils.esc(e.prenom || 'Événement')} · <span style="color:#1877F2;font-size:.75rem;font-weight:700;">ÉVÉNEMENT</span></div>
-            <div style="font-size:.72rem;color:var(--txt3);">${dateStr}</div>
+            <div style="font-size:.72rem;color:#1877F2;font-weight:700;letter-spacing:.5px;">ÉVÉNEMENT · ${dateStr}</div>
+            <div style="font-weight:600;font-size:.88rem;margin-top:1px;">${Utils.esc(e.prenom || '')}</div>
           </div>
+          <span style="font-size:.72rem;color:#1877F2;font-weight:600;white-space:nowrap;">Voir →</span>
         </div>
-        <div class="card-body" style="font-size:.9rem;">${Utils.esc(e.titre)}</div>
-        <div style="padding:0 16px 12px;font-size:.78rem;color:#1877F2;font-weight:600;">Voir l'agenda →</div>
+        <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">${Utils.esc(e.titre)}</div>
       </article>`)
     }
   }
 
   const _setupInfiniteScroll = () => {
+    // Sentinel IntersectionObserver
     const s = document.createElement('div')
-    s.style.height = '1px'
+    s.id = 'feed-sentinel'
+    s.style.height = '20px'
     _el.parentElement?.appendChild(s)
-    new IntersectionObserver(e => { if (e[0].isIntersecting) loadMore() }, { rootMargin:'400px' }).observe(s)
+    new IntersectionObserver(e => {
+      if (e[0].isIntersecting && !_loading) loadMore()
+    }, { rootMargin: '300px' }).observe(s)
+
+    // Fallback scroll event au cas où le sentinel est hors DOM
+    let _scrollTimer = null
+    window.addEventListener('scroll', () => {
+      if (_scrollTimer) return
+      _scrollTimer = setTimeout(() => {
+        _scrollTimer = null
+        if (_loading || _done) return
+        const scrollBottom = window.scrollY + window.innerHeight
+        const docHeight = document.documentElement.scrollHeight
+        if (docHeight - scrollBottom < 500) loadMore()
+      }, 100)
+    }, { passive: true })
   }
 
   // ── LIKES (optimiste) ─────────────────────────────────────────
