@@ -172,27 +172,35 @@ const Feed = (() => {
     const countEl = document.getElementById(`lc-${postId}`)
     const svg = btn.querySelector('svg')
     if (!liked) {
+      // Optimiste : like immédiat
       _myLikes.add(postId); btn.classList.add('liked')
       if (svg) svg.setAttribute('fill', 'currentColor')
       if (countEl) countEl.textContent = parseInt(countEl.textContent||0) + 1
       saveLikes()
-      Api.addLike(postId).catch(() => {
+      try {
+        await Api.addLike(postId)
+      } catch(e) {
+        // Rollback si erreur
         _myLikes.delete(postId); btn.classList.remove('liked')
         if (svg) svg.setAttribute('fill', 'none')
         if (countEl) countEl.textContent = Math.max(0, parseInt(countEl.textContent)-1)
         saveLikes()
-      })
+      }
     } else {
+      // Optimiste : unlike immédiat
       _myLikes.delete(postId); btn.classList.remove('liked')
       if (svg) svg.setAttribute('fill', 'none')
       if (countEl) countEl.textContent = Math.max(0, parseInt(countEl.textContent||0)-1)
       saveLikes()
-      Api.removeLike(postId).catch(() => {
+      try {
+        await Api.removeLike(postId)
+      } catch(e) {
+        // Rollback si erreur
         _myLikes.add(postId); btn.classList.add('liked')
         if (svg) svg.setAttribute('fill', 'currentColor')
         if (countEl) countEl.textContent = parseInt(countEl.textContent) + 1
         saveLikes()
-      })
+      }
     }
   }
 
