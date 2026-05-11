@@ -186,7 +186,9 @@ async function submitEvt(){
   msg.style.color='var(--green)';msg.textContent='✅ Proposé — validation sous 24h.'
   setTimeout(closeModal,2000)
 }
-load();Api.trackView('evenements')
+load();Api.trackView('evenements');
+// Deep link
+setTimeout(function(){ var h=location.hash.replace('#evt-',''); if(h&&!isNaN(h)) openDetail(parseInt(h)); }, 600);
 if(window.location.search.includes('new=1'))openModal()
 </script>
 <div class="modal-ov" id="modal-detail" onclick="if(event.target===this)closeDetail()" style="align-items:center;">

@@ -175,7 +175,7 @@ const Feed = (() => {
     const titre = Utils.esc(a.titre)
     const time = Utils.timeAgo(a.date_publication)
     const excerpt = Utils.esc((a.contenu||'').substring(0,120)) + ((a.contenu||'').length>120?'…':'')
-    return '<article class="card" onclick="location.href=\'actus2.html\'" style="cursor:pointer;border-left:5px solid #C8102E;">'
+    return '<article class="card" onclick="location.href=\'actus2.html#act-' + a.id + '\'" style="cursor:pointer;border-left:5px solid #C8102E;">'
       + '<div class="card-head">'
       + '<div class="c-av c-av-40" style="background:#C8102E;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;font-family:\'Bebas Neue\',sans-serif;letter-spacing:1px;font-size:.8rem;">CQP</div>'
       + '<div class="card-meta">'
@@ -195,7 +195,7 @@ const Feed = (() => {
     const titre = Utils.esc(a.titre)
     const desc = Utils.esc((a.description || '').substring(0, 100)) + ((a.description || '').length > 100 ? '…' : '')
     const av = prenom ? prenom[0].toUpperCase() : '?'
-    return `<article class="card" style="cursor:pointer;border-left:5px solid #2e7d32;" onclick="location.href='annonces.html'">
+    return `<article class="card" style="cursor:pointer;border-left:5px solid #2e7d32;" onclick="location.href='annonces.html#an-${a.id}'">
       <div class="card-head">
         <div class="c-av c-av-40 c-av-init" style="background:#2e7d32;color:#fff;">${av}</div>
         <div class="card-meta">
@@ -218,7 +218,7 @@ const Feed = (() => {
     const heureStr = d ? d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' }) : ''
     const prenom = Utils.esc(e.prenom || 'CQP')
     const av = prenom[0].toUpperCase()
-    return `<article class="card" style="cursor:pointer;border-left:5px solid #1565c0;" onclick="location.href='evenements.html'">
+    return `<article class="card" style="cursor:pointer;border-left:5px solid #1565c0;" onclick="location.href='evenements.html#evt-${e.id}'">
       <div class="card-head">
         <div class="c-av c-av-40 c-av-init" style="background:#1565c0;color:#fff;">${av}</div>
         <div class="card-meta">

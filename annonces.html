@@ -24,7 +24,7 @@
     }</script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><link rel="stylesheet" href="/css/main.css"><script src="/js/app.js?v=9490"></script><script src="/js/utils.js?v=9490"></script><script src="/js/auth.js?v=9490"></script><script src="/js/api.js?v=9490"></script>
 <style>
-.an-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:10px;}
+.an-list{background:#fff;}
 .an-card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;}
 .an-img{width:100%;height:120px;object-fit:cover;}
 .an-body{padding:10px 12px;}
@@ -113,17 +113,27 @@ async function load(){
 }
 function render(annonces){
   const el=document.getElementById('an-list')
-  if(!annonces.length){el.innerHTML='<div class="empty">Aucune annonce dans cette catégorie.</div>';return}
-  el.innerHTML=`<div class="an-grid">${annonces.map(a=>`
-    <div class="an-card" onclick="openAn(${a.id})">
-      ${a.photo_url?`<img class="an-img" src="${esc(a.photo_url)}" loading="lazy" alt="">`:`<div style="height:120px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#020510,#081a5e,#7C3AED);font-size:2rem;">📋</div>`}
-      <div class="an-body">
-        <div class="an-title">${esc(a.titre)}</div>
-        ${a.prix!=null?`<div class="an-prix">${a.prix==0?'Gratuit':a.prix+' €'}</div>`:''}
-        <div class="an-meta">${esc(a.prenom||'')} · ${timeAgo(a.created_at)}</div>
-        <span class="tag">${esc(a.categorie||'')}</span>
-      </div>
-    </div>`).join('')}</div>`
+  if(!annonces.length){el.innerHTML='<div class="empty" style="text-align:center;padding:48px 20px"><div style="font-size:2rem;margin-bottom:8px">📋</div><div style="font-weight:700;">Aucune annonce dans cette catégorie</div></div>';return}
+  const catColors={'Logement':'#1565c0','Emploi':'#6a1b9a','Vente':'#e65100','Service':'#2e7d32','Don':'#00695c'}
+  el.innerHTML=annonces.map(a=>{
+    const color=catColors[a.categorie]||'#555'
+    const img=a.photo_url
+      ? '<img src="'+esc(a.photo_url)+'" loading="lazy" alt="" style="width:90px;height:90px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
+      : '<div style="width:90px;height:90px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,#020510,#081a5e,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">📋</div>'
+    return '<div id="an-'+a.id+'" onclick="openAn('+a.id+')" style="display:flex;gap:12px;padding:14px;background:#fff;border-bottom:1px solid var(--border);cursor:pointer;align-items:flex-start;">'
+      + img
+      + '<div style="flex:1;min-width:0;">'
+      + '<div style="font-size:.65rem;font-weight:700;letter-spacing:.5px;color:'+color+';margin-bottom:4px;text-transform:uppercase;">'+esc(a.categorie||'Annonce')+'</div>'
+      + '<div style="font-weight:700;font-size:.92rem;line-height:1.3;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">'+esc(a.titre)+'</div>'
+      + '<div style="font-size:.8rem;color:var(--txt2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:6px;">'+esc((a.description||a.contenu||'').substring(0,120))+'</div>'
+      + '<div style="display:flex;align-items:center;gap:8px;">'
+      + (a.quartier ? '<span style="font-size:.7rem;background:var(--bg3);padding:2px 8px;border-radius:10px;color:var(--txt2);">📍 '+esc(a.quartier)+'</span>' : '')
+      + '<span style="font-size:.7rem;color:var(--txt3);">'+esc(a.prenom||'')+'</span>'
+      + '<span style="font-size:.7rem;color:var(--txt3);">· '+timeAgo(a.created_at)+'</span>'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+  }).join('')
 }
 function openAn(id){
   const a=_all.find(x=>x.id===id);if(!a)return
@@ -164,6 +174,13 @@ async function submitAnnonce(){
   setTimeout(closeModal,2000)
 }
 load();Api.trackView('annonces')
+// Deep link : annonces.html#an-42 ouvre directement l'annonce
+window.addEventListener('hashchange', handleHash)
+function handleHash(){
+  const h=location.hash.replace('#an-','')
+  if(h && !isNaN(h)) setTimeout(()=>openAn(parseInt(h)),300)
+}
+handleHash()
 if(window.location.search.includes('new=1'))openModal()
 </script>
 </body></html>

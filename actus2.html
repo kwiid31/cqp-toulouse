@@ -182,6 +182,8 @@ async function load() {
 
 load();
 if (typeof Api !== 'undefined' && Api.trackView) Api.trackView('actus');
+// Deep link
+setTimeout(function(){ var h=location.hash.replace('#act-',''); if(h&&!isNaN(h)) openActu(parseInt(h)); }, 600);
 </script>
 </body>
 </html>
