@@ -78,8 +78,8 @@
         <div style="opacity:.75;font-size:.75rem;margin-top:2px;">discute avec tes voisins</div>
       </div>
     </div>
-    <button onclick="goConnect()" class="btn-rouge" style="width:100%;max-width:320px;font-size:1rem;padding:14px;">Rejoindre le réseau →</button>
-    <button onclick="goConnect()" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:.8rem;margin-top:12px;cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:underline;">J'ai déjà un code</button>
+    <button onclick="goConnect('signup')" class="btn-rouge" style="width:100%;max-width:320px;font-size:1rem;padding:14px;">Rejoindre le réseau →</button>
+    <button onclick="goConnect('login')" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:.8rem;margin-top:12px;cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:underline;">J'ai déjà un code</button>
   </div>
 
   <!-- TÉMOIGNAGES/PROFILS -->
@@ -109,7 +109,7 @@
       </div>
     </div>
     <div style="text-align:center;margin-top:20px;">
-      <button onclick="goConnect()" class="btn-rouge" style="padding:12px 32px;">Je rejoins le réseau</button>
+      <button onclick="goConnect('signup')" class="btn-rouge" style="padding:12px 32px;">Je rejoins le réseau</button>
     </div>
   </div>
 
@@ -406,9 +406,10 @@ async function loadMesPosts(code) {
 }
 
 // ── INIT ──────────────────────────────────────────────────────
-function goConnect() {
+function goConnect(panel = 'login') {
   document.getElementById('view-welcome').style.display = 'none'
   document.getElementById('view-connect').style.display = 'block'
+  switchPanel(panel)
 }
 
 async function init() {
