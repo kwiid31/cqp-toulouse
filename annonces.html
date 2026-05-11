@@ -139,8 +139,8 @@ function openAn(id){
   const a=_all.find(x=>x.id===id);if(!a)return
   document.getElementById('dr-titre').textContent=a.titre
   document.getElementById('dr-prix').textContent=a.prix!=null?(a.prix==0?'Gratuit':a.prix+' €'):''
-  document.getElementById('dr-desc').textContent=a.contenu||''
-  document.getElementById('dr-meta').textContent=`${a.prenom||''} · ${a.categorie||''} · ${timeAgo(a.created_at)}`
+  document.getElementById('dr-desc').textContent=a.description||a.contenu||''
+  document.getElementById('dr-meta').textContent=`${a.prenom||''} · ${a.quartier||''} · ${a.categorie||''} · ${timeAgo(a.created_at)}`
   const img=document.getElementById('dr-img');if(a.photo_url){img.src=a.photo_url;img.style.display='block'}else img.style.display='none'
   const contact=document.getElementById('dr-contact')
   contact.innerHTML=''
