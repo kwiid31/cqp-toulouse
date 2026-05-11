@@ -126,6 +126,8 @@ const Feed = (() => {
         _el.insertAdjacentHTML('beforeend', _cardActu(item._data))
       } else if (item._type === 'annonce') {
         _el.insertAdjacentHTML('beforeend', _cardAnnonce(item._data))
+      } else if (item._type === 'evenement') {
+        _el.insertAdjacentHTML('beforeend', _cardEvenement(item._data))
       }
     })
 
@@ -189,18 +191,52 @@ const Feed = (() => {
     const qrt = Utils.esc(a.quartier || '')
     const prenom = Utils.esc(a.prenom)
     const titre = Utils.esc(a.titre)
-    return `<article class="card card-promo" onclick="location.href='annonces.html'" style="cursor:pointer;border-left:4px solid var(--rouge);background:#fff;">
+    const desc = Utils.esc((a.description || '').substring(0, 120)) + ((a.description || '').length > 120 ? '...' : '')
+    const av = prenom ? prenom[0].toUpperCase() : '?'
+    return `<article class="card" style="cursor:pointer;" onclick="location.href='annonces.html'">
       <div class="card-head">
-        <div class="c-av c-av-40" style="background:#C8102E;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📋</div>
+        <div class="c-av c-av-40 c-av-init" style="background:#e67e22;color:#fff;">${av}</div>
         <div class="card-meta">
-          <div style="font-size:.72rem;color:var(--rouge);font-weight:700;letter-spacing:.5px;">ANNONCE · ${qrt}</div>
-          <div style="font-weight:600;font-size:.88rem;margin-top:1px;">${prenom}</div>
+          <div class="card-author">${prenom}</div>
+          <div class="card-ts">${qrt ? '📍 ' + qrt + ' · ' : ''}Annonce</div>
         </div>
-        <span style="font-size:.72rem;color:var(--rouge);font-weight:600;white-space:nowrap;">Voir →</span>
+        <span style="font-size:.7rem;background:#fff3e0;color:#e67e22;padding:3px 8px;border-radius:20px;font-weight:600;white-space:nowrap;">📋 Annonce</span>
       </div>
-      <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:600;">${titre}</div>
+      <div class="card-text" style="font-weight:600;">${titre}</div>
+      ${desc ? `<div class="card-text" style="color:var(--txt2);font-size:.85rem;padding-top:0;">${desc}</div>` : ''}
+      <div class="card-actions">
+        <button class="action-btn" onclick="event.stopPropagation();location.href='annonces.html'" style="color:var(--rouge);font-weight:600;">Voir l'annonce →</button>
+      </div>
     </article>`
   }
+
+  const _cardEvenement = e => {
+    const titre = Utils.esc(e.titre)
+    const lieu = e.lieu ? '📍 ' + Utils.esc(e.lieu) : ''
+    const desc = Utils.esc((e.description || '').substring(0, 120)) + ((e.description || '').length > 120 ? '...' : '')
+    const d = e.date_debut ? new Date(e.date_debut) : null
+    const dateStr = d ? d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }) : ''
+    const heureStr = d ? d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' }) : ''
+    const prenom = Utils.esc(e.prenom || 'CQP')
+    const av = prenom[0].toUpperCase()
+    return `<article class="card" style="cursor:pointer;" onclick="location.href='evenements.html'">
+      <div class="card-head">
+        <div class="c-av c-av-40 c-av-init" style="background:#1877F2;color:#fff;">${av}</div>
+        <div class="card-meta">
+          <div class="card-author">${prenom}</div>
+          <div class="card-ts">Événement · ${dateStr}</div>
+        </div>
+        <span style="font-size:.7rem;background:#e8f0fe;color:#1877F2;padding:3px 8px;border-radius:20px;font-weight:600;white-space:nowrap;">📅 Événement</span>
+      </div>
+      <div class="card-text" style="font-weight:600;">${titre}</div>
+      ${heureStr || lieu ? `<div class="card-text" style="color:var(--txt2);font-size:.85rem;padding-top:0;">${heureStr ? '🕐 ' + heureStr : ''} ${lieu}</div>` : ''}
+      ${desc ? `<div class="card-text" style="color:var(--txt2);font-size:.85rem;padding-top:0;">${desc}</div>` : ''}
+      <div class="card-actions">
+        <button class="action-btn" onclick="event.stopPropagation();location.href='evenements.html'" style="color:#1877F2;font-weight:600;">Voir l'événement →</button>
+      </div>
+    </article>`
+  }
+
 
   // ── SCROLL INFINI ─────────────────────────────────────────────
   const _setupInfiniteScroll = () => {

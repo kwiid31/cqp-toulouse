@@ -103,6 +103,7 @@ async function load(){
   const el=document.getElementById('evt-list')
   const{data,error}=await Api.getEvenements(20)
   if(error||!data?.length){el.innerHTML='<div class="empty" style="text-align:center;padding:48px 20px"><div style="font-size:2.5rem;margin-bottom:12px">📅</div><div style="font-weight:700;font-size:1rem;margin-bottom:8px">Aucun événement à venir</div><div style="color:var(--txt3);font-size:.85rem;line-height:1.6">Vous organisez quelque chose dans le quartier ?<br>Proposez-le avec le bouton + Proposer !</div></div>';document.getElementById('hero-sub').textContent='Aucun événement à venir';return}
+  _eventsData=data
   document.getElementById('hero-sub').textContent=`${data.length} événement${data.length>1?'s':''} à venir`
   el.innerHTML=data.map(e=>{
     const d=new Date(e.date_debut)
@@ -118,12 +119,29 @@ async function load(){
       ${e.description?`<div class="evt-body">${esc(e.description.substring(0,160))}${e.description.length>160?'…':''}</div>`:''}
       <div class="evt-footer">
         <span class="tag">${Utils.countdown(e.date_debut)}</span>
+        <button onclick="openDetail(${e.id})" style="padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:22px;color:var(--txt);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Lire +</button>
         <button id="ins-${e.id}" onclick="openInscription(${e.id},'${Utils.esc(e.titre)}')" style="flex:1;padding:10px;background:${_inscrits.has(e.id)?'var(--green)':'var(--blue)'};border:none;border-radius:22px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">${_inscrits.has(e.id)?'✅ Inscrit':"S'inscrire"}</button>
       </div>
     </div>`
   }).join('')
 }
 let _currentInsEvtId=null
+let _eventsData=[]
+function openDetail(id){
+  const e=_eventsData.find(x=>x.id===id)
+  if(!e)return
+  const d=e.date_debut?new Date(e.date_debut):null
+  const dateStr=d?d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):''
+  const heureStr=d?d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):''
+  document.getElementById('detail-titre').textContent=e.titre||''
+  document.getElementById('detail-date').textContent=(dateStr?dateStr+' ':'')+( heureStr?'à '+heureStr:'')
+  document.getElementById('detail-lieu').textContent=e.lieu?'📍 '+e.lieu:''
+  document.getElementById('detail-body').textContent=e.description||'Aucune description.'
+  document.getElementById('detail-cat').textContent=e.categorie||'Événement'
+  document.getElementById('modal-detail').classList.add('open')
+  document.body.style.overflow='hidden'
+}
+function closeDetail(){document.getElementById('modal-detail').classList.remove('open');document.body.style.overflow=''}
 function openInscription(id,titre){
   _currentInsEvtId=id
   const el=document.getElementById('ins-titre-display');if(el)el.textContent=titre||''
@@ -171,4 +189,16 @@ async function submitEvt(){
 load();Api.trackView('evenements')
 if(window.location.search.includes('new=1'))openModal()
 </script>
+<div class="modal-ov" id="modal-detail" onclick="if(event.target===this)closeDetail()" style="align-items:center;">
+  <div style="background:#fff;border-radius:16px;width:92%;max-width:420px;padding:24px 20px;max-height:80vh;overflow-y:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <span id="detail-cat" style="font-size:.7rem;background:#e8f0fe;color:#1877F2;padding:4px 12px;border-radius:20px;font-weight:700;letter-spacing:.5px;"></span>
+      <button onclick="closeDetail()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--txt3);">✕</button>
+    </div>
+    <div id="detail-titre" style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:8px;line-height:1.3;"></div>
+    <div id="detail-date" style="font-size:.82rem;color:var(--txt3);margin-bottom:4px;"></div>
+    <div id="detail-lieu" style="font-size:.82rem;color:var(--txt3);margin-bottom:16px;"></div>
+    <div id="detail-body" style="font-size:.9rem;line-height:1.7;color:var(--txt);white-space:pre-wrap;border-top:1px solid var(--border);padding-top:14px;"></div>
+  </div>
+</div>
 </body></html>
