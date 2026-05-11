@@ -471,16 +471,13 @@ async function init() {
   Api.trackView('index')
 
   // ── TRACKING VISITE ──────────────────────────────────────────
-  const code = Auth.getCode()
-  const prenom = Auth.getPrenom()
-  if (code) {
-    // Logger la visite
-    sb.from('visites').insert({ profil_code: code, prenom, page: 'feed' }).then(() => {})
-    // Upsert présence (dernière vue = maintenant)
-    sb.from('presences').upsert({ profil_code: code, prenom, last_seen: new Date().toISOString() }).then(() => {})
-    // Mettre à jour la présence toutes les 30s
+  const trackCode = Auth.getCode()
+  const trackPrenom = Auth.getPrenom()
+  if (trackCode) {
+    sb.from('visites').insert({ profil_code: trackCode, prenom: trackPrenom, page: 'feed' }).then(() => {})
+    sb.from('presences').upsert({ profil_code: trackCode, prenom: trackPrenom, last_seen: new Date().toISOString() }).then(() => {})
     setInterval(() => {
-      sb.from('presences').upsert({ profil_code: code, prenom, last_seen: new Date().toISOString() }).then(() => {})
+      sb.from('presences').upsert({ profil_code: trackCode, prenom: trackPrenom, last_seen: new Date().toISOString() }).then(() => {})
     }, 30000)
   }
 
