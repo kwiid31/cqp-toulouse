@@ -144,12 +144,12 @@
     </div>
 
     <div id="panel-signup" class="connect-box" style="display:none;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:6px;">Nouveau Profil</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:4px;">Nouveau Profil</div>
       <div style="font-size:.85rem;color:var(--txt2);margin-bottom:20px;">Rejoins le réseau CQP Toulouse.</div>
       <div class="fg"><label>Prénom *</label><input id="s-prenom" placeholder="Ex : Karim" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
       <div class="fg"><label>Quartier</label><input id="s-quartier" placeholder="Ex : Mirail, Bellefontaine…" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
       <div class="fg">
-        <label>Choisis ton code secret à 6 chiffres *</label>
+        <label>Ton code secret — 6 chiffres *</label>
         <div class="code-inputs" id="signup-code-inputs">
           <input class="code-digit" id="sc0" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
           <input class="code-digit" id="sc1" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
@@ -158,7 +158,10 @@
           <input class="code-digit" id="sc4" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
           <input class="code-digit" id="sc5" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
         </div>
-        <div style="font-size:.75rem;color:var(--txt3);margin-top:4px;">⚠️ Note-le bien — c'est ta seule façon de te reconnecter.</div>
+        <div style="display:flex;gap:7px;align-items:flex-start;background:#fff8e1;border-radius:8px;padding:9px 11px;margin-top:8px;">
+          <span style="font-size:13px;flex-shrink:0;">💡</span>
+          <span style="font-size:.75rem;color:#7a6020;line-height:1.5;">Note-le ou fais une capture — il te servira si tu changes de téléphone un jour.</span>
+        </div>
       </div>
       <div class="fg"><label>Email <span style="color:var(--txt3);font-weight:400;">(optionnel — pour retrouver ton code si oublié)</span></label><input id="s-email" type="email" placeholder="ton@email.fr" maxlength="100" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
       <button class="btn-rouge" id="signup-btn" onclick="doSignup()">Créer mon profil</button>
@@ -167,15 +170,28 @@
       <button class="btn-outline" onclick="switchPanel('login')">J'ai déjà un code</button>
     </div>
 
-    <div id="panel-code" class="connect-box" style="display:none;text-align:center;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--green);margin-bottom:8px;">✅ Profil créé !</div>
-      <div style="font-size:.85rem;color:var(--txt2);margin-bottom:4px;">Ton code secret :</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:10px;color:var(--rouge);margin:12px 0;" id="new-code"></div>
-      <div style="font-size:.8rem;color:var(--txt3);margin-bottom:16px;">📸 Fais une capture d'écran ou note-le — c'est la seule façon de te reconnecter.</div>
-      <button class="btn-rouge" onclick="window.location.href='index.html'">Accéder à l'accueil →</button>
-    </div>
+    <div id="panel-code" class="connect-box" style="display:none;"></div>
   </div>
 </div>
+
+<!-- POPUP CONFIRMATION CODE -->
+<div id="code-popup" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:20px;padding:28px 22px;width:100%;max-width:340px;text-align:center;animation:popIn .3s ease;">
+    <div style="font-size:2rem;margin-bottom:8px;">🎉</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--rouge);margin-bottom:4px;" id="popup-welcome">Bienvenue !</div>
+    <div style="font-size:.85rem;color:var(--txt2);margin-bottom:20px;">Tu fais partie du réseau CQP.</div>
+    <div style="background:#fff5f5;border:2px dashed var(--rouge);border-radius:14px;padding:14px 10px;margin-bottom:12px;">
+      <div style="font-size:.65rem;color:var(--rouge);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:8px;">Ton code CQP</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:10px;color:var(--rouge);" id="popup-code"></div>
+    </div>
+    <button onclick="copyPopupCode()" id="popup-copy-btn" style="width:100%;padding:10px;background:#f4f4f4;border:none;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;color:#555;cursor:pointer;margin-bottom:12px;">📋 Copier mon code</button>
+    <button onclick="goToFeed()" class="btn-rouge" style="width:100%;">Accéder au réseau →</button>
+    <div style="font-size:.72rem;color:var(--txt3);margin-top:10px;">Note-le ou fais une capture avant de continuer</div>
+  </div>
+</div>
+<style>
+@keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
 
 <!-- VUE PROFIL -->
 <div id="view-profil" style="display:none;">
@@ -325,12 +341,27 @@ async function doSignup() {
   msg.style.color = 'var(--txt3)'; msg.textContent = 'Création…'
   try {
     const data = await Auth.signup({ prenom, quartier, bio: '', code, email })
-    document.getElementById('new-code').textContent = data.code
-    switchPanel('code')
+    const prenom = document.getElementById('s-prenom').value.trim()
+    document.getElementById('popup-welcome').textContent = `Bienvenue ${prenom} !`
+    document.getElementById('popup-code').textContent = data.code.split('').join(' ')
+    const popup = document.getElementById('code-popup')
+    popup.style.display = 'flex'
   } catch (e) {
     msg.style.color = 'var(--rouge)'; msg.textContent = e.message
     btn.disabled = false; btn.textContent = 'Créer mon profil'
   }
+}
+
+function copyPopupCode() {
+  const code = document.getElementById('popup-code').textContent.replace(/\s/g,'')
+  if (navigator.clipboard) navigator.clipboard.writeText(code)
+  const btn = document.getElementById('popup-copy-btn')
+  btn.textContent = '✅ Code copié !'
+  setTimeout(() => { btn.textContent = '📋 Copier mon code' }, 2000)
+}
+
+function goToFeed() {
+  window.location.href = 'index.html'
 }
 
 function doLogout() {
