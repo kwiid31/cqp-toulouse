@@ -69,8 +69,30 @@ const Stories = (() => {
 
   const openCompose = () => {
     if (!Auth.getCode()) { window.location.href = 'profil.html'; return }
-    document.getElementById('story-drawer')?.classList.add('open')
-    document.body.style.overflow = 'hidden'
+    // Ouvrir directement le sélecteur de fichier natif (photo/vidéo/bibliothèque)
+    const inp = document.getElementById('story-photo-inp')
+    if (inp) {
+      inp.accept = 'image/*,video/*'
+      inp.capture = '' // laisser le choix : galerie ou appareil
+      inp.click()
+      // Quand un fichier est choisi, afficher le drawer
+      inp.onchange = () => {
+        if (inp.files && inp.files[0]) {
+          document.getElementById('story-drawer')?.classList.add('open')
+          document.body.style.overflow = 'hidden'
+          // Prévisualisation
+          const reader = new FileReader()
+          reader.onload = e => {
+            const prev = document.getElementById('story-preview-img')
+            if (prev) { prev.src = e.target.result; prev.style.display = 'block' }
+          }
+          reader.readAsDataURL(inp.files[0])
+        }
+      }
+    } else {
+      document.getElementById('story-drawer')?.classList.add('open')
+      document.body.style.overflow = 'hidden'
+    }
   }
 
   const publish = async () => {

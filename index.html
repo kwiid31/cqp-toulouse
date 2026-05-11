@@ -307,12 +307,17 @@ let _postType = 'post'
 function openPostForm(type) {
   closePub()
   _postType = type || 'post'
+  // Pour une story → ouvrir directement la photothèque
+  if (type === 'story') {
+    Stories.openCompose()
+    return
+  }
   const prenom = Auth.getPrenom()
   document.getElementById('pf-name').textContent = prenom || 'Anonyme'
   document.getElementById('pf-av').textContent = (prenom || '?')[0].toUpperCase()
   const ph = Auth.getPhoto()
   if (ph) { const av = document.getElementById('pf-av'); av.innerHTML = `<img src="${esc(ph)}" alt="" style="width:100%;height:100%;object-fit:cover;">`; av.classList.remove('c-av-init') }
-  document.getElementById('pf-text').placeholder = type === 'story' ? 'Texte de ta story (optionnel)…' : 'Quoi de neuf dans le quartier ?'
+  document.getElementById('pf-text').placeholder = 'Quoi de neuf dans le quartier ?'
   document.getElementById('post-form').classList.add('open')
   document.body.style.overflow = 'hidden'
   setTimeout(() => document.getElementById('pf-text').focus(), 100)
