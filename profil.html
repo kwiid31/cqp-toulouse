@@ -148,16 +148,16 @@
       <div style="font-size:.85rem;color:var(--txt2);margin-bottom:20px;">Rejoins le réseau CQP Toulouse.</div>
       <div class="fg"><label>Prénom *</label><input id="s-prenom" placeholder="Ex : Karim" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
       <div class="fg"><label>Quartier</label><input id="s-quartier" placeholder="Ex : Mirail, Bellefontaine…" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <div class="fg">
+      <div class="fg" id="code-block" style="display:none;opacity:0;transition:opacity .4s;">
         <label>Ton code CQP</label>
         <div style="display:flex;align-items:center;gap:12px;margin-top:6px;">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:8px;color:var(--rouge);background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;padding:8px 16px;flex:1;text-align:center;" id="generated-code-display">——————</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:8px;color:var(--rouge);background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;padding:8px 16px;flex:1;text-align:center;" id="generated-code-display"></div>
           <button type="button" onclick="copyCode()" style="padding:10px 14px;background:none;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:1px;color:var(--txt2);" id="copy-btn">Copier</button>
         </div>
         <div style="font-size:.75rem;color:var(--txt3);margin-top:6px;">📲 Ce code est généré pour toi — note-le ou fais une capture si tu changes de téléphone.</div>
       </div>
-      <div class="fg"><label>Email <span style="color:var(--txt3);font-weight:400;">(optionnel — pour retrouver ton code si oublié)</span></label><input id="s-email" type="email" placeholder="ton@email.fr" maxlength="100" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <button class="btn-rouge" id="signup-btn" onclick="doSignup()">Créer mon profil</button>
+      <div class="fg" id="email-block" style="display:none;"><label>Email <span style="color:var(--txt3);font-weight:400;">(optionnel — pour retrouver ton code si oublié)</span></label><input id="s-email" type="email" placeholder="ton@email.fr" maxlength="100" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+      <button class="btn-rouge" id="signup-btn" onclick="doSignup()" style="display:none;">Créer mon profil</button>
       <div class="form-msg" id="signup-msg"></div>
       <div class="divider">ou</div>
       <button class="btn-outline" onclick="switchPanel('login')">J'ai déjà un code</button>
@@ -270,7 +270,6 @@ async function doForgotCode() {
 
 function switchPanel(name) {
   ['login', 'signup', 'code'].forEach(p => document.getElementById(`panel-${p}`).style.display = p === name ? 'block' : 'none')
-  if (name === 'signup') initSignupCode()
 }
 
 async function doLogin() {
@@ -307,11 +306,37 @@ function copyCode() {
 }
 
 // Génère et affiche le code dès l'ouverture du panel signup
+let _pendingCode = null
 function initSignupCode() {
-  const code = generateCode()
-  document.getElementById('generated-code-display').textContent = code.split('').join(' ')
-  document.getElementById('generated-code-display').dataset.code = code
+  if (!_pendingCode) _pendingCode = generateCode()
+  document.getElementById('generated-code-display').textContent = _pendingCode.split('').join(' ')
+  document.getElementById('generated-code-display').dataset.code = _pendingCode
 }
+
+function revealCodeIfReady() {
+  const prenom = document.getElementById('s-prenom').value.trim()
+  const codeBlock = document.getElementById('code-block')
+  const emailBlock = document.getElementById('email-block')
+  const btn = document.getElementById('signup-btn')
+  if (prenom.length >= 2) {
+    if (codeBlock.style.display === 'none') {
+      initSignupCode()
+      codeBlock.style.display = 'block'
+      emailBlock.style.display = 'block'
+      btn.style.display = 'block'
+      setTimeout(() => { codeBlock.style.opacity = '1' }, 10)
+    }
+  } else {
+    codeBlock.style.display = 'none'
+    codeBlock.style.opacity = '0'
+    emailBlock.style.display = 'none'
+    btn.style.display = 'none'
+    _pendingCode = null
+  }
+}
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('s-prenom').addEventListener('input', revealCodeIfReady)
+})
 
 async function doSignup() {
   const prenom = document.getElementById('s-prenom').value.trim()
