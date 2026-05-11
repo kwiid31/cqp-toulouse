@@ -66,22 +66,47 @@
 
   <div style="max-width:760px;margin:0 auto;padding:12px;">
 
-    <!-- STATS -->
+    <!-- STATS LIVE -->
     <div class="stat-grid" id="stats-grid">
+      <div class="stat-card"><div class="stat-n" id="st-online" style="color:#43a047">—</div><div class="stat-l">🟢 En ligne</div></div>
+      <div class="stat-card"><div class="stat-n" id="st-today" style="color:var(--rouge)">—</div><div class="stat-l">Visites auj.</div></div>
       <div class="stat-card"><div class="stat-n" id="st-profils" style="color:var(--purple)">—</div><div class="stat-l">Profils</div></div>
       <div class="stat-card"><div class="stat-n" id="st-posts" style="color:var(--blue)">—</div><div class="stat-l">Posts</div></div>
       <div class="stat-card"><div class="stat-n" id="st-annonces" style="color:var(--green)">—</div><div class="stat-l">Annonces</div></div>
-      <div class="stat-card"><div class="stat-n" id="st-evts" style="color:var(--orange)">—</div><div class="stat-l">Événements</div></div>
-      <div class="stat-card"><div class="stat-n" id="st-new7j" style="color:var(--rouge)">—</div><div class="stat-l">Nouveaux 7j</div></div>
-      <div class="stat-card"><div class="stat-n" id="st-vues" style="color:var(--txt2)">—</div><div class="stat-l">Visites 7j</div></div>
+      <div class="stat-card"><div class="stat-n" id="st-new7j" style="color:var(--orange)">—</div><div class="stat-l">Nouveaux 7j</div></div>
     </div>
 
     <!-- TABS -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('actus',this)">Actus</button>
+      <button class="tab-btn active" onclick="switchTab('dashboard',this)">Dashboard</button>
+      <button class="tab-btn" onclick="switchTab('actus',this)">Actus</button>
       <button class="tab-btn" onclick="switchTab('mod',this)">Modération</button>
       <button class="tab-btn" onclick="switchTab('evts',this)">Événements</button>
       <button class="tab-btn" onclick="switchTab('profils',this)">Profils</button>
+    </div>
+
+    <!-- TAB DASHBOARD -->
+    <div id="tab-dashboard">
+      <div class="tbl" style="margin-bottom:12px;">
+        <div class="tbl-head">
+          <div class="tbl-title">🟢 Connectés maintenant (3 dernières minutes)</div>
+          <span style="font-size:.65rem;color:var(--txt3);cursor:pointer;" onclick="loadDashboard()">↻</span>
+        </div>
+        <div id="online-list"><div style="padding:14px;color:var(--txt3);font-size:.82rem;">Chargement…</div></div>
+      </div>
+      <div class="tbl" style="margin-bottom:12px;">
+        <div class="tbl-head"><div class="tbl-title">📊 Visites aujourd'hui par profil</div></div>
+        <div id="today-list"><div style="padding:14px;color:var(--txt3);font-size:.82rem;">Chargement…</div></div>
+      </div>
+      <div class="tbl" style="margin-bottom:12px;">
+        <div class="tbl-head"><div class="tbl-title">🏆 Plus actifs cette semaine</div></div>
+        <div id="top-list"><div style="padding:14px;color:var(--txt3);font-size:.82rem;">Chargement…</div></div>
+      </div>
+      <div class="tbl" style="margin-bottom:12px;">
+        <div class="tbl-head"><div class="tbl-title">📈 Connexions par heure (aujourd'hui)</div></div>
+        <div id="hours-chart" style="padding:14px 14px 6px;display:flex;align-items:flex-end;gap:4px;height:90px;"></div>
+        <div id="hours-labels" style="padding:0 14px 10px;display:flex;gap:4px;"></div>
+      </div>
     </div>
 
     <!-- TAB ACTUS -->
@@ -157,15 +182,73 @@ async function doLogin(){
 function doLogout(){sessionStorage.removeItem('cqp_adm');location.reload()}
 
 function switchTab(name,btn){
-  ['actus','mod','evts','profils'].forEach(t=>document.getElementById('tab-'+t).style.display=t===name?'block':'none')
+  ['dashboard','actus','mod','evts','profils'].forEach(t=>{
+    const el=document.getElementById('tab-'+t)
+    if(el) el.style.display=t===name?'block':'none'
+  })
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'))
   btn.classList.add('active')
+  if(name==='dashboard')loadDashboard()
   if(name==='mod'){loadModPosts();loadModAnnonces()}
   if(name==='evts')loadModEvts()
   if(name==='profils')loadProfils()
 }
 
-async function loadAll(){loadStats();loadActusList()}
+async function loadDashboard(){
+  const since3min=new Date(Date.now()-3*60*1000).toISOString()
+  const sinceDay=new Date(new Date().setHours(0,0,0,0)).toISOString()
+  const since7j=new Date(Date.now()-7*24*3600*1000).toISOString()
+
+  // 1. En ligne maintenant
+  const{data:online}=await sb.from('presences').select('*').gte('last_seen',since3min).order('last_seen',{ascending:false})
+  const onlineEl=document.getElementById('online-list')
+  document.getElementById('st-online').textContent=online?.length||0
+  if(!online?.length){onlineEl.innerHTML='<div style="padding:12px 14px;color:var(--txt3);font-size:.82rem;">Personne connecté pour le moment</div>'}
+  else onlineEl.innerHTML=online.map(p=>{
+    const mins=Math.round((Date.now()-new Date(p.last_seen))/60000)
+    return `<div class="tbl-row"><div class="c-av c-av-32 c-av-init" style="background:var(--rouge);color:#fff;font-size:.75rem;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${(p.prenom||'?')[0].toUpperCase()}</div><div class="tbl-main"><div class="tbl-title2">${esc(p.prenom||'Inconnu')}</div><div class="tbl-sub">Vu il y a ${mins} min</div></div><div style="width:8px;height:8px;border-radius:50%;background:#43a047;flex-shrink:0;margin-top:6px;"></div></div>`
+  }).join('')
+
+  // 2. Visites aujourd'hui par profil
+  const{data:today}=await sb.from('visites').select('prenom,profil_code').gte('created_at',sinceDay)
+  document.getElementById('st-today').textContent=today?.length||0
+  const counts={}
+  ;(today||[]).forEach(v=>{counts[v.prenom]=(counts[v.prenom]||0)+1})
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1])
+  const todayEl=document.getElementById('today-list')
+  if(!sorted.length){todayEl.innerHTML='<div style="padding:12px 14px;color:var(--txt3);font-size:.82rem;">Aucune visite aujourd\'hui</div>'}
+  else todayEl.innerHTML=sorted.map(([prenom,n])=>`<div class="tbl-row"><div class="tbl-main"><div class="tbl-title2">${esc(prenom)}</div></div><div style="font-family:\'Bebas Neue\';font-size:1.2rem;color:var(--rouge);">${n}x</div></div>`).join('')
+
+  // 3. Top actifs 7j
+  const{data:week}=await sb.from('visites').select('prenom,profil_code').gte('created_at',since7j)
+  const wcounts={}
+  ;(week||[]).forEach(v=>{wcounts[v.prenom]=(wcounts[v.prenom]||0)+1})
+  const wsorted=Object.entries(wcounts).sort((a,b)=>b[1]-a[1]).slice(0,8)
+  const topEl=document.getElementById('top-list')
+  if(!wsorted.length){topEl.innerHTML='<div style="padding:12px 14px;color:var(--txt3);font-size:.82rem;">Aucune données</div>'}
+  else topEl.innerHTML=wsorted.map(([prenom,n],i)=>`<div class="tbl-row"><div style="font-family:\'Bebas Neue\';font-size:1rem;color:var(--txt3);width:20px;">${i+1}</div><div class="tbl-main"><div class="tbl-title2">${esc(prenom)}</div></div><div style="font-family:\'Bebas Neue\';font-size:1.2rem;color:var(--rouge);">${n}x</div></div>`).join('')
+
+  // 4. Graphe par heure
+  const{data:hours}=await sb.from('visites').select('created_at').gte('created_at',sinceDay)
+  const hcounts=Array(24).fill(0)
+  ;(hours||[]).forEach(v=>{ hcounts[new Date(v.created_at).getHours()]++ })
+  const max=Math.max(...hcounts,1)
+  const chartEl=document.getElementById('hours-chart')
+  const labelsEl=document.getElementById('hours-labels')
+  const nowH=new Date().getHours()
+  chartEl.innerHTML=hcounts.map((n,h)=>`<div style="flex:1;background:${h===nowH?'var(--rouge)':'#e8e8e5'};height:${Math.max(4,Math.round(n/max*70))}px;border-radius:3px 3px 0 0;" title="${h}h: ${n} visites"></div>`).join('')
+  labelsEl.innerHTML=hcounts.map((_,h)=>`<div style="flex:1;font-size:.5rem;color:var(--txt3);text-align:center;">${h%6===0?h+'h':''}</div>`).join('')
+}
+
+async function loadAll(){
+  loadStats()
+  loadActusList()
+  loadDashboard()
+  // Realtime presences
+  sb.channel('admin-presences').on('postgres_changes',{event:'*',schema:'public',table:'presences'},()=>{
+    document.getElementById('st-online') && loadDashboard()
+  }).subscribe()
+}
 
 async function loadStats(){
   const{data,error}=await sb.from('v_stats_admin').select('*').single()
