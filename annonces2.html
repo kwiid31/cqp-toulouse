@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><link rel="icon" href="/favicon.ico"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#C8102E"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Petites Annonces Gratuit Quartiers Toulouse — Vente, Emploi, Logement</title>
+<meta name="description" content="Petites annonces gratuites entre voisins dans les quartiers de Toulouse. Vente, emploi, logement, services, dons. Mirail, Bellefontaine, Empalot. Déposez votre annonce en 1 minute.">
+<meta name="keywords" content="petites annonces Toulouse quartiers, annonces gratuites Mirail, vente Bellefontaine, emploi quartiers Toulouse, logement Empalot, don voisins Toulouse">
+<meta name="robots" content="index, follow">
+<meta name="author" content="CQP Toulouse">
+<meta name="geo.region" content="FR-31">
+<meta name="geo.placename" content="Toulouse">
+<meta property="og:title" content="Annonces Quartiers Populaires Toulouse — CQP">
+<meta property="og:description" content="Petites annonces des quartiers populaires de Toulouse. Vente, emploi, logement, services, dons entre voisins. Déposez votre annonce gratuitement.">
+<meta property="og:url" content="https://cqp-toulouse.fr">
+<meta property="og:image" content="https://cqp-toulouse.fr/icons/icon-512.png">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="CQP Toulouse">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Annonces Quartiers Populaires Toulouse — CQP">
+<meta name="twitter:description" content="Petites annonces des quartiers populaires de Toulouse. Vente, emploi, logement, services, dons entre voisins. Déposez votre annonce gratuitement.">
+<link rel="canonical" href="https://cqp-toulouse.fr/">
+<script type="application/ld+json">{
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Annonces Quartiers Populaires Toulouse",
+      "url": "https://cqp-toulouse.fr/annonces.html"
+    }</script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><link rel="stylesheet" href="/css/main.css"><script src="/js/app.js?v=9490"></script><script src="/js/utils.js?v=9490"></script><script src="/js/auth.js?v=9490"></script><script src="/js/api.js?v=9490"></script>
+<style>
+.an-list{background:#fff;}
+.an-card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-card);overflow:hidden;cursor:pointer;}
+.an-img{width:100%;height:120px;object-fit:cover;}
+.an-body{padding:10px 12px;}
+.an-title{font-weight:600;font-size:.88rem;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.an-prix{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--rouge);}
+.an-meta{font-size:.72rem;color:var(--txt3);margin-top:4px;}
+.drawer-ov{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.45);}
+.drawer-ov.open{display:flex;justify-content:flex-end;}
+.drawer{width:min(560px,100vw);height:100vh;background:#fff;overflow-y:auto;display:flex;flex-direction:column;animation:slideIn .28s cubic-bezier(.4,0,.2,1);}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:none}}
+.drawer-head{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:flex-start;gap:10px;z-index:1;}
+.drawer-body{padding:16px;flex:1;}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;justify-content:center;}
+.modal-ov.open{display:flex;}
+.modal-box{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding-bottom:max(24px,env(safe-area-inset-bottom));}
+</style>
+</head><body>
+<header class="topbar">
+  <button class="back-btn" onclick="history.back()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <div class="topbar-logo"><span class="logo-pill">CQP</span><div class="logo-text"><span class="logo-name">Annonces</span></div></div>
+  <button onclick="openModal()" style="padding:8px 14px;background:var(--green);border:none;border-radius:20px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">+ Déposer</button>
+</header>
+<div class="cats-bar">
+  <button class="cat-btn active" onclick="filterCat(this,'')">Tout</button>
+  <button class="cat-btn" onclick="filterCat(this,'Logement')">Logement</button>
+  <button class="cat-btn" onclick="filterCat(this,'Emploi')">Emploi</button>
+  <button class="cat-btn" onclick="filterCat(this,'Vente')">Vente</button>
+  <button class="cat-btn" onclick="filterCat(this,'Service')">Service</button>
+  <button class="cat-btn" onclick="filterCat(this,'Don')">Don</button>
+</div>
+<div id="an-list" style="max-width:720px;margin:0 auto;"><div class="spinner" style="padding:40px;"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div></div>
+
+<!-- DRAWER DÉTAIL -->
+<div class="drawer-ov" id="dr" onclick="if(event.target===this)closeDr()">
+  <div class="drawer">
+    <div class="drawer-head">
+      <div style="flex:1;"><h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin:0 0 4px;" id="dr-titre"></h3><div id="dr-prix" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--rouge);"></div></div>
+      <button onclick="closeDr()" style="width:30px;height:30px;border:1px solid var(--border);border-radius:6px;background:none;cursor:pointer;font-size:1rem;">✕</button>
+    </div>
+    <div class="drawer-body">
+      <img id="dr-img" style="width:100%;border-radius:8px;margin-bottom:14px;display:none;" alt="">
+      <div style="font-size:.9rem;color:var(--txt2);line-height:1.8;margin-bottom:16px;" id="dr-desc"></div>
+      <div style="font-size:.8rem;color:var(--txt3);margin-bottom:16px;" id="dr-meta"></div>
+      <div id="dr-contact"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DÉPÔT -->
+<div class="modal-ov" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:16px;">📋 Déposer une annonce</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Votre prénom *</label><input id="an-prenom" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+      <div class="fg"><label>Quartier *</label><input id="an-quartier" placeholder="Ex: Mirail" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+    </div>
+    <div class="fg"><label>Titre *</label><input id="an-titre" placeholder="Ex: Cherche baby-sitter" maxlength="100" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="fg"><label>Catégorie *</label><select id="an-cat" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"><option>Vente</option><option>Don</option><option>Service</option><option>Logement</option><option>Emploi</option><option>Autre</option></select></div>
+      <div class="fg"><label>Téléphone</label><input id="an-tel" type="tel" placeholder="06 XX XX XX XX" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+    </div>
+    <div class="fg"><label>Description *</label><textarea id="an-desc" rows="3" placeholder="Décrivez votre annonce…" maxlength="1000" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;resize:vertical;"></textarea></div>
+    <button class="btn-rouge" onclick="submitAnnonce()">📋 Déposer l'annonce</button>
+    <div class="form-msg" id="an-msg"></div>
+    <button onclick="closeModal()" style="width:100%;padding:12px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;margin-top:4px;cursor:pointer;">Annuler</button>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
+  <a class="nav-item" href="groupes.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Groupes</a>
+  <a class="nav-item active" href="annonces.html"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>Annonces</a>
+  <div class="nav-center"><button class="nav-pub" onclick="openModal()" aria-label="Déposer une annonce"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
+  <a class="nav-item" href="evenements.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a class="nav-item" href="actus2.html"><svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>Actus</a>
+  <a class="nav-item" href="profil.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
+</nav>
+<script>
+const esc=s=>Utils.esc(s),timeAgo=d=>Utils.timeAgo(d)
+let _all=[]
+function filterCat(btn,cat){document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render(_all.filter(a=>!cat||a.categorie===cat))}
+async function load(){
+  const{data,error}=await Api.getAnnonces(null,40)
+  if(error||!data?.length){document.getElementById('an-list').innerHTML='<div class="empty">Aucune annonce pour l\'instant.</div>';return}
+  _all=data;render(data)
+}
+function render(annonces){
+  const el=document.getElementById('an-list')
+  if(!annonces.length){el.innerHTML='<div class="empty" style="text-align:center;padding:48px 20px"><div style="font-size:2rem;margin-bottom:8px">📋</div><div style="font-weight:700;">Aucune annonce dans cette catégorie</div></div>';return}
+  const catColors={'Logement':'#1565c0','Emploi':'#6a1b9a','Vente':'#e65100','Service':'#2e7d32','Don':'#00695c'}
+  el.innerHTML=annonces.map(a=>{
+    const color=catColors[a.categorie]||'#555'
+    const img=a.photo_url
+      ? '<img src="'+esc(a.photo_url)+'" loading="lazy" alt="" style="width:90px;height:90px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
+      : '<div style="width:90px;height:90px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,#020510,#081a5e,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">📋</div>'
+    return '<div id="an-'+a.id+'" onclick="openAn('+a.id+')" style="display:flex;gap:12px;padding:14px;background:#fff;border-bottom:1px solid var(--border);cursor:pointer;align-items:flex-start;">'
+      + img
+      + '<div style="flex:1;min-width:0;">'
+      + '<div style="font-size:.65rem;font-weight:700;letter-spacing:.5px;color:'+color+';margin-bottom:4px;text-transform:uppercase;">'+esc(a.categorie||'Annonce')+'</div>'
+      + '<div style="font-weight:700;font-size:.92rem;line-height:1.3;margin-bottom:4px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">'+esc(a.titre)+'</div>'
+      + '<div style="font-size:.8rem;color:var(--txt2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;margin-bottom:6px;">'+esc((a.description||a.contenu||'').substring(0,120))+'</div>'
+      + '<div style="display:flex;align-items:center;gap:8px;">'
+      + (a.quartier ? '<span style="font-size:.7rem;background:var(--bg3);padding:2px 8px;border-radius:10px;color:var(--txt2);">📍 '+esc(a.quartier)+'</span>' : '')
+      + '<span style="font-size:.7rem;color:var(--txt3);">'+esc(a.prenom||'')+'</span>'
+      + '<span style="font-size:.7rem;color:var(--txt3);">· '+timeAgo(a.created_at)+'</span>'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+  }).join('')
+}
+function openAn(id){
+  const a=_all.find(x=>x.id===id);if(!a)return
+  document.getElementById('dr-titre').textContent=a.titre
+  document.getElementById('dr-prix').textContent=a.prix!=null?(a.prix==0?'Gratuit':a.prix+' €'):''
+  document.getElementById('dr-desc').textContent=a.contenu||''
+  document.getElementById('dr-meta').textContent=`${a.prenom||''} · ${a.categorie||''} · ${timeAgo(a.created_at)}`
+  const img=document.getElementById('dr-img');if(a.photo_url){img.src=a.photo_url;img.style.display='block'}else img.style.display='none'
+  const contact=document.getElementById('dr-contact')
+  contact.innerHTML=''
+  if(a.telephone)contact.innerHTML+=`<a href="tel:${esc(a.telephone)}" style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--green);color:#fff;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">📞 Appeler — ${esc(a.telephone)}</a>`
+  if(a.email)contact.innerHTML+=`<a href="mailto:${esc(a.email)}" style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--blue);color:#fff;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;">✉️ Envoyer un email</a>`
+  document.getElementById('dr').classList.add('open');document.body.style.overflow='hidden'
+}
+function closeDr(){document.getElementById('dr').classList.remove('open');document.body.style.overflow=''}
+function openModal(){
+  const p=Auth.getPrenom();if(p){const el=document.getElementById('an-prenom');el.value=p;el.readOnly=true}
+  document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'
+}
+function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow=''}
+async function submitAnnonce(){
+  const prenom=document.getElementById('an-prenom').value.trim()||Auth.getPrenom()
+  const quartier=document.getElementById('an-quartier').value.trim()
+  const titre=document.getElementById('an-titre').value.trim()
+  const cat=document.getElementById('an-cat').value
+  const tel=document.getElementById('an-tel').value.trim()
+  const desc=document.getElementById('an-desc').value.trim()
+  const msg=document.getElementById('an-msg')
+  if(!prenom||!titre||!desc||desc.length<3){msg.style.color='var(--rouge)';msg.textContent='Prénom, titre et description (min 3 caractères) obligatoires.';return}
+  msg.style.color='var(--txt3)';msg.textContent='Envoi…'
+  // ⚠️ nom/email/quartier/categorie/description sont NOT NULL en DB
+  const{error}=await Api.createAnnonce({
+    prenom, nom:'', email:'', quartier:quartier||'Non précisé',
+    categorie:cat, titre, description:desc, contenu:desc, telephone:tel||null
+  })
+  if(error){msg.style.color='var(--rouge)';msg.textContent='Erreur: '+error.message;return}
+  msg.style.color='var(--green)';msg.textContent='✅ Annonce soumise — validation sous 24h.'
+  setTimeout(closeModal,2000)
+}
+load();Api.trackView('annonces')
+// Deep link : annonces.html#an-42 ouvre directement l'annonce
+window.addEventListener('hashchange', handleHash)
+function handleHash(){
+  const h=location.hash.replace('#an-','')
+  if(h && !isNaN(h)) setTimeout(()=>openAn(parseInt(h)),300)
+}
+handleHash()
+if(window.location.search.includes('new=1'))openModal()
+</script>
+</body></html>
