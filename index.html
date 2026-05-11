@@ -161,6 +161,12 @@
   <div class="ticker-track"><div class="ticker-inner" id="ticker-inner"></div></div>
 </div>
 
+<!-- ONLINE COUNT -->
+<div id="online-count" style="display:none;align-items:center;gap:5px;padding:4px 12px;font-size:.72rem;color:#2e7d32;background:#e8f5e9;border-bottom:1px solid #c8e6c9;font-family:'Barlow',sans-serif;">
+  <span style="width:7px;height:7px;border-radius:50%;background:#43a047;display:inline-block;flex-shrink:0;animation:pulse 2s infinite;"></span>
+  <span></span>
+</div>
+
 <!-- COMPOSER -->
 <div class="composer">
   <div class="c-av c-av-40 c-av-init" id="c-av">?</div>
@@ -276,7 +282,7 @@
 </div>
 
 <script src="/js/api.js?v=9490"></script>
-<script src="/js/feed3.js?t=223618"></script>
+<script src="/js/feed4.js"></script>
 <script src="/js/stories.js?v=9490"></script>
 <script>
 'use strict'
@@ -463,6 +469,35 @@ async function init() {
   }).catch(() => {})
 
   Api.trackView('index')
+
+  // ── TRACKING VISITE ──────────────────────────────────────────
+  const code = Auth.getCode()
+  const prenom = Auth.getPrenom()
+  if (code) {
+    // Logger la visite
+    sb.from('visites').insert({ profil_code: code, prenom, page: 'feed' }).then(() => {})
+    // Upsert présence (dernière vue = maintenant)
+    sb.from('presences').upsert({ profil_code: code, prenom, last_seen: new Date().toISOString() }).then(() => {})
+    // Mettre à jour la présence toutes les 30s
+    setInterval(() => {
+      sb.from('presences').upsert({ profil_code: code, prenom, last_seen: new Date().toISOString() }).then(() => {})
+    }, 30000)
+  }
+
+  // ── COMPTEUR TEMPS RÉEL ───────────────────────────────────────
+  const updateOnlineCount = async () => {
+    // Compter les profils vus dans les 3 dernières minutes
+    const since = new Date(Date.now() - 3 * 60 * 1000).toISOString()
+    const { data } = await sb.from('presences').select('profil_code', { count: 'exact' }).gte('last_seen', since)
+    const n = data?.length || 0
+    const el = document.getElementById('online-count')
+    if (el) el.textContent = n + ' en ligne'
+    el?.style && (el.style.display = n > 0 ? 'flex' : 'none')
+  }
+  updateOnlineCount()
+  setInterval(updateOnlineCount, 15000)
+  // Écouter les changements realtime sur presences
+  sb.channel('presences').on('postgres_changes', { event: '*', schema: 'public', table: 'presences' }, updateOnlineCount).subscribe()
 }
 init()
 </script>

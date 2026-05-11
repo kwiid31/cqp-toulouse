@@ -348,3 +348,9 @@ img { max-width:100%; display:block; }
   padding:12px; position:fixed; top:var(--nav); left:0; right:0; z-index:150;
 }
 .ptr-spinner { width:24px; height:24px; border:2.5px solid rgba(200,16,46,.2); border-top-color:var(--rouge); border-radius:50%; animation:spin .7s linear infinite; }
+
+/* Online presence counter */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .6; transform: scale(1.3); }
+}
