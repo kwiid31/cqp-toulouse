@@ -524,8 +524,6 @@ function renderStreak(n) {
   if (count) count.textContent = n
   if (icon) icon.textContent = n >= 7 ? '🔥' : n >= 3 ? '🔥' : '🌱'
   if (n >= 7) document.querySelector('.profil-av')?.classList.add('av-gold')
-  const hero = document.querySelector('.profil-hero')
-  if (hero && n <= 1) hero.style.background = 'linear-gradient(160deg,#0a0a0a 0%,#1a0305 100%)'
 
   const phrase = document.getElementById('flamme-phrase')
   if (phrase) {
@@ -633,7 +631,16 @@ const NOTIF_ICONS  = { like:'❤️', comment:'💬', streak:'🔥', reward:'�
 async function loadNotifs(code) {
   const { data } = await sb.from('notifications').select('*').eq('dest_code', code).order('created_at', { ascending: false }).limit(30)
   const list = document.getElementById('notifs-list')
-  if (!data?.length) { list.innerHTML = '<div style="padding:32px;text-align:center;color:var(--txt3);font-size:.85rem;">Aucune activité pour l\'instant.<br>Reviens demain pour ta flamme !</div>'; return }
+  if (!data?.length) {
+    list.innerHTML = `
+      <div style="padding:28px 20px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:10px;">🌱</div>
+        <div style="font-size:.88rem;font-weight:600;color:var(--txt1);margin-bottom:6px;">Rien encore par ici</div>
+        <div style="font-size:.8rem;color:var(--txt3);line-height:1.6;margin-bottom:18px;">Quand quelqu'un aimera ou commentera<br>ton post, tu le verras ici.</div>
+        <a href="index.html" style="display:inline-block;background:var(--rouge);color:#fff;padding:11px 22px;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:1px;font-weight:700;text-decoration:none;">Voir le flux →</a>
+      </div>`
+    return
+  }
   const unread = data.filter(n => !n.read).length
   document.getElementById('notif-dot').style.display = unread ? 'inline-block' : 'none'
   list.innerHTML = data.map(n => {
@@ -755,11 +762,23 @@ async function sendMsg() {
   const contenu = input.value.trim()
   if (!contenu || !currentConvCode) return
   const code = Auth.getCode()
-  const prenom = Auth.getPrenom ? Auth.getPrenom() : ''
+  const prenom = Auth.getPrenom()
   input.value = ''
-  await sb.from('messages_prives').insert({ from_code: code, from_prenom: prenom, to_code: currentConvCode, to_prenom: currentConvPrenom, contenu })
-  // Notif pour le destinataire
-  await sb.from('notifications').insert({ dest_code: currentConvCode, from_code: code, from_prenom: prenom, type: 'message', message: (prenom || 'Quelqu\'un') + ' vous a envoyé un message' })
+  const { error } = await sb.from('messages_prives').insert({
+    from_code: code,
+    from_prenom: prenom,
+    to_code: currentConvCode,
+    to_prenom: currentConvPrenom,
+    contenu
+  })
+  if (error) { console.warn('msg error:', error); return }
+  await sb.from('notifications').insert({
+    dest_code: currentConvCode,
+    from_code: code,
+    from_prenom: prenom,
+    type: 'message',
+    message: (prenom || 'Quelqu\'un') + ' t\'a envoyé un message'
+  })
   openConv(currentConvCode, currentConvPrenom)
 }
 
