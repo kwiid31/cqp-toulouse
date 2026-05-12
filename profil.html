@@ -200,7 +200,8 @@
 .streak-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px}
 .notif-item{display:flex;align-items:center;gap:12px;padding:13px 16px;background:#fff;border-bottom:1px solid var(--bg3);position:relative;overflow:hidden;transition:transform .25s ease;touch-action:pan-y}
 .notif-item.swiped{transform:translateX(-80px)}
-.swipe-delete{position:absolute;right:0;top:0;bottom:0;width:80px;background:#E24B4A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;letter-spacing:.5px}
+.swipe-delete{position:absolute;right:-80px;top:0;bottom:0;width:80px;background:#E24B4A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:right .25s ease}
+.notif-item.swiped .swipe-delete,.conv-item.swiped .swipe-delete{right:0}
 .notif-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
 .notif-body{flex:1;min-width:0}
 .notif-text{font-size:.85rem;color:var(--txt1);line-height:1.4}
@@ -562,14 +563,14 @@ function renderStreak(n) {
       lblStyle = isToday ? 'color:#FFD700;font-weight:700' : 'color:rgba(255,200,0,.65)'
     } else if (isToday) {
       // Pas encore allumé — pulse
-      circle = `<div id="circle-${i}" style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.07);border:2px dashed rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;animation:breathe 2s ease-in-out infinite;position:relative;">${flameSVG('rgba(255,255,255,.2)','rgba(255,255,255,.1)',22)}<span style="position:absolute;bottom:-18px;font-size:7px;color:rgba(255,255,255,.4);white-space:nowrap;letter-spacing:.3px;">Appuie ici</span></div>`
+      circle = `<div id="circle-${i}" style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.07);border:2px dashed rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;animation:breathe 2s ease-in-out infinite;position:relative;">${flameSVG('rgba(255,255,255,.2)','rgba(255,255,255,.1)',22)}</div>`
       lblStyle = 'color:rgba(255,255,255,.5);font-weight:700'
     } else {
       circle = `<div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);"></div>`
       lblStyle = 'color:rgba(255,255,255,.2)'
     }
 
-    const lbl = isToday ? 'Auj' : d.charAt(0)
+    const lbl = isToday && !isLit ? 'Appuie' : isToday ? 'Auj' : d.charAt(0)
     el.innerHTML = `${circle}<span style="font-size:8px;text-transform:uppercase;letter-spacing:.3px;${lblStyle}">${lbl}</span>`
 
     if (isToday && !isLit) {
