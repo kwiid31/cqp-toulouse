@@ -191,32 +191,103 @@
 </div>
 <style>
 @keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+/* ── PROFIL TABS ────────────────────────────── */
+.profil-tab{flex:1;padding:12px 4px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;font-weight:700;background:none;border:none;border-bottom:2px solid transparent;color:var(--txt3);cursor:pointer;transition:all .2s}
+.profil-tab-active{color:var(--rouge);border-bottom-color:var(--rouge)}
+.streak-day{display:flex;flex-direction:column;align-items:center;gap:3px}
+.streak-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px}
+.notif-item{display:flex;align-items:center;gap:12px;padding:13px 16px;background:#fff;border-bottom:1px solid var(--bg3);position:relative;overflow:hidden;transition:transform .25s ease;touch-action:pan-y}
+.notif-item.swiped{transform:translateX(-80px)}
+.swipe-delete{position:absolute;right:0;top:0;bottom:0;width:80px;background:#E24B4A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;letter-spacing:.5px}
+.notif-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.notif-body{flex:1;min-width:0}
+.notif-text{font-size:.85rem;color:var(--txt1);line-height:1.4}
+.notif-time{font-size:.72rem;color:var(--txt3);margin-top:2px}
+.notif-reward{background:#FFF8E1;border-left:3px solid #D97706}
+.conv-item{display:flex;align-items:center;gap:12px;padding:13px 16px;background:#fff;border-bottom:1px solid var(--bg3);cursor:pointer;position:relative;overflow:hidden;transition:transform .25s ease;touch-action:pan-y}
+.conv-item.swiped{transform:translateX(-80px)}
+.conv-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.conv-body{flex:1;min-width:0}
+.conv-name{font-size:.88rem;font-weight:700;color:var(--txt1)}
+.conv-last{font-size:.78rem;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.conv-time{font-size:.7rem;color:var(--txt3)}
+.conv-unread-dot{width:8px;height:8px;background:var(--rouge);border-radius:50%}
+.bubble{max-width:78%;padding:9px 13px;font-size:.85rem;line-height:1.45;border-radius:14px}
+.bubble-other{background:#fff;color:var(--txt1);border-radius:14px 14px 14px 3px;align-self:flex-start;border:1px solid var(--border)}
+.bubble-me{background:var(--rouge);color:#fff;border-radius:14px 14px 3px 14px;align-self:flex-end}
+.bubble-time{font-size:.65rem;color:var(--txt3);margin-top:2px}
 </style>
 
 <!-- VUE PROFIL -->
 <div id="view-profil" style="display:none;">
-  <div class="profil-hero">
+
+  <!-- HEADER -->
+  <div class="profil-hero" style="position:relative;">
+    <div style="position:absolute;top:14px;right:14px;" id="streak-badge-wrap">
+      <div style="display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.22);border-radius:20px;padding:5px 11px;">
+        <span id="streak-icon" style="font-size:15px;">🌱</span>
+        <span id="streak-count" style="font-size:13px;font-weight:900;color:#fff;">1</span>
+        <span style="font-size:8px;color:rgba(255,255,255,.45);">jours</span>
+      </div>
+    </div>
     <label for="avatar-file" style="cursor:pointer;">
-      <div class="profil-av-wrap">
+      <div class="profil-av-wrap" id="av-ring-wrap">
         <div class="profil-av" id="profil-av">?</div>
-        <div class="profil-av-edit">
-          <svg viewBox="0 0 24 24" width="12" height="12" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </div>
+        <div class="profil-av-edit"><svg viewBox="0 0 24 24" width="12" height="12" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
       </div>
     </label>
     <input type="file" id="avatar-file" accept="image/*" onchange="uploadAvatar(this)">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;letter-spacing:.5px;line-height:1;" id="p-name">…</div>
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:3px;color:rgba(255,255,255,.55);text-transform:uppercase;margin-top:3px;" id="p-code"></div>
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;color:rgba(255,255,255,.7);margin-top:6px;" id="p-quartier"></div>
+    <!-- BARRE STREAK SEMAINE -->
+    <div id="streak-week" style="display:flex;gap:6px;justify-content:center;margin-top:14px;"></div>
   </div>
 
-  <div class="profil-stats">
-    <div class="pstat"><div class="pstat-n" id="s-posts">—</div><div class="pstat-l">Posts</div></div>
-    <div class="pstat"><div class="pstat-n" id="s-likes">—</div><div class="pstat-l">J'aime</div></div>
-    <div class="pstat"><div class="pstat-n" id="s-cmts">—</div><div class="pstat-l">Comms</div></div>
+  <!-- ONGLETS -->
+  <div style="display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;">
+    <button onclick="switchTab('activite')" id="tab-activite" class="profil-tab profil-tab-active">
+      Activité <span id="notif-dot" style="display:none;width:6px;height:6px;background:var(--rouge);border-radius:50%;display:inline-block;margin-left:4px;vertical-align:middle;"></span>
+    </button>
+    <button onclick="switchTab('messages')" id="tab-messages" class="profil-tab">
+      Messages <span id="msg-dot" style="display:none;width:6px;height:6px;background:var(--rouge);border-radius:50%;display:inline-block;margin-left:4px;vertical-align:middle;"></span>
+    </button>
+    <button onclick="switchTab('mon-profil')" id="tab-mon-profil" class="profil-tab">Mon profil</button>
   </div>
 
-  <div class="section">
+  <!-- TAB ACTIVITÉ -->
+  <div id="tab-content-activite" class="section">
+    <div id="notifs-list"></div>
+  </div>
+
+  <!-- TAB MESSAGES -->
+  <div id="tab-content-messages" class="section" style="display:none;">
+    <!-- VUE LISTE -->
+    <div id="conv-list-view">
+      <div id="conv-list"></div>
+      <div style="padding:16px;text-align:center;font-size:.78rem;color:var(--txt3);line-height:1.6;">
+        Tu peux écrire à quelqu'un dès que vous avez interagi dans le flux
+      </div>
+    </div>
+    <!-- VUE CONVERSATION -->
+    <div id="conv-detail-view" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:49px;z-index:10;">
+        <button onclick="closeConv()" style="background:none;border:none;font-size:1.3rem;color:var(--txt2);cursor:pointer;padding:0;">‹</button>
+        <div id="conv-av" style="width:34px;height:34px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;"></div>
+        <div><div id="conv-name" style="font-size:.9rem;font-weight:700;color:var(--txt1);"></div><div id="conv-loc" style="font-size:.72rem;color:var(--txt3);"></div></div>
+      </div>
+      <div id="conv-bubbles" style="padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-height:200px;"></div>
+      <div style="padding:10px 14px;background:#fff;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;position:sticky;bottom:60px;">
+        <input id="msg-input" placeholder="Écrire un message..." maxlength="500" style="flex:1;padding:10px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:20px;font-family:'Barlow',sans-serif;font-size:.85rem;outline:none;" onkeydown="if(event.key==='Enter')sendMsg()">
+        <button onclick="sendMsg()" style="width:36px;height:36px;background:var(--rouge);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB MON PROFIL -->
+  <div id="tab-content-mon-profil" class="section" style="display:none;">
     <div class="section-title">Modifier mon profil</div>
     <div class="pcard pcard-pad">
       <div class="fg"><label>Prénom</label><input id="e-prenom" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
@@ -226,17 +297,16 @@
       <button class="btn-rouge" onclick="saveProfil()">Enregistrer</button>
       <div class="form-msg" id="edit-msg"></div>
     </div>
-
     <div class="section-title">Mon identifiant CQP</div>
     <div class="pcard pcard-pad" style="text-align:center;">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:8px;color:var(--rouge);" id="code-display">——</div>
       <div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-top:4px;">Note-le si tu changes de téléphone</div>
-      <button onclick="copyCode()" style="margin-top:12px;padding:8px 20px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;color:var(--txt2);cursor:pointer;" id="copy-btn">Copier le code</button>
+      <button onclick="copyCode()" style="margin-top:12px;padding:8px 20px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;color:var(--txt2);cursor:pointer;" id="copy-btn">Copier</button>
     </div>
-
     <div class="section-title">Mes publications</div>
     <div id="mes-posts"></div>
   </div>
+
 </div>
 
 <nav class="bottom-nav">
@@ -364,6 +434,217 @@ function goToFeed() {
   window.location.href = 'index.html'
 }
 
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(tab) {
+  ['activite','messages','mon-profil'].forEach(t => {
+    document.getElementById('tab-content-' + t).style.display = t === tab ? 'block' : 'none'
+    const btn = document.getElementById('tab-' + t)
+    btn.classList.toggle('profil-tab-active', t === tab)
+  })
+  if (tab === 'messages') loadConvList()
+}
+
+// ── STREAK ────────────────────────────────────────────────────
+const STREAK_REWARDS = [
+  { days: 7,   icon: '🔥', label: 'Anneau doré débloqué !', ring: true },
+  { days: 30,  icon: '⭐', label: 'Titre "Habitant fidèle" débloqué !' },
+  { days: 100, icon: '🏆', label: 'Avatar exclusif débloqué !' },
+]
+
+async function initStreak(code) {
+  const today = new Date().toISOString().split('T')[0]
+  const res = await sb.from('streaks').select('*').eq('code', code).single().catch(() => null)
+  let streak = res?.data
+  if (!streak) {
+    await sb.from('streaks').insert({ code, current_streak: 1, last_visit: today, longest_streak: 1 })
+    streak = { current_streak: 1, last_visit: today, longest_streak: 1 }
+  } else {
+    const last = new Date(streak.last_visit)
+    const diff = Math.floor((new Date(today) - last) / 86400000)
+    if (diff === 1) {
+      streak.current_streak++
+      streak.longest_streak = Math.max(streak.longest_streak, streak.current_streak)
+      await sb.from('streaks').update({ current_streak: streak.current_streak, longest_streak: streak.longest_streak, last_visit: today }).eq('code', code)
+      // Vérif récompenses
+      for (const r of STREAK_REWARDS) {
+        if (streak.current_streak === r.days) {
+          await sb.from('notifications').insert({ dest_code: code, type: 'streak', message: r.icon + ' ' + r.label })
+        }
+      }
+    } else if (diff > 1) {
+      streak.current_streak = 1
+      await sb.from('streaks').update({ current_streak: 1, last_visit: today }).eq('code', code)
+    }
+  }
+  renderStreak(streak.current_streak)
+}
+
+function renderStreak(n) {
+  const icon = document.getElementById('streak-icon')
+  const count = document.getElementById('streak-count')
+  count.textContent = n
+  if (n >= 30) icon.textContent = '⭐'
+  else if (n >= 7) { icon.textContent = '🔥'; document.querySelector('.profil-av')?.classList.add('av-gold') }
+  else icon.textContent = n >= 3 ? '🔥' : '🌱'
+  // Semaine visuelle
+  const days = ['L','M','M','J','V','S','D']
+  const todayIdx = (new Date().getDay() + 6) % 7
+  const wrap = document.getElementById('streak-week')
+  if (!wrap) return
+  wrap.innerHTML = days.map((d, i) => {
+    const isPast = i < todayIdx && i >= todayIdx - n + 1
+    const isToday = i === todayIdx
+    const dot = isToday ? `<div class="streak-dot" style="background:var(--rouge);font-size:7px;color:#fff;font-weight:700;">Auj</div>`
+      : isPast ? `<div class="streak-dot" style="background:rgba(255,200,0,.2);">🔥</div>`
+      : `<div class="streak-dot" style="background:rgba(255,255,255,.1);"></div>`
+    return `<div class="streak-day">${dot}<div style="font-size:7px;color:rgba(255,255,255,.3);text-transform:uppercase;">${d}</div></div>`
+  }).join('')
+}
+
+// ── NOTIFS ────────────────────────────────────────────────────
+const NOTIF_COLORS = { like:'#C8102E', comment:'#1877F2', streak:'#D97706', reward:'#D97706', message:'#7C3AED' }
+const NOTIF_ICONS  = { like:'❤️', comment:'💬', streak:'🔥', reward:'🏆', message:'✉️' }
+
+async function loadNotifs(code) {
+  const { data } = await sb.from('notifications').select('*').eq('dest_code', code).order('created_at', { ascending: false }).limit(30)
+  const list = document.getElementById('notifs-list')
+  if (!data?.length) { list.innerHTML = '<div style="padding:32px;text-align:center;color:var(--txt3);font-size:.85rem;">Aucune activité pour l\'instant.<br>Reviens demain pour ta flamme !</div>'; return }
+  const unread = data.filter(n => !n.read).length
+  document.getElementById('notif-dot').style.display = unread ? 'inline-block' : 'none'
+  list.innerHTML = data.map(n => {
+    const color = NOTIF_COLORS[n.type] || '#888'
+    const icon = NOTIF_ICONS[n.type] || '•'
+    const initials = (n.from_prenom || '?').charAt(0).toUpperCase()
+    const cls = n.type === 'streak' || n.type === 'reward' ? 'notif-item notif-reward' : 'notif-item'
+    return `
+    <div class="${cls}" id="notif-${n.id}" data-id="${n.id}">
+      <div class="swipe-delete" onclick="deleteNotif(${n.id})">Supprimer</div>
+      <div class="notif-av" style="background:${color}">${n.type === 'streak' || n.type === 'reward' ? icon : initials}</div>
+      <div class="notif-body">
+        <div class="notif-text">${n.message || ''}</div>
+        <div class="notif-time">${timeAgo(n.created_at)}</div>
+      </div>
+      <span style="font-size:16px;">${icon}</span>
+    </div>`
+  }).join('')
+  // Mark as read
+  await sb.from('notifications').update({ read: true }).eq('dest_code', code).eq('read', false)
+  // Swipe
+  list.querySelectorAll('.notif-item').forEach(el => addSwipe(el))
+}
+
+async function deleteNotif(id) {
+  await sb.from('notifications').delete().eq('id', id)
+  const el = document.getElementById('notif-' + id)
+  el?.remove()
+}
+
+// ── SWIPE HELPER ──────────────────────────────────────────────
+function addSwipe(el) {
+  let startX = 0, dx = 0
+  el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dx = 0 }, { passive: true })
+  el.addEventListener('touchmove', e => {
+    dx = e.touches[0].clientX - startX
+    if (dx < -20) el.style.transform = `translateX(${Math.max(dx, -80)}px)`
+    else if (dx > 10) el.style.transform = 'translateX(0)'
+  }, { passive: true })
+  el.addEventListener('touchend', () => {
+    if (dx < -60) el.classList.add('swiped')
+    else el.style.transform = 'translateX(0)'
+  })
+}
+
+// ── MESSAGES PRIVÉS ───────────────────────────────────────────
+let currentConvCode = null
+let currentConvPrenom = null
+
+async function loadConvList() {
+  const code = Auth.getCode()
+  const { data } = await sb.from('messages_prives')
+    .select('*')
+    .or(`from_code.eq.${code},to_code.eq.${code}`)
+    .order('created_at', { ascending: false })
+  const convMap = {}
+  data?.forEach(m => {
+    const other = m.from_code === code ? m.to_code : m.from_code
+    const otherPrenom = m.from_code === code ? (m.to_prenom || other) : m.from_prenom
+    if (!convMap[other]) convMap[other] = { code: other, prenom: otherPrenom, last: m.contenu, time: m.created_at, unread: 0 }
+    if (!m.read && m.to_code === code) convMap[other].unread++
+  })
+  const convs = Object.values(convMap)
+  const list = document.getElementById('conv-list')
+  const unreadTotal = convs.reduce((a, c) => a + c.unread, 0)
+  document.getElementById('msg-dot').style.display = unreadTotal ? 'inline-block' : 'none'
+  if (!convs.length) { list.innerHTML = '<div style="padding:32px;text-align:center;color:var(--txt3);font-size:.85rem;">Aucun message pour l\'instant</div>'; return }
+  list.innerHTML = convs.map(c => `
+    <div class="conv-item" id="conv-${c.code}" data-code="${c.code}" onclick="openConv('${c.code}','${esc(c.prenom)}')">
+      <div class="swipe-delete" onclick="event.stopPropagation();deleteConv('${c.code}')">Supprimer</div>
+      <div class="conv-av" style="background:var(--rouge)">${c.prenom.charAt(0).toUpperCase()}</div>
+      <div class="conv-body">
+        <div class="conv-name">${esc(c.prenom)}</div>
+        <div class="conv-last">${esc(c.last)}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+        <div class="conv-time">${timeAgo(c.time)}</div>
+        ${c.unread ? '<div class="conv-unread-dot"></div>' : ''}
+      </div>
+    </div>`).join('')
+  list.querySelectorAll('.conv-item').forEach(el => addSwipe(el))
+}
+
+async function openConv(toCode, toPrenom) {
+  currentConvCode = toCode
+  currentConvPrenom = toPrenom
+  document.getElementById('conv-list-view').style.display = 'none'
+  document.getElementById('conv-detail-view').style.display = 'block'
+  document.getElementById('conv-name').textContent = toPrenom
+  const avEl = document.getElementById('conv-av')
+  avEl.textContent = toPrenom.charAt(0).toUpperCase()
+  const code = Auth.getCode()
+  const { data } = await sb.from('messages_prives')
+    .select('*')
+    .or(`and(from_code.eq.${code},to_code.eq.${toCode}),and(from_code.eq.${toCode},to_code.eq.${code})`)
+    .order('created_at', { ascending: true })
+  const bubbles = document.getElementById('conv-bubbles')
+  bubbles.innerHTML = (data || []).map(m => {
+    const isMe = m.from_code === code
+    return `<div style="display:flex;flex-direction:column;">
+      <div class="bubble ${isMe ? 'bubble-me' : 'bubble-other'}">${esc(m.contenu)}</div>
+      <div class="bubble-time" style="${isMe ? 'text-align:right' : ''}">${timeAgo(m.created_at)}</div>
+    </div>`
+  }).join('')
+  bubbles.scrollTop = bubbles.scrollHeight
+  // Mark read
+  await sb.from('messages_prives').update({ read: true }).eq('from_code', toCode).eq('to_code', code).eq('read', false)
+}
+
+function closeConv() {
+  currentConvCode = null
+  document.getElementById('conv-list-view').style.display = 'block'
+  document.getElementById('conv-detail-view').style.display = 'none'
+  loadConvList()
+}
+
+async function sendMsg() {
+  const input = document.getElementById('msg-input')
+  const contenu = input.value.trim()
+  if (!contenu || !currentConvCode) return
+  const code = Auth.getCode()
+  const prenom = Auth.getPrenom ? Auth.getPrenom() : ''
+  input.value = ''
+  await sb.from('messages_prives').insert({ from_code: code, from_prenom: prenom, to_code: currentConvCode, to_prenom: currentConvPrenom, contenu })
+  // Notif pour le destinataire
+  await sb.from('notifications').insert({ dest_code: currentConvCode, from_code: code, from_prenom: prenom, type: 'message', message: (prenom || 'Quelqu\'un') + ' vous a envoyé un message' })
+  openConv(currentConvCode, currentConvPrenom)
+}
+
+async function deleteConv(otherCode) {
+  const code = Auth.getCode()
+  await sb.from('messages_prives').delete()
+    .or(`and(from_code.eq.${code},to_code.eq.${otherCode}),and(from_code.eq.${otherCode},to_code.eq.${code})`)
+  loadConvList()
+}
+
 function doLogout() {
   Auth.logout()
 }
@@ -463,12 +744,14 @@ async function init() {
   try {
     const p = await Api.getProfil(code)
     if (p) { Auth.save(p); renderProfil(p) }
-    const stats = await Api.getProfilStats(code)
-    document.getElementById('s-posts').textContent = stats.posts
-    document.getElementById('s-likes').textContent = stats.likes
-    document.getElementById('s-cmts').textContent = stats.commentaires
     await loadMesPosts(code)
   } catch (e) { console.warn(e) }
+
+  // Streak + Notifs
+  try {
+    await initStreak(code)
+    await loadNotifs(code)
+  } catch(e) { console.warn('streak/notifs:', e) }
 
   Api.trackView('profil')
 }
