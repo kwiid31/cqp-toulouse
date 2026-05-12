@@ -266,8 +266,11 @@
       </div>
     </div>
 
-    <!-- Semaine streak -->
-    <div id="streak-week" style="display:flex;gap:5px;justify-content:center;margin-top:14px;padding:0 4px;"></div>
+    <!-- FLAMME ZONE -->
+    <div id="flamme-zone" style="background:rgba(0,0,0,.22);border-radius:12px 12px 0 0;margin:14px -16px 0;padding:12px 16px 14px;">
+      <p id="flamme-phrase" style="font-size:.78rem;color:#fff;line-height:1.6;text-align:center;margin-bottom:10px;font-family:'Barlow',sans-serif;"></p>
+      <div id="streak-week" style="display:flex;gap:5px;justify-content:center;"></div>
+    </div>
   </div>
 
   <!-- ONGLETS -->
@@ -513,26 +516,56 @@ async function initStreak(code) {
 }
 
 function renderStreak(n) {
+  // Badge haut droite
   const icon = document.getElementById('streak-icon')
   const count = document.getElementById('streak-count')
-  count.textContent = n
-  if (n >= 30) icon.textContent = '⭐'
-  else if (n >= 7) { icon.textContent = '🔥'; document.querySelector('.profil-av')?.classList.add('av-gold') }
-  else icon.textContent = n >= 3 ? '🔥' : '🌱'
-  // Semaine visuelle
-  const days = ['L','M','M','J','V','S','D']
+  if (count) count.textContent = n
+  if (icon) icon.textContent = n >= 7 ? '🔥' : n >= 3 ? '🔥' : '🌱'
+
+  // Anneau doré à 7 jours
+  if (n >= 7) document.querySelector('.profil-av')?.classList.add('av-gold')
+
+  // Fond hero dynamique
+  const hero = document.querySelector('.profil-hero')
+  if (hero && n === 1) hero.style.background = 'linear-gradient(160deg,#0a0a0a 0%,#1a0305 100%)'
+
+  // Phrase narrative
+  const phrase = document.getElementById('flamme-phrase')
+  if (phrase) {
+    if (n === 1) phrase.innerHTML = `Ta flamme vient de naître dans le réseau.<br><span style="color:rgba(255,255,255,.5);font-size:.72rem;">Reviens demain pour la garder vivante.</span>`
+    else if (n < 7) phrase.innerHTML = `Tu alimentes la flamme <strong style="color:#FFD700;">${n} jours de suite.</strong><br><span style="color:rgba(255,255,255,.55);font-size:.72rem;">Elle grandit avec toi, chaque jour.</span>`
+    else if (n < 30) phrase.innerHTML = `<strong style="color:#FFD700;">Semaine complète 🏆</strong><br><span style="color:rgba(255,255,255,.8);">Tu fais partie du cœur du réseau.</span>`
+    else phrase.innerHTML = `<strong style="color:#FFD700;">${n} jours — la flamme ne s'éteint plus.</strong><br><span style="color:rgba(255,255,255,.7);">Le réseau brûle grâce à toi.</span>`
+  }
+
+  // SVG flamme
+  const flameSVG = (color, size=13) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none"><path d="M12 2c0 6-8 8-8 14a8 8 0 0016 0c0-6-8-8-8-14z" fill="${color}"/><path d="M12 10c0 3-3 4-3 7a3 3 0 006 0c0-3-3-4-3-7z" fill="rgba(255,255,255,.3)"/></svg>`
+
+  const days = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']
   const todayIdx = (new Date().getDay() + 6) % 7
   const wrap = document.getElementById('streak-week')
   if (!wrap) return
+
   wrap.innerHTML = days.map((d, i) => {
-    const isPast = i < todayIdx && i >= todayIdx - n + 1
+    const isDone = i < todayIdx && i >= Math.max(0, todayIdx - n + 1)
     const isToday = i === todayIdx
-    const dot = isToday ? `<div class="streak-dot" style="background:var(--rouge);font-size:7px;color:#fff;font-weight:700;">Auj</div>`
-      : isPast ? `<div class="streak-dot" style="background:rgba(255,200,0,.2);">🔥</div>`
-      : `<div class="streak-dot" style="background:rgba(255,255,255,.1);"></div>`
-    return `<div class="streak-day">${dot}<div style="font-size:7px;color:rgba(255,255,255,.3);text-transform:uppercase;">${d}</div></div>`
+
+    let circle, lblColor
+    if (isToday) {
+      circle = `<div style="width:28px;height:28px;border-radius:50%;background:#FFD700;display:flex;align-items:center;justify-content:center;">${flameSVG('#C8102E', 14)}</div>`
+      lblColor = '#FFD700'
+    } else if (isDone) {
+      circle = `<div style="width:28px;height:28px;border-radius:50%;background:rgba(255,200,0,.18);border:1.5px solid rgba(255,200,0,.55);display:flex;align-items:center;justify-content:center;">${flameSVG('rgba(255,200,0,.9)', 12)}</div>`
+      lblColor = 'rgba(255,200,0,.6)'
+    } else {
+      circle = `<div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);"></div>`
+      lblColor = 'rgba(255,255,255,.25)'
+    }
+
+    return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">${circle}<span style="font-size:6.5px;text-transform:uppercase;letter-spacing:.3px;color:${lblColor};font-weight:${isToday?'700':'400'};">${isToday ? 'Auj' : d.charAt(0)}</span></div>`
   }).join('')
 }
+
 
 // ── NOTIFS ────────────────────────────────────────────────────
 const NOTIF_COLORS = { like:'#C8102E', comment:'#1877F2', streak:'#D97706', reward:'#D97706', message:'#7C3AED' }
