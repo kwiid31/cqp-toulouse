@@ -216,6 +216,15 @@
 .bubble-other{background:#fff;color:var(--txt1);border-radius:14px 14px 14px 3px;align-self:flex-start;border:1px solid var(--border)}
 .bubble-me{background:var(--rouge);color:#fff;border-radius:14px 14px 3px 14px;align-self:flex-end}
 .bubble-time{font-size:.65rem;color:var(--txt3);margin-top:2px}
+.av-gold{outline:3px solid rgba(255,200,0,.85);outline-offset:3px;animation:goldPulse 2s infinite}
+@keyframes goldPulse{0%,100%{outline-color:rgba(255,200,0,.85)}50%{outline-color:rgba(255,200,0,.3)}}
+.level-wrap{margin-top:10px;width:100%}
+.level-label{font-size:.68rem;color:rgba(255,255,255,.4);display:flex;justify-content:space-between;margin-bottom:4px}
+.level-bar-bg{background:rgba(255,255,255,.1);border-radius:4px;height:4px;overflow:hidden}
+.level-bar-fill{height:4px;border-radius:4px;background:linear-gradient(90deg,rgba(255,200,0,.5),rgba(255,200,0,1));transition:width .6s ease}
+.member-search-inp{width:100%;padding:10px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:20px;font-family:'Barlow',sans-serif;font-size:.85rem;outline:none;}
+.member-result{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#fff;border-bottom:1px solid var(--bg3);cursor:pointer;transition:background .15s}
+.member-result:active{background:var(--bg3)}
 </style>
 
 <!-- VUE PROFIL -->
@@ -242,6 +251,14 @@
     <div style="font-family:'Barlow Condensed',sans-serif;font-size:.78rem;color:rgba(255,255,255,.7);margin-top:6px;" id="p-quartier"></div>
     <!-- BARRE STREAK SEMAINE -->
     <div id="streak-week" style="display:flex;gap:6px;justify-content:center;margin-top:14px;"></div>
+    <!-- BARRE DE NIVEAU -->
+    <div class="level-wrap" id="level-wrap" style="padding:0 20px;">
+      <div class="level-label">
+        <span id="level-label-txt">Niveau 1 · Nouveau</span>
+        <span id="level-pts-txt">0 / 100 pts</span>
+      </div>
+      <div class="level-bar-bg"><div class="level-bar-fill" id="level-bar" style="width:0%"></div></div>
+    </div>
   </div>
 
   <!-- ONGLETS -->
@@ -264,6 +281,10 @@
   <div id="tab-content-messages" class="section" style="display:none;">
     <!-- VUE LISTE -->
     <div id="conv-list-view">
+      <div style="padding:12px 16px;background:#fff;border-bottom:1px solid var(--bg3);">
+        <input class="member-search-inp" id="member-search" placeholder="🔍 Chercher quelqu'un par prénom…" oninput="searchMember(this.value)">
+      </div>
+      <div id="member-results" style="display:none;"></div>
       <div id="conv-list"></div>
       <div style="padding:16px;text-align:center;font-size:.78rem;color:var(--txt3);line-height:1.6;">
         Tu peux écrire à quelqu'un dès que vous avez interagi dans le flux
@@ -648,6 +669,60 @@ async function deleteConv(otherCode) {
   loadConvList()
 }
 
+// ── NIVEAU ────────────────────────────────────────────────────
+const LEVELS = [
+  { n: 1, label: 'Nouveau',         pts: 100 },
+  { n: 2, label: 'Habitant actif',  pts: 300 },
+  { n: 3, label: 'Voix du quartier',pts: 700 },
+  { n: 4, label: 'Pilier',          pts: 1500 },
+  { n: 5, label: 'Légende',         pts: 99999 },
+]
+
+function calcPoints(streak, posts, likes, cmts) {
+  return (streak * 10) + (posts * 30) + (likes * 5) + (cmts * 15)
+}
+
+function renderLevel(streak, posts = 0, likes = 0, cmts = 0) {
+  const pts = calcPoints(streak, posts, likes, cmts)
+  let lvl = LEVELS[0]
+  let next = LEVELS[1]
+  for (let i = 0; i < LEVELS.length - 1; i++) {
+    if (pts >= LEVELS[i].pts) { lvl = LEVELS[i + 1] || LEVELS[LEVELS.length - 1]; next = LEVELS[i + 2] || null }
+    else { lvl = LEVELS[i]; next = LEVELS[i + 1]; break }
+  }
+  const prevPts = LEVELS[LEVELS.indexOf(lvl) - 1]?.pts || 0
+  const pct = next ? Math.min(100, Math.round(((pts - prevPts) / (next.pts - prevPts)) * 100)) : 100
+  const el_lbl = document.getElementById('level-label-txt')
+  const el_pts = document.getElementById('level-pts-txt')
+  const el_bar = document.getElementById('level-bar')
+  if (el_lbl) el_lbl.textContent = `Niveau ${lvl.n} · ${lvl.label}`
+  if (el_pts) el_pts.textContent = next ? `${pts} / ${next.pts} pts` : 'Niveau max !'
+  if (el_bar) el_bar.style.width = pct + '%'
+}
+
+// ── RECHERCHE MEMBRE ──────────────────────────────────────────
+let searchTimeout = null
+async function searchMember(q) {
+  const results = document.getElementById('member-results')
+  if (!q || q.length < 2) { results.style.display = 'none'; return }
+  clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(async () => {
+    const myCode = Auth.getCode()
+    const { data } = await sb.from('profils').select('code,prenom,quartier').ilike('prenom', `%${q}%`).neq('code', myCode).limit(8)
+    if (!data?.length) { results.innerHTML = '<div style="padding:12px 16px;font-size:.82rem;color:var(--txt3);">Aucun résultat</div>'; results.style.display = 'block'; return }
+    results.style.display = 'block'
+    results.innerHTML = data.map(p => `
+      <div class="member-result" onclick="openConv('${p.code}','${esc(p.prenom)}')">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">${p.prenom.charAt(0).toUpperCase()}</div>
+        <div>
+          <div style="font-size:.88rem;font-weight:700;color:var(--txt1);">${esc(p.prenom)}</div>
+          ${p.quartier ? `<div style="font-size:.75rem;color:var(--txt3);">📍 ${esc(p.quartier)}</div>` : ''}
+        </div>
+      </div>`).join('')
+  }, 300)
+}
+
+// ── RECHERCHE MEMBRE ──────────────────────────────────────────
 function doLogout() {
   Auth.logout()
 }
@@ -750,10 +825,14 @@ async function init() {
     await loadMesPosts(code)
   } catch (e) { console.warn(e) }
 
-  // Streak + Notifs
+  // Streak + Notifs + Level
   try {
     await initStreak(code)
     await loadNotifs(code)
+    // Stats pour le niveau
+    const stats = await Api.getProfilStats(code)
+    const streakData = await sb.from('streaks').select('current_streak').eq('code', code).single()
+    renderLevel(streakData.data?.current_streak || 1, stats.posts, stats.likes, stats.commentaires)
   } catch(e) { console.warn('streak/notifs:', e) }
 
   Api.trackView('profil')
