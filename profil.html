@@ -453,8 +453,11 @@ const STREAK_REWARDS = [
 
 async function initStreak(code) {
   const today = new Date().toISOString().split('T')[0]
-  const res = await sb.from('streaks').select('*').eq('code', code).single().catch(() => null)
-  let streak = res?.data
+  let streak = null
+  try {
+    const res = await sb.from('streaks').select('*').eq('code', code).single()
+    if (!res.error) streak = res.data
+  } catch(e) {}
   if (!streak) {
     await sb.from('streaks').insert({ code, current_streak: 1, last_visit: today, longest_streak: 1 })
     streak = { current_streak: 1, last_visit: today, longest_streak: 1 }
