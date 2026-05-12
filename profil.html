@@ -79,7 +79,7 @@
       </div>
     </div>
     <button onclick="goConnect('signup')" class="btn-rouge" style="width:100%;max-width:320px;font-size:1rem;padding:14px;">Rejoindre le réseau →</button>
-    <button onclick="goConnect('login')" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:.8rem;margin-top:12px;cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:underline;">J'ai déjà un code</button>
+    <button onclick="goConnect('login')" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:.8rem;margin-top:12px;cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:underline;">J'ai déjà un identifiant</button>
   </div>
 
   <!-- TÉMOIGNAGES/PROFILS -->
@@ -149,7 +149,7 @@
       <div class="fg"><label>Prénom *</label><input id="s-prenom" placeholder="Ex : Karim" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
       <div class="fg"><label>Quartier</label><input id="s-quartier" placeholder="Ex : Mirail, Bellefontaine…" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
       <div class="fg">
-        <label>Ton identifiant CQP — 6 chiffres *</label>
+        <label>Crée ton identifiant — 6 chiffres *</label>
         <div class="code-inputs" id="signup-code-inputs">
           <input class="code-digit" id="sc0" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
           <input class="code-digit" id="sc1" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
@@ -167,7 +167,7 @@
       <button class="btn-rouge" id="signup-btn" onclick="doSignup()">Créer mon profil</button>
       <div class="form-msg" id="signup-msg"></div>
       <div class="divider">ou</div>
-      <button class="btn-outline" onclick="switchPanel('login')">J'ai déjà un code</button>
+      <button class="btn-outline" onclick="switchPanel('login')">J'ai déjà un identifiant</button>
     </div>
 
     <div id="panel-code" class="connect-box" style="display:none;"></div>
