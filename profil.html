@@ -220,6 +220,9 @@
 .bubble-time{font-size:.65rem;color:var(--txt3);margin-top:2px}
 .av-gold{outline:3px solid rgba(255,200,0,.85);outline-offset:3px;animation:goldPulse 2s infinite}
 @keyframes goldPulse{0%,100%{outline-color:rgba(255,200,0,.85)}50%{outline-color:rgba(255,200,0,.3)}}
+@keyframes breathe{0%,100%{border-color:rgba(255,255,255,.25);box-shadow:none}50%{border-color:rgba(255,200,0,.55);box-shadow:0 0 14px rgba(255,200,0,.2)}}
+@keyframes pulseRing{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.7);opacity:0}}
+.no-scrollbar::-webkit-scrollbar{display:none}
 .level-wrap{margin-top:10px;width:100%}
 .level-label{font-size:.68rem;color:rgba(255,255,255,.4);display:flex;justify-content:space-between;margin-bottom:4px}
 .level-bar-bg{background:rgba(255,255,255,.1);border-radius:4px;height:4px;overflow:hidden}
@@ -267,9 +270,9 @@
     </div>
 
     <!-- FLAMME ZONE -->
-    <div id="flamme-zone" style="background:rgba(0,0,0,.22);border-radius:12px 12px 0 0;margin:14px -16px 0;padding:12px 16px 14px;">
-      <p id="flamme-phrase" style="font-size:.78rem;color:#fff;line-height:1.6;text-align:center;margin-bottom:10px;font-family:'Barlow',sans-serif;"></p>
-      <div id="streak-week" style="display:flex;gap:5px;justify-content:center;"></div>
+    <div id="flamme-zone" style="background:rgba(0,0,0,.22);border-radius:14px 14px 0 0;margin:14px -16px 0;padding:14px 0 16px;">
+      <p id="flamme-phrase" style="font-size:.78rem;color:#fff;line-height:1.6;text-align:center;margin-bottom:14px;padding:0 16px;font-family:'Barlow',sans-serif;min-height:38px;"></p>
+      <div id="streak-week" style="display:flex;gap:10px;overflow-x:auto;padding:0 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;" class="no-scrollbar"></div>
     </div>
   </div>
 
@@ -516,54 +519,110 @@ async function initStreak(code) {
 }
 
 function renderStreak(n) {
-  // Badge haut droite
   const icon = document.getElementById('streak-icon')
   const count = document.getElementById('streak-count')
   if (count) count.textContent = n
   if (icon) icon.textContent = n >= 7 ? '🔥' : n >= 3 ? '🔥' : '🌱'
-
-  // Anneau doré à 7 jours
   if (n >= 7) document.querySelector('.profil-av')?.classList.add('av-gold')
-
-  // Fond hero dynamique
   const hero = document.querySelector('.profil-hero')
-  if (hero && n === 1) hero.style.background = 'linear-gradient(160deg,#0a0a0a 0%,#1a0305 100%)'
+  if (hero && n <= 1) hero.style.background = 'linear-gradient(160deg,#0a0a0a 0%,#1a0305 100%)'
 
-  // Phrase narrative
   const phrase = document.getElementById('flamme-phrase')
   if (phrase) {
-    if (n === 1) phrase.innerHTML = `Ta flamme vient de naître dans le réseau.<br><span style="color:rgba(255,255,255,.5);font-size:.72rem;">Reviens demain pour la garder vivante.</span>`
-    else if (n < 7) phrase.innerHTML = `Tu alimentes la flamme <strong style="color:#FFD700;">${n} jours de suite.</strong><br><span style="color:rgba(255,255,255,.55);font-size:.72rem;">Elle grandit avec toi, chaque jour.</span>`
-    else if (n < 30) phrase.innerHTML = `<strong style="color:#FFD700;">Semaine complète 🏆</strong><br><span style="color:rgba(255,255,255,.8);">Tu fais partie du cœur du réseau.</span>`
-    else phrase.innerHTML = `<strong style="color:#FFD700;">${n} jours — la flamme ne s'éteint plus.</strong><br><span style="color:rgba(255,255,255,.7);">Le réseau brûle grâce à toi.</span>`
+    if (n === 0) phrase.innerHTML = `Appuie pour allumer<br><span style="color:rgba(255,255,255,.5);font-size:.7rem">ta flamme dans le réseau</span>`
+    else if (n === 1) phrase.innerHTML = `Ta flamme vient de naître dans le réseau.<br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Reviens demain pour la garder vivante.</span>`
+    else if (n < 7) phrase.innerHTML = `Tu alimentes la flamme <strong style="color:#FFD700">${n} jours de suite.</strong><br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Elle grandit avec toi, chaque jour.</span>`
+    else if (n < 30) phrase.innerHTML = `<strong style="color:#FFD700">Semaine complète 🏆</strong><br><span style="color:rgba(255,255,255,.75)">Tu fais partie du cœur du réseau.</span>`
+    else phrase.innerHTML = `<strong style="color:#FFD700">${n} jours — la flamme ne s'éteint plus.</strong><br><span style="color:rgba(255,255,255,.7)">Le réseau brûle grâce à toi.</span>`
   }
 
-  // SVG flamme
-  const flameSVG = (color, size=13) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none"><path d="M12 2c0 6-8 8-8 14a8 8 0 0016 0c0-6-8-8-8-14z" fill="${color}"/><path d="M12 10c0 3-3 4-3 7a3 3 0 006 0c0-3-3-4-3-7z" fill="rgba(255,255,255,.3)"/></svg>`
+  const flameSVG = (bodyColor, glowColor, size=28) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none"><path d="M12 2c0 6-8 8-8 14a8 8 0 0016 0c0-6-8-8-8-14z" fill="${bodyColor}"/><path d="M12 10c0 3-3 4-3 7a3 3 0 006 0c0-3-3-4-3-7z" fill="${glowColor}"/></svg>`
 
-  const days = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']
+  const today = new Date().toISOString().split('T')[0]
+  const alreadyLit = localStorage.getItem('flamme_lit_' + today) === '1'
   const todayIdx = (new Date().getDay() + 6) % 7
+  const dayNames = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']
+
   const wrap = document.getElementById('streak-week')
   if (!wrap) return
+  wrap.innerHTML = ''
 
-  wrap.innerHTML = days.map((d, i) => {
+  dayNames.forEach((d, i) => {
     const isDone = i < todayIdx && i >= Math.max(0, todayIdx - n + 1)
     const isToday = i === todayIdx
+    const isLit = isToday && (alreadyLit || n > 1)
 
-    let circle, lblColor
-    if (isToday) {
-      circle = `<div style="width:28px;height:28px;border-radius:50%;background:#FFD700;display:flex;align-items:center;justify-content:center;">${flameSVG('#C8102E', 14)}</div>`
-      lblColor = '#FFD700'
-    } else if (isDone) {
-      circle = `<div style="width:28px;height:28px;border-radius:50%;background:rgba(255,200,0,.18);border:1.5px solid rgba(255,200,0,.55);display:flex;align-items:center;justify-content:center;">${flameSVG('rgba(255,200,0,.9)', 12)}</div>`
-      lblColor = 'rgba(255,200,0,.6)'
+    const el = document.createElement('div')
+    el.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;scroll-snap-align:center;'
+
+    let circle, lblStyle
+    if (isDone || (isToday && isLit)) {
+      const bg = isToday ? '#FFD700' : 'rgba(255,200,0,.18)'
+      const border = isToday ? 'none' : '2px solid rgba(255,200,0,.65)'
+      const flame = isToday ? flameSVG('#C8102E','rgba(255,255,255,.4)',30) : flameSVG('rgba(255,200,0,.95)','rgba(255,255,255,.3)',26)
+      circle = `<div id="circle-${i}" style="width:60px;height:60px;border-radius:50%;background:${bg};border:${border};display:flex;align-items:center;justify-content:center;position:relative;">${flame}</div>`
+      lblStyle = isToday ? 'color:#FFD700;font-weight:700' : 'color:rgba(255,200,0,.65)'
+    } else if (isToday) {
+      // Pas encore allumé — pulse
+      circle = `<div id="circle-${i}" style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.07);border:2px dashed rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;animation:breathe 2s ease-in-out infinite;position:relative;">${flameSVG('rgba(255,255,255,.2)','rgba(255,255,255,.1)',22)}<span style="position:absolute;bottom:-18px;font-size:7px;color:rgba(255,255,255,.4);white-space:nowrap;letter-spacing:.3px;">Appuie ici</span></div>`
+      lblStyle = 'color:rgba(255,255,255,.5);font-weight:700'
     } else {
-      circle = `<div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);"></div>`
-      lblColor = 'rgba(255,255,255,.25)'
+      circle = `<div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);"></div>`
+      lblStyle = 'color:rgba(255,255,255,.2)'
     }
 
-    return `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;">${circle}<span style="font-size:6.5px;text-transform:uppercase;letter-spacing:.3px;color:${lblColor};font-weight:${isToday?'700':'400'};">${isToday ? 'Auj' : d.charAt(0)}</span></div>`
-  }).join('')
+    const lbl = isToday ? 'Auj' : d.charAt(0)
+    el.innerHTML = `${circle}<span style="font-size:8px;text-transform:uppercase;letter-spacing:.3px;${lblStyle}">${lbl}</span>`
+
+    if (isToday && !isLit) {
+      const circleEl = el.querySelector(`#circle-${i}`)
+      if (circleEl) {
+        circleEl.addEventListener('click', () => lightFlamme(i, n, circleEl))
+        circleEl.addEventListener('touchend', (e) => { e.preventDefault(); lightFlamme(i, n, circleEl) })
+      }
+    }
+    wrap.appendChild(el)
+  })
+
+  // Scroll vers aujourd'hui
+  setTimeout(() => {
+    const todayEl = wrap.children[todayIdx]
+    if (todayEl) todayEl.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' })
+  }, 100)
+}
+
+function lightFlamme(idx, n, el) {
+  // Vibration
+  if (navigator.vibrate) navigator.vibrate([30, 20, 60])
+
+  // Animation allumage
+  el.style.animation = 'none'
+  el.style.background = '#FFD700'
+  el.style.border = 'none'
+  el.style.cursor = 'default'
+  el.innerHTML = `<div style="position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(255,200,0,.8);animation:pulseRing .6s ease-out forwards;"></div><svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 2c0 6-8 8-8 14a8 8 0 0016 0c0-6-8-8-8-14z" fill="#C8102E"/><path d="M12 10c0 3-3 4-3 7a3 3 0 006 0c0-3-3-4-3-7z" fill="rgba(255,255,255,.4)"/></svg>`
+
+  // Sauver en localStorage
+  const today = new Date().toISOString().split('T')[0]
+  localStorage.setItem('flamme_lit_' + today, '1')
+
+  // Mettre à jour la phrase
+  const newN = n + 1
+  const phrase = document.getElementById('flamme-phrase')
+  if (phrase) {
+    if (newN === 1) phrase.innerHTML = `Ta flamme vient de naître dans le réseau.<br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Reviens demain pour la garder vivante.</span>`
+    else phrase.innerHTML = `Tu alimentes la flamme <strong style="color:#FFD700">${newN} jours de suite.</strong><br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Elle grandit avec toi, chaque jour.</span>`
+  }
+
+  // Badge streak
+  const count = document.getElementById('streak-count')
+  if (count) count.textContent = newN
+  const icon = document.getElementById('streak-icon')
+  if (icon) icon.textContent = newN >= 7 ? '🔥' : newN >= 3 ? '🔥' : '🌱'
+
+  // Sauver streak en DB
+  const code = Auth.getCode()
+  if (code) sb.from('streaks').upsert({ code, current_streak: newN, last_visit: today, longest_streak: newN }).then(() => {})
 }
 
 
