@@ -738,16 +738,16 @@ function doLogout() {
 
 // ── PROFIL VIEW ──────────────────────────────────────────────
 function renderProfil(p) {
-  document.getElementById('p-name').textContent = p.prenom || 'Anonyme'
-  document.getElementById('p-code').textContent = 'Code : ' + p.code
-  document.getElementById('p-quartier').textContent = p.quartier ? '📍 ' + p.quartier : ''
-  document.getElementById('code-display').textContent = p.code
-  document.getElementById('e-prenom').value = p.prenom || ''
-  document.getElementById('e-quartier').value = p.quartier || ''
-  document.getElementById('e-bio').value = p.bio || ''
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val }
+  set('p-name', p.prenom || 'Anonyme')
+  set('p-quartier', p.quartier ? '📍 ' + p.quartier : '')
+  const cd = document.getElementById('code-display'); if (cd) cd.textContent = p.code
+  const ep = document.getElementById('e-prenom'); if (ep) ep.value = p.prenom || ''
+  const eq = document.getElementById('e-quartier'); if (eq) eq.value = p.quartier || ''
+  const eb = document.getElementById('e-bio'); if (eb) eb.value = p.bio || ''
+  const ee = document.getElementById('e-email'); if (ee) ee.value = p.email || ''
   const av = document.getElementById('profil-av')
-  if (p.photo_url) av.innerHTML = `<img src="${esc(p.photo_url)}" alt="">`
-  else av.textContent = (p.prenom || '?')[0].toUpperCase()
+  if (av) { if (p.photo_url) av.innerHTML = `<img src="${esc(p.photo_url)}" alt="">` ; else av.textContent = (p.prenom || '?')[0].toUpperCase() }
 }
 
 async function saveProfil() {
