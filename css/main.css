@@ -8,12 +8,12 @@
   --rouge:#C8102E; --rouge-dk:#a00d24; --rouge-lt:#fff0f2;
   --blue:#1877F2;  --green:#42B72A; --purple:#7C3AED; --orange:#EA580C;
   --txt:#050505;   --txt2:#65676B;  --txt3:#8A8D91;
-  --bg:#f0f2f5;    --bg2:#fff;      --bg3:#f0f2f5; --border:#D8DADF;
+  --bg:#F0F2F5;    --bg2:#fff;      --bg3:#F0F2F5; --border:#CED0D4;
   --shadow:0 1px 3px rgba(0,0,0,.1);
   --shadow-card:0 2px 8px rgba(0,0,0,.07);
   --r:12px; --r-sm:8px; --nav:58px;
 }
-html, body { font-size:15px; background:var(--bg); color:var(--txt); font-family:'Barlow',sans-serif; min-height:100vh; }
+html, body { font-size:15px; background:var(--bg); color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
 body { padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px); overscroll-behavior:none; }
 a { text-decoration:none; color:inherit; }
 button, label { cursor:pointer; font-family:inherit; outline:none; border:none; }
@@ -159,11 +159,11 @@ img { max-width:100%; display:block; }
 .c-av-28 { width:28px; height:28px; min-width:28px; font-size:.7rem; }
 .c-av-36 { width:36px; height:36px; min-width:36px; font-size:.85rem; }
 .card-meta { flex:1; min-width:0; }
-.card-author { font-weight:700; font-size:1rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--txt1); }
-.card-ts { font-size:.78rem; color:var(--txt3); margin-top:2px; display:flex; align-items:center; gap:4px; }
+.card-author { font-weight:700; font-size:.9375rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--txt1); }
+.card-ts { font-size:.8125rem; color:var(--txt3); margin-top:2px; display:flex; align-items:center; gap:4px; }
 .card-more { background:none; border:none; padding:10px; min-width:44px; min-height:44px; color:var(--txt3); border-radius:6px; transition:background .15s; }
 .card-more:active { background:var(--bg3); }
-.card-text { padding:8px 14px 12px; font-size:1rem; line-height:1.6; white-space:pre-wrap; word-break:break-word; color:var(--txt1); }
+.card-text { padding:8px 14px 12px; font-size:.9375rem; line-height:1.6; white-space:pre-wrap; word-break:break-word; color:var(--txt1); }
 .card-img-wrap { overflow:hidden; }
 .card-img { width:100%; max-height:420px; object-fit:cover; display:block; }
 
