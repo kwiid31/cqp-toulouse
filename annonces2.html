@@ -37,8 +37,8 @@
 @keyframes slideIn{from{transform:translateX(100%)}to{transform:none}}
 .drawer-head{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:flex-start;gap:10px;z-index:1;}
 .drawer-body{padding:16px;flex:1;}
-.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;justify-content:center;}
-.modal-ov.open{display:flex;}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.modal-ov.open{opacity:1;pointer-events:auto;}
 .modal-box{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding-bottom:max(24px,env(safe-area-inset-bottom));}
 </style>
 </head><body>

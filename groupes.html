@@ -56,8 +56,8 @@
 .chat-foot{padding:8px 8px 8px 10px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;align-items:center;padding-bottom:max(8px,env(safe-area-inset-bottom));}
 .chat-input{flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:24px;color:var(--txt);font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;}
 .chat-input:focus{border-color:var(--purple);}
-.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;justify-content:center;}
-.modal-ov.open{display:flex;}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.modal-ov.open{opacity:1;pointer-events:auto;}
 .modal-box{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding-bottom:max(24px,env(safe-area-inset-bottom));}
 </style>
 </head><body>
