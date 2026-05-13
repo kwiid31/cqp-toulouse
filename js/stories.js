@@ -14,11 +14,13 @@ const Stories = (() => {
     barEl.innerHTML = `
       <div class="add-story" onclick="Stories.openCompose()">
         <div class="add-story-ring">+</div>
-        <div class="add-story-txt">Story</div>
+        <div class="add-story-txt">Votre story</div>
       </div>
       ${_stories.map((s,i) => `
         <div class="story-thumb" onclick="Stories.open(${i})">
-          <div class="story-ring">
+          ${s.media_url ? `<img class="story-thumb-bg" src="${Utils.esc(s.media_url)}" alt="">` : ''}
+          <div class="story-thumb-overlay"></div>
+          <div class="story-ring ${s.seen ? 'story-ring-seen' : ''}">
             <div class="story-av">
               ${s.photo_url ? `<img src="${Utils.esc(s.photo_url)}" alt="">` : Utils.esc((s.prenom||'?')[0].toUpperCase())}
             </div>
