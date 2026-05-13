@@ -8,7 +8,7 @@
   --rouge:#C8102E; --rouge-dk:#a00d24; --rouge-lt:#fff0f2;
   --blue:#1877F2;  --green:#42B72A; --purple:#7C3AED; --orange:#EA580C;
   --txt:#050505;   --txt2:#65676B;  --txt3:#8A8D91;
-  --bg:#ECEEF2;    --bg2:#fff;      --bg3:#E4E6EB; --border:#D8DADF;
+  --bg:#f0f2f5;    --bg2:#fff;      --bg3:#f0f2f5; --border:#D8DADF;
   --shadow:0 1px 3px rgba(0,0,0,.1);
   --shadow-card:0 2px 8px rgba(0,0,0,.07);
   --r:12px; --r-sm:8px; --nav:58px;
@@ -39,7 +39,7 @@ img { max-width:100%; display:block; }
 .logo-sub  { font-family:'Barlow Condensed',sans-serif; font-size:.52rem; letter-spacing:2.5px; text-transform:uppercase; color:var(--txt3); }
 .topbar-right { display:flex; align-items:center; gap:6px; }
 .icon-btn {
-  width:38px; height:38px; background:var(--bg3); border-radius:50%;
+  width:38px; height:38px; background:none; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   position:relative; transition:background .15s;
 }
@@ -323,9 +323,8 @@ img { max-width:100%; display:block; }
   position:sticky; top:var(--nav); z-index:99;
 }
 .stories-bar::-webkit-scrollbar { display:none; }
-
 .story-thumb {
-  flex-shrink:0; width:96px; height:156px; cursor:pointer;
+  flex-shrink:0; width:110px; height:175px; cursor:pointer;
   border-radius:12px; overflow:hidden; position:relative;
   background:var(--bg3);
 }
@@ -360,7 +359,7 @@ img { max-width:100%; display:block; }
 
 /* Add story card */
 .add-story {
-  flex-shrink:0; width:96px; height:156px; cursor:pointer;
+  flex-shrink:0; width:110px; height:175px; cursor:pointer;
   border-radius:12px; overflow:hidden; position:relative;
   background:var(--bg3); border:0.5px solid var(--border);
   display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
@@ -395,7 +394,7 @@ img { max-width:100%; display:block; }
 @keyframes scroll-x { from{transform:translateX(100%)} to{transform:translateX(-100%)} }
 
 /* ── Composer ─────────────────────────────────────────────────── */
-.composer { background:#fff; padding:10px 14px; border-bottom:0.5px solid var(--border); }
+.composer { background:#fff; padding:8px 14px 10px; border-bottom:0.5px solid var(--border); }
 @media (min-width:600px) { .composer { border-radius:var(--r); box-shadow:var(--shadow-card); } }
 .composer-row { display:flex; align-items:center; gap:10px; }
 .c-name {
