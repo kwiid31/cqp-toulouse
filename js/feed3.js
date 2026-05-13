@@ -303,7 +303,7 @@ const Feed = (() => {
 
   // ── DELETE POST ───────────────────────────────────────────────
   const deletePost = async (postId, btn) => {
-    if (!confirm('Supprimer ce post ?')) return
+    if (!await showConfirm('Supprimer ce post ?', 'Cette publication sera définitivement effacée.')) return
     const { error } = await Api.hidePost(postId)
     if (!error) {
       document.getElementById(`card-${postId}`)?.remove()

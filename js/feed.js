@@ -254,7 +254,7 @@ const Feed = (() => {
 
   // ── DELETE ────────────────────────────────────────────────────
   const deletePost = async id => {
-    if (!confirm('Supprimer cette publication ?')) return
+    if (!await showConfirm('Supprimer ce post ?', 'Cette publication sera définitivement effacée.')) return
     await Api.hidePost(id)
     document.getElementById(`card-${id}`)?.remove()
     Utils.toast('Publication supprimée', 'success')

@@ -85,7 +85,59 @@ img { max-width:100%; display:block; }
 }
 .nav-pub:active { transform:scale(.88); box-shadow:0 2px 8px rgba(200,16,46,.3); }
 .nav-pub svg { width:20px; height:20px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; }
-@media (min-width:700px) { .bottom-nav { display:none; } body { padding-bottom:0; } }
+@media (min-width:700px) {
+  .bottom-nav { display:none; }
+  body { padding-bottom:0; padding-left:220px; }
+  .desktop-nav {
+    display:flex; flex-direction:column; gap:4px;
+    position:fixed; left:0; top:0; bottom:0; width:220px;
+    background:#fff; border-right:1px solid var(--border);
+    padding:20px 12px; z-index:200;
+  }
+  .desktop-nav-logo {
+    display:flex; align-items:center; gap:8px;
+    padding:8px 10px; margin-bottom:16px;
+  }
+  .desktop-nav-logo .logo-box {
+    background:var(--rouge); color:#fff;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:.9rem; letter-spacing:2px;
+    padding:4px 8px; border-radius:6px;
+  }
+  .desktop-nav-logo span {
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:.75rem; letter-spacing:2px;
+    text-transform:uppercase; color:var(--txt3);
+  }
+  .desktop-nav-item {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:10px;
+    color:var(--txt2); text-decoration:none;
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:.9rem; letter-spacing:.5px;
+    text-transform:uppercase; font-weight:600;
+    transition:background .15s, color .15s;
+  }
+  .desktop-nav-item svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+  .desktop-nav-item:hover { background:var(--bg3); color:var(--txt1); }
+  .desktop-nav-item.active { background:rgba(200,16,46,.08); color:var(--rouge); }
+  .desktop-nav-item.active svg { stroke:var(--rouge); }
+  .desktop-nav-pub {
+    display:flex; align-items:center; gap:10px;
+    padding:12px 14px; border-radius:12px;
+    background:var(--rouge); color:#fff; border:none;
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:.9rem; letter-spacing:.5px;
+    text-transform:uppercase; font-weight:700;
+    cursor:pointer; margin-top:8px; width:100%;
+    transition:opacity .15s;
+  }
+  .desktop-nav-pub svg { width:16px; height:16px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; flex-shrink:0; }
+  .desktop-nav-pub:hover { opacity:.88; }
+}
+@media (prefers-color-scheme:dark) {
+  .desktop-nav { background:var(--bg2); border-right-color:var(--border); }
+}
 
 /* ── Cards ────────────────────────────────────────────────────── */
 .card { background:#fff; overflow:hidden; position:relative; }
@@ -392,3 +444,13 @@ img { max-width:100%; display:block; }
   opacity:1;
   pointer-events:auto;
 }
+
+/* ── Confirm bottom sheet ─────────────────────────────────────── */
+#confirm-sheet{position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s ease;background:rgba(0,0,0,.5);}
+#confirm-sheet.open{opacity:1;pointer-events:auto;}
+#confirm-sheet .sheet-inner{background:#fff;width:100%;max-width:600px;border-radius:20px 20px 0 0;padding:20px 16px max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;}
+#confirm-sheet .sheet-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--txt1);letter-spacing:.3px;text-align:center;}
+#confirm-sheet .sheet-msg{font-size:.85rem;color:var(--txt2);text-align:center;line-height:1.5;}
+#confirm-sheet .btn-danger{background:#E24B4A;color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.5px;width:100%;cursor:pointer;}
+#confirm-sheet .btn-cancel{background:var(--bg3);color:var(--txt2);border:none;border-radius:12px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:600;width:100%;cursor:pointer;}
+@media (prefers-color-scheme:dark){#confirm-sheet .sheet-inner{background:var(--bg2);}}
