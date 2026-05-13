@@ -112,7 +112,7 @@ const Feed = (() => {
       _index = 0
       // Séparateur visuel
       _el.insertAdjacentHTML('beforeend',
-        '<div style="text-align:center;padding:20px;color:var(--txt3);font-size:.8rem;border-top:1px solid var(--border);">— Tout vu ! On repart du début —</div>'
+        '<div class="feed-end">— Tout vu ! On repart du début —</div>'
       )
     }
 
@@ -175,17 +175,17 @@ const Feed = (() => {
     const titre = Utils.esc(a.titre)
     const time = Utils.timeAgo(a.date_publication)
     const excerpt = Utils.esc((a.contenu||'').substring(0,120)) + ((a.contenu||'').length>120?'…':'')
-    return '<article class="card" onclick="location.href=\'actus2.html#act-' + a.id + '\'" style="cursor:pointer;border-left:5px solid #C8102E;">'
+    return '<article class="card" onclick="location.href=\'actus2.html#act-' + a.id + '\'" class="card-clickable card-border-rouge">'
       + '<div class="card-head">'
       + '<div class="c-av c-av-40" style="background:#C8102E;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff;font-family:\'Bebas Neue\',sans-serif;letter-spacing:1px;font-size:.8rem;">CQP</div>'
       + '<div class="card-meta">'
-      + '<div class="card-author" style="color:#C8102E;font-size:.72rem;font-weight:700;letter-spacing:.5px;">📰 ACTU · ' + cat + '</div>'
+      + '<div class="card-author" class="badge-annonce">📰 ACTU · ' + cat + '</div>'
       + '<div class="card-ts">' + time + '</div>'
       + '</div>'
-      + '<span style="font-size:.72rem;color:#C8102E;font-weight:700;white-space:nowrap;">Lire →</span>'
+      + '<span class="card-link-rouge">Lire →</span>'
       + '</div>'
-      + '<div class="card-text" style="font-weight:700;font-size:.95rem;line-height:1.3;">' + titre + '</div>'
-      + (excerpt ? '<div class="card-text" style="color:var(--txt2);font-size:.82rem;padding-top:0;">' + excerpt + '</div>' : '')
+      + '<div class="card-text" class="card-titre-lg">' + titre + '</div>'
+      + (excerpt ? '<div class="card-text" class="card-desc">' + excerpt + '</div>' : '')
       + '</article>'
   }
 
@@ -195,17 +195,17 @@ const Feed = (() => {
     const titre = Utils.esc(a.titre)
     const desc = Utils.esc((a.description || '').substring(0, 100)) + ((a.description || '').length > 100 ? '…' : '')
     const av = prenom ? prenom[0].toUpperCase() : '?'
-    return `<article class="card" style="cursor:pointer;border-left:5px solid #2e7d32;" onclick="location.href='annonces.html#an-${a.id}'">
+    return `<article class="card" class="card-clickable card-border-vert" onclick="location.href='annonces.html#an-${a.id}'">
       <div class="card-head">
-        <div class="c-av c-av-40 c-av-init" style="background:#2e7d32;color:#fff;">${av}</div>
+        <div class="c-av c-av-40 c-av-init" class="c-av c-av-40 c-av-init card-av-annonce-v2">${av}</div>
         <div class="card-meta">
-          <div class="card-author" style="color:#2e7d32;font-size:.72rem;font-weight:700;letter-spacing:.5px;">📋 ANNONCE${qrt ? ' · ' + qrt : ''}</div>
+          <div class="card-author" class="card-author-annonce">📋 ANNONCE${qrt ? ' · ' + qrt : ''}</div>
           <div class="card-ts">${prenom}</div>
         </div>
-        <span style="font-size:.72rem;color:#2e7d32;font-weight:700;white-space:nowrap;">Voir →</span>
+        <span class="card-link-annonce">Voir →</span>
       </div>
-      <div class="card-text" style="font-weight:700;font-size:.95rem;">${titre}</div>
-      ${desc ? `<div class="card-text" style="color:var(--txt2);font-size:.82rem;padding-top:0;">${desc}</div>` : ''}
+      <div class="card-text" class="card-titre-lg">${titre}</div>
+      ${desc ? `<div class="card-text" class="card-desc">${desc}</div>` : ''}
     </article>`
   }
 
@@ -218,17 +218,17 @@ const Feed = (() => {
     const heureStr = d ? d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' }) : ''
     const prenom = Utils.esc(e.prenom || 'CQP')
     const av = prenom[0].toUpperCase()
-    return `<article class="card" style="cursor:pointer;border-left:5px solid #1565c0;" onclick="location.href='evenements.html#evt-${e.id}'">
+    return `<article class="card" class="card-clickable card-border-bleu" onclick="location.href='evenements.html#evt-${e.id}'">
       <div class="card-head">
-        <div class="c-av c-av-40 c-av-init" style="background:#1565c0;color:#fff;">${av}</div>
+        <div class="c-av c-av-40 c-av-init" class="c-av c-av-40 c-av-init card-av-evenement-v2">${av}</div>
         <div class="card-meta">
-          <div class="card-author" style="color:#1565c0;font-size:.72rem;font-weight:700;letter-spacing:.5px;">📅 ÉVÉNEMENT${dateStr ? ' · ' + dateStr : ''}</div>
+          <div class="card-author" class="card-author-evenement">📅 ÉVÉNEMENT${dateStr ? ' · ' + dateStr : ''}</div>
           <div class="card-ts">${heureStr ? '🕐 ' + heureStr : ''}${lieu ? ' · 📍 ' + lieu : ''}</div>
         </div>
-        <span style="font-size:.72rem;color:#1565c0;font-weight:700;white-space:nowrap;">Voir →</span>
+        <span class="card-link-bleu">Voir →</span>
       </div>
-      <div class="card-text" style="font-weight:700;font-size:.95rem;">${titre}</div>
-      ${desc ? `<div class="card-text" style="color:var(--txt2);font-size:.82rem;padding-top:0;">${desc}</div>` : ''}
+      <div class="card-text" class="card-titre-lg">${titre}</div>
+      ${desc ? `<div class="card-text" class="card-desc">${desc}</div>` : ''}
     </article>`
   }
 

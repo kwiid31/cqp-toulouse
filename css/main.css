@@ -302,6 +302,9 @@ img { max-width:100%; display:block; }
 .prow-val { font-size:.88rem; color:var(--txt); font-weight:500; }
 
 /* ── Stories bar ──────────────────────────────────────────────── */
+:root {
+  --stories-h: 90px; /* hauteur stories-bar — mise à jour en JS si nécessaire */
+}
 .stories-bar {
   background:#fff; border-bottom:1px solid var(--border);
   display:flex; gap:10px; padding:10px 12px;
@@ -342,7 +345,7 @@ img { max-width:100%; display:block; }
   padding:7px 14px; background:#fff;
   border-bottom:1px solid var(--border);
   overflow:hidden;
-  position:sticky; top:calc(var(--nav) + 80px); z-index:98;
+  position:sticky; top:calc(var(--nav) + var(--stories-h)); z-index:98;
 }
 .ticker-dot { width:6px; height:6px; border-radius:50%; background:var(--rouge); flex-shrink:0; animation:pulse 2s infinite; }
 @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
@@ -454,3 +457,38 @@ img { max-width:100%; display:block; }
 #confirm-sheet .btn-danger{background:#E24B4A;color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.5px;width:100%;cursor:pointer;}
 #confirm-sheet .btn-cancel{background:var(--bg3);color:var(--txt2);border:none;border-radius:12px;padding:13px;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:600;width:100%;cursor:pointer;}
 @media (prefers-color-scheme:dark){#confirm-sheet .sheet-inner{background:var(--bg2);}}
+
+/* ── Classes issues du refactor inline styles ─────────────────── */
+.badge-annonce{font-size:.72rem;color:var(--rouge);font-weight:700;letter-spacing:.5px;}
+.badge-evenement{font-size:.72rem;color:#1877F2;font-weight:700;letter-spacing:.5px;}
+.badge-actu{font-size:.72rem;color:#e67e22;font-weight:700;letter-spacing:.5px;}
+.card-link-rouge{font-size:.72rem;color:var(--rouge);font-weight:600;white-space:nowrap;}
+.card-link-bleu{font-size:.72rem;color:#1877F2;font-weight:600;white-space:nowrap;}
+.card-link-orange{font-size:.72rem;color:#e67e22;font-weight:600;white-space:nowrap;}
+.card-author-annonce{color:#2e7d32;font-size:.72rem;font-weight:700;letter-spacing:.5px;}
+.card-author-evenement{color:#1565c0;font-size:.72rem;font-weight:700;letter-spacing:.5px;}
+.card-av-annonce{background:var(--rouge);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.card-av-evenement{background:#1877F2;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.card-av-actu{background:#e67e22;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.card-av-annonce-v2{background:#2e7d32;color:#fff;}
+.card-av-evenement-v2{background:#1565c0;color:#fff;}
+.card-av-evenement-v3{background:#1877F2;color:#fff;}
+.card-av-actu-v2{background:#e67e22;color:#fff;}
+.card-titre{padding-top:2px;color:var(--txt);font-weight:500;}
+.card-desc{color:var(--txt2);font-size:.85rem;padding-top:0;}
+.card-meta-author{font-weight:600;font-size:.88rem;margin-top:1px;}
+.pill-evenement{font-size:.7rem;background:#e8f0fe;color:#1877F2;padding:3px 8px;border-radius:20px;font-weight:600;white-space:nowrap;}
+.pill-annonce{font-size:.7rem;background:#fff3e0;color:#e67e22;padding:3px 8px;border-radius:20px;font-weight:600;white-space:nowrap;}
+.feed-end{text-align:center;padding:20px;color:var(--txt3);font-size:.8rem;border-top:1px solid var(--border);}
+.action-btn-annonce{color:var(--rouge);font-weight:600;}
+.action-btn-evenement{color:#1877F2;font-weight:600;}
+
+/* classes supplémentaires refactor inline */
+.card-promo{cursor:pointer;border-left:4px solid #e67e22;background:#fff;}
+.card-clickable{cursor:pointer;}
+.card-titre-lg{font-weight:700;font-size:.95rem;line-height:1.3;}
+.card-titre-md{font-weight:600;font-size:.88rem;}
+.card-border-rouge{border-left:5px solid var(--rouge);}
+.card-border-vert{border-left:5px solid #2e7d32;}
+.card-border-bleu{border-left:5px solid #1565c0;}
+.card-av-cqp{background:var(--rouge);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;font-size:.8rem;}

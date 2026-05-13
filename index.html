@@ -475,6 +475,11 @@ async function init() {
 
   // Non-bloquant
   setTimeout(() => Stories.load(document.getElementById('stories-bar')), 300)
+  // Met à jour --stories-h dynamiquement
+  const storiesBar = document.getElementById('stories-bar')
+  const updateStoriesH = () => document.documentElement.style.setProperty('--stories-h', storiesBar.offsetHeight + 'px')
+  updateStoriesH()
+  new ResizeObserver(updateStoriesH).observe(storiesBar)
   setTimeout(() => loadTicker(), 600)
 
   // Profil en arrière-plan

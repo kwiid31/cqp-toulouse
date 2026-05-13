@@ -135,31 +135,31 @@ const Feed = (() => {
     if (promo.type === 'annonce') {
       const a = promo.data
       _el.insertAdjacentHTML('beforeend', `
-      <article class="card card-promo" onclick="location.href='annonces.html'" style="cursor:pointer;border-left:4px solid var(--rouge);background:#fff;">
+      <article class="card card-promo" onclick="location.href='annonces.html'" class="card-clickable card-border-rouge">
         <div class="card-head">
-          <div class="c-av c-av-40" style="background:#C8102E;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📋</div>
+          <div class="c-av c-av-40" class="c-av c-av-40 card-av-annonce">📋</div>
           <div class="card-meta">
-            <div style="font-size:.72rem;color:var(--rouge);font-weight:700;letter-spacing:.5px;">ANNONCE · ${Utils.esc(a.quartier || '')}</div>
-            <div style="font-weight:600;font-size:.88rem;margin-top:1px;">${Utils.esc(a.prenom)}</div>
+            <div class="badge-annonce">ANNONCE · ${Utils.esc(a.quartier || '')}</div>
+            <div class="card-meta-author">${Utils.esc(a.prenom)}</div>
           </div>
-          <span style="font-size:.72rem;color:var(--rouge);font-weight:600;white-space:nowrap;">Voir →</span>
+          <span class="card-link-rouge">Voir →</span>
         </div>
-        <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">${Utils.esc(a.titre)}</div>
+        <div class="card-text" class="card-titre">${Utils.esc(a.titre)}</div>
       </article>`)
     } else {
       const e = promo.data
       const dateStr = e.date_debut ? new Date(e.date_debut).toLocaleDateString('fr-FR', {day:'numeric',month:'long'}) : ''
       _el.insertAdjacentHTML('beforeend', `
-      <article class="card card-promo" onclick="location.href='evenements.html'" style="cursor:pointer;border-left:4px solid #1877F2;background:#fff;">
+      <article class="card card-promo" onclick="location.href='evenements.html'" class="card-clickable card-border-bleu">
         <div class="card-head">
-          <div class="c-av c-av-40" style="background:#1877F2;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📅</div>
+          <div class="c-av c-av-40" class="c-av c-av-40 card-av-evenement">📅</div>
           <div class="card-meta">
-            <div style="font-size:.72rem;color:#1877F2;font-weight:700;letter-spacing:.5px;">ÉVÉNEMENT · ${dateStr}</div>
-            <div style="font-weight:600;font-size:.88rem;margin-top:1px;">${Utils.esc(e.prenom || '')}</div>
+            <div class="badge-evenement">ÉVÉNEMENT · ${dateStr}</div>
+            <div class="card-meta-author">${Utils.esc(e.prenom || '')}</div>
           </div>
-          <span style="font-size:.72rem;color:#1877F2;font-weight:600;white-space:nowrap;">Voir →</span>
+          <span class="card-link-bleu">Voir →</span>
         </div>
-        <div class="card-text" style="padding-top:2px;color:var(--txt);font-weight:500;">${Utils.esc(e.titre)}</div>
+        <div class="card-text" class="card-titre">${Utils.esc(e.titre)}</div>
       </article>`)
     }
   }
