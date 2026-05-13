@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="/css/main.css?v=20260513d">
+<link rel="stylesheet" href="/css/main.css?v=20260513e">
 <script src="/js/app.js?v=9490"></script>
 <script src="/js/utils.js?v=9490"></script>
 <script src="/js/auth.js?v=9490"></script>
@@ -477,8 +477,11 @@ async function init() {
 
   // Non-bloquant
   setTimeout(() => Stories.load(document.getElementById('stories-bar')), 300)
-  // Met à jour --stories-h dynamiquement
-  const storiesBar = document.getElementById('stories-bar')
+  // Ombre topbar au scroll — comme Facebook
+  const topbarEl = document.querySelector('.topbar')
+  window.addEventListener('scroll', () => {
+    topbarEl?.classList.toggle('scrolled', window.scrollY > 10)
+  }, { passive: true })
   const updateStoriesH = () => document.documentElement.style.setProperty('--stories-h', storiesBar.offsetHeight + 'px')
   updateStoriesH()
   new ResizeObserver(updateStoriesH).observe(storiesBar)

@@ -23,10 +23,11 @@ img { max-width:100%; display:block; }
 .topbar {
   position:sticky; top:0; z-index:100;
   height:var(--nav); background:#fff;
-  border:none; box-shadow:none;
+  border:none; box-shadow:none; transition:box-shadow .2s;
   display:flex; align-items:center; justify-content:space-between;
   padding:0 16px;
 }
+.topbar.scrolled { box-shadow:0 1px 2px rgba(0,0,0,.1); }
 .topbar-logo { display:flex; align-items:center; gap:10px; }
 .logo-pill {
   background:var(--rouge); color:#fff;
@@ -320,7 +321,6 @@ img { max-width:100%; display:block; }
   background:#fff; border-bottom:8px solid #f0f2f5;
   display:flex; gap:8px; padding:10px 12px;
   overflow-x:auto; scrollbar-width:none;
-  position:sticky; top:var(--nav); z-index:99;
 }
 .stories-bar::-webkit-scrollbar { display:none; }
 .story-thumb {
@@ -395,7 +395,7 @@ video.story-thumb-bg { object-fit:cover; }
 @keyframes scroll-x { from{transform:translateX(100%)} to{transform:translateX(-100%)} }
 
 /* ── Composer ─────────────────────────────────────────────────── */
-.composer { background:#fff; padding:10px 14px; border-bottom:8px solid #f0f2f5; }
+.composer { background:#fff; padding:10px 14px; border-bottom:8px solid #f0f2f5; position:relative; z-index:1; }
 @media (min-width:600px) { .composer { border-radius:var(--r); box-shadow:var(--shadow-card); } }
 .composer-row { display:flex; align-items:center; gap:10px; }
 .c-name {
