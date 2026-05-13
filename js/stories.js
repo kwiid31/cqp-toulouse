@@ -18,7 +18,7 @@ const Stories = (() => {
       </div>
       ${_stories.map((s,i) => `
         <div class="story-thumb" onclick="Stories.open(${i})">
-          ${s.media_url ? `<img class="story-thumb-bg" src="${Utils.esc(s.media_url)}" alt="">` : ''}
+          ${s.photo_url ? `<img class="story-thumb-bg" src="${Utils.esc(s.photo_url)}" alt="">` : ''}
           <div class="story-thumb-overlay"></div>
           <div class="story-ring ${s.seen ? 'story-ring-seen' : ''}">
             <div class="story-av">
