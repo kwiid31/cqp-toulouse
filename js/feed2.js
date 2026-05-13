@@ -84,9 +84,15 @@ const Feed = (() => {
           <div class="card-author">${Utils.esc(p.prenom||'Anonyme')}</div>
           <div class="card-ts">${Utils.timeAgo(p.created_at)}</div>
         </div>
-        ${isMine ? `<button class="card-more" onclick="Feed.deletePost(${p.id})" aria-label="Supprimer">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
-        </button>` : ''}
+        ${isMine ? `<div style="position:relative;">
+          <button class="card-more" onclick="Feed.toggleMenu(${p.id},event)" aria-label="Options" style="font-size:1.2rem;color:var(--txt3);letter-spacing:1px;padding:4px 8px;">···</button>
+          <div id="menu-${p.id}" style="display:none;position:absolute;right:0;top:100%;background:#fff;border:0.5px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:100;min-width:140px;">
+            <button onclick="Feed.deletePost(${p.id})" style="width:100%;padding:11px 14px;background:none;border:none;text-align:left;font-family:'Barlow',sans-serif;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+              Supprimer
+            </button>
+          </div>
+        </div>` : ''}
       </div>
       ${p.contenu ? `<p class="card-text">${Utils.esc(p.contenu)}</p>` : ''}
       ${p.photo_url ? `<div class="card-img-wrap"><img class="card-img" src="${Utils.esc(p.photo_url)}" loading="lazy" alt=""></div>` : ''}
@@ -272,6 +278,15 @@ const Feed = (() => {
   }
 
   // ── DELETE ────────────────────────────────────────────────────
+  const toggleMenu = (id, e) => {
+    e.stopPropagation()
+    const menu = document.getElementById(`menu-${id}`)
+    if (!menu) return
+    const isOpen = menu.style.display === 'block'
+    document.querySelectorAll('[id^="menu-"]').forEach(m => m.style.display = 'none')
+    if (!isOpen) { menu.style.display = 'block'; setTimeout(() => document.addEventListener('click', () => { menu.style.display = 'none' }, { once: true }), 0) }
+  }
+
   const deletePost = async id => {
     if (!await showConfirm('Supprimer ce post ?', 'Cette publication sera définitivement effacée.')) return
     await Api.hidePost(id)
@@ -307,5 +322,5 @@ const Feed = (() => {
     _page=0; _done=false; _el.innerHTML = spinner(); loadMore()
   }
 
-  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, share, setupPullToRefresh, refresh }
+  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, toggleMenu, share, setupPullToRefresh, refresh }
 })()
