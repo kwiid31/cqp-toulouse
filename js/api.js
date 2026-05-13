@@ -89,15 +89,17 @@ const Api = (() => {
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false }).limit(20)
 
-  const createStory = ({ prenom, photo_url, texte }) => {
-    if (!photo_url) throw new Error('Photo obligatoire pour une story')
+  const createStory = ({ prenom, photo_url, video_url, texte }) => {
+    if (!photo_url && !video_url) throw new Error('Photo ou vidéo obligatoire pour une story')
     return sb.from('stories').insert({
-      session_id: sid(),               // optionnel dans stories mais bonne pratique
+      session_id: sid(),
       profil_code: Auth.getCode() || null,
       prenom,
-      photo_url,                       // ⚠️ NOT NULL
+      photo_url: photo_url || null,
+      video_url: video_url || null,
+      texte: texte || null,
       visible: true,
-      media_type: 'image',
+      media_type: video_url ? 'video' : 'image',
     }).select().single()
   }
 

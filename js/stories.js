@@ -16,9 +16,17 @@ const Stories = (() => {
         <div class="add-story-ring">+</div>
         <div class="add-story-txt">Votre story</div>
       </div>
-      ${_stories.map((s,i) => `
+      ${_stories.map((s,i) => {
+        const bg = s.photo_url || s.video_url
+        const isVideo = s.media_type === 'video' || (!s.photo_url && s.video_url)
+        return `
         <div class="story-thumb" onclick="Stories.open(${i})">
-          ${s.photo_url ? `<img class="story-thumb-bg" src="${Utils.esc(s.photo_url)}" alt="">` : ''}
+          ${isVideo && s.video_url
+            ? `<video class="story-thumb-bg" src="${Utils.esc(s.video_url)}" muted playsinline></video>`
+            : s.photo_url
+            ? `<img class="story-thumb-bg" src="${Utils.esc(s.photo_url)}" alt="">`
+            : `<div style="position:absolute;inset:0;background:linear-gradient(135deg,var(--rouge),#8B0000);"></div>`
+          }
           <div class="story-thumb-overlay"></div>
           <div class="story-ring ${s.seen ? 'story-ring-seen' : ''}">
             <div class="story-av">
@@ -26,7 +34,8 @@ const Stories = (() => {
             </div>
           </div>
           <div class="story-name">${Utils.esc(s.prenom||'')}</div>
-        </div>`).join('')}`
+        </div>`
+      }).join('')}`
   }
 
   const open = idx => {
@@ -100,23 +109,33 @@ const Stories = (() => {
   const publish = async () => {
     const prenom = Auth.getPrenom()
     const file = document.getElementById('story-photo-inp')?.files?.[0]
+    const texte = document.getElementById('story-texte')?.value?.trim() || ''
     const msg = document.getElementById('story-msg')
-    // ⚠️ photo_url NOT NULL en DB — obligatoire
     if (!file) {
-      if (msg) { msg.style.color='var(--rouge)'; msg.textContent='⚠️ Photo obligatoire pour une story' }
-      Utils.toast('Photo obligatoire pour une story', 'error')
+      if (msg) { msg.style.color='var(--rouge)'; msg.textContent='⚠️ Photo ou vidéo obligatoire' }
+      Utils.toast('Photo ou vidéo obligatoire', 'error')
       return
     }
+    const isVideo = file.type.startsWith('video/')
     if (msg) { msg.style.color='var(--txt3)'; msg.textContent='Upload en cours…' }
     try {
-      const photo_url = await Api.uploadPhoto(file, 'stories')
-      const { error } = await Api.createStory({ prenom, photo_url })
+      let photo_url = null, video_url = null
+      if (isVideo) {
+        video_url = await Api.uploadPhoto(file, 'stories')
+      } else {
+        photo_url = await Api.uploadPhoto(file, 'stories')
+      }
+      const { error } = await Api.createStory({ prenom, photo_url, video_url, texte })
       if (error) throw error
       Utils.toast('Story publiée !', 'success')
       document.getElementById('story-drawer')?.classList.remove('open')
       document.body.style.overflow = ''
-      if (document.getElementById('story-photo-inp')) document.getElementById('story-photo-inp').value = ''
-      if (document.getElementById('story-preview-img')) { document.getElementById('story-preview-img').style.display='none' }
+      document.getElementById('story-photo-inp').value = ''
+      const img = document.getElementById('story-preview-img')
+      const vid = document.getElementById('story-preview-vid')
+      if (img) img.style.display='none'
+      if (vid) { vid.style.display='none'; vid.src='' }
+      if (document.getElementById('story-texte')) document.getElementById('story-texte').value = ''
       if (msg) msg.textContent = ''
       load(document.querySelector('.stories-bar'))
     } catch (e) {

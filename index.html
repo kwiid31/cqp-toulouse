@@ -152,28 +152,17 @@
 <!-- PULL TO REFRESH -->
 <div id="ptr"><div class="ptr-dot"></div><div class="ptr-dot"></div><div class="ptr-dot"></div></div>
 
-<!-- STORIES BAR -->
-<div class="stories-bar" id="stories-bar"></div>
-
-<!-- TICKER -->
-<div class="ticker" id="ticker" onclick="location.href='actus2.html'" style="display:none;cursor:pointer;" title="Voir toutes les actus">
-  <div class="ticker-dot"></div>
-  <div class="ticker-track"><div class="ticker-inner" id="ticker-inner"></div></div>
-</div>
-
-<!-- ONLINE COUNT -->
-<div id="online-count" style="display:none;align-items:center;gap:5px;padding:4px 12px;font-size:.72rem;color:#2e7d32;background:#e8f5e9;border-bottom:1px solid #c8e6c9;font-family:'Barlow',sans-serif;">
-  <span style="width:7px;height:7px;border-radius:50%;background:#43a047;display:inline-block;flex-shrink:0;animation:pulse 2s infinite;"></span>
-  <span></span>
-</div>
-
-<!-- COMPOSER -->
-<div class="composer" onclick="openPub()" style="cursor:pointer;">
+<!-- COMPOSER — comme Facebook, au-dessus des stories -->
+<div class="composer" onclick="openPub()" style="cursor:pointer;border-bottom:0.5px solid var(--border);">
   <div class="c-av c-av-40 c-av-init" id="c-av">?</div>
   <div style="flex:1;padding:10px 16px;background:var(--bg3);border-radius:20px;font-family:'Barlow',sans-serif;font-size:.95rem;color:var(--txt3);">Quoi de neuf ?</div>
 </div>
+
+<!-- STORIES BAR -->
+<div class="stories-bar" id="stories-bar"></div>
+
 <!-- FEED -->
-<div id="feed" style="max-width:680px;margin:8px auto 0;display:flex;flex-direction:column;gap:8px;padding:0 0 8px;"></div>
+<div id="feed" style="max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:0;padding:0 0 8px;"></div>
 
 <!-- BOTTOM NAV -->
 <!-- DESKTOP SIDEBAR -->
@@ -280,14 +269,31 @@
       <button class="drawer-x" onclick="document.getElementById('story-drawer').classList.remove('open');document.body.style.overflow=''">✕</button>
     </div>
     <div class="drawer-body">
-      <div class="fg"><label>Texte (optionnel)</label><textarea id="story-texte" rows="3" placeholder="Dis quelque chose…" maxlength="200" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;resize:none;"></textarea></div>
-      <div class="fg"><label>Photo</label>
+      <div class="fg"><label>Texte (optionnel)</label><textarea id="story-texte" rows="2" placeholder="Dis quelque chose…" maxlength="200" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;resize:none;"></textarea></div>
+      <div class="fg"><label>Photo ou vidéo</label>
         <label style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg3);border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;font-size:.88rem;color:var(--txt2);">
-          📷 Choisir une photo <input type="file" id="story-photo-inp" accept="image/*" style="display:none" onchange="const f=this.files[0];if(f){const p=document.getElementById('story-preview-img');p.src=URL.createObjectURL(f);p.style.display='block';}">
+          📷 Choisir une photo ou vidéo
+          <input type="file" id="story-photo-inp" accept="image/*,video/*" style="display:none" onchange="
+            const f=this.files[0];
+            if(!f) return;
+            const isVideo = f.type.startsWith('video/');
+            const img = document.getElementById('story-preview-img');
+            const vid = document.getElementById('story-preview-vid');
+            if(isVideo){
+              vid.src=URL.createObjectURL(f);
+              vid.style.display='block';
+              img.style.display='none';
+            } else {
+              img.src=URL.createObjectURL(f);
+              img.style.display='block';
+              vid.style.display='none';
+            }
+          ">
         </label>
       </div>
       <div class="form-msg" id="story-msg" style="margin-bottom:8px;"></div>
-      <img id="story-preview-img" style="width:100%;border-radius:8px;margin-bottom:10px;display:none;" alt="">
+      <img id="story-preview-img" style="width:100%;border-radius:8px;margin-bottom:10px;display:none;object-fit:cover;max-height:200px;" alt="">
+      <video id="story-preview-vid" style="width:100%;border-radius:8px;margin-bottom:10px;display:none;max-height:200px;" controls playsinline></video>
       <button class="btn-rouge" onclick="Stories.publish()">Publier la story</button>
     </div>
   </div>
