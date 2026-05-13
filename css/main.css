@@ -13,7 +13,7 @@
   --shadow-card:0 2px 8px rgba(0,0,0,.07);
   --r:12px; --r-sm:8px; --nav:58px;
 }
-html, body { font-size:15px; background:var(--bg); color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
+html, body { font-size:15px; background:#fff; color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
 body { padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px); overscroll-behavior:none; }
 a { text-decoration:none; color:inherit; }
 button, label { cursor:pointer; font-family:inherit; outline:none; border:none; }
