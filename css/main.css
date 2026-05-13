@@ -317,7 +317,7 @@ img { max-width:100%; display:block; }
   --stories-h: 180px;
 }
 .stories-bar {
-  background:#fff; border-bottom:0.5px solid var(--border);
+  background:#fff; border-bottom:8px solid var(--bg3);
   display:flex; gap:8px; padding:10px 12px;
   overflow-x:auto; scrollbar-width:none;
   position:sticky; top:var(--nav); z-index:99;
@@ -395,7 +395,7 @@ video.story-thumb-bg { object-fit:cover; }
 @keyframes scroll-x { from{transform:translateX(100%)} to{transform:translateX(-100%)} }
 
 /* ── Composer ─────────────────────────────────────────────────── */
-.composer { background:#fff; padding:8px 14px 10px; border-bottom:0.5px solid var(--border); }
+.composer { background:#fff; padding:10px 14px 10px; border-bottom:8px solid var(--bg3); }
 @media (min-width:600px) { .composer { border-radius:var(--r); box-shadow:var(--shadow-card); } }
 .composer-row { display:flex; align-items:center; gap:10px; }
 .c-name {
