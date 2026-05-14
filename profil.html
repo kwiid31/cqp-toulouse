@@ -448,7 +448,6 @@ async function doSignup() {
   msg.style.color = 'var(--txt3)'; msg.textContent = 'Création…'
   try {
     const data = await Auth.signup({ prenom, quartier, bio: '', code, email })
-    const prenom = document.getElementById('s-prenom').value.trim()
     document.getElementById('popup-welcome').textContent = `Bienvenue ${prenom} !`
     document.getElementById('popup-code').textContent = data.code.split('').join(' ')
     const popup = document.getElementById('code-popup')
