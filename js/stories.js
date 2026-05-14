@@ -125,6 +125,15 @@ const Stories = (() => {
         svBg.innerHTML = `<video id="sv-video" src="${Utils.esc(s.video_url)}" autoplay muted playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>`
         const soundBtn = document.getElementById('sv-sound-btn')
         if (soundBtn) { soundBtn.style.display = 'flex'; soundBtn.textContent = '🔇' }
+        // Dès que l'utilisateur touche le bouton volume physique → activer le son
+        requestAnimationFrame(() => {
+          const v = document.getElementById('sv-video')
+          if (!v) return
+          v.addEventListener('volumechange', () => {
+            if (v.muted) return
+            if (soundBtn) { soundBtn.textContent = '🔊' }
+          }, { once: true })
+        })
       } else if (s.photo_url) {
         svBg.innerHTML = `<img src="${Utils.esc(s.photo_url)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`
         const soundBtn = document.getElementById('sv-sound-btn')
