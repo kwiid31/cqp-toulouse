@@ -312,12 +312,12 @@ img { max-width:100%; display:block; }
 }
 .stories-bar {
   background:#fff; border-bottom:8px solid #E4E6EB;
-  display:flex; gap:8px; padding:8px 12px;
+  display:flex; gap:8px; padding:8px 12px 12px;
   overflow-x:auto; scrollbar-width:none;
 }
 .stories-bar::-webkit-scrollbar { display:none; }
 .story-thumb {
-  flex-shrink:0; width:110px; height:175px; cursor:pointer;
+  flex-shrink:0; width:115px; height:200px; cursor:pointer;
   border-radius:12px; overflow:hidden; position:relative;
   background:var(--bg3);
 }
@@ -332,8 +332,8 @@ video.story-thumb-bg { object-fit:cover; }
 }
 .story-ring {
   position:absolute; top:8px; left:8px;
-  width:32px; height:32px; border-radius:50%;
-  border:2px solid var(--rouge); padding:1.5px;
+  width:36px; height:36px; border-radius:50%;
+  border:2.5px solid var(--rouge); padding:2px;
   background:var(--rouge);
 }
 .story-ring-seen { border-color:rgba(255,255,255,.5); background:rgba(255,255,255,.15); }
@@ -345,15 +345,15 @@ video.story-thumb-bg { object-fit:cover; }
 }
 .story-av img { width:100%; height:100%; object-fit:cover; }
 .story-name {
-  position:absolute; bottom:7px; left:6px; right:6px;
-  font-family:'Barlow',sans-serif; font-size:.68rem; font-weight:600;
+  position:absolute; bottom:8px; left:8px; right:8px;
+  font-family:system-ui,sans-serif; font-size:.75rem; font-weight:700;
   color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  text-shadow:0 1px 3px rgba(0,0,0,.5);
+  text-shadow:0 1px 4px rgba(0,0,0,.8);
 }
 
 /* Add story card */
 .add-story {
-  flex-shrink:0; width:110px; height:175px; cursor:pointer;
+  flex-shrink:0; width:115px; height:200px; cursor:pointer;
   border-radius:12px; overflow:hidden; position:relative;
   background:var(--bg3); border:0.5px solid var(--border);
   display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
