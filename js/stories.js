@@ -11,10 +11,13 @@ const Stories = (() => {
   }
 
   const _render = barEl => {
+    const photo = Auth.getPhoto ? Auth.getPhoto() : null
+    const prenom = Auth.getPrenom ? Auth.getPrenom() : ''
     barEl.innerHTML = `
       <div class="add-story" onclick="Stories.openCompose()">
+        <div class="add-story-photo">${photo ? `<img src="${Utils.esc(photo)}" alt="">` : ''}</div>
         <div class="add-story-ring">+</div>
-        <div class="add-story-txt">Votre story</div>
+        <div class="add-story-txt">Créer une<br>story</div>
       </div>
       ${_stories.map((s,i) => {
         const bg = s.photo_url || s.video_url
