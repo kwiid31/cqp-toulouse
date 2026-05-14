@@ -263,5 +263,27 @@ const Stories = (() => {
     }
   }
 
+  // Realtime — retire les stories masquées par l'admin instantanément
+  sb.channel('stories-moderation')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'stories' }, (payload) => {
+      if (payload.new?.visible === false) {
+        const id = payload.new.id
+        // Retirer de toutes les listes quartier
+        for (const q of Object.keys(_storiesByQuartier)) {
+          _storiesByQuartier[q] = _storiesByQuartier[q].filter(s => s.id !== id)
+        }
+        // Si on est en train de voir cette story → passer à la suivante ou fermer
+        if (document.getElementById('sv')?.classList.contains('open')) {
+          const stories = _storiesByQuartier[_currentQuartier] || []
+          if (!stories.length) close()
+          else _renderViewer(stories)
+        }
+        // Recharger la barre de stories
+        const bar = document.getElementById('stories-bar')
+        if (bar) load(bar)
+      }
+    })
+    .subscribe()
+
   return { load, openQuartier, openCompose, close, next, prev, publish, QUARTIERS }
 })()

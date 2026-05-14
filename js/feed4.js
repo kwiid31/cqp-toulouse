@@ -361,5 +361,16 @@ const Feed = (() => {
 
   const loadMore = () => _renderChunk()
 
+  // Realtime — retire les posts masqués par l'admin instantanément
+  sb.channel('feed-moderation')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'posts' }, (payload) => {
+      if (payload.new?.visible === false) {
+        const card = document.getElementById('card-' + payload.new.id)
+        if (card) card.remove()
+        _allItems = _allItems.filter(p => p.id !== payload.new.id)
+      }
+    })
+    .subscribe()
+
   return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, toggleMenu, share, setupPullToRefresh, refresh }
 })()
