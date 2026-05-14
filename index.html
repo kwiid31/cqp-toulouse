@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="/css/main.css?v=20260513k">
+<link rel="stylesheet" href="/css/main.css?v=20260513l">
 <script src="/js/app.js?v=9490"></script>
 <script src="/js/utils.js?v=9490"></script>
 <script src="/js/auth.js?v=9490"></script>
@@ -269,7 +269,12 @@
       <button class="drawer-x" onclick="document.getElementById('story-drawer').classList.remove('open');document.body.style.overflow=''">✕</button>
     </div>
     <div class="drawer-body">
-      <div class="fg"><label>Texte (optionnel)</label><textarea id="story-texte" rows="2" placeholder="Dis quelque chose…" maxlength="200" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;resize:none;"></textarea></div>
+      <div class="fg">
+        <label>Quartier</label>
+        <select id="story-quartier-select" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:system-ui,sans-serif;font-size:.9rem;outline:none;color:var(--txt1);">
+        </select>
+      </div>
+      <div class="fg"><label>Texte (optionnel)</label><textarea id="story-texte" rows="2" placeholder="Dis quelque chose…" maxlength="200" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:system-ui,sans-serif;font-size:.9rem;outline:none;resize:none;"></textarea></div>
       <div class="fg"><label>Photo ou vidéo</label>
         <label style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg3);border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;font-size:.88rem;color:var(--txt2);">
           📷 Choisir une photo ou vidéo
@@ -279,15 +284,8 @@
             const isVideo = f.type.startsWith('video/');
             const img = document.getElementById('story-preview-img');
             const vid = document.getElementById('story-preview-vid');
-            if(isVideo){
-              vid.src=URL.createObjectURL(f);
-              vid.style.display='block';
-              img.style.display='none';
-            } else {
-              img.src=URL.createObjectURL(f);
-              img.style.display='block';
-              vid.style.display='none';
-            }
+            if(isVideo){vid.src=URL.createObjectURL(f);vid.style.display='block';img.style.display='none';}
+            else{img.src=URL.createObjectURL(f);img.style.display='block';vid.style.display='none';}
           ">
         </label>
       </div>

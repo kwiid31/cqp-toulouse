@@ -89,7 +89,7 @@ const Api = (() => {
       .gt('expires_at', new Date().toISOString())
       .order('created_at', { ascending: false }).limit(20)
 
-  const createStory = ({ prenom, photo_url, video_url, texte }) => {
+  const createStory = ({ prenom, photo_url, video_url, texte, quartier }) => {
     if (!photo_url && !video_url) throw new Error('Photo ou vidéo obligatoire pour une story')
     return sb.from('stories').insert({
       session_id: sid(),
@@ -98,6 +98,7 @@ const Api = (() => {
       photo_url: photo_url || null,
       video_url: video_url || null,
       texte: texte || null,
+      quartier: quartier || 'Autre',
       visible: true,
       media_type: video_url ? 'video' : 'image',
     }).select().single()
