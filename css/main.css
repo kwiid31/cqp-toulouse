@@ -312,12 +312,12 @@ img { max-width:100%; display:block; }
 }
 .stories-bar {
   background:#fff; border-bottom:8px solid #E4E6EB;
-  display:flex; gap:6px; padding:8px 8px 12px;
+  display:flex; gap:6px; padding:8px 8px 10px;
   overflow-x:auto; scrollbar-width:none;
 }
 .stories-bar::-webkit-scrollbar { display:none; }
 .story-thumb {
-  flex-shrink:0; width:120px; height:200px; cursor:pointer;
+  flex-shrink:0; width:102px; height:205px; cursor:pointer;
   border-radius:12px; overflow:hidden; position:relative;
   background:var(--bg3);
 }
@@ -353,7 +353,7 @@ video.story-thumb-bg { object-fit:cover; }
 
 /* Add story card */
 .add-story {
-  flex-shrink:0; width:120px; height:200px; cursor:pointer;
+  flex-shrink:0; width:102px; height:205px; cursor:pointer;
   border-radius:12px; overflow:hidden; position:relative;
   background:#fff; border:0.5px solid #E4E6EB;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
