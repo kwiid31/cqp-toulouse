@@ -119,25 +119,16 @@ const Stories = (() => {
     if (svBg) {
       if (s.video_url) {
         svBg.innerHTML = `<video id="sv-video" src="${Utils.esc(s.video_url)}" autoplay muted playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>`
-        // Bouton son — dans svBg pour être sûr qu'il existe
-        let soundBtn = document.getElementById('sv-sound-btn')
-        if (!soundBtn) {
-          soundBtn = document.createElement('button')
-          soundBtn.id = 'sv-sound-btn'
-          soundBtn.style.cssText = 'position:absolute;bottom:70px;right:16px;z-index:20;background:rgba(0,0,0,.55);border:none;border-radius:50%;width:40px;height:40px;font-size:1.2rem;display:flex;align-items:center;justify-content:center;cursor:pointer;'
-          soundBtn.innerHTML = '🔇'
-          svBg.appendChild(soundBtn)
-        } else {
-          soundBtn.style.display = 'flex'
-          soundBtn.innerHTML = '🔇'
-        }
-        soundBtn.onclick = (e) => {
-          e.stopPropagation()
+        // Supprimer bouton son si présent
+        const oldBtn = document.getElementById('sv-sound-btn')
+        if (oldBtn) oldBtn.remove()
+        // Dès le premier tap → enlever muted (iOS autorise après interaction utilisateur)
+        const unmuteOnTap = () => {
           const v = document.getElementById('sv-video')
-          if (!v) return
-          v.muted = !v.muted
-          soundBtn.innerHTML = v.muted ? '🔇' : '🔊'
+          if (v) v.muted = false
+          svBg.removeEventListener('click', unmuteOnTap)
         }
+        svBg.addEventListener('click', unmuteOnTap)
       } else if (s.photo_url) {
         svBg.innerHTML = `<img src="${Utils.esc(s.photo_url)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`
       } else {
