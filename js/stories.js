@@ -118,30 +118,29 @@ const Stories = (() => {
     const svBg = document.getElementById('sv-bg')
     if (svBg) {
       if (s.video_url) {
-        svBg.innerHTML = `<video id="sv-video" src="${Utils.esc(s.video_url)}" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>`
-        // Bouton son
+        svBg.innerHTML = `<video id="sv-video" src="${Utils.esc(s.video_url)}" autoplay muted playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>`
+        // Bouton son — dans svBg pour être sûr qu'il existe
         let soundBtn = document.getElementById('sv-sound-btn')
         if (!soundBtn) {
           soundBtn = document.createElement('button')
           soundBtn.id = 'sv-sound-btn'
-          soundBtn.style.cssText = 'position:absolute;bottom:80px;right:16px;z-index:10;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;'
+          soundBtn.style.cssText = 'position:absolute;bottom:70px;right:16px;z-index:20;background:rgba(0,0,0,.55);border:none;border-radius:50%;width:40px;height:40px;font-size:1.2rem;display:flex;align-items:center;justify-content:center;cursor:pointer;'
           soundBtn.innerHTML = '🔇'
-          document.getElementById('sv')?.appendChild(soundBtn)
+          svBg.appendChild(soundBtn)
+        } else {
+          soundBtn.style.display = 'flex'
+          soundBtn.innerHTML = '🔇'
         }
-        soundBtn.style.display = 'flex'
-        soundBtn.onclick = () => {
+        soundBtn.onclick = (e) => {
+          e.stopPropagation()
           const v = document.getElementById('sv-video')
           if (!v) return
           v.muted = !v.muted
           soundBtn.innerHTML = v.muted ? '🔇' : '🔊'
         }
       } else if (s.photo_url) {
-        const soundBtn = document.getElementById('sv-sound-btn')
-        if (soundBtn) soundBtn.style.display = 'none'
         svBg.innerHTML = `<img src="${Utils.esc(s.photo_url)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`
       } else {
-        const soundBtn = document.getElementById('sv-sound-btn')
-        if (soundBtn) soundBtn.style.display = 'none'
         svBg.innerHTML = `<div style="position:absolute;inset:0;background:${COLORS[_currentQuartier]||'#333'};"></div>`
       }
     }
@@ -162,15 +161,39 @@ const Stories = (() => {
     const txt = document.getElementById('sv-text')
     if (txt) txt.textContent = s.texte || ''
 
-    // Progress bar
+    // Progress bar + timer
     clearTimeout(_timer)
-    _timer = setTimeout(next, 5000)
-    requestAnimationFrame(() => {
-      const fill = document.getElementById(`svb-${_currentIdx}`)
-      if (fill) { fill.style.transition = 'none'; fill.style.width = '0%';
-        requestAnimationFrame(() => { fill.style.transition = 'width 5s linear'; fill.style.width = '100%' })
-      }
-    })
+    if (s.video_url) {
+      // Pour les vidéos : attendre la durée réelle
+      requestAnimationFrame(() => {
+        const vid = document.getElementById('sv-video')
+        const startTimer = (duration) => {
+          const ms = Math.min(duration * 1000, 60000)
+          const fill = document.getElementById(`svb-${_currentIdx}`)
+          if (fill) { fill.style.transition = 'none'; fill.style.width = '0%';
+            requestAnimationFrame(() => { fill.style.transition = `width ${ms/1000}s linear`; fill.style.width = '100%' })
+          }
+          _timer = setTimeout(next, ms)
+        }
+        if (vid) {
+          if (vid.duration && !isNaN(vid.duration)) {
+            startTimer(vid.duration)
+          } else {
+            vid.addEventListener('loadedmetadata', () => startTimer(vid.duration || 5), { once: true })
+            // Fallback si metadata ne charge pas
+            _timer = setTimeout(next, 60000)
+          }
+        }
+      })
+    } else {
+      _timer = setTimeout(next, 5000)
+      requestAnimationFrame(() => {
+        const fill = document.getElementById(`svb-${_currentIdx}`)
+        if (fill) { fill.style.transition = 'none'; fill.style.width = '0%';
+          requestAnimationFrame(() => { fill.style.transition = 'width 5s linear'; fill.style.width = '100%' })
+        }
+      })
+    }
   }
 
   const close = () => {
