@@ -164,7 +164,7 @@ img { max-width:100%; display:block; }
 .card-ts { font-size:.8125rem; color:var(--txt3); margin-top:1px; display:flex; align-items:center; gap:3px; }
 .card-more { background:none; border:none; padding:10px; min-width:44px; min-height:44px; color:var(--txt3); border-radius:6px; transition:background .15s; }
 .card-more:active { background:var(--bg3); }
-.card-text { padding:4px 12px 8px; font-size:.9375rem; line-height:1.45; white-space:pre-wrap; word-break:break-word; color:var(--txt1); }
+.card-text { padding:4px 12px 4px; font-size:.9375rem; line-height:1.45; white-space:pre-wrap; word-break:break-word; color:var(--txt1); }
 .card-img-wrap { overflow:hidden; }
 .card-img { width:100%; display:block; object-fit:cover; }
 

@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="/css/main.css?v=20260513n">
+<link rel="stylesheet" href="/css/main.css?v=20260513o">
 <script src="/js/app.js?v=9490"></script>
 <script src="/js/utils.js?v=9490"></script>
 <script src="/js/auth.js?v=9490"></script>
@@ -561,6 +561,26 @@ function closeConfirm() {
   if (window._confirmResolve) { window._confirmResolve(false); window._confirmResolve = null }
 }
 document.getElementById('confirm-sheet').addEventListener('click', e => { if (e.target === e.currentTarget) closeConfirm() })
+</script>
+<!-- BANNIÈRE INSTALLER PWA — iOS Safari uniquement -->
+<div id="pwa-banner" style="display:none;position:fixed;bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 8px);left:12px;right:12px;background:#1C1E21;color:#fff;border-radius:14px;padding:12px 14px;z-index:300;box-shadow:0 4px 20px rgba(0,0,0,.3);display:flex;align-items:center;gap:10px;">
+  <div style="width:36px;height:36px;background:#C8102E;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+  </div>
+  <div style="flex:1;">
+    <div style="font-size:.82rem;font-weight:700;">Installer CQP Toulouse</div>
+    <div style="font-size:.72rem;color:rgba(255,255,255,.6);margin-top:2px;">Appuie sur <strong style="color:#fff;">⎋ Partager</strong> puis <strong style="color:#fff;">Sur l'écran d'accueil</strong></div>
+  </div>
+  <button onclick="document.getElementById('pwa-banner').style.display='none';localStorage.setItem('pwa-dismissed','1')" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.2rem;padding:4px;cursor:pointer;">✕</button>
+</div>
+<script>
+// Afficher bannière iOS uniquement si pas encore installé et pas dismissé
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent)
+const isStandalone = window.navigator.standalone === true
+const dismissed = localStorage.getItem('pwa-dismissed')
+if (isIOS && !isStandalone && !dismissed) {
+  setTimeout(() => { document.getElementById('pwa-banner').style.display = 'flex' }, 3000)
+}
 </script>
 </body>
 </html>
