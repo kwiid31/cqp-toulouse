@@ -141,7 +141,7 @@ const Feed = (() => {
       ? `<div class="c-av c-av-40"><img src="${Utils.esc(p.photo_url)}" alt=""></div>`
       : `<div class="c-av c-av-40 c-av-init">${Utils.esc((p.prenom||'?')[0].toUpperCase())}</div>`
     const img = p.photo_url && p.photo_url.includes('post')
-      ? `<div class="card-img-wrap"><img class="card-img" src="${Utils.esc(p.photo_url)}" loading="lazy"></div>` : ''
+      ? (p.video_url ? `<div class="card-img-wrap"><video class="card-img" src="${Utils.esc(p.video_url)}" playsinline controls preload="metadata" style="max-height:500px;background:#000;"></video></div>` : p.photo_url ? `<div class="card-img-wrap"><img class="card-img" src="${Utils.esc(p.photo_url)}" loading="lazy"></div>` : '') : ''
     return `
     <article class="card" id="card-${p.id}">
       <div class="card-head">

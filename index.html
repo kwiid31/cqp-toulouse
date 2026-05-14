@@ -46,7 +46,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="/css/main.css?v=20260513o">
+<link rel="stylesheet" href="/css/main.css?v=20260513p">
 <script src="/js/app.js?v=9490"></script>
 <script src="/js/utils.js?v=9490"></script>
 <script src="/js/auth.js?v=9490"></script>
@@ -228,8 +228,8 @@
     <img id="pf-preview" class="photo-preview">
   </div>
   <div class="photo-bar">
-    <label class="photo-bar-btn" for="pf-photo">📷</label>
-    <input type="file" id="pf-photo" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+    <label class="photo-bar-btn" for="pf-photo">📷🎥</label>
+    <input type="file" id="pf-photo" accept="image/*,video/*" style="display:none" onchange="previewPhoto(this)">
     <span id="pf-msg" style="flex:1;font-size:.8rem;color:var(--txt3);"></span>
   </div>
 </div>
@@ -374,15 +374,22 @@ async function submitPost() {
   btn.textContent = '…'; btn.disabled = true
   msg.textContent = ''
   try {
-    let photo_url = null
-    if (file) { msg.textContent = 'Upload en cours…'; photo_url = await Api.uploadPhoto(file, 'posts') }
+    let photo_url = null, video_url = null
+    if (file) {
+      msg.textContent = 'Upload en cours…'
+      if (file.type.startsWith('video/')) {
+        video_url = await Api.uploadPhoto(file, 'posts')
+      } else {
+        photo_url = await Api.uploadPhoto(file, 'posts')
+      }
+    }
     if (_postType === 'story') {
-      if (!photo_url) throw new Error('Photo obligatoire pour une story')
-      const { error } = await Api.createStory({ prenom, photo_url })
+      if (!photo_url && !video_url) throw new Error('Photo ou vidéo obligatoire pour une story')
+      const { error } = await Api.createStory({ prenom, photo_url, video_url })
       if (error) throw error
       Utils.toast('Story publiée !', 'success')
     } else {
-      const { data, error } = await Api.createPost({ prenom, contenu: text || null, photo_url })
+      const { data, error } = await Api.createPost({ prenom, contenu: text || null, photo_url, video_url })
       if (error) throw error
       if (data) Feed.prepend(data)
       Utils.toast('Post publié !', 'success')

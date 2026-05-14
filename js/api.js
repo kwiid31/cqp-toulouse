@@ -35,13 +35,14 @@ const Api = (() => {
     sb.from('posts').select('*').eq('profil_code', code).eq('visible', true)
       .order('created_at', { ascending: false }).limit(limit)
 
-  const createPost = ({ prenom, contenu, photo_url }) =>
+  const createPost = ({ prenom, contenu, photo_url, video_url }) =>
     sb.from('posts').insert({
-      session_id: sid(),               // ⚠️ NOT NULL en DB
+      session_id: sid(),
       profil_code: Auth.getCode() || null,
       prenom,
       contenu: contenu || null,
       photo_url: photo_url || null,
+      video_url: video_url || null,
       visible: true,
     }).select().single()
 
@@ -266,11 +267,24 @@ const Api = (() => {
 
   // ── UPLOAD PHOTO ──────────────────────────────────────────────
   const uploadPhoto = async (file, folder = 'posts') => {
+    // Si c'est une vidéo — upload direct sans compression
+    if (file.type.startsWith('video/')) {
+      return uploadVideo(file, folder)
+    }
     const compressed = await Utils.compressImage(file)
-    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z]/g, 'jpg')
-    const name = `${folder}/${Date.now()}-${Auth.getSid().slice(0, 8)}.${ext}`
+    const name = `${folder}/${Date.now()}-${Auth.getSid().slice(0, 8)}.jpg`
     const { error } = await sb.storage.from(CQP.BUCKET)
       .upload(name, compressed, { contentType: 'image/jpeg', upsert: false })
+    if (error) throw error
+    return sb.storage.from(CQP.BUCKET).getPublicUrl(name).data.publicUrl
+  }
+
+  const uploadVideo = async (file, folder = 'posts') => {
+    const ext = file.name.split('.').pop()?.toLowerCase() || 'mp4'
+    const safeExt = ['mp4','mov','webm','m4v','avi'].includes(ext) ? ext : 'mp4'
+    const name = `${folder}/${Date.now()}-${Auth.getSid().slice(0, 8)}.${safeExt}`
+    const { error } = await sb.storage.from(CQP.BUCKET)
+      .upload(name, file, { contentType: file.type || 'video/mp4', upsert: false })
     if (error) throw error
     return sb.storage.from(CQP.BUCKET).getPublicUrl(name).data.publicUrl
   }
