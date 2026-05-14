@@ -11,7 +11,7 @@
   --bg:#F0F2F5;    --bg2:#fff;      --bg3:#F0F2F5; --border:#CED0D4;
   --shadow:0 1px 3px rgba(0,0,0,.1);
   --shadow-card:0 2px 8px rgba(0,0,0,.07);
-  --r:12px; --r-sm:8px; --nav:58px;
+  --r:12px; --r-sm:8px; --nav:50px;
 }
 html, body { font-size:15px; background:#fff; color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
 body { padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px); overscroll-behavior:none; }
@@ -312,12 +312,12 @@ img { max-width:100%; display:block; }
 }
 .stories-bar {
   background:#fff; border-bottom:8px solid #E4E6EB;
-  display:flex; gap:6px; padding:8px 8px 10px;
+  display:flex; gap:6px; padding:6px 8px 8px;
   overflow-x:auto; scrollbar-width:none;
 }
 .stories-bar::-webkit-scrollbar { display:none; }
 .story-thumb {
-  flex-shrink:0; width:102px; height:205px; cursor:pointer;
+  flex-shrink:0; width:102px; height:190px; cursor:pointer;
   border-radius:12px; overflow:hidden; position:relative;
   background:var(--bg3);
 }
@@ -353,7 +353,7 @@ video.story-thumb-bg { object-fit:cover; }
 
 /* Add story card */
 .add-story {
-  flex-shrink:0; width:102px; height:205px; cursor:pointer;
+  flex-shrink:0; width:102px; height:190px; cursor:pointer;
   border-radius:12px; overflow:hidden; position:relative;
   background:#fff; border:0.5px solid #E4E6EB;
   display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
