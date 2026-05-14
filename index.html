@@ -376,12 +376,13 @@ async function submitPost() {
   try {
     let photo_url = null, video_url = null
     if (file) {
-      msg.textContent = 'Upload en cours…'
-      if (file.type.startsWith('video/')) {
-        video_url = await Api.uploadPhoto(file, 'posts')
-      } else {
-        photo_url = await Api.uploadPhoto(file, 'posts')
-      }
+      const sizeMB = (file.size / 1024 / 1024).toFixed(1)
+      const isVideo = file.type.startsWith('video/')
+      msg.textContent = isVideo
+        ? `Upload vidéo (${sizeMB}MB) en cours… ça peut prendre une minute`
+        : 'Upload en cours…'
+      if (isVideo) video_url = await Api.uploadPhoto(file, 'posts')
+      else photo_url = await Api.uploadPhoto(file, 'posts')
     }
     if (_postType === 'story') {
       if (!photo_url && !video_url) throw new Error('Photo ou vidéo obligatoire pour une story')

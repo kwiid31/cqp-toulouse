@@ -280,12 +280,22 @@ const Api = (() => {
   }
 
   const uploadVideo = async (file, folder = 'posts') => {
-    const ext = file.name.split('.').pop()?.toLowerCase() || 'mp4'
-    const safeExt = ['mp4','mov','webm','m4v','avi'].includes(ext) ? ext : 'mp4'
-    const name = `${folder}/${Date.now()}-${Auth.getSid().slice(0, 8)}.${safeExt}`
+    // iPhone filme en .mov (video/quicktime) — on garde le format natif
+    const mimeType = file.type || 'video/mp4'
+    const extMap = {
+      'video/mp4': 'mp4',
+      'video/quicktime': 'mov',
+      'video/mov': 'mov',
+      'video/webm': 'webm',
+      'video/x-m4v': 'm4v',
+      'video/3gpp': '3gp',
+      'video/mpeg': 'mpeg',
+    }
+    const ext = extMap[mimeType] || file.name.split('.').pop() || 'mp4'
+    const name = `${folder}/${Date.now()}-${Auth.getSid().slice(0, 8)}.${ext}`
     const { error } = await sb.storage.from(CQP.BUCKET)
-      .upload(name, file, { contentType: file.type || 'video/mp4', upsert: false })
-    if (error) throw error
+      .upload(name, file, { contentType: mimeType, upsert: false })
+    if (error) throw new Error('Upload vidéo : ' + error.message)
     return sb.storage.from(CQP.BUCKET).getPublicUrl(name).data.publicUrl
   }
 
