@@ -119,20 +119,16 @@ const Stories = (() => {
     if (svBg) {
       if (s.video_url) {
         svBg.innerHTML = `<video id="sv-video" src="${Utils.esc(s.video_url)}" autoplay muted playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>`
-        // Supprimer bouton son si présent
-        const oldBtn = document.getElementById('sv-sound-btn')
-        if (oldBtn) oldBtn.remove()
-        // Dès le premier tap → enlever muted (iOS autorise après interaction utilisateur)
-        const unmuteOnTap = () => {
-          const v = document.getElementById('sv-video')
-          if (v) v.muted = false
-          svBg.removeEventListener('click', unmuteOnTap)
-        }
-        svBg.addEventListener('click', unmuteOnTap)
+        const soundBtn = document.getElementById('sv-sound-btn')
+        if (soundBtn) { soundBtn.style.display = 'flex'; soundBtn.textContent = '🔇' }
       } else if (s.photo_url) {
         svBg.innerHTML = `<img src="${Utils.esc(s.photo_url)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`
+        const soundBtn = document.getElementById('sv-sound-btn')
+        if (soundBtn) soundBtn.style.display = 'none'
       } else {
         svBg.innerHTML = `<div style="position:absolute;inset:0;background:${COLORS[_currentQuartier]||'#333'};"></div>`
+        const soundBtn = document.getElementById('sv-sound-btn')
+        if (soundBtn) soundBtn.style.display = 'none'
       }
     }
 
@@ -263,6 +259,14 @@ const Stories = (() => {
     }
   }
 
+  const toggleSound = () => {
+    const v = document.getElementById('sv-video')
+    const btn = document.getElementById('sv-sound-btn')
+    if (!v) return
+    v.muted = !v.muted
+    if (btn) btn.textContent = v.muted ? '🔇' : '🔊'
+  }
+
   // Realtime — retire les stories masquées par l'admin instantanément
   sb.channel('stories-moderation')
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'stories' }, (payload) => {
@@ -285,5 +289,5 @@ const Stories = (() => {
     })
     .subscribe()
 
-  return { load, openQuartier, openCompose, close, next, prev, publish, QUARTIERS }
+  return { load, openQuartier, openCompose, close, next, prev, publish, toggleSound, QUARTIERS }
 })()

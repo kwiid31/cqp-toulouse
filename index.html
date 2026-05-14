@@ -265,6 +265,8 @@
     <!-- Navigation -->
     <div class="sv-nav sv-nav-l" onclick="Stories.prev()"></div>
     <div class="sv-nav sv-nav-r" onclick="Stories.next()"></div>
+    <!-- Bouton son vidéo -->
+    <button id="sv-sound-btn" onclick="Stories.toggleSound()" style="display:none;position:absolute;bottom:24px;right:16px;z-index:20;background:rgba(0,0,0,.6);border:none;border-radius:50%;width:44px;height:44px;font-size:1.3rem;color:#fff;cursor:pointer;align-items:center;justify-content:center;">🔇</button>
     <!-- Close -->
     <button onclick="Stories.close()" style="position:absolute;top:12px;right:12px;z-index:10;background:none;border:none;color:#fff;font-size:1.5rem;padding:8px;line-height:1;">✕</button>
   </div>
