@@ -51,73 +51,36 @@
 </header>
 
 <!-- ÉCRAN D'ACCUEIL — visible uniquement aux nouveaux visiteurs -->
-<div id="view-welcome" style="display:none;">
-  <!-- HERO -->
-  <div style="background:linear-gradient(160deg,#0d0205 0%,#1a0408 50%,#C8102E 100%);padding:48px 24px 36px;text-align:center;color:#fff;">
-    <div style="width:64px;height:64px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.25);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;">CQP</div>
-    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;margin:0 0 8px;letter-spacing:1px;line-height:1.1;">Le réseau de nos quartiers</h1>
-    <p style="font-size:.95rem;opacity:.85;margin:0 0 24px;line-height:1.6;">Mirail · Bellefontaine · Reynerie · Empalot · Bagatelle · Papus</p>
-    <!-- Fonctionnalités -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:320px;margin:0 auto 28px;">
-      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 10px;font-size:.8rem;">
-        <div style="font-size:1.4rem;margin-bottom:4px;">📢</div>
-        <div style="font-weight:600;">Publie</div>
-        <div style="opacity:.75;font-size:.75rem;margin-top:2px;">tes infos de quartier</div>
-      </div>
-      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 10px;font-size:.8rem;">
-        <div style="font-size:1.4rem;margin-bottom:4px;">📅</div>
-        <div style="font-weight:600;">Événements</div>
-        <div style="opacity:.75;font-size:.75rem;margin-top:2px;">propose et inscris-toi</div>
-      </div>
-      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 10px;font-size:.8rem;">
-        <div style="font-size:1.4rem;margin-bottom:4px;">📋</div>
-        <div style="font-weight:600;">Annonces</div>
-        <div style="opacity:.75;font-size:.75rem;margin-top:2px;">entre voisins, gratuit</div>
-      </div>
-      <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:12px 10px;font-size:.8rem;">
-        <div style="font-size:1.4rem;margin-bottom:4px;">👥</div>
-        <div style="font-weight:600;">Groupes</div>
-        <div style="opacity:.75;font-size:.75rem;margin-top:2px;">discute avec tes voisins</div>
-      </div>
-    </div>
-    <button onclick="goConnect('signup')" class="btn-rouge" style="width:100%;max-width:320px;font-size:1rem;padding:14px;">Rejoindre le réseau →</button>
-    <button onclick="goConnect('login')" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:.8rem;margin-top:12px;cursor:pointer;font-family:'Barlow',sans-serif;text-decoration:underline;">J'ai déjà un identifiant</button>
+<div id="view-welcome" style="display:none;flex-direction:column;background:#fff;font-family:-apple-system,system-ui,sans-serif;min-height:100vh;">
+
+  <!-- Topbar style Instagram -->
+  <div style="display:flex;align-items:center;gap:10px;padding:18px 20px 0;">
+    <div style="background:#C8102E;border-radius:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;color:#fff;letter-spacing:.5px;flex-shrink:0;">CQP</div>
+    <div style="font-size:1rem;font-weight:600;color:#111;letter-spacing:-.2px;">Comité Quartiers Populaires</div>
   </div>
 
-  <!-- TÉMOIGNAGES/PROFILS -->
-  <div style="background:#f7f7f7;padding:24px 20px;">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;color:var(--txt2);text-align:center;margin-bottom:16px;">Ils sont déjà là</div>
-    <div style="display:flex;flex-direction:column;gap:10px;max-width:400px;margin:0 auto;">
-      <div style="background:#fff;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.06);">
-        <div style="width:38px;height:38px;background:#C8102E;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;flex-shrink:0;">K</div>
-        <div>
-          <div style="font-size:.85rem;font-weight:600;">Karim · Bellefontaine</div>
-          <div style="font-size:.8rem;color:var(--txt2);margin-top:2px;line-height:1.5;">Coach sportif au city-stade. Venez vous dépenser, tout le monde bienvenu ! ⚽</div>
-        </div>
-      </div>
-      <div style="background:#fff;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.06);">
-        <div style="width:38px;height:38px;background:#1877F2;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;flex-shrink:0;">F</div>
-        <div>
-          <div style="font-size:.85rem;font-weight:600;">Fatima · Reynerie</div>
-          <div style="font-size:.8rem;color:var(--txt2);margin-top:2px;line-height:1.5;">Aide-soignante, militante pour les droits des habitants. Quartier fier ! 🌟</div>
-        </div>
-      </div>
-      <div style="background:#fff;border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.06);">
-        <div style="width:38px;height:38px;background:#7C3AED;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#fff;flex-shrink:0;">J</div>
-        <div>
-          <div style="font-size:.85rem;font-weight:600;">Jean-Paul · Papus</div>
-          <div style="font-size:.8rem;color:var(--txt2);margin-top:2px;line-height:1.5;">Électricien freelance. Si vous avez besoin d'un coup de main dans le quartier, je suis là. 🔧</div>
-        </div>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:20px;">
-      <button onclick="goConnect('signup')" class="btn-rouge" style="padding:12px 32px;">Je rejoins le réseau</button>
-    </div>
-  </div>
+  <!-- Corps centré -->
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px 48px;text-align:center;">
 
-  <!-- FOOTER WELCOME -->
-  <div style="padding:16px;text-align:center;font-size:.75rem;color:var(--txt3);">
-    Gratuit · Sans pub · Pour les habitants des quartiers de Toulouse
+    <div style="font-size:2.6rem;font-weight:800;color:#111;line-height:1.1;letter-spacing:-.8px;margin-bottom:16px;">
+      Le quartier,<br>c'est <span style="color:#C8102E;">nous.</span>
+    </div>
+
+    <div style="width:36px;height:3px;background:#C8102E;border-radius:2px;margin:0 auto 20px;"></div>
+
+    <div style="font-size:1rem;color:#555;line-height:1.7;margin-bottom:56px;">
+      Parlons. Partageons. Avançons <span style="color:#C8102E;font-weight:600;">ensemble.</span>
+    </div>
+
+    <div style="width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px;">
+      <button onclick="goConnect('signup')" style="width:100%;background:#C8102E;border:none;border-radius:12px;color:#fff;font-size:1rem;font-weight:600;padding:16px 24px;cursor:pointer;font-family:-apple-system,system-ui,sans-serif;">
+        Rejoindre le réseau →
+      </button>
+      <button onclick="goConnect('login')" style="width:100%;background:none;border:1.5px solid #dbdbdb;border-radius:12px;color:#333;font-size:.95rem;font-weight:500;padding:14px 24px;cursor:pointer;font-family:-apple-system,system-ui,sans-serif;">
+        J'ai déjà un identifiant
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -924,13 +887,16 @@ function goConnect(panel = 'login') {
 
 async function init() {
   const code = Auth.getCode()
+  const nav = document.querySelector('.bottom-nav')
 
   if (!code) {
-    // Nouveau visiteur → écran d'accueil
-    document.getElementById('view-welcome').style.display = 'block'
+    // Nouveau visiteur → landing épurée sans navbar
+    document.getElementById('view-welcome').style.display = 'flex'
+    if (nav) nav.style.display = 'none'
     return
   }
 
+  if (nav) nav.style.display = 'flex'
   document.getElementById('view-connect').style.display = 'none'
   document.getElementById('view-profil').style.display = 'block'
   document.getElementById('logout-btn').style.display = 'block'
