@@ -37,7 +37,18 @@ const Stories = (() => {
 
   // ── RENDER CARDS ──────────────────────────────────────────────
   const _render = barEl => {
-    barEl.innerHTML = QUARTIERS.map(q => {
+    const photo = Auth.getPhoto ? Auth.getPhoto() : null
+
+    // Card "Créer ma story" en premier
+    const createCard = `
+      <div class="add-story" onclick="Stories.openCompose()">
+        <div class="add-story-photo">${photo ? `<img src="${Utils.esc(photo)}" alt="">` : ''}</div>
+        <div class="add-story-ring">+</div>
+        <div class="add-story-txt">Créer une<br>story</div>
+      </div>`
+
+    // Cards quartier
+    const quartierCards = QUARTIERS.map(q => {
       const stories = _storiesByQuartier[q] || []
       const latest = stories[0]
       const hasNew = stories.length > 0
@@ -51,73 +62,95 @@ const Stories = (() => {
             : `<div style="position:absolute;inset:0;background:${bg};"></div>`
           }
           <div class="story-thumb-overlay"></div>
-          ${hasNew ? `<div style="position:absolute;top:6px;right:6px;background:var(--rouge);color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:2px 6px;font-family:system-ui;">${count}</div>` : ''}
-          <div class="story-ring ${hasNew ? '' : 'story-ring-seen'}" style="background:${bg};">
-            <div class="story-av" style="font-size:8px;font-weight:700;color:#fff;font-family:system-ui;">📍</div>
+          ${count > 0 ? `<div style="position:absolute;top:6px;right:6px;background:#C8102E;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:2px 6px;">${count}</div>` : ''}
+          <div class="story-ring" style="background:${bg};border-color:${hasNew ? '#fff' : 'rgba(255,255,255,.3)'};">
+            <div class="story-av" style="font-size:12px;">📍</div>
           </div>
           <div class="story-name">${q}</div>
         </div>`
     }).join('')
+
+    barEl.innerHTML = createCard + quartierCards
   }
 
   // ── OPEN QUARTIER ─────────────────────────────────────────────
   const openQuartier = quartier => {
-    const stories = _storiesByQuartier[quartier] || []
-    if (!stories.length) {
-      // Aucune story — proposer d'en créer une
-      openCompose(quartier)
-      return
-    }
     _currentQuartier = quartier
     _currentIdx = 0
-    _openViewer(stories)
+    const stories = _storiesByQuartier[quartier] || []
+    // Toujours ouvrir le viewer, même vide (on montre un état vide)
+    _openViewer(quartier, stories)
   }
 
-  const _openViewer = stories => {
+  const _openViewer = (quartier, stories) => {
     const viewer = document.getElementById('sv')
     if (!viewer) return
     viewer.classList.add('open')
     document.body.style.overflow = 'hidden'
+
+    if (!stories.length) {
+      // État vide — fond couleur + message
+      const bg = COLORS[quartier] || '#333'
+      const svBg = document.getElementById('sv-bg')
+      if (svBg) svBg.innerHTML = `<div style="position:absolute;inset:0;background:${bg};display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;"><div style="font-size:3rem;">📍</div><div style="color:#fff;font-size:1.1rem;font-weight:700;">${Utils.esc(quartier)}</div><div style="color:rgba(255,255,255,.7);font-size:.9rem;">Aucune story pour l'instant</div><button onclick="Stories.close();Stories.openCompose('${quartier.replace(/'/,"\\'")}');" style="background:#fff;color:#111;border:none;padding:10px 20px;border-radius:20px;font-weight:700;font-size:.88rem;cursor:pointer;margin-top:8px;">+ Publier une story ici</button></div>`
+      const bars = document.getElementById('sv-bars')
+      if (bars) bars.innerHTML = ''
+      const meta = document.getElementById('sv-meta')
+      if (meta) meta.innerHTML = ''
+      const txt = document.getElementById('sv-text')
+      if (txt) txt.textContent = ''
+      return
+    }
     _renderViewer(stories)
   }
 
   const _renderViewer = stories => {
     const s = stories[_currentIdx]
     if (!s) return
-    const viewer = document.getElementById('sv')
 
-    const mediaHtml = s.video_url
-      ? `<video src="${Utils.esc(s.video_url)}" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>`
-      : s.photo_url
-      ? `<img src="${Utils.esc(s.photo_url)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`
-      : `<div style="position:absolute;inset:0;background:${COLORS[_currentQuartier]||'#333'};"></div>`
-
-    const bars = viewer.querySelector('.sv-bars')
+    // Bars
+    const bars = document.getElementById('sv-bars')
     if (bars) bars.innerHTML = stories.map((_,i) =>
       `<div class="sv-bar"><div class="sv-bar-fill" id="svb-${i}" style="width:${i<_currentIdx?'100%':'0%'}"></div></div>`
     ).join('')
 
-    const bg = viewer.querySelector('.sv-bg')
-    if (bg) bg.innerHTML = mediaHtml
+    // Media
+    const svBg = document.getElementById('sv-bg')
+    if (svBg) {
+      if (s.video_url) {
+        svBg.innerHTML = `<video src="${Utils.esc(s.video_url)}" autoplay muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>`
+      } else if (s.photo_url) {
+        svBg.innerHTML = `<img src="${Utils.esc(s.photo_url)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`
+      } else {
+        svBg.innerHTML = `<div style="position:absolute;inset:0;background:${COLORS[_currentQuartier]||'#333'};"></div>`
+      }
+    }
 
-    const meta = viewer.querySelector('.sv-meta')
+    // Meta
+    const bg = COLORS[_currentQuartier] || '#333'
+    const meta = document.getElementById('sv-meta')
     if (meta) meta.innerHTML = `
       <div style="display:flex;align-items:center;gap:8px;">
-        <div style="width:32px;height:32px;border-radius:50%;background:${COLORS[_currentQuartier]||'#333'};border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;">📍</div>
+        <div style="width:36px;height:36px;border-radius:50%;background:${bg};border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:14px;">📍</div>
         <div>
-          <div style="font-size:.88rem;font-weight:700;color:#fff;">${Utils.esc(_currentQuartier)}</div>
-          <div style="font-size:.72rem;color:rgba(255,255,255,.7);">${Utils.esc(s.prenom||'')} · ${Utils.timeAgo(s.created_at)}</div>
+          <div style="font-size:.9rem;font-weight:700;color:#fff;">${Utils.esc(_currentQuartier)}</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.75);">${Utils.esc(s.prenom||'')} · ${Utils.timeAgo(s.created_at)}</div>
         </div>
       </div>`
 
-    const txt = viewer.querySelector('.sv-text')
+    // Texte
+    const txt = document.getElementById('sv-text')
     if (txt) txt.textContent = s.texte || ''
 
+    // Progress bar
     clearTimeout(_timer)
     _timer = setTimeout(next, 5000)
-    // Progress bar animation
-    const fill = document.getElementById(`svb-${_currentIdx}`)
-    if (fill) { fill.style.transition = 'width 5s linear'; fill.style.width = '100%' }
+    requestAnimationFrame(() => {
+      const fill = document.getElementById(`svb-${_currentIdx}`)
+      if (fill) { fill.style.transition = 'none'; fill.style.width = '0%';
+        requestAnimationFrame(() => { fill.style.transition = 'width 5s linear'; fill.style.width = '100%' })
+      }
+    })
   }
 
   const close = () => {
