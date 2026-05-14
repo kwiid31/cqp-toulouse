@@ -80,6 +80,7 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('dashboard',this)">Dashboard</button>
       <button class="tab-btn" onclick="switchTab('actus',this)">Actus</button>
+      <button class="tab-btn" onclick="switchTab('stories',this)">Stories</button>
       <button class="tab-btn" onclick="switchTab('mod',this)">Modération</button>
       <button class="tab-btn" onclick="switchTab('evts',this)">Événements</button>
       <button class="tab-btn" onclick="switchTab('profils',this)">Profils</button>
@@ -129,6 +130,11 @@
     </div>
 
     <!-- TAB MODÉRATION -->
+    <div id="tab-stories" style="display:none;">
+      <div class="section-title" style="margin-bottom:8px;">Stories en ligne</div>
+      <div id="mod-stories"><div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div></div>
+    </div>
+
     <div id="tab-mod" style="display:none;">
       <div class="tbl" style="margin-bottom:12px;">
         <div class="tbl-head"><div class="tbl-title">Posts récents</div></div>
@@ -182,13 +188,14 @@ async function doLogin(){
 function doLogout(){sessionStorage.removeItem('cqp_adm');location.reload()}
 
 function switchTab(name,btn){
-  ['dashboard','actus','mod','evts','profils'].forEach(t=>{
+  ['dashboard','actus','stories','mod','evts','profils'].forEach(t=>{
     const el=document.getElementById('tab-'+t)
     if(el) el.style.display=t===name?'block':'none'
   })
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'))
   btn.classList.add('active')
   if(name==='dashboard')loadDashboard()
+  if(name==='stories')loadStories()
   if(name==='mod'){loadModPosts();loadModAnnonces()}
   if(name==='evts')loadModEvts()
   if(name==='profils')loadProfils()
@@ -285,6 +292,35 @@ async function publishActu(){
 async function deleteActu(id){
   if(!confirm('Supprimer cette actu ?'))return
   await sb.from('actus').update({visible:false}).eq('id',id);loadActusList();loadStats()
+}
+
+async function loadStories(){
+  const el=document.getElementById('mod-stories')
+  const{data}=await sb.from('stories').select('*').eq('visible',true).order('created_at',{ascending:false}).limit(50)
+  if(!data?.length){el.innerHTML='<div class="empty">Aucune story en ligne.</div>';return}
+  el.innerHTML=data.map(s=>{
+    const isVideo=s.media_type==='video'||s.video_url
+    const thumb=isVideo&&s.video_url
+      ?`<video src="${esc(s.video_url)}" muted playsinline style="width:56px;height:56px;object-fit:cover;border-radius:8px;flex-shrink:0;" preload="metadata"></video>`
+      :s.photo_url
+      ?`<img src="${esc(s.photo_url)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;flex-shrink:0;">`
+      :`<div style="width:56px;height:56px;border-radius:8px;background:var(--bg3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">📍</div>`
+    const badge=isVideo?'<span style="background:#C8102E;color:#fff;font-size:.6rem;padding:1px 5px;border-radius:4px;margin-left:4px;">VID</span>':''
+    return`<div class="tbl-row" style="align-items:center;">
+      ${thumb}
+      <div class="tbl-main">
+        <div class="tbl-title2">${esc(s.prenom||'Anonyme')} ${badge}</div>
+        <div class="tbl-sub">${esc(s.quartier||'')} · ${timeAgo(s.created_at)}</div>
+        ${s.texte?`<div class="tbl-sub" style="margin-top:2px;font-style:italic;">"${esc(s.texte.substring(0,60))}"</div>`:''}
+      </div>
+      <div class="tbl-actions"><button class="btn-del" onclick="deleteStory(${s.id})">Supprimer</button></div>
+    </div>`
+  }).join('')
+}
+async function deleteStory(id){
+  if(!confirm('Supprimer cette story ?'))return
+  await sb.from('stories').update({visible:false}).eq('id',id)
+  loadStories()
 }
 
 async function loadModPosts(){
