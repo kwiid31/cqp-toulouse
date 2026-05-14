@@ -108,6 +108,10 @@ const Stories = (() => {
     const s = stories[_currentIdx]
     if (!s) return
 
+    // Bouton admin supprimer (visible seulement pour les admins)
+    const adminBtn = document.getElementById('sv-admin-del')
+    if (adminBtn) { adminBtn.style.display = Auth.isAdmin() ? 'block' : 'none'; adminBtn.textContent = '🗑 Supprimer'; adminBtn.disabled = false }
+
     // Bars
     const bars = document.getElementById('sv-bars')
     if (bars) bars.innerHTML = stories.map((_,i) =>
@@ -267,6 +271,23 @@ const Stories = (() => {
     if (btn) btn.textContent = v.muted ? '🔇' : '🔊'
   }
 
+  const adminDeleteCurrent = async () => {
+    const stories = _storiesByQuartier[_currentQuartier] || []
+    const s = stories[_currentIdx]
+    if (!s) return
+    const adminBtn = document.getElementById('sv-admin-del')
+    if (adminBtn) { adminBtn.textContent = '…'; adminBtn.disabled = true }
+    const { error } = await sb.from('stories').update({ visible: false }).eq('id', s.id)
+    if (error) { Utils.toast('Erreur : ' + error.message, 'error'); if (adminBtn) { adminBtn.textContent = '🗑 Supprimer'; adminBtn.disabled = false } return }
+    _storiesByQuartier[_currentQuartier] = stories.filter(x => x.id !== s.id)
+    Utils.toast('Story supprimée', 'success')
+    const remaining = _storiesByQuartier[_currentQuartier]
+    if (!remaining.length) close()
+    else { if (_currentIdx >= remaining.length) _currentIdx = remaining.length - 1; _renderViewer(remaining) }
+    const bar = document.getElementById('stories-bar')
+    if (bar) load(bar)
+  }
+
   // Realtime — retire les stories masquées par l'admin instantanément
   sb.channel('stories-moderation')
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'stories' }, (payload) => {
@@ -289,5 +310,5 @@ const Stories = (() => {
     })
     .subscribe()
 
-  return { load, openQuartier, openCompose, close, next, prev, publish, toggleSound, QUARTIERS }
+  return { load, openQuartier, openCompose, close, next, prev, publish, toggleSound, adminDeleteCurrent, QUARTIERS }
 })()

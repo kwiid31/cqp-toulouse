@@ -8,7 +8,7 @@ const Feed = (() => {
   let _index = 0       // Position courante dans la liste
   let _loading = false
   let _myLikes = new Set(JSON.parse(localStorage.getItem('cqp_likes') || '[]'))
-  let _myCode = null, _mySid = null
+  let _myCode = null, _mySid = null, _isAdmin = false
 
   const saveLikes = () => localStorage.setItem('cqp_likes', JSON.stringify([..._myLikes]))
   const spinner = () => `<div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>`
@@ -19,6 +19,7 @@ const Feed = (() => {
     _el = el
     _myCode = Auth.getCode()
     _mySid = Auth.getSid()
+    _isAdmin = Auth.isAdmin()
     _el.innerHTML = spinner()
 
     // Charger tout en parallèle
@@ -159,7 +160,16 @@ const Feed = (() => {
               Supprimer
             </button>
           </div>
-        </div>` : ''}
+        </div>` : (_isAdmin ? `<div style="position:relative;">
+          <button class="card-more" onclick="Feed.toggleMenu(${p.id},event)" aria-label="Options admin" style="font-size:1.2rem;color:#C8102E;letter-spacing:1px;padding:4px 8px;">···</button>
+          <div id="menu-${p.id}" style="display:none;position:absolute;right:0;top:100%;background:#fff;border:0.5px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:100;min-width:160px;">
+            <div style="padding:6px 14px 4px;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;">Admin</div>
+            <button onclick="Feed.adminHidePost(${p.id})" style="width:100%;padding:9px 14px;background:none;border:none;text-align:left;font-family:'Barlow',sans-serif;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              Masquer ce post
+            </button>
+          </div>
+        </div>` : '')}
       </div>
       ${p.contenu ? `<div class="card-text">${Utils.esc(p.contenu)}</div>` : ''}
       ${img}
@@ -325,7 +335,17 @@ const Feed = (() => {
     }
   }
 
-  // ── SHARE ────────────────────────────────────────────────────
+  const adminHidePost = async (postId) => {
+    const card = document.getElementById(`card-${postId}`)
+    if (card) card.style.opacity = '0.4'
+    const { error } = await sb.from('posts').update({ visible: false }).eq('id', postId)
+    if (error) { Utils.toast('Erreur : ' + error.message, 'error'); if (card) card.style.opacity = '1'; return }
+    if (card) card.remove()
+    _allItems = _allItems.filter(i => !(i._type === 'post' && i._data.id === postId))
+    Utils.toast('Post masqué', 'success')
+    // Fermer le menu
+    document.getElementById(`menu-${postId}`)?.remove()
+  }
   const share = postId => {
     const url = `${location.origin}/index.html#card-${postId}`
     if (navigator.share) navigator.share({ url })
@@ -372,5 +392,5 @@ const Feed = (() => {
     })
     .subscribe()
 
-  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, toggleMenu, share, setupPullToRefresh, refresh }
+  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh }
 })()
