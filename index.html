@@ -389,7 +389,7 @@ function previewPhoto(inp) {
       if (!vid) {
         vid = document.createElement('video')
         vid.id = 'pf-preview-vid'
-        vid.controls = true; vid.muted = true; vid.playsinline = true
+        vid.controls = true; vid.playsinline = true
         vid.style.cssText = 'width:100%;border-radius:10px;margin-top:8px;max-height:200px;display:block;'
         preview.parentNode.insertBefore(vid, preview)
       }
