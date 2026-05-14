@@ -290,11 +290,15 @@
           <input type="file" id="story-photo-inp" accept="image/*,video/*" style="display:none" onchange="
             const f=this.files[0];
             if(!f) return;
-            const isVideo = f.type.startsWith('video/');
-            const img = document.getElementById('story-preview-img');
-            const vid = document.getElementById('story-preview-vid');
-            if(isVideo){vid.src=URL.createObjectURL(f);vid.style.display='block';img.style.display='none';}
-            else{img.src=URL.createObjectURL(f);img.style.display='block';vid.style.display='none';}
+            const inp = this;
+            checkVideoDuration(f, ok => {
+              if(!ok) { inp.value=''; return }
+              const isVideo = f.type.startsWith('video/');
+              const img = document.getElementById('story-preview-img');
+              const vid = document.getElementById('story-preview-vid');
+              if(isVideo){vid.src=URL.createObjectURL(f);vid.style.display='block';img.style.display='none';}
+              else{img.src=URL.createObjectURL(f);img.style.display='block';vid.style.display='none';}
+            })
           ">
         </label>
       </div>
@@ -355,12 +359,49 @@ function closePostForm() {
   document.getElementById('pf-photo').value = ''
   document.getElementById('pf-msg').textContent = ''
 }
+function checkVideoDuration(file, cb) {
+  if (!file.type.startsWith('video/')) { cb(true); return }
+  const url = URL.createObjectURL(file)
+  const vid = document.createElement('video')
+  vid.preload = 'metadata'
+  vid.onloadedmetadata = () => {
+    URL.revokeObjectURL(url)
+    if (vid.duration > 60) {
+      Utils.toast('Vidéo trop longue — 60 secondes maximum', 'error')
+      cb(false)
+    } else { cb(true) }
+  }
+  vid.onerror = () => { URL.revokeObjectURL(url); cb(true) }
+  vid.src = url
+}
+
 function previewPhoto(inp) {
   const file = inp.files?.[0]
   if (!file) return
-  const img = document.getElementById('pf-preview')
-  img.src = URL.createObjectURL(file)
-  img.style.display = 'block'
+  checkVideoDuration(file, ok => {
+    if (!ok) { inp.value = ''; return }
+    const preview = document.getElementById('pf-preview')
+    if (file.type.startsWith('video/')) {
+      preview.src = ''
+      preview.style.display = 'none'
+      // Afficher un aperçu vidéo
+      let vid = document.getElementById('pf-preview-vid')
+      if (!vid) {
+        vid = document.createElement('video')
+        vid.id = 'pf-preview-vid'
+        vid.controls = true; vid.muted = true; vid.playsinline = true
+        vid.style.cssText = 'width:100%;border-radius:10px;margin-top:8px;max-height:200px;display:block;'
+        preview.parentNode.insertBefore(vid, preview)
+      }
+      vid.src = URL.createObjectURL(file)
+      vid.style.display = 'block'
+    } else {
+      const vid = document.getElementById('pf-preview-vid')
+      if (vid) vid.style.display = 'none'
+      preview.src = URL.createObjectURL(file)
+      preview.style.display = 'block'
+    }
+  })
 }
 async function submitPost() {
   const code = Auth.getCode()
