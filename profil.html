@@ -103,12 +103,14 @@
     </div>
 
     <div id="panel-signup" class="connect-box" style="display:none;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:4px;">Nouveau Profil</div>
-      <div style="font-size:.85rem;color:var(--txt2);margin-bottom:20px;">Rejoins le réseau CQP Toulouse.</div>
-      <div class="fg"><label>Prénom *</label><input id="s-prenom" placeholder="Ex : Karim" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <div class="fg"><label>Quartier</label><input id="s-quartier" placeholder="Ex : Mirail, Bellefontaine…" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+      <div style="text-align:center;margin-bottom:28px;">
+        <div style="background:#C8102E;border-radius:14px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;color:#fff;letter-spacing:.5px;margin:0 auto 16px;">CQP</div>
+        <div style="font-size:1.3rem;font-weight:700;color:#111;letter-spacing:-.3px;">Crée ton profil</div>
+        <div style="font-size:.85rem;color:var(--txt2);margin-top:4px;">Juste ton prénom et un code à 6 chiffres</div>
+      </div>
+      <div class="fg"><input id="s-prenom" placeholder="Ton prénom" maxlength="30" style="width:100%;padding:14px 16px;background:#fff;border:1.5px solid #dbdbdb;border-radius:12px;font-family:-apple-system,system-ui,sans-serif;font-size:1rem;outline:none;box-sizing:border-box;"></div>
       <div class="fg">
-        <label>Crée ton identifiant — 6 chiffres *</label>
+        <div style="font-size:.78rem;color:var(--txt2);margin-bottom:8px;text-align:center;letter-spacing:.3px;">TON IDENTIFIANT — 6 CHIFFRES</div>
         <div class="code-inputs" id="signup-code-inputs">
           <input class="code-digit" id="sc0" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
           <input class="code-digit" id="sc1" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
@@ -117,16 +119,15 @@
           <input class="code-digit" id="sc4" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
           <input class="code-digit" id="sc5" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
         </div>
-        <div style="display:flex;gap:7px;align-items:flex-start;background:#fff8e1;border-radius:8px;padding:9px 11px;margin-top:8px;">
+        <div style="display:flex;gap:7px;align-items:flex-start;background:#fff8e1;border-radius:8px;padding:9px 11px;margin-top:10px;">
           <span style="font-size:13px;flex-shrink:0;">💡</span>
-          <span style="font-size:.75rem;color:#7a6020;line-height:1.5;">Note-le ou fais une capture — il te servira si tu changes de téléphone.</span>
+          <span style="font-size:.75rem;color:#7a6020;line-height:1.5;">Note-le — il te servira si tu changes de téléphone.</span>
         </div>
       </div>
-      <div class="fg"><label>Email <span style="color:var(--txt3);font-weight:400;">(optionnel — pour retrouver ton identifiant si perdu)</span></label><input id="s-email" type="email" placeholder="ton@email.fr" maxlength="100" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <button class="btn-rouge" id="signup-btn" onclick="doSignup()">Créer mon profil</button>
+      <button class="btn-rouge" id="signup-btn" onclick="doSignup()" style="border-radius:12px;font-size:1rem;padding:15px;">Entrer dans le réseau</button>
       <div class="form-msg" id="signup-msg"></div>
       <div class="divider">ou</div>
-      <button class="btn-outline" onclick="switchPanel('login')">J'ai déjà un identifiant</button>
+      <button class="btn-outline" onclick="switchPanel('login')" style="border-radius:12px;">J'ai déjà un identifiant</button>
     </div>
 
     <div id="panel-code" class="connect-box" style="display:none;"></div>
@@ -389,29 +390,26 @@ async function doLogin() {
 
 async function doSignup() {
   const prenom = document.getElementById('s-prenom').value.trim()
-  const quartier = document.getElementById('s-quartier').value.trim()
-  const email = document.getElementById('s-email').value.trim()
   const msg = document.getElementById('signup-msg')
   const btn = document.getElementById('signup-btn')
 
-  // Récupérer le code choisi
   const digits = ['sc0','sc1','sc2','sc3','sc4','sc5'].map(id => document.getElementById(id).value)
   const code = digits.join('')
 
-  if (!prenom) { msg.style.color='var(--rouge)'; msg.textContent='Prénom obligatoire.'; return }
+  if (!prenom) { msg.style.color='var(--rouge)'; msg.textContent='Ton prénom est obligatoire.'; return }
   if (code.length !== 6 || !/^\d{6}$/.test(code)) { msg.style.color='var(--rouge)'; msg.textContent='Choisis un identifiant à 6 chiffres.'; return }
 
   btn.disabled = true; btn.textContent = '…'
   msg.style.color = 'var(--txt3)'; msg.textContent = 'Création…'
   try {
-    const data = await Auth.signup({ prenom, quartier, bio: '', code, email })
+    const data = await Auth.signup({ prenom, quartier: '', bio: '', code, email: '' })
     document.getElementById('popup-welcome').textContent = `Bienvenue ${prenom} !`
     document.getElementById('popup-code').textContent = data.code.split('').join(' ')
     const popup = document.getElementById('code-popup')
     popup.style.display = 'flex'
   } catch (e) {
     msg.style.color = 'var(--rouge)'; msg.textContent = e.message
-    btn.disabled = false; btn.textContent = 'Créer mon profil'
+    btn.disabled = false; btn.textContent = 'Entrer dans le réseau'
   }
 }
 
