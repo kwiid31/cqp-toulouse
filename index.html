@@ -631,7 +631,11 @@ function showConfirm(title, msg) {
     window._confirmResolve = resolve
     document.getElementById('confirm-title').textContent = title || 'Supprimer ?'
     document.getElementById('confirm-msg').textContent = msg || 'Cette action est irréversible.'
-    document.getElementById('confirm-ok').onclick = () => { closeConfirm(); resolve(true) }
+    document.getElementById('confirm-ok').onclick = () => {
+      window._confirmResolve = null
+      document.getElementById('confirm-sheet').classList.remove('open')
+      resolve(true)
+    }
     document.getElementById('confirm-sheet').classList.add('open')
   })
 }
