@@ -325,12 +325,13 @@ const Feed = (() => {
     if (!isOpen) { menu.style.display = 'block'; setTimeout(() => document.addEventListener('click', () => { menu.style.display = 'none' }, { once: true }), 0) }
   }
 
-  const deletePost = async (postId, btn) => {
+  const deletePost = async (postId) => {
+    document.querySelectorAll('[id^="menu-"]').forEach(m => m.style.display = 'none')
+    await new Promise(r => setTimeout(r, 50))
     if (!await showConfirm('Supprimer ce post ?', 'Cette publication sera définitivement effacée.')) return
     const { error } = await Api.hidePost(postId)
     if (!error) {
       document.getElementById(`card-${postId}`)?.remove()
-      // Retirer de la liste
       _allItems = _allItems.filter(i => !(i._type==='post' && i._data.id===postId))
     }
   }
