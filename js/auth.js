@@ -6,11 +6,12 @@
 
 const Auth = (() => {
   const LS = {
-    code:   'cqp_code',
-    prenom: 'cqp_prenom',
-    photo:  'cqp_photo',
-    sid:    'cqp_sid',
-    admin:  'cqp_admin',
+    code:    'cqp_code',
+    prenom:  'cqp_prenom',
+    photo:   'cqp_photo',
+    sid:     'cqp_sid',
+    admin:   'cqp_admin',
+    quartier:'cqp_quartier',
   };
 
   // ── Getters (lecture localStorage — synchrone, immédiat) ───────
@@ -29,9 +30,10 @@ const Auth = (() => {
 
   // ── Save / clear ───────────────────────────────────────────────
   const save = (profil) => {
-    if (profil.code)      localStorage.setItem(LS.code,   profil.code);
-    if (profil.prenom)    localStorage.setItem(LS.prenom, profil.prenom);
+    if (profil.code)      localStorage.setItem(LS.code,    profil.code);
+    if (profil.prenom)    localStorage.setItem(LS.prenom,  profil.prenom);
     if (profil.photo_url !== undefined) localStorage.setItem(LS.photo, profil.photo_url || '');
+    if (profil.quartier !== undefined)  localStorage.setItem(LS.quartier, profil.quartier || '');
     localStorage.setItem(LS.admin, profil.is_admin ? '1' : '0');
   };
 

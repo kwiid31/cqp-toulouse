@@ -534,3 +534,7 @@ video.story-thumb-bg { object-fit:cover; }
 .card-border-vert{border-left:5px solid #2e7d32;}
 .card-border-bleu{border-left:5px solid #1565c0;}
 .card-av-cqp{background:var(--rouge);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;font-size:.8rem;}
+.mood-opt{background:#f0f2f5;border:none;border-radius:10px;padding:11px 10px;font-size:.85rem;font-family:'Barlow',sans-serif;cursor:pointer;text-align:left;color:#1c1e21;transition:background .15s;}
+.mood-opt:hover{background:#e4e6eb;}
+.pf-tag{display:inline-flex;align-items:center;gap:5px;background:#fff0f0;border:1px solid #ffc5c5;border-radius:16px;padding:4px 10px;font-size:.78rem;color:#C8102E;font-weight:600;}
+.pf-tag button{background:none;border:none;cursor:pointer;color:#C8102E;font-size:.9rem;padding:0;line-height:1;}
