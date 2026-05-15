@@ -406,12 +406,19 @@ function pfShowOptions() {
 }
 function pfOpenLoc() {
   const quartiers=['Bagatelle','Faourette','Reynerie','Bellefontaine','Papus','Empalot','Izards','Croix d\'Aurade','Arènes','Bourbaki','Grand Mirail','Autre']
-  document.getElementById('pf-loc-list').innerHTML=quartiers.map(q=>`
-    <button onclick="pfSelectLoc('${q.replace(/'/g,"\\'")}') " style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:none;background:${_pfLoc===q?'#fff0f0':'none'};border-radius:10px;cursor:pointer;font-family:-apple-system,system-ui,sans-serif;font-size:.9rem;width:100%;text-align:left;">
-      <span style="width:32px;height:32px;background:#fff0f0;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;">📍</span>
-      <span style="font-weight:${_pfLoc===q?700:400};color:${_pfLoc===q?'#C8102E':'#1c1e21'};">${q}</span>
-      ${_pfLoc===q?'<span style="margin-left:auto;color:#C8102E;font-weight:700;">✓</span>':''}
-    </button>`).join('')
+  document.getElementById('pf-loc-list').innerHTML=quartiers.map(q=>{
+    const sel=_pfLoc===q
+    const bg=sel?'#fff0f0':'transparent'
+    const fw=sel?700:400
+    const col=sel?'#C8102E':'#1c1e21'
+    const check=sel?'<span style="margin-left:auto;color:#C8102E;font-weight:700;">✓</span>':''
+    const qs=q.replace(/'/g,"\\'")
+    return '<button onclick="pfSelectLoc(\''+qs+'\')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:none;background:'+bg+';border-radius:10px;cursor:pointer;font-family:-apple-system,system-ui,sans-serif;font-size:.9rem;width:100%;text-align:left;">'
+      +'<span style="width:32px;height:32px;background:#fff0f0;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">📍</span>'
+      +'<span style="font-weight:'+fw+';color:'+col+';">'+q+'</span>'
+      +check
+      +'</button>'
+  }).join('')
   document.getElementById('pf-loc-sheet').style.display='block'
   document.getElementById('pf-loc-ov').style.display='block'
 }
