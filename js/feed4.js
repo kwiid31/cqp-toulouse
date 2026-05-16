@@ -421,7 +421,7 @@ const Feed = (() => {
         + '<div style="padding:12px 14px;">'
         + '<div style="font-size:.88rem;font-weight:600;color:#1c1e21;line-height:1.35;margin-bottom:4px;">' + Utils.esc(a._data.titre) + '</div>'
         + '<div style="font-size:.75rem;color:#65676b;margin-bottom:12px;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
-        + '<a href="annonces.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:10px;border-radius:8px;font-size:.82rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Voir l'annonce</a>'
+        + '<a href="annonces.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:10px;border-radius:8px;font-size:.82rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Voir l&#39;annonce</a>'
         + '</div></div>'
     }).join('')
     return '<div style="background:#fff;border-bottom:8px solid #e4e6eb;padding:14px 0;">'
