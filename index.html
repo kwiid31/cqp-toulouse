@@ -542,7 +542,7 @@ async function submitPost() {
       if (error) throw error
       Utils.toast('Story publiée !', 'success')
     } else {
-      const { data, error } = await Api.createPost({ prenom, contenu: text || null, photo_url, video_url })
+      const { data, error } = await Api.createPost({ prenom, contenu: text || null, photo_url, video_url, quartier: _pfLoc || null })
       if (error) throw error
       if (data) Feed.prepend(data)
       Utils.toast('Post publié !', 'success')
