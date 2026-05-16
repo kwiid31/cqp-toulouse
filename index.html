@@ -388,8 +388,28 @@ function openPostForm(type) {
     window.visualViewport.addEventListener('resize', function() {
       var isOpen = document.getElementById('post-form').classList.contains('open')
       if (!isOpen) return
-      var keyboardUp = window.visualViewport.height < window.innerHeight * 0.75
-      if (keyboardUp) pfHideOptions(); else pfShowOptions()
+      var opts = document.getElementById('pf-options')
+      if (!opts) return
+      var vvh = window.visualViewport.height
+      var vvt = window.visualViewport.offsetTop || 0
+      var keyboardUp = vvh < window.innerHeight * 0.75
+      if (keyboardUp) {
+        // Coller le panel juste au-dessus du clavier
+        opts.style.position = 'fixed'
+        opts.style.bottom = (window.innerHeight - vvh - vvt) + 'px'
+        opts.style.left = '0'
+        opts.style.right = '0'
+        opts.style.zIndex = '600'
+        opts.style.display = 'block'
+      } else {
+        // Revenir en position normale dans le flux
+        opts.style.position = ''
+        opts.style.bottom = ''
+        opts.style.left = ''
+        opts.style.right = ''
+        opts.style.zIndex = ''
+        opts.style.display = 'block'
+      }
     })
   }
 }
