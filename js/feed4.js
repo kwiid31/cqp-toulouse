@@ -149,9 +149,8 @@ const Feed = (() => {
       <div class="card-head">
         ${av}
         <div class="card-meta">
-          <div style="font-size:.72rem;color:var(--txt2);font-weight:500;line-height:1.2;">${Utils.esc(p.prenom||'Anonyme')}</div>
-          <div class="card-author">${p.quartier ? Utils.esc(p.quartier) : 'Toulouse'}</div>
-          <div class="card-ts">${Utils.timeAgo(p.created_at)}</div>
+          <div class="card-author">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</div>
+          <div class="card-ts">${p.quartier ? Utils.esc(p.prenom||'Anonyme') + ' · ' : ''}${Utils.timeAgo(p.created_at)}</div>
         </div>
         ${isMine ? `<div style="position:relative;">
           <button class="card-more" onclick="Feed.toggleMenu(${p.id},event)" aria-label="Options" style="font-size:1.2rem;color:var(--txt3);letter-spacing:1px;padding:4px 8px;">···</button>
