@@ -236,8 +236,8 @@
     <img id="pf-preview" class="photo-preview">
     <video id="pf-video-preview" style="display:none;width:100%;max-height:200px;border-radius:8px;margin-top:8px;" controls playsinline></video>
   </div>
-  <!-- Panel options — visible par defaut, cache par le clavier -->
-  <div id="pf-options" style="border-top:0.5px solid #e4e6eb;background:#fff;">
+  <!-- Panel options — fixed en bas, se repositionne avec le clavier -->
+  <div id="pf-options" style="position:fixed;bottom:0;left:0;right:0;border-top:0.5px solid #e4e6eb;background:#fff;z-index:510;">
     <div style="display:flex;justify-content:center;padding:8px 0 2px;">
       <div style="width:32px;height:4px;background:#e0e0e0;border-radius:2px;"></div>
     </div>
@@ -258,9 +258,9 @@
     </button>
     <div style="height:max(8px,env(safe-area-inset-bottom));"></div>
   </div>
-  <!-- Sheet choix quartier — position absolute dans le post-form -->
-  <div id="pf-loc-ov" onclick="pfCloseLoc()" style="display:none;position:absolute;inset:0;z-index:9;background:rgba(0,0,0,.35);"></div>
-  <div id="pf-loc-sheet" style="display:none;position:absolute;bottom:0;left:0;right:0;z-index:10;background:#fff;border-radius:20px 20px 0 0;padding:16px 16px 20px;">
+  <!-- Sheet choix quartier — position fixed -->
+  <div id="pf-loc-ov" onclick="pfCloseLoc()" style="display:none;position:fixed;inset:0;z-index:590;background:rgba(0,0,0,.35);"></div>
+  <div id="pf-loc-sheet" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:595;background:#fff;border-radius:20px 20px 0 0;padding:16px 16px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.15);">
     <div style="display:flex;justify-content:center;margin-bottom:12px;"><div style="width:32px;height:4px;background:#e0e0e0;border-radius:2px;"></div></div>
     <div style="font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:#999;text-align:center;margin-bottom:12px;font-weight:600;">Ton quartier</div>
     <div id="pf-loc-list" style="max-height:55vh;overflow-y:auto;"></div>
@@ -390,26 +390,8 @@ function openPostForm(type) {
       if (!isOpen) return
       var opts = document.getElementById('pf-options')
       if (!opts) return
-      var vvh = window.visualViewport.height
-      var vvt = window.visualViewport.offsetTop || 0
-      var keyboardUp = vvh < window.innerHeight * 0.75
-      if (keyboardUp) {
-        // Coller le panel juste au-dessus du clavier
-        opts.style.position = 'fixed'
-        opts.style.bottom = (window.innerHeight - vvh - vvt) + 'px'
-        opts.style.left = '0'
-        opts.style.right = '0'
-        opts.style.zIndex = '600'
-        opts.style.display = 'block'
-      } else {
-        // Revenir en position normale dans le flux
-        opts.style.position = ''
-        opts.style.bottom = ''
-        opts.style.left = ''
-        opts.style.right = ''
-        opts.style.zIndex = ''
-        opts.style.display = 'block'
-      }
+      var offsetBottom = window.innerHeight - window.visualViewport.height - (window.visualViewport.offsetTop || 0)
+      opts.style.bottom = Math.max(0, offsetBottom) + 'px'
     })
   }
 }
