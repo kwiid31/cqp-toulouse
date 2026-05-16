@@ -223,9 +223,6 @@
     <div class="c-av c-av-40 c-av-init" id="pf-av" style="flex-shrink:0;">?</div>
     <div style="flex:1;margin-left:10px;">
       <div style="font-weight:700;font-size:.95rem;color:#1c1e21;" id="pf-name"></div>
-      <button onclick="pfOpenLoc()" id="pf-loc-tag" style="display:none;align-items:center;gap:4px;margin-top:3px;background:none;border:none;cursor:pointer;padding:0;">
-        <span id="pf-loc-label" style="background:#fff0f0;border:1px solid #ffc5c5;border-radius:12px;padding:3px 10px;font-size:.75rem;color:#C8102E;font-weight:600;"></span>
-      </button>
     </div>
     <button id="pf-submit" onclick="submitPost()" disabled style="background:var(--rouge);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;opacity:.4;transition:opacity .15s;">Publier</button>
   </div>
@@ -248,6 +245,13 @@
       <span style="font-size:.92rem;font-weight:600;color:#1c1e21;">Photo / Video</span>
     </label>
     <input type="file" id="pf-photo" accept="image/*,video/*" style="display:none" onchange="previewPhoto(this);pfHideOptions()">
+    <button onclick="pfOpenLoc()" style="display:flex;align-items:center;gap:14px;padding:11px 16px;border:none;background:none;width:100%;cursor:pointer;font-family:-apple-system,system-ui,sans-serif;">
+      <div style="width:42px;height:42px;background:#fff0f0;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#C8102E" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <span style="font-size:.92rem;font-weight:600;color:#1c1e21;">Quartier</span>
+      <span id="pf-loc-preview" style="margin-left:auto;font-size:.85rem;color:#C8102E;font-weight:600;padding-right:4px;"></span>
+    </button>
     <div style="height:max(8px,env(safe-area-inset-bottom));"></div>
   </div>
   <!-- Sheet choix quartier — position fixed -->
@@ -376,10 +380,8 @@ function openPostForm(type) {
   var profilQuartier = localStorage.getItem('cqp_quartier')
   if (profilQuartier && !_pfLoc) {
     _pfLoc = profilQuartier
-    var lbl = document.getElementById('pf-loc-label')
-    var ltag = document.getElementById('pf-loc-tag')
-    if (lbl) lbl.textContent = '\ud83d\udccd ' + profilQuartier
-    if (ltag) ltag.style.display = 'flex'
+    var prev = document.getElementById('pf-loc-preview')
+    if (prev) prev.textContent = '\ud83d\udccd ' + profilQuartier
   }
   document.getElementById('post-form').classList.add('open')
   document.body.style.overflow = 'hidden'
@@ -428,17 +430,15 @@ function pfCloseLoc() {
 }
 function pfSelectLoc(q) {
   _pfLoc = q
-  var label = document.getElementById('pf-loc-label')
-  var tag = document.getElementById('pf-loc-tag')
-  if (label) label.textContent = '\ud83d\udccd ' + q
-  if (tag) tag.style.display = 'flex'
+  var prev = document.getElementById('pf-loc-preview')
+  if (prev) prev.textContent = '\ud83d\udccd ' + q
   pfCloseLoc()
   pfCheckPublish()
 }
 function pfRemoveLoc() {
   _pfLoc = null
-  var tag = document.getElementById('pf-loc-tag')
-  if (tag) tag.style.display = 'none'
+  var prev = document.getElementById('pf-loc-preview')
+  if (prev) prev.textContent = ''
 }
 
 function pfCheckPublish() {
@@ -459,7 +459,6 @@ function closePostForm() {
   document.getElementById('pf-preview').style.display = 'none'
   document.getElementById('pf-photo').value = ''
   document.getElementById('pf-msg').textContent = ''
-  _pfLoc = null
   pfRemoveLoc()
   pfShowOptions()
   pfCloseLoc()
