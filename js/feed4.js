@@ -417,7 +417,7 @@ const Feed = (() => {
         ? '<img src="' + Utils.esc(a._data.photo_url) + '" style="width:100%;height:100%;object-fit:cover;">'
         : '<i class="ti ' + icon + '" style="font-size:32px;color:rgba(255,255,255,.85);" aria-hidden="true"></i>'
       return '<div style="flex-shrink:0;width:72vw;max-width:280px;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;">'
-        + '<div style="height:120px;background:' + color + ';display:flex;align-items:center;justify-content:center;">' + img + '</div>'
+        + '<div style="height:200px;background:' + color + ';display:flex;align-items:center;justify-content:center;">' + img + '</div>'
         + '<div style="padding:10px 12px;">'
         + '<div style="font-size:.8rem;font-weight:600;color:#1c1e21;line-height:1.35;margin-bottom:3px;">' + Utils.esc(a._data.titre) + '</div>'
         + '<div style="font-size:.72rem;color:#65676b;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
@@ -444,7 +444,7 @@ const Feed = (() => {
         ? '<img src="' + Utils.esc(e._data.photo_url) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">'
         : ''
       return '<div style="flex-shrink:0;width:44vw;max-width:170px;border-radius:12px;overflow:hidden;position:relative;">'
-        + '<div style="height:240px;background:' + color + ';position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:10px;">'
+        + '<div style="height:340px;background:' + color + ';position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:10px;">'
         + img
         + '<div style="position:relative;background:rgba(255,255,255,.2);border-radius:6px;padding:3px 7px;width:fit-content;">'
         + '<span style="font-size:.6rem;color:#fff;font-weight:600;">' + dateStr + '</span></div>'
