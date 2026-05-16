@@ -415,12 +415,13 @@ const Feed = (() => {
       const icon = _annonceIcon(a._data.categorie)
       const img = a._data.photo_url
         ? '<img src="' + Utils.esc(a._data.photo_url) + '" style="width:100%;height:100%;object-fit:cover;">'
-        : '<i class="ti ' + icon + '" style="font-size:32px;color:rgba(255,255,255,.85);" aria-hidden="true"></i>'
-      return '<div style="flex-shrink:0;width:72vw;max-width:280px;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;">'
-        + '<div style="height:200px;background:' + color + ';display:flex;align-items:center;justify-content:center;">' + img + '</div>'
-        + '<div style="padding:10px 12px;">'
-        + '<div style="font-size:.8rem;font-weight:600;color:#1c1e21;line-height:1.35;margin-bottom:3px;">' + Utils.esc(a._data.titre) + '</div>'
-        + '<div style="font-size:.72rem;color:#65676b;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
+        : '<i class="ti ' + icon + '" style="font-size:40px;color:rgba(255,255,255,.85);" aria-hidden="true"></i>'
+      return '<div style="flex-shrink:0;width:82vw;max-width:320px;background:#fff;border-radius:14px;overflow:hidden;border:0.5px solid #e4e6eb;">'
+        + '<div style="height:220px;background:' + color + ';display:flex;align-items:center;justify-content:center;">' + img + '</div>'
+        + '<div style="padding:12px 14px;">'
+        + '<div style="font-size:.88rem;font-weight:600;color:#1c1e21;line-height:1.35;margin-bottom:4px;">' + Utils.esc(a._data.titre) + '</div>'
+        + '<div style="font-size:.75rem;color:#65676b;margin-bottom:12px;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
+        + '<a href="annonces.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:10px;border-radius:8px;font-size:.82rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Voir l'annonce</a>'
         + '</div></div>'
     }).join('')
     return '<div style="background:#fff;border-bottom:8px solid #e4e6eb;padding:14px 0;">'
@@ -443,15 +444,18 @@ const Feed = (() => {
       const img = e._data.photo_url
         ? '<img src="' + Utils.esc(e._data.photo_url) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">'
         : ''
-      return '<div style="flex-shrink:0;width:44vw;max-width:170px;border-radius:12px;overflow:hidden;position:relative;">'
-        + '<div style="height:340px;background:' + color + ';position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:10px;">'
+      return '<div style="flex-shrink:0;width:48vw;max-width:185px;border-radius:14px;overflow:hidden;background:#fff;border:0.5px solid #e4e6eb;">'
+        + '<div style="height:320px;background:' + color + ';position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:12px;">'
         + img
-        + '<div style="position:relative;background:rgba(255,255,255,.2);border-radius:6px;padding:3px 7px;width:fit-content;">'
-        + '<span style="font-size:.6rem;color:#fff;font-weight:600;">' + dateStr + '</span></div>'
+        + '<div style="position:relative;background:rgba(255,255,255,.25);border-radius:6px;padding:4px 8px;width:fit-content;">'
+        + '<span style="font-size:.62rem;color:#fff;font-weight:700;">' + dateStr + '</span></div>'
         + '<div style="position:relative;">'
-        + '<div style="font-size:.78rem;font-weight:600;color:#fff;line-height:1.35;">' + Utils.esc(e._data.titre) + '</div>'
-        + (e._data.lieu ? '<div style="font-size:.65rem;color:rgba(255,255,255,.75);margin-top:3px;">' + Utils.esc(e._data.lieu.split(',')[0]) + '</div>' : '')
-        + '</div></div></div>'
+        + '<div style="font-size:.82rem;font-weight:700;color:#fff;line-height:1.35;">' + Utils.esc(e._data.titre) + '</div>'
+        + (e._data.lieu ? '<div style="font-size:.68rem;color:rgba(255,255,255,.8);margin-top:3px;">' + Utils.esc(e._data.lieu.split(',')[0]) + '</div>' : '')
+        + '</div></div>'
+        + '<div style="padding:10px 12px;">'
+        + '<a href="evenements.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Je participe</a>'
+        + '</div></div>'
     }).join('')
     return '<div style="background:#fff;border-bottom:8px solid #e4e6eb;padding:14px 0;">'
       + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px;">'
