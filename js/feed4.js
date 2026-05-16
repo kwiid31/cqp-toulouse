@@ -24,15 +24,17 @@ const Feed = (() => {
 
     // Charger tout en parallèle
     try {
-      const [postsRes, actusRes, annoncesRes] = await Promise.all([
+      const [postsRes, actusRes, annoncesRes, evtsRes] = await Promise.all([
         Api.getFeed(0, 100),
         Api.getActus(null, 20),
-        Api.getAnnonces(null, 20)
+        Api.getAnnonces(null, 20),
+        Api.getEvenements(10)
       ])
 
       const posts = (postsRes.data || []).map(p => ({ _type: 'post', _data: p }))
       const actus = (actusRes.data || []).map(a => ({ _type: 'actu', _data: a }))
       const annonces = (annoncesRes.data || []).map(a => ({ _type: 'annonce', _data: a }))
+      const evts = (evtsRes.data || []).map(a => ({ _type: 'evt', _data: a }))
 
       if (!posts.length) {
         _el.innerHTML = '<div class="empty">Aucune publication pour l\'instant.</div>'
@@ -40,7 +42,7 @@ const Feed = (() => {
       }
 
       // Mélanger : 1 actu toutes les 4 posts, 1 annonce toutes les 6 posts
-      _allItems = _buildFeed(posts, actus, annonces)
+      _allItems = _buildFeed(posts, actus, annonces, evts)
       _index = 0
       _el.innerHTML = ''
 
@@ -77,25 +79,34 @@ const Feed = (() => {
   }
 
   // ── CONSTRUCTION DU FEED MIXTE ────────────────────────────────
-  const _buildFeed = (posts, actus, annonces) => {
+  const _buildFeed = (posts, actus, annonces, evts) => {
     const result = []
-    let aIdx = 0, anIdx = 0
+    let aIdx = 0
+    // Injecter un bloc annonces toutes les 4 posts, evenements toutes les 7 posts
+    var annoncesBloc = annonces.length ? { _type: 'bloc_annonces', _data: annonces } : null
+    var evtsBloc = evts && evts.length ? { _type: 'bloc_evts', _data: evts } : null
+    var annoncesInserted = false, evtsInserted = false
 
     posts.forEach((p, i) => {
       result.push(p)
-      // Toutes les 4 posts → une actu
+      // Toutes les 4 posts → actu
       if ((i + 1) % 4 === 0 && aIdx < actus.length) {
         result.push(actus[aIdx++])
       }
-      // Toutes les 6 posts → une annonce
-      if ((i + 1) % 6 === 0 && anIdx < annonces.length) {
-        result.push(annonces[anIdx++])
+      // Apres 3 posts → bloc annonces
+      if (i === 2 && annoncesBloc && !annoncesInserted) {
+        result.push(annoncesBloc)
+        annoncesInserted = true
+      }
+      // Apres 7 posts → bloc evenements
+      if (i === 6 && evtsBloc && !evtsInserted) {
+        result.push(evtsBloc)
+        evtsInserted = true
       }
     })
 
-    // Ajouter les actus et annonces restantes à la fin
+    // Actus restantes a la fin
     while (aIdx < actus.length) result.push(actus[aIdx++])
-    while (anIdx < annonces.length) result.push(annonces[anIdx++])
 
     return result
   }
@@ -129,6 +140,10 @@ const Feed = (() => {
         _el.insertAdjacentHTML('beforeend', _cardAnnonce(item._data))
       } else if (item._type === 'evenement') {
         _el.insertAdjacentHTML('beforeend', _cardEvenement(item._data))
+      } else if (item._type === 'bloc_annonces') {
+        _el.insertAdjacentHTML('beforeend', _blocAnnonces(item._data))
+      } else if (item._type === 'bloc_evts') {
+        _el.insertAdjacentHTML('beforeend', _blocEvts(item._data))
       }
     })
 
@@ -381,6 +396,72 @@ const Feed = (() => {
   }
 
   const loadMore = () => _renderChunk()
+
+  // ── COULEURS PAR CATÉGORIE ANNONCE ────────────────────────────
+  const _annonceColor = cat => ({
+    'Vente':'#E65100','Don':'#2E7D32','Service':'#1565C0',
+    'Emploi':'#6A1B9A','Logement':'#00695C','Autre':'#546E7A'
+  }[cat] || '#546E7A')
+
+  const _annonceIcon = cat => ({
+    'Vente':'ti-tag','Don':'ti-gift','Service':'ti-tool',
+    'Emploi':'ti-briefcase','Logement':'ti-home','Autre':'ti-file'
+  }[cat] || 'ti-file')
+
+  // ── BLOC ANNONCES (scroll horizontal, peek) ───────────────────
+  const _blocAnnonces = (annonces) => {
+    const cards = annonces.slice(0, 6).map(a => {
+      const color = _annonceColor(a._data.categorie)
+      const icon = _annonceIcon(a._data.categorie)
+      const img = a._data.photo_url
+        ? '<img src="' + Utils.esc(a._data.photo_url) + '" style="width:100%;height:100%;object-fit:cover;">'
+        : '<i class="ti ' + icon + '" style="font-size:32px;color:rgba(255,255,255,.85);" aria-hidden="true"></i>'
+      return '<div style="flex-shrink:0;width:72vw;max-width:280px;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;">'
+        + '<div style="height:120px;background:' + color + ';display:flex;align-items:center;justify-content:center;">' + img + '</div>'
+        + '<div style="padding:10px 12px;">'
+        + '<div style="font-size:.8rem;font-weight:600;color:#1c1e21;line-height:1.35;margin-bottom:3px;">' + Utils.esc(a._data.titre) + '</div>'
+        + '<div style="font-size:.72rem;color:#65676b;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
+        + '</div></div>'
+    }).join('')
+    return '<div style="background:#fff;border-bottom:8px solid #e4e6eb;padding:14px 0;">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px;">'
+      + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Annonces du quartier</span>'
+      + '<a href="annonces.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
+      + '</div>'
+      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 14px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
+      + cards
+      + '</div></div>'
+  }
+
+  // ── BLOC ÉVÉNEMENTS (grille 2 col, grande hauteur, peek) ──────
+  const _blocEvts = (evts) => {
+    const COLORS = ['#C8102E','#1565C0','#2E7D32','#6A1B9A','#E65100','#00695C']
+    const cards = evts.slice(0, 6).map((e, i) => {
+      const d = new Date(e._data.date_debut)
+      const dateStr = d.toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' }).toUpperCase()
+      const color = COLORS[i % COLORS.length]
+      const img = e._data.photo_url
+        ? '<img src="' + Utils.esc(e._data.photo_url) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">'
+        : ''
+      return '<div style="flex-shrink:0;width:44vw;max-width:170px;border-radius:12px;overflow:hidden;position:relative;">'
+        + '<div style="height:240px;background:' + color + ';position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:10px;">'
+        + img
+        + '<div style="position:relative;background:rgba(255,255,255,.2);border-radius:6px;padding:3px 7px;width:fit-content;">'
+        + '<span style="font-size:.6rem;color:#fff;font-weight:600;">' + dateStr + '</span></div>'
+        + '<div style="position:relative;">'
+        + '<div style="font-size:.78rem;font-weight:600;color:#fff;line-height:1.35;">' + Utils.esc(e._data.titre) + '</div>'
+        + (e._data.lieu ? '<div style="font-size:.65rem;color:rgba(255,255,255,.75);margin-top:3px;">' + Utils.esc(e._data.lieu.split(',')[0]) + '</div>' : '')
+        + '</div></div></div>'
+    }).join('')
+    return '<div style="background:#fff;border-bottom:8px solid #e4e6eb;padding:14px 0;">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px;">'
+      + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Cette semaine</span>'
+      + '<a href="evenements.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
+      + '</div>'
+      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 14px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
+      + cards
+      + '</div></div>'
+  }
 
   // Realtime — retire les posts masqués par l'admin instantanément
   sb.channel('feed-moderation')
