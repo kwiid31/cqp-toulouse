@@ -380,6 +380,17 @@ function openPostForm(type) {
   if (ph) { const av = document.getElementById('pf-av'); av.innerHTML = '<img src="' + esc(ph) + '" alt="" style="width:100%;height:100%;object-fit:cover;">'; av.classList.remove('c-av-init') }
   document.getElementById('pf-text').placeholder = 'Quoi de neuf dans le quartier ?'
   pfShowOptions()
+  // Pré-remplir le quartier depuis le profil
+  var profilQuartier = localStorage.getItem('cqp_quartier')
+  if (profilQuartier && !_pfLoc) {
+    _pfLoc = profilQuartier
+    var lbl = document.getElementById('pf-loc-label')
+    var ltag = document.getElementById('pf-loc-tag')
+    var lprev = document.getElementById('pf-loc-preview')
+    if (lbl) lbl.textContent = '\ud83d\udccd ' + profilQuartier
+    if (ltag) ltag.style.display = 'flex'
+    if (lprev) lprev.textContent = '\ud83d\udccd ' + profilQuartier
+  }
   document.getElementById('post-form').classList.add('open')
   document.body.style.overflow = 'hidden'
   // Detecter clavier iOS — cache les options quand le clavier monte

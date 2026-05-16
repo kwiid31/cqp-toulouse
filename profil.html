@@ -109,6 +109,21 @@
         <div style="font-size:.85rem;color:var(--txt2);margin-top:4px;">Juste ton prénom et un code à 6 chiffres</div>
       </div>
       <div class="fg"><input id="s-prenom" placeholder="Ton prénom" maxlength="30" style="width:100%;padding:14px 16px;background:#fff;border:1.5px solid #dbdbdb;border-radius:12px;font-family:-apple-system,system-ui,sans-serif;font-size:1rem;outline:none;box-sizing:border-box;"></div>
+      <div class="fg"><select id="s-quartier" style="width:100%;padding:14px 16px;background:#fff;border:1.5px solid #dbdbdb;border-radius:12px;font-family:-apple-system,system-ui,sans-serif;font-size:1rem;outline:none;box-sizing:border-box;color:#1c1e21;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2365676b%22 stroke-width=%222%22><polyline points=%226 9 12 15 18 9%22/></svg>');background-repeat:no-repeat;background-position:right 14px center;">
+        <option value="" disabled selected>Ton quartier</option>
+        <option>Bagatelle</option>
+        <option>Faourette</option>
+        <option>Reynerie</option>
+        <option>Bellefontaine</option>
+        <option>Papus</option>
+        <option>Empalot</option>
+        <option>Izards</option>
+        <option>Croix d'Aurade</option>
+        <option>Arènes</option>
+        <option>Bourbaki</option>
+        <option>Grand Mirail</option>
+        <option>Autre</option>
+      </select></div>
       <div class="fg">
         <div style="font-size:.78rem;color:var(--txt2);margin-bottom:8px;text-align:center;letter-spacing:.3px;">TON IDENTIFIANT — 6 CHIFFRES</div>
         <div class="code-inputs" id="signup-code-inputs">
@@ -390,6 +405,7 @@ async function doLogin() {
 
 async function doSignup() {
   const prenom = document.getElementById('s-prenom').value.trim()
+  const quartier = document.getElementById('s-quartier').value
   const msg = document.getElementById('signup-msg')
   const btn = document.getElementById('signup-btn')
 
@@ -397,12 +413,13 @@ async function doSignup() {
   const code = digits.join('')
 
   if (!prenom) { msg.style.color='var(--rouge)'; msg.textContent='Ton prénom est obligatoire.'; return }
+  if (!quartier) { msg.style.color='var(--rouge)'; msg.textContent='Choisis ton quartier.'; return }
   if (code.length !== 6 || !/^\d{6}$/.test(code)) { msg.style.color='var(--rouge)'; msg.textContent='Choisis un identifiant à 6 chiffres.'; return }
 
   btn.disabled = true; btn.textContent = '…'
   msg.style.color = 'var(--txt3)'; msg.textContent = 'Création…'
   try {
-    const data = await Auth.signup({ prenom, quartier: '', bio: '', code, email: '' })
+    const data = await Auth.signup({ prenom, quartier, bio: '', code, email: '' })
     document.getElementById('popup-welcome').textContent = `Bienvenue ${prenom} !`
     document.getElementById('popup-code').textContent = data.code.split('').join(' ')
     const popup = document.getElementById('code-popup')
