@@ -316,7 +316,7 @@ const Api = (() => {
     getLikesForFeed, addLike, removeLike,
     getComments, addComment,
     getStories, createStory,
-    getActus, createActu, deleteActu,
+    getActus, createActu, deleteActu, createAnnonce, createEvenement,
     getAnnonces, getPendingAnnonces, createAnnonce, approveAnnonce, rejectAnnonce,
     getEvenements, getPendingEvenements, createEvenement, approveEvenement, rejectEvenement,
     createInscription,
