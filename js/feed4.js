@@ -453,15 +453,16 @@ const Feed = (() => {
           + '<a href="evenements.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Je participe</a>'
           + '</div></div>'
       }
-      // Sans affiche — fond gris neutre
+      // Sans affiche — fond gris neutre + infos centrees
       return '<div style="flex-shrink:0;width:48vw;max-width:185px;border-radius:14px;overflow:hidden;background:#fff;border:0.5px solid #e4e6eb;">'
-        + '<div style="height:320px;background:#f0f2f5;display:flex;flex-direction:column;justify-content:space-between;padding:14px;">'
-        + '<div style="background:#e4e6eb;border-radius:6px;padding:4px 8px;width:fit-content;">'
-        + '<span style="font-size:.62rem;color:#65676b;font-weight:700;">' + dateStr + '</span></div>'
-        + '<div>'
-        + '<div style="font-size:.82rem;font-weight:700;color:#1c1e21;line-height:1.35;">' + Utils.esc(e._data.titre) + '</div>'
-        + (e._data.lieu ? '<div style="font-size:.68rem;color:#65676b;margin-top:3px;">' + Utils.esc(e._data.lieu.split(',')[0]) + '</div>' : '')
-        + '</div></div>'
+        + '<div style="height:320px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;gap:10px;">'
+        + '<div style="width:56px;height:56px;border-radius:50%;background:#e4e6eb;display:flex;align-items:center;justify-content:center;">'
+        + '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#adb5bd" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'
+        + '</div>'
+        + '<div style="font-size:.75rem;font-weight:700;color:#C8102E;">' + dateStr + '</div>'
+        + '<div style="font-size:.82rem;font-weight:700;color:#1c1e21;line-height:1.3;">' + Utils.esc(e._data.titre) + '</div>'
+        + (e._data.lieu ? '<div style="font-size:.68rem;color:#65676b;line-height:1.3;">' + Utils.esc(e._data.lieu.split(',')[0]) + '</div>' : '')
+        + '</div>'
         + '<div style="padding:10px 12px;">'
         + '<a href="evenements.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Je participe</a>'
         + '</div></div>'
