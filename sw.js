@@ -1,4 +1,4 @@
-const CACHE = 'cqp-v4'
+const CACHE = 'cqp-v5'
 const SHELL = [
   '/', '/index.html', '/profil.html', '/admin.html',
   '/actus.html', '/evenements.html', '/annonces.html', '/groupes.html',
@@ -18,6 +18,18 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return
   if (new URL(e.request.url).hostname.includes('supabase')) return
+  const url = e.request.url
+  // Network-first pour les JS — toujours la dernière version
+  if (url.includes('/js/')) {
+    e.respondWith(
+      fetch(e.request).then(r => {
+        if (r.ok) caches.open(CACHE).then(c => c.put(e.request, r.clone()))
+        return r
+      }).catch(() => caches.match(e.request))
+    )
+    return
+  }
+  // Cache-first pour le reste
   e.respondWith(
     caches.match(e.request).then(cached => {
       const fresh = fetch(e.request).then(r => {
