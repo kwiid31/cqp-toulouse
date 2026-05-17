@@ -52,7 +52,7 @@ const Stories = (() => {
       const stories = _storiesByQuartier[q] || []
       const latest = stories[0]
       const hasNew = stories.length > 0
-      const bg = COLORS[q] || '#546E7A'
+      const bg = '#e4e6eb'
       const count = stories.length
 
       return `
@@ -63,8 +63,8 @@ const Stories = (() => {
           }
           <div class="story-thumb-overlay"></div>
           ${count > 0 ? `<div style="position:absolute;top:6px;right:6px;background:#C8102E;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:2px 6px;">${count}</div>` : ''}
-          <div class="story-ring" style="background:${bg};border-color:${hasNew ? '#fff' : 'rgba(255,255,255,.3)'};">
-            <div class="story-av" style="font-size:12px;">📍</div>
+          <div class="story-ring" style="background:${bg};border-color:${hasNew ? '#C8102E' : '#e4e6eb'};">
+            <div class="story-av" style="font-size:12px;color:#65676b;">📍</div>
           </div>
           <div class="story-name">${q}</div>
         </div>`
@@ -90,7 +90,7 @@ const Stories = (() => {
 
     if (!stories.length) {
       // État vide — fond couleur + message
-      const bg = COLORS[quartier] || '#333'
+      const bg = '#f0f2f5'
       const svBg = document.getElementById('sv-bg')
       if (svBg) svBg.innerHTML = `<div style="position:absolute;inset:0;background:${bg};display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;"><div style="font-size:3rem;">📍</div><div style="color:#fff;font-size:1.1rem;font-weight:700;">${Utils.esc(quartier)}</div><div style="color:rgba(255,255,255,.7);font-size:.9rem;">Aucune story pour l'instant</div><button onclick="Stories.close();Stories.openCompose('${quartier.replace(/'/,"\\'")}');" style="background:#fff;color:#111;border:none;padding:10px 20px;border-radius:20px;font-weight:700;font-size:.88rem;cursor:pointer;margin-top:8px;">+ Publier une story ici</button></div>`
       const bars = document.getElementById('sv-bars')
@@ -139,14 +139,14 @@ const Stories = (() => {
         const soundBtn = document.getElementById('sv-sound-btn')
         if (soundBtn) soundBtn.style.display = 'none'
       } else {
-        svBg.innerHTML = `<div style="position:absolute;inset:0;background:${COLORS[_currentQuartier]||'#333'};"></div>`
+        svBg.innerHTML = `<div style="position:absolute;inset:0;background:#1c1e21;"></div>`
         const soundBtn = document.getElementById('sv-sound-btn')
         if (soundBtn) soundBtn.style.display = 'none'
       }
     }
 
     // Meta
-    const bg = COLORS[_currentQuartier] || '#333'
+    const bg = '#1c1e21'
     const meta = document.getElementById('sv-meta')
     if (meta) meta.innerHTML = `
       <div style="display:flex;align-items:center;gap:8px;">
