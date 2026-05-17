@@ -437,22 +437,30 @@ const Feed = (() => {
 
   // ── BLOC ÉVÉNEMENTS (grille 2 col, grande hauteur, peek) ──────
   const _blocEvts = (evts) => {
-    const COLORS = ['#C8102E','#1565C0','#2E7D32','#6A1B9A','#E65100','#00695C']
     const cards = evts.slice(0, 6).map((e, i) => {
       const d = new Date(e._data.date_debut)
       const dateStr = d.toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' }).toUpperCase()
-      const color = COLORS[i % COLORS.length]
-      const img = e._data.photo_url
-        ? '<img src="' + Utils.esc(e._data.photo_url) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">'
-        : ''
+      const hasPhoto = !!e._data.photo_url
+      // Avec affiche — image plein format
+      if (hasPhoto) {
+        return '<div style="flex-shrink:0;width:48vw;max-width:185px;border-radius:14px;overflow:hidden;background:#fff;border:0.5px solid #e4e6eb;">'
+          + '<div style="position:relative;height:320px;background:#111;">'
+          + '<img src="' + Utils.esc(e._data.photo_url) + '" style="width:100%;height:100%;object-fit:cover;display:block;">'
+          + '<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.55));padding:10px 10px 8px;">'
+          + '<div style="font-size:.62rem;color:rgba(255,255,255,.9);font-weight:600;">' + dateStr + '</div>'
+          + '</div></div>'
+          + '<div style="padding:10px 12px;">'
+          + '<a href="evenements.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Je participe</a>'
+          + '</div></div>'
+      }
+      // Sans affiche — fond gris neutre
       return '<div style="flex-shrink:0;width:48vw;max-width:185px;border-radius:14px;overflow:hidden;background:#fff;border:0.5px solid #e4e6eb;">'
-        + '<div style="height:320px;background:' + color + ';position:relative;display:flex;flex-direction:column;justify-content:space-between;padding:12px;">'
-        + img
-        + '<div style="position:relative;background:rgba(255,255,255,.25);border-radius:6px;padding:4px 8px;width:fit-content;">'
-        + '<span style="font-size:.62rem;color:#fff;font-weight:700;">' + dateStr + '</span></div>'
-        + '<div style="position:relative;">'
-        + '<div style="font-size:.82rem;font-weight:700;color:#fff;line-height:1.35;">' + Utils.esc(e._data.titre) + '</div>'
-        + (e._data.lieu ? '<div style="font-size:.68rem;color:rgba(255,255,255,.8);margin-top:3px;">' + Utils.esc(e._data.lieu.split(',')[0]) + '</div>' : '')
+        + '<div style="height:320px;background:#f0f2f5;display:flex;flex-direction:column;justify-content:space-between;padding:14px;">'
+        + '<div style="background:#e4e6eb;border-radius:6px;padding:4px 8px;width:fit-content;">'
+        + '<span style="font-size:.62rem;color:#65676b;font-weight:700;">' + dateStr + '</span></div>'
+        + '<div>'
+        + '<div style="font-size:.82rem;font-weight:700;color:#1c1e21;line-height:1.35;">' + Utils.esc(e._data.titre) + '</div>'
+        + (e._data.lieu ? '<div style="font-size:.68rem;color:#65676b;margin-top:3px;">' + Utils.esc(e._data.lieu.split(',')[0]) + '</div>' : '')
         + '</div></div>'
         + '<div style="padding:10px 12px;">'
         + '<a href="evenements.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Je participe</a>'

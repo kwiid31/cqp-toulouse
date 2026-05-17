@@ -333,15 +333,18 @@
       <input id="pub-prix" class="pub-field" placeholder="Ex : 20€ ou Gratuit" maxlength="30">
     </div>
 
-    <!-- Photo -->
+    <!-- Photo / Affiche -->
     <div>
-      <div class="pub-label">Photo (optionnelle)</div>
-      <label for="pub-photo" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px dashed #dbdbdb;border-radius:12px;cursor:pointer;">
+      <div class="pub-label" id="pub-photo-title">Photo (optionnelle)</div>
+      <label for="pub-photo" style="display:flex;align-items:center;gap:10px;padding:14px;border:1.5px dashed #dbdbdb;border-radius:12px;cursor:pointer;transition:border-color .15s;" id="pub-photo-zone">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#45bd62" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <span style="font-size:.9rem;color:#65676b;" id="pub-photo-label">Ajouter une photo</span>
+        <div>
+          <div style="font-size:.9rem;color:#1c1e21;font-weight:600;" id="pub-photo-label">Ajouter une photo</div>
+          <div style="font-size:.75rem;color:#65676b;margin-top:2px;" id="pub-photo-sub"></div>
+        </div>
       </label>
       <input type="file" id="pub-photo" accept="image/*" style="display:none" onchange="pubPreviewPhoto(this)">
-      <img id="pub-photo-preview" style="display:none;width:100%;border-radius:10px;margin-top:8px;max-height:200px;object-fit:cover;">
+      <img id="pub-photo-preview" style="display:none;width:100%;border-radius:10px;margin-top:8px;max-height:280px;object-fit:cover;">
     </div>
 
   </div>
@@ -479,24 +482,44 @@ function switchPubTab(tab) {
   document.getElementById('pub-date-wrap').style.display = tab === 'evenement' ? 'block' : 'none'
   document.getElementById('pub-lieu-wrap').style.display = tab === 'evenement' ? 'block' : 'none'
   document.getElementById('pub-form-title').textContent = tab === 'annonce' ? 'Déposer une annonce' : 'Créer un événement'
+  // Changer le label photo selon onglet
+  var ptitle = document.getElementById('pub-photo-title')
+  var plabel = document.getElementById('pub-photo-label')
+  var psub = document.getElementById('pub-photo-sub')
+  var pzone = document.getElementById('pub-photo-zone')
+  if (tab === 'evenement') {
+    if (ptitle) ptitle.textContent = 'Affiche *'
+    if (plabel) plabel.textContent = 'Ajouter une affiche'
+    if (psub) psub.textContent = 'Obligatoire — flyer, visuel, photo de l\'événement'
+    if (pzone) pzone.style.borderColor = '#C8102E'
+  } else {
+    if (ptitle) ptitle.textContent = 'Photo (optionnelle)'
+    if (plabel) plabel.textContent = 'Ajouter une photo'
+    if (psub) psub.textContent = ''
+    if (pzone) pzone.style.borderColor = '#dbdbdb'
+  }
   pubCheckSubmit()
 }
 function pubCheckSubmit() {
   var titre = document.getElementById('pub-titre').value.trim()
   var date = document.getElementById('pub-date').value
-  var ok = titre && (_pubTab === 'annonce' || date)
+  var hasPhoto = document.getElementById('pub-photo').files.length > 0
+  var ok = titre && (_pubTab === 'annonce' ? true : (date && hasPhoto))
   var btn = document.getElementById('pub-form-submit')
   btn.disabled = !ok; btn.style.opacity = ok ? '1' : '0.4'
 }
 function pubPreviewPhoto(inp) {
   var file = inp.files[0]; if (!file) return
-  document.getElementById('pub-photo-label').textContent = file.name
+  var pzone = document.getElementById('pub-photo-zone')
+  if (pzone) pzone.style.borderColor = '#45bd62'
   var reader = new FileReader()
   reader.onload = function(e) {
     var img = document.getElementById('pub-photo-preview')
     img.src = e.target.result; img.style.display = 'block'
+    document.getElementById('pub-photo-label').textContent = file.name
   }
   reader.readAsDataURL(file)
+  pubCheckSubmit()
 }
 async function submitPubForm() {
   var titre = document.getElementById('pub-titre').value.trim()
