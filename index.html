@@ -548,7 +548,7 @@ async function submitPubForm() {
       var { error } = await Api.createEvenement({
         titre, date_debut: date, lieu: lieu||null,
         description: desc||null, propose_par: Auth.getPrenom()||'Anonyme',
-        categorie: 'Evenement'
+        categorie: 'Evenement', photo_url: photo_url||null
       })
       if (error) throw error
     }

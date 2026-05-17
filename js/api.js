@@ -166,7 +166,7 @@ const Api = (() => {
     sb.from('evenements').select('*').eq('validee', false)
       .order('created_at', { ascending: false })
 
-  const createEvenement = ({ titre, date_debut, categorie, lieu, description, propose_par }) =>
+  const createEvenement = ({ titre, date_debut, categorie, lieu, description, propose_par, photo_url }) =>
     sb.from('evenements').insert({
       titre,
       date_debut,
@@ -176,6 +176,7 @@ const Api = (() => {
       propose_par: propose_par || Auth.getPrenom() || null,
       prenom: Auth.getPrenom() || null,
       profil_code: Auth.getCode() || null,
+      photo_url: photo_url || null,
       visible: false,
       validee: false,
     })
