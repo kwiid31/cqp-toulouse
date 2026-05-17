@@ -398,11 +398,6 @@ const Feed = (() => {
   const loadMore = () => _renderChunk()
 
   // ── COULEURS PAR CATÉGORIE ANNONCE ────────────────────────────
-  const _annonceColor = cat => ({
-    'Vente':'#E65100','Don':'#2E7D32','Service':'#1565C0',
-    'Emploi':'#6A1B9A','Logement':'#00695C','Autre':'#546E7A'
-  }[cat] || '#546E7A')
-
   const _annonceIcon = cat => ({
     'Vente':'ti-tag','Don':'ti-gift','Service':'ti-tool',
     'Emploi':'ti-briefcase','Logement':'ti-home','Autre':'ti-file'
@@ -411,13 +406,23 @@ const Feed = (() => {
   // ── BLOC ANNONCES (scroll horizontal, peek) ───────────────────
   const _blocAnnonces = (annonces) => {
     const cards = annonces.slice(0, 6).map(a => {
-      const color = _annonceColor(a._data.categorie)
+      const hasPhoto = !!a._data.photo_url
       const icon = _annonceIcon(a._data.categorie)
-      const img = a._data.photo_url
-        ? '<img src="' + Utils.esc(a._data.photo_url) + '" style="width:100%;height:100%;object-fit:cover;">'
-        : '<i class="ti ' + icon + '" style="font-size:48px;color:rgba(255,255,255,.85);" aria-hidden="true"></i>'
+      var photoZone
+      if (hasPhoto) {
+        photoZone = '<div style="height:52vw;max-height:210px;background:#111;display:flex;align-items:center;justify-content:center;">'
+          + '<img src="' + Utils.esc(a._data.photo_url) + '" style="width:100%;height:100%;object-fit:cover;">'
+          + '</div>'
+      } else {
+        photoZone = '<div style="height:52vw;max-height:210px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">'
+          + '<div style="width:48px;height:48px;border-radius:50%;background:#e4e6eb;display:flex;align-items:center;justify-content:center;">'
+          + '<i class="ti ' + icon + '" style="font-size:22px;color:#adb5bd;" aria-hidden="true"></i>'
+          + '</div>'
+          + '<span style="font-size:.72rem;color:#adb5bd;font-weight:600;">' + Utils.esc(a._data.categorie||'Annonce') + '</span>'
+          + '</div>'
+      }
       return '<div style="flex-shrink:0;width:88vw;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;box-shadow:0 1px 4px rgba(0,0,0,.08);">'
-        + '<div style="height:52vw;max-height:210px;background:' + color + ';display:flex;align-items:center;justify-content:center;">' + img + '</div>'
+        + photoZone
         + '<div style="padding:12px 14px 14px;">'
         + '<div style="font-size:.92rem;font-weight:700;color:#1c1e21;line-height:1.35;margin-bottom:3px;">' + Utils.esc(a._data.titre) + '</div>'
         + '<div style="font-size:.75rem;color:#65676b;margin-bottom:12px;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
