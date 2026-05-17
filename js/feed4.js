@@ -416,15 +416,15 @@ const Feed = (() => {
       const img = a._data.photo_url
         ? '<img src="' + Utils.esc(a._data.photo_url) + '" style="width:100%;height:100%;object-fit:cover;">'
         : '<i class="ti ' + icon + '" style="font-size:48px;color:rgba(255,255,255,.85);" aria-hidden="true"></i>'
-      return '<div style="flex-shrink:0;width:85vw;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;box-shadow:0 1px 4px rgba(0,0,0,.08);">'
-        + '<div style="height:56vw;max-height:220px;background:' + color + ';display:flex;align-items:center;justify-content:center;">' + img + '</div>'
+      return '<div style="flex-shrink:0;width:88vw;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;box-shadow:0 1px 4px rgba(0,0,0,.08);">'
+        + '<div style="height:52vw;max-height:210px;background:' + color + ';display:flex;align-items:center;justify-content:center;">' + img + '</div>'
         + '<div style="padding:12px 14px 14px;">'
         + '<div style="font-size:.92rem;font-weight:700;color:#1c1e21;line-height:1.35;margin-bottom:3px;">' + Utils.esc(a._data.titre) + '</div>'
         + '<div style="font-size:.75rem;color:#65676b;margin-bottom:12px;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
         + '<a href="annonces.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:11px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Voir l&#39;annonce</a>'
         + '</div></div>'
     }).join('')
-    return '<div style="background:#fff;border-bottom:8px solid #e4e6eb;padding:12px 0;">'
+    return '<div style="background:#fff;border-bottom:8px solid #e4e6eb;padding:0 0 12px;">'
       + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px;">'
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Annonces du quartier</span>'
       + '<a href="annonces.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
