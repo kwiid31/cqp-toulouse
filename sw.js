@@ -1,4 +1,4 @@
-const CACHE = 'cqp-v3'
+const CACHE = 'cqp-v4'
 const SHELL = [
   '/', '/index.html', '/profil.html', '/admin.html',
   '/actus.html', '/evenements.html', '/annonces.html', '/groupes.html',
