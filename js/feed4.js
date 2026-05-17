@@ -157,8 +157,8 @@ const Feed = (() => {
       ? `<div class="c-av c-av-40"><img src="${Utils.esc(p.photo_url)}" alt=""></div>`
       : `<div class="c-av c-av-40 c-av-init">${Utils.esc((p.prenom||'?')[0].toUpperCase())}</div>`
     const img = p.video_url
-      ? `<div class="card-img-wrap"><video class="card-img" src="${Utils.esc(p.video_url)}" playsinline controls preload="auto" style="max-height:500px;background:#000;width:100%;"></video></div>`
-      : (p.photo_url ? `<div class="card-img-wrap"><img class="card-img" src="${Utils.esc(p.photo_url)}" loading="lazy"></div>` : '')
+      ? `<div class="card-img-wrap"><video src="${Utils.esc(p.video_url)}" playsinline controls preload="auto" style="width:100%;max-height:500px;display:block;background:#000;"></video></div>`
+      : (p.photo_url ? `<div class="card-img-wrap"><img src="${Utils.esc(p.photo_url)}" loading="lazy" style="width:100%;display:block;max-height:500px;object-fit:cover;"></div>` : '')
     return `
     <article class="card" id="card-${p.id}">
       <div class="card-head">
@@ -186,8 +186,8 @@ const Feed = (() => {
           </div>
         </div>` : '')}
       </div>
-      ${p.contenu ? `<div class="card-text">${Utils.esc(p.contenu)}</div>` : ''}
       ${img}
+      ${p.contenu ? `<div class="card-text" style="padding:10px 14px 4px;">${Utils.esc(p.contenu)}</div>` : ''}
       <div class="card-actions">
         <button class="action-btn ${liked?'liked':''}" id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="${liked?'currentColor':'none'}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
