@@ -488,10 +488,10 @@ function switchPubTab(tab) {
   var psub = document.getElementById('pub-photo-sub')
   var pzone = document.getElementById('pub-photo-zone')
   if (tab === 'evenement') {
-    if (ptitle) ptitle.textContent = 'Affiche *'
+    if (ptitle) ptitle.textContent = 'Affiche (optionnelle)'
     if (plabel) plabel.textContent = 'Ajouter une affiche'
-    if (psub) psub.textContent = 'Obligatoire — flyer, visuel, photo de l\'événement'
-    if (pzone) pzone.style.borderColor = '#C8102E'
+    if (psub) psub.textContent = 'Flyer, visuel ou photo de l\'événement'
+    if (pzone) pzone.style.borderColor = '#dbdbdb'
   } else {
     if (ptitle) ptitle.textContent = 'Photo (optionnelle)'
     if (plabel) plabel.textContent = 'Ajouter une photo'
@@ -504,7 +504,7 @@ function pubCheckSubmit() {
   var titre = document.getElementById('pub-titre').value.trim()
   var date = document.getElementById('pub-date').value
   var hasPhoto = document.getElementById('pub-photo').files.length > 0
-  var ok = titre && (_pubTab === 'annonce' ? true : (date && hasPhoto))
+  var ok = titre && (_pubTab === 'annonce' ? true : !!date)
   var btn = document.getElementById('pub-form-submit')
   btn.disabled = !ok; btn.style.opacity = ok ? '1' : '0.4'
 }
