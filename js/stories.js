@@ -213,33 +213,94 @@ const Stories = (() => {
   }
 
   // ── COMPOSE ──────────────────────────────────────────────────
+  const closeCompose = () => {
+    document.getElementById('story-drawer')?.classList.remove('open')
+    document.body.style.overflow = ''
+    // Reset
+    document.getElementById('story-step1').style.display = 'block'
+    document.getElementById('story-step2').style.display = 'none'
+    const img = document.getElementById('story-preview-img')
+    const vid = document.getElementById('story-preview-vid')
+    if (img) { img.style.display = 'none'; img.src = '' }
+    if (vid) { vid.style.display = 'none'; vid.src = '' }
+    if (document.getElementById('story-msg')) document.getElementById('story-msg').textContent = ''
+    _selectedFile = null
+    _selectedQuartier = null
+  }
+
+  let _selectedFile = null
+  let _selectedQuartier = null
+
+  const previewFile = (inp) => {
+    const f = inp.files[0]
+    if (!f) return
+    _selectedFile = f
+    const isVideo = f.type.startsWith('video/')
+    const img = document.getElementById('story-preview-img')
+    const vid = document.getElementById('story-preview-vid')
+    if (isVideo) { vid.src = URL.createObjectURL(f); vid.style.display = 'block'; img.style.display = 'none' }
+    else { img.src = URL.createObjectURL(f); img.style.display = 'block'; vid.style.display = 'none' }
+    // Passer à l'étape 2
+    document.getElementById('story-step1').style.display = 'none'
+    document.getElementById('story-step2').style.display = 'block'
+    // Remplir la liste des quartiers
+    const myQ = localStorage.getItem('cqp_quartier') || ''
+    _selectedQuartier = myQ || QUARTIERS[0]
+    const list = document.getElementById('story-quartier-list')
+    if (list) {
+      list.innerHTML = QUARTIERS.map(q => {
+        const selected = q === _selectedQuartier
+        return `<div onclick="Stories.selectQuartier('${q.replace(/'/g, "\\'")}')" id="sq-${q.replace(/\s/g,'_')}"
+          style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;cursor:pointer;
+          background:${selected ? '#C8102E' : 'var(--bg3)'};transition:background .15s;">
+          <span style="font-size:14px;font-weight:${selected?'600':'400'};color:${selected ? '#fff' : 'var(--txt1)'};">${q}</span>
+          ${selected ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+        </div>`
+      }).join('')
+    }
+  }
+
+  const selectQuartier = (q) => {
+    _selectedQuartier = q
+    // Mettre à jour visuellement
+    const list = document.getElementById('story-quartier-list')
+    if (list) list.querySelectorAll('div').forEach(el => {
+      const isThis = el.id === 'sq-' + q.replace(/\s/g,'_')
+      el.style.background = isThis ? '#C8102E' : 'var(--bg3)'
+      const span = el.querySelector('span')
+      if (span) { span.style.color = isThis ? '#fff' : 'var(--txt1)'; span.style.fontWeight = isThis ? '600' : '400' }
+      const check = el.querySelector('svg')
+      if (isThis && !check) el.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>')
+      else if (!isThis && check) check.remove()
+    })
+  }
+
+  const backToStep1 = () => {
+    document.getElementById('story-step1').style.display = 'block'
+    document.getElementById('story-step2').style.display = 'none'
+    _selectedFile = null
+  }
+
   const openCompose = (preselectedQuartier = null) => {
     if (!Auth.getCode()) { window.location.href = 'profil.html'; return }
+    _selectedQuartier = preselectedQuartier || localStorage.getItem('cqp_quartier') || QUARTIERS[0]
+    document.getElementById('story-step1').style.display = 'block'
+    document.getElementById('story-step2').style.display = 'none'
     const drawer = document.getElementById('story-drawer')
     if (!drawer) return
-
-    // Injecter le sélecteur de quartier
-    const select = document.getElementById('story-quartier-select')
-    if (select) {
-      select.innerHTML = QUARTIERS.map(q =>
-        `<option value="${q}" ${q === (preselectedQuartier || Auth.getQuartier?.() || '') ? 'selected' : ''}>${q}</option>`
-      ).join('')
-    }
-
     drawer.classList.add('open')
     document.body.style.overflow = 'hidden'
   }
 
   // ── PUBLISH ──────────────────────────────────────────────────
   const publish = async () => {
-    const prenom = Auth.getPrenom()
-    const file = document.getElementById('story-photo-inp')?.files?.[0]
-    const texte = document.getElementById('story-texte')?.value?.trim() || ''
-    const quartier = document.getElementById('story-quartier-select')?.value || 'Autre'
+    const prenom = Auth.getPrenom() || 'Anonyme'
+    const file = _selectedFile
+    const quartier = _selectedQuartier || 'Autre'
     const msg = document.getElementById('story-msg')
 
     if (!file) {
-      if (msg) { msg.style.color='var(--rouge)'; msg.textContent='⚠️ Photo ou vidéo obligatoire' }
+      if (msg) { msg.textContent = 'Sélectionne une photo ou vidéo' }
       return
     }
     const isVideo = file.type.startsWith('video/')
@@ -249,19 +310,11 @@ const Stories = (() => {
       if (isVideo) video_url = await Api.uploadPhoto(file, 'stories')
       else photo_url = await Api.uploadPhoto(file, 'stories')
 
-      const { error } = await Api.createStory({ prenom, photo_url, video_url, texte, quartier })
+      const { error } = await Api.createStory({ prenom, photo_url, video_url, quartier })
       if (error) throw error
 
       Utils.toast('Story publiée dans ' + quartier + ' !', 'success')
-      document.getElementById('story-drawer')?.classList.remove('open')
-      document.body.style.overflow = ''
-      document.getElementById('story-photo-inp').value = ''
-      const img = document.getElementById('story-preview-img')
-      const vid = document.getElementById('story-preview-vid')
-      if (img) { img.style.display='none'; img.src='' }
-      if (vid) { vid.style.display='none'; vid.src='' }
-      if (document.getElementById('story-texte')) document.getElementById('story-texte').value = ''
-      if (msg) msg.textContent = ''
+      closeCompose()
       load(document.querySelector('.stories-bar'))
     } catch(e) {
       if (msg) { msg.style.color='var(--rouge)'; msg.textContent='Erreur: '+e.message }
@@ -316,5 +369,5 @@ const Stories = (() => {
     })
     .subscribe()
 
-  return { load, openQuartier, openCompose, close, next, prev, publish, toggleSound, adminDeleteCurrent, QUARTIERS }
+  return { load, openQuartier, openCompose, closeCompose, previewFile, selectQuartier, backToStep1, close, next, prev, publish, toggleSound, adminDeleteCurrent, QUARTIERS }
 })()

@@ -391,44 +391,66 @@
 </div>
 
 <!-- STORY DRAWER -->
-<div class="drawer-ov" id="story-drawer" onclick="if(event.target===this){this.classList.remove('open');document.body.style.overflow='';}">
-  <div class="drawer">
-    <div class="drawer-head">
-      <h3>Nouvelle Story</h3>
-      <button class="drawer-x" onclick="document.getElementById('story-drawer').classList.remove('open');document.body.style.overflow=''">✕</button>
+<div class="drawer-ov" id="story-drawer" onclick="if(event.target===this){Stories.closeCompose();}">
+  <!-- ÉTAPE 1 : Choix source -->
+  <div id="story-step1" style="width:100%;max-width:440px;background:#000;border-radius:16px 16px 0 0;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;">
+      <button onclick="Stories.closeCompose()" style="background:rgba(255,255,255,.15);border:none;border-radius:50%;width:34px;height:34px;color:#fff;font-size:18px;cursor:pointer;">✕</button>
+      <span style="font-size:13px;font-weight:600;color:#fff;letter-spacing:2px;">STORY</span>
+      <div style="width:34px;"></div>
     </div>
-    <div class="drawer-body">
-      <div class="fg">
-        <label>Quartier</label>
-        <select id="story-quartier-select" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:system-ui,sans-serif;font-size:.9rem;outline:none;color:var(--txt1);">
-        </select>
-      </div>
-      <div class="fg"><label>Texte (optionnel)</label><textarea id="story-texte" rows="2" placeholder="Dis quelque chose…" maxlength="200" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:system-ui,sans-serif;font-size:.9rem;outline:none;resize:none;"></textarea></div>
-      <div class="fg"><label>Photo ou vidéo</label>
-        <label style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--bg3);border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;font-size:.88rem;color:var(--txt2);">
-          📷 Choisir une photo ou vidéo
-          <input type="file" id="story-photo-inp" accept="image/*,video/*" style="display:none" onchange="
-            const f=this.files[0];
-            if(!f) return;
-            const inp = this;
-            checkVideoDuration(f, ok => {
-              if(!ok) { inp.value=''; return }
-              const isVideo = f.type.startsWith('video/');
-              const img = document.getElementById('story-preview-img');
-              const vid = document.getElementById('story-preview-vid');
-              if(isVideo){vid.src=URL.createObjectURL(f);vid.style.display='block';img.style.display='none';}
-              else{img.src=URL.createObjectURL(f);img.style.display='block';vid.style.display='none';}
-            })
-          ">
-        </label>
-      </div>
-      <div class="form-msg" id="story-msg" style="margin-bottom:8px;"></div>
-      <img id="story-preview-img" style="width:100%;border-radius:8px;margin-bottom:10px;display:none;object-fit:cover;max-height:200px;" alt="">
-      <video id="story-preview-vid" style="width:100%;border-radius:8px;margin-bottom:10px;display:none;max-height:200px;" controls playsinline></video>
-      <button class="btn-rouge" onclick="Stories.publish()">Publier la story</button>
+    <div style="background:#111;height:180px;display:flex;align-items:center;justify-content:center;">
+      <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#333" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    </div>
+    <div style="padding:20px 16px 32px;display:flex;flex-direction:column;gap:10px;">
+      <label style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(255,255,255,.08);border-radius:12px;cursor:pointer;border:0.5px solid rgba(255,255,255,.12);">
+        <div style="width:42px;height:42px;border-radius:50%;background:#C8102E;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:#fff;">Prendre une photo</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:2px;">Ouvre l'appareil photo</div>
+        </div>
+        <input type="file" accept="image/*" capture="environment" style="display:none" onchange="Stories.previewFile(this)">
+      </label>
+      <label style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(255,255,255,.08);border-radius:12px;cursor:pointer;border:0.5px solid rgba(255,255,255,.12);">
+        <div style="width:42px;height:42px;border-radius:50%;background:#C8102E;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:#fff;">Filmer une vidéo</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:2px;">Ouvre la caméra vidéo</div>
+        </div>
+        <input type="file" accept="video/*" capture="environment" style="display:none" onchange="Stories.previewFile(this)">
+      </label>
+      <label style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(255,255,255,.08);border-radius:12px;cursor:pointer;border:0.5px solid rgba(255,255,255,.12);">
+        <div style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:#fff;">Choisir dans la galerie</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.45);margin-top:2px;">Photos et vidéos</div>
+        </div>
+        <input type="file" accept="image/*,video/*" style="display:none" onchange="Stories.previewFile(this)">
+      </label>
     </div>
   </div>
-</div>
+
+  <!-- ÉTAPE 2 : Preview + choix quartier -->
+  <div id="story-step2" style="display:none;width:100%;max-width:440px;background:var(--bg1);border-radius:16px 16px 0 0;overflow:hidden;">
+    <div style="position:relative;background:#000;">
+      <button onclick="Stories.backToStep1()" style="position:absolute;top:12px;left:12px;z-index:2;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:34px;height:34px;color:#fff;font-size:18px;cursor:pointer;">←</button>
+      <img id="story-preview-img" style="width:100%;max-height:300px;object-fit:cover;display:none;" alt="">
+      <video id="story-preview-vid" style="width:100%;max-height:300px;display:none;" controls playsinline></video>
+    </div>
+    <div style="padding:20px 16px 32px;">
+      <div style="font-size:11px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Poster dans</div>
+      <div id="story-quartier-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;"></div>
+      <div id="story-msg" style="font-size:.85rem;color:var(--rouge);margin-bottom:8px;"></div>
+      <button onclick="Stories.publish()" style="width:100%;background:#C8102E;color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">Envoyer la story</button>
+    </div>
+  </div>
+</div>v>
 
 <script src="/js/api.js?v=20260514"></script>
 <script src="/js/feed4.js?v=20260517b"></script>
