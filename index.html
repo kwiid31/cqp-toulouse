@@ -791,17 +791,17 @@ async function refreshComments() {
   body.scrollTop = body.scrollHeight
 }
 async function sendComment() {
-  const prenom = Auth.getPrenom()
+  const prenom = Auth.getPrenom() || 'Anonyme'
   const inp = document.getElementById('sheet-input')
   const message = inp.value.trim()
   if (!message || !_sheetPostId) return
+  if (!Auth.getCode()) { Utils.toast('Connecte-toi pour commenter', 'error'); return }
   inp.value = ''
-  // ⚠️ DB: champ "message" pas "contenu"
   const { error } = await Api.addComment({ itemType: _sheetItemType, itemId: _sheetPostId, message, prenom })
   if (error) { Utils.toast('Erreur envoi commentaire', 'error'); inp.value = message; return }
   await refreshComments()
   const cc = document.getElementById(`cc-${_sheetPostId}`)
-  if (cc) cc.textContent = parseInt(cc.textContent || 0) + 1
+  if (cc) { const cur = parseInt(cc.textContent)||0; cc.textContent = (cur+1) + ' commentaire' + (cur+1>1?'s':'') }
   Utils.toast('Commentaire publié ✅')
 }
 
