@@ -247,8 +247,8 @@ img { max-width:100%; display:block; }
 .modal-close { position:absolute; top:16px; right:16px; }
 
 /* ── Drawer ───────────────────────────────────────────────────── */
-.drawer-ov { display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,.45); }
-.drawer-ov.open { display:flex; justify-content:flex-end; }
+.drawer-ov { display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,.55); align-items:flex-end; justify-content:center; }
+.drawer-ov.open { display:flex; }
 .drawer {
   width:min(560px,100vw); height:100vh; background:#fff;
   overflow-y:auto; display:flex; flex-direction:column;
