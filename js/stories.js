@@ -41,11 +41,13 @@ const Stories = (() => {
 
     // Card "Créer ma story" en premier
     const createCard = `
-      <div class="add-story" onclick="Stories.openCompose()">
+      <label class="add-story" style="cursor:pointer;">
         <div class="add-story-photo">${photo ? `<img src="${Utils.esc(photo)}" alt="">` : ''}</div>
         <div class="add-story-ring">+</div>
         <div class="add-story-txt">Créer une<br>story</div>
-      </div>`
+        <input type="file" accept="image/*,video/*" capture="environment" style="display:none"
+          onchange="if(Auth.getCode()){Stories.previewFile(this)}else{window.location.href='profil.html'}">
+      </label>`
 
     // Cards quartier
     const quartierCards = QUARTIERS.map(q => {
@@ -216,9 +218,6 @@ const Stories = (() => {
   const closeCompose = () => {
     document.getElementById('story-drawer')?.classList.remove('open')
     document.body.style.overflow = ''
-    // Reset
-    document.getElementById('story-step1').style.display = 'block'
-    document.getElementById('story-step2').style.display = 'none'
     const img = document.getElementById('story-preview-img')
     const vid = document.getElementById('story-preview-vid')
     if (img) { img.style.display = 'none'; img.src = '' }
@@ -238,26 +237,23 @@ const Stories = (() => {
     const isVideo = f.type.startsWith('video/')
     const img = document.getElementById('story-preview-img')
     const vid = document.getElementById('story-preview-vid')
-    if (isVideo) { vid.src = URL.createObjectURL(f); vid.style.display = 'block'; img.style.display = 'none' }
-    else { img.src = URL.createObjectURL(f); img.style.display = 'block'; vid.style.display = 'none' }
-    // Passer à l'étape 2
-    document.getElementById('story-step1').style.display = 'none'
-    document.getElementById('story-step2').style.display = 'block'
+    if (isVideo) { vid.src = URL.createObjectURL(f); vid.style.display = 'block'; if(img){img.style.display='none';img.src=''} }
+    else { img.src = URL.createObjectURL(f); img.style.display = 'block'; if(vid){vid.style.display='none';vid.src=''} }
     // Remplir la liste des quartiers
-    const myQ = localStorage.getItem('cqp_quartier') || ''
-    _selectedQuartier = myQ || QUARTIERS[0]
+    _selectedQuartier = localStorage.getItem('cqp_quartier') || QUARTIERS[0]
     const list = document.getElementById('story-quartier-list')
     if (list) {
       list.innerHTML = QUARTIERS.map(q => {
-        const selected = q === _selectedQuartier
-        return `<div onclick="Stories.selectQuartier('${q.replace(/'/g, "\\'")}')" id="sq-${q.replace(/\s/g,'_')}"
-          style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;cursor:pointer;
-          background:${selected ? '#C8102E' : 'var(--bg3)'};transition:background .15s;">
-          <span style="font-size:14px;font-weight:${selected?'600':'400'};color:${selected ? '#fff' : 'var(--txt1)'};">${q}</span>
-          ${selected ? '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+        const sel = q === _selectedQuartier
+        return `<div onclick="Stories.selectQuartier('${q.replace(/'/g,"\\'")}');this.parentNode.querySelectorAll('div').forEach(d=>{d.style.background=d===this?'#C8102E':'var(--bg3)';d.querySelector('span').style.color=d===this?'#fff':'var(--txt1)'})"
+          style="display:flex;align-items:center;padding:12px 14px;border-radius:10px;cursor:pointer;background:${sel?'#C8102E':'var(--bg3)'};">
+          <span style="font-size:14px;font-weight:${sel?'600':'400'};color:${sel?'#fff':'var(--txt1)'};">${q}</span>
         </div>`
       }).join('')
     }
+    // Ouvrir le drawer
+    document.getElementById('story-drawer')?.classList.add('open')
+    document.body.style.overflow = 'hidden'
   }
 
   const selectQuartier = (q) => {
