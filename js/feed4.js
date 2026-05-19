@@ -188,17 +188,23 @@ const Feed = (() => {
       </div>
       ${img}
       ${p.contenu ? `<div class="card-text" style="padding:10px 14px 4px;">${Utils.esc(p.contenu)}</div>` : ''}
+      <div class="card-stats" style="display:flex;justify-content:space-between;align-items:center;padding:5px 14px;font-size:.8rem;color:var(--txt3);">
+        ${likeCount ? `<span>${likeCount} J'aime</span>` : '<span></span>'}
+        ${cmtCount ? `<span>${cmtCount} commentaire${cmtCount>1?'s':''}</span>` : '<span></span>'}
+      </div>
+      <div style="height:0.5px;background:var(--bg3);margin:0 14px;"></div>
       <div class="card-actions">
         <button class="action-btn ${liked?'liked':''}" id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="${liked?'currentColor':'none'}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          <span id="lc-${p.id}">${likeCount}</span>
+          J'aime
         </button>
         <button class="action-btn" onclick="openSheet('post',${p.id})">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span id="cc-${p.id}">${cmtCount}</span>
+          Commenter
         </button>
         <button class="action-btn" onclick="Feed.share(${p.id})">
           <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Partager
         </button>
       </div>
     </article>`
