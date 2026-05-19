@@ -239,18 +239,20 @@ const Stories = (() => {
     const vid = document.getElementById('story-preview-vid')
     if (isVideo) { vid.src = URL.createObjectURL(f); vid.style.display = 'block'; if(img){img.style.display='none';img.src=''} }
     else { img.src = URL.createObjectURL(f); img.style.display = 'block'; if(vid){vid.style.display='none';vid.src=''} }
-    // Remplir le select natif
-    _selectedQuartier = localStorage.getItem('cqp_quartier') || QUARTIERS[0]
-    const sel = document.getElementById('story-quartier-select')
-    if (sel) {
+    // Quartier par défaut = celui du profil
+    _selectedQuartier = localStorage.getItem('cqp_quartier') || 'Reynerie'
+    // Ouvrir le drawer d'abord
+    const drawer = document.getElementById('story-drawer')
+    if (drawer) { drawer.classList.add('open'); document.body.style.overflow = 'hidden' }
+    // Remplir le select après que le DOM soit visible
+    setTimeout(() => {
+      const sel = document.getElementById('story-quartier-select')
+      if (!sel) return
       sel.innerHTML = QUARTIERS.map(q =>
-        `<option value="${q}" ${q === _selectedQuartier ? 'selected' : ''}>${q}</option>`
+        `<option value="${q}"${q === _selectedQuartier ? ' selected' : ''}>${q}</option>`
       ).join('')
       sel.onchange = () => { _selectedQuartier = sel.value }
-    }
-    // Ouvrir le drawer
-    document.getElementById('story-drawer')?.classList.add('open')
-    document.body.style.overflow = 'hidden'
+    }, 50)
   }
 
   const selectQuartier = (el, q) => {
@@ -286,7 +288,9 @@ const Stories = (() => {
   const publish = async () => {
     const prenom = Auth.getPrenom() || 'Anonyme'
     const file = _selectedFile
-    const quartier = _selectedQuartier || 'Autre'
+    // Lire la valeur du select au moment de publier
+    const sel = document.getElementById('story-quartier-select')
+    const quartier = (sel && sel.value) || _selectedQuartier || localStorage.getItem('cqp_quartier') || 'Autre'
     const msg = document.getElementById('story-msg')
 
     if (!file) {
