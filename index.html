@@ -396,20 +396,66 @@
 
 <!-- STORY DRAWER -->
 <div class="drawer-ov" id="story-drawer" onclick="if(event.target===this){Stories.closeCompose();}">
-  <div style="width:100%;max-width:440px;background:var(--bg1);border-radius:16px 16px 0 0;overflow:hidden;">
-    <!-- Preview media -->
-    <div style="position:relative;background:#000;min-height:60px;">
-      <button onclick="Stories.closeCompose()" style="position:absolute;top:10px;left:10px;z-index:2;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:18px;cursor:pointer;line-height:1;">←</button>
+  <div style="width:100%;max-width:440px;background:#fff;border-radius:16px 16px 0 0;overflow:hidden;">
+
+    <!-- ÉTAPE 1 : Choix quartier + source -->
+    <div id="story-step1">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;">
+        <button onclick="Stories.closeCompose()" style="background:none;border:none;font-size:22px;color:#65676b;cursor:pointer;line-height:1;">✕</button>
+        <span style="font-size:15px;font-weight:700;color:#1c1e21;">Nouvelle story</span>
+        <div style="width:32px;"></div>
+      </div>
+
+      <!-- Select quartier -->
+      <div style="padding:0 16px 20px;">
+        <div style="font-size:11px;color:#65676b;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Quartier</div>
+        <select id="story-quartier-select" style="width:100%;padding:14px;background:#f0f2f5;border:none;border-radius:10px;font-size:15px;color:#1c1e21;font-family:inherit;outline:none;-webkit-appearance:none;appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2365676b%22 stroke-width=%222%22><polyline points=%2218 9 12 15 6 9%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;background-size:18px;background-color:#f0f2f5;"></select>
+      </div>
+
+      <!-- Séparateur -->
+      <div style="height:0.5px;background:#e4e6eb;margin:0 16px 20px;"></div>
+
+      <!-- Boutons source -->
+      <div style="padding:0 16px 32px;display:flex;flex-direction:column;gap:10px;">
+        <label style="display:flex;align-items:center;gap:14px;padding:14px;background:#f0f2f5;border-radius:12px;cursor:pointer;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#C8102E;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <span style="font-size:15px;font-weight:500;color:#1c1e21;">Photo</span>
+          <input type="file" accept="image/*" capture="environment" style="display:none" onchange="Stories.previewFile(this)">
+        </label>
+        <label style="display:flex;align-items:center;gap:14px;padding:14px;background:#f0f2f5;border-radius:12px;cursor:pointer;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#C8102E;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          </div>
+          <span style="font-size:15px;font-weight:500;color:#1c1e21;">Vidéo</span>
+          <input type="file" accept="video/*" capture="environment" style="display:none" onchange="Stories.previewFile(this)">
+        </label>
+        <label style="display:flex;align-items:center;gap:14px;padding:14px;background:#f0f2f5;border-radius:12px;cursor:pointer;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#f0f2f5;border:2px solid #e4e6eb;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#65676b" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <span style="font-size:15px;font-weight:500;color:#1c1e21;">Galerie</span>
+          <input type="file" accept="image/*,video/*" style="display:none" onchange="Stories.previewFile(this)">
+        </label>
+      </div>
+    </div>
+
+    <!-- ÉTAPE 2 : Preview + Envoyer -->
+    <div id="story-step2" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;">
+        <button onclick="Stories.backToStep1()" style="background:none;border:none;font-size:22px;color:#65676b;cursor:pointer;line-height:1;">←</button>
+        <span style="font-size:15px;font-weight:700;color:#1c1e21;">Aperçu</span>
+      </div>
       <img id="story-preview-img" style="width:100%;max-height:320px;object-fit:cover;display:none;" alt="">
       <video id="story-preview-vid" style="width:100%;max-height:320px;display:none;" controls playsinline></video>
+      <div style="padding:16px 16px 32px;">
+        <div id="story-msg" style="font-size:.85rem;color:#C8102E;margin-bottom:8px;"></div>
+        <button onclick="Stories.publish()" style="width:100%;background:#C8102E;color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">Envoyer la story</button>
+      </div>
     </div>
-    <!-- Choix quartier — select natif iOS -->
-    <div style="padding:20px 16px 32px;">
-      <div style="font-size:11px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Poster dans</div>
-      <select id="story-quartier-select" style="width:100%;padding:13px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;font-size:15px;color:var(--txt1);font-family:inherit;margin-bottom:16px;-webkit-appearance:none;appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2365676b%22 stroke-width=%222%22><polyline points=%2218 9 12 15 6 9%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;background-size:18px;"></select>
-      <div id="story-msg" style="font-size:.85rem;color:var(--rouge);margin-bottom:8px;"></div>
-      <button onclick="Stories.publish()" style="width:100%;background:#C8102E;color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">Envoyer la story</button>
-    </div>
+
   </div>
 </div>
 

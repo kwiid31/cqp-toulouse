@@ -239,20 +239,14 @@ const Stories = (() => {
     const vid = document.getElementById('story-preview-vid')
     if (isVideo) { vid.src = URL.createObjectURL(f); vid.style.display = 'block'; if(img){img.style.display='none';img.src=''} }
     else { img.src = URL.createObjectURL(f); img.style.display = 'block'; if(vid){vid.style.display='none';vid.src=''} }
-    // Quartier par défaut = celui du profil
-    _selectedQuartier = localStorage.getItem('cqp_quartier') || 'Reynerie'
-    // Ouvrir le drawer d'abord
-    const drawer = document.getElementById('story-drawer')
-    if (drawer) { drawer.classList.add('open'); document.body.style.overflow = 'hidden' }
-    // Remplir le select après que le DOM soit visible
-    setTimeout(() => {
-      const sel = document.getElementById('story-quartier-select')
-      if (!sel) return
-      sel.innerHTML = QUARTIERS.map(q =>
-        `<option value="${q}"${q === _selectedQuartier ? ' selected' : ''}>${q}</option>`
-      ).join('')
-      sel.onchange = () => { _selectedQuartier = sel.value }
-    }, 50)
+    // Lire le quartier sélectionné
+    const sel = document.getElementById('story-quartier-select')
+    if (sel && sel.value) _selectedQuartier = sel.value
+    // Passer à l'étape 2
+    const s1 = document.getElementById('story-step1')
+    const s2 = document.getElementById('story-step2')
+    if (s1) s1.style.display = 'none'
+    if (s2) s2.style.display = 'block'
   }
 
   const selectQuartier = (el, q) => {
@@ -268,27 +262,37 @@ const Stories = (() => {
   }
 
   const backToStep1 = () => {
-    document.getElementById('story-step1').style.display = 'block'
-    document.getElementById('story-step2').style.display = 'none'
+    const s1 = document.getElementById('story-step1')
+    const s2 = document.getElementById('story-step2')
+    if (s1) s1.style.display = 'block'
+    if (s2) s2.style.display = 'none'
     _selectedFile = null
   }
 
   const openCompose = (preselectedQuartier = null) => {
     if (!Auth.getCode()) { window.location.href = 'profil.html'; return }
     _selectedQuartier = preselectedQuartier || localStorage.getItem('cqp_quartier') || QUARTIERS[0]
-    document.getElementById('story-step1').style.display = 'block'
-    document.getElementById('story-step2').style.display = 'none'
+    // Montrer étape 1
+    const s1 = document.getElementById('story-step1')
+    const s2 = document.getElementById('story-step2')
+    if (s1) s1.style.display = 'block'
+    if (s2) s2.style.display = 'none'
+    // Remplir le select
+    const sel = document.getElementById('story-quartier-select')
+    if (sel) {
+      sel.innerHTML = QUARTIERS.map(q =>
+        `<option value="${q}"${q === _selectedQuartier ? ' selected' : ''}>${q}</option>`
+      ).join('')
+      sel.onchange = () => { _selectedQuartier = sel.value }
+    }
     const drawer = document.getElementById('story-drawer')
-    if (!drawer) return
-    drawer.classList.add('open')
-    document.body.style.overflow = 'hidden'
+    if (drawer) { drawer.classList.add('open'); document.body.style.overflow = 'hidden' }
   }
 
   // ── PUBLISH ──────────────────────────────────────────────────
   const publish = async () => {
     const prenom = Auth.getPrenom() || 'Anonyme'
     const file = _selectedFile
-    // Lire la valeur du select au moment de publier
     const sel = document.getElementById('story-quartier-select')
     const quartier = (sel && sel.value) || _selectedQuartier || localStorage.getItem('cqp_quartier') || 'Autre'
     const msg = document.getElementById('story-msg')
