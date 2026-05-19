@@ -45,7 +45,7 @@ const Stories = (() => {
         <div class="add-story-photo">${photo ? `<img src="${Utils.esc(photo)}" alt="">` : ''}</div>
         <div class="add-story-ring">+</div>
         <div class="add-story-txt">Créer une<br>story</div>
-        <input type="file" accept="image/*,video/*" capture="environment" style="display:none"
+        <input type="file" accept="image/*,video/*" style="display:none"
           onchange="if(Auth.getCode()){Stories.previewFile(this)}else{window.location.href='profil.html'}">
       </label>`
 
@@ -245,7 +245,7 @@ const Stories = (() => {
     if (list) {
       list.innerHTML = QUARTIERS.map(q => {
         const sel = q === _selectedQuartier
-        return `<div onclick="Stories.selectQuartier('${q.replace(/'/g,"\\'")}');this.parentNode.querySelectorAll('div').forEach(d=>{d.style.background=d===this?'#C8102E':'var(--bg3)';d.querySelector('span').style.color=d===this?'#fff':'var(--txt1)'})"
+        return `<div onclick="Stories.selectQuartier(this,'${q.replace(/'/g,"\\'")}');"
           style="display:flex;align-items:center;padding:12px 14px;border-radius:10px;cursor:pointer;background:${sel?'#C8102E':'var(--bg3)'};">
           <span style="font-size:14px;font-weight:${sel?'600':'400'};color:${sel?'#fff':'var(--txt1)'};">${q}</span>
         </div>`
@@ -256,18 +256,15 @@ const Stories = (() => {
     document.body.style.overflow = 'hidden'
   }
 
-  const selectQuartier = (q) => {
+  const selectQuartier = (el, q) => {
     _selectedQuartier = q
-    // Mettre à jour visuellement
     const list = document.getElementById('story-quartier-list')
-    if (list) list.querySelectorAll('div').forEach(el => {
-      const isThis = el.id === 'sq-' + q.replace(/\s/g,'_')
-      el.style.background = isThis ? '#C8102E' : 'var(--bg3)'
-      const span = el.querySelector('span')
+    if (!list) return
+    list.querySelectorAll('div').forEach(d => {
+      const isThis = d === el
+      d.style.background = isThis ? '#C8102E' : 'var(--bg3)'
+      const span = d.querySelector('span')
       if (span) { span.style.color = isThis ? '#fff' : 'var(--txt1)'; span.style.fontWeight = isThis ? '600' : '400' }
-      const check = el.querySelector('svg')
-      if (isThis && !check) el.insertAdjacentHTML('beforeend', '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>')
-      else if (!isThis && check) check.remove()
     })
   }
 
