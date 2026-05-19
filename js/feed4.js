@@ -404,6 +404,31 @@ const Feed = (() => {
     await init(_el)
   }
 
+
+  const _adminMenuAnnonce = (id) => {
+    if (!_isAdmin) return ''
+    return '<div style="position:absolute;top:8px;right:8px;z-index:10;">'
+      + '<button onclick="event.stopPropagation();document.getElementById(\'amenu-' + id + '\').style.display=\'block\'" '
+      + 'style="background:rgba(0,0,0,.4);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;letter-spacing:1px;">···</button>'
+      + '<div id="amenu-' + id + '" style="display:none;position:absolute;right:0;top:32px;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:100;min-width:150px;">'
+      + '<button onclick="Feed.hideAnnonce(' + id + ')" style="width:100%;padding:11px 14px;background:none;border:none;text-align:left;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">'
+      + '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+      + 'Masquer</button>'
+      + '</div></div>'
+  }
+
+  const _adminMenuEvt = (id) => {
+    if (!_isAdmin) return ''
+    return '<div style="position:absolute;top:8px;right:8px;z-index:10;">'
+      + '<button onclick="event.stopPropagation();document.getElementById(\'emenu-' + id + '\').style.display=\'block\'" '
+      + 'style="background:rgba(0,0,0,.4);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;letter-spacing:1px;">···</button>'
+      + '<div id="emenu-' + id + '" style="display:none;position:absolute;right:0;top:32px;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:100;min-width:150px;">'
+      + '<button onclick="Feed.hideEvt(' + id + ')" style="width:100%;padding:11px 14px;background:none;border:none;text-align:left;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">'
+      + '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+      + 'Masquer</button>'
+      + '</div></div>'
+  }
+
   const loadMore = () => _renderChunk()
 
   // ── COULEURS PAR CATÉGORIE ANNONCE ────────────────────────────
@@ -419,11 +444,12 @@ const Feed = (() => {
       const icon = _annonceIcon(a._data.categorie)
       var photoZone
       if (hasPhoto) {
-        photoZone = '<div style="height:52vw;max-height:210px;background:#111;display:flex;align-items:center;justify-content:center;">'
+        photoZone = '<div style="height:52vw;max-height:210px;background:#111;display:flex;align-items:center;justify-content:center;position:relative;">'
+          + _adminMenuAnnonce(a._data.id)
           + '<img src="' + Utils.esc(a._data.photo_url) + '" style="width:100%;height:100%;object-fit:cover;">'
           + '</div>'
       } else {
-        photoZone = '<div style="height:52vw;max-height:210px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">'
+        photoZone = '<div style="height:52vw;max-height:210px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;position:relative;">' + _adminMenuAnnonce(a._data.id)
           + '<div style="width:48px;height:48px;border-radius:50%;background:#e4e6eb;display:flex;align-items:center;justify-content:center;">'
           + '<i class="ti ' + icon + '" style="font-size:22px;color:#adb5bd;" aria-hidden="true"></i>'
           + '</div>'
@@ -459,6 +485,7 @@ const Feed = (() => {
       if (hasPhoto) {
         return '<div style="flex-shrink:0;width:48vw;max-width:185px;border-radius:14px;overflow:hidden;background:#fff;border:0.5px solid #e4e6eb;">'
           + '<div style="position:relative;height:320px;background:#111;">'
+          + _adminMenuEvt(e._data.id)
           + '<img src="' + Utils.esc(e._data.photo_url) + '" style="width:100%;height:100%;object-fit:cover;display:block;">'
           + '<div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.55));padding:10px 10px 8px;">'
           + '<div style="font-size:.62rem;color:rgba(255,255,255,.9);font-weight:600;">' + dateStr + '</div>'
@@ -469,7 +496,8 @@ const Feed = (() => {
       }
       // Sans affiche — fond gris neutre + infos centrees
       return '<div style="flex-shrink:0;width:48vw;max-width:185px;border-radius:14px;overflow:hidden;background:#fff;border:0.5px solid #e4e6eb;">'
-        + '<div style="height:320px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;gap:10px;">'
+        + '<div style="height:320px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;gap:10px;position:relative;">'
+        + _adminMenuEvt(e._data.id)
         + '<div style="width:56px;height:56px;border-radius:50%;background:#e4e6eb;display:flex;align-items:center;justify-content:center;">'
         + '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#adb5bd" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>'
         + '</div>'
@@ -502,5 +530,16 @@ const Feed = (() => {
     })
     .subscribe()
 
-  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh }
+  const hideAnnonce = async (id) => {
+    await window.__sb.from('annonces').update({visible:false}).eq('id',id)
+    // Retirer le bloc du DOM
+    document.querySelectorAll('[id^="amenu-' + id + '"]').forEach(el => el.closest('[style*="border-bottom"]')?.remove())
+    Utils.toast('Annonce masquée')
+  }
+  const hideEvt = async (id) => {
+    await window.__sb.from('evenements').update({visible:false}).eq('id',id)
+    document.querySelectorAll('[id^="emenu-' + id + '"]').forEach(el => el.closest('[style*="border-bottom"]')?.remove())
+    Utils.toast('Événement masqué')
+  }
+  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh, hideAnnonce, hideEvt }
 })()
