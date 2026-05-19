@@ -239,17 +239,14 @@ const Stories = (() => {
     const vid = document.getElementById('story-preview-vid')
     if (isVideo) { vid.src = URL.createObjectURL(f); vid.style.display = 'block'; if(img){img.style.display='none';img.src=''} }
     else { img.src = URL.createObjectURL(f); img.style.display = 'block'; if(vid){vid.style.display='none';vid.src=''} }
-    // Remplir la liste des quartiers
+    // Remplir le select natif
     _selectedQuartier = localStorage.getItem('cqp_quartier') || QUARTIERS[0]
-    const list = document.getElementById('story-quartier-list')
-    if (list) {
-      list.innerHTML = QUARTIERS.map(q => {
-        const sel = q === _selectedQuartier
-        return `<div onclick="Stories.selectQuartier(this,'${q.replace(/'/g,"\\'")}');"
-          style="display:flex;align-items:center;padding:12px 14px;border-radius:10px;cursor:pointer;background:${sel?'#C8102E':'var(--bg3)'};">
-          <span style="font-size:14px;font-weight:${sel?'600':'400'};color:${sel?'#fff':'var(--txt1)'};">${q}</span>
-        </div>`
-      }).join('')
+    const sel = document.getElementById('story-quartier-select')
+    if (sel) {
+      sel.innerHTML = QUARTIERS.map(q =>
+        `<option value="${q}" ${q === _selectedQuartier ? 'selected' : ''}>${q}</option>`
+      ).join('')
+      sel.onchange = () => { _selectedQuartier = sel.value }
     }
     // Ouvrir le drawer
     document.getElementById('story-drawer')?.classList.add('open')

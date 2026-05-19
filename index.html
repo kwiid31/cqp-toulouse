@@ -164,9 +164,8 @@
 <div class="composer" style="border-bottom:8px solid #E4E6EB;display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;">
   <div class="c-av c-av-40 c-av-init" id="c-av" style="cursor:pointer;" onclick="openPub()">?</div>
   <div onclick="openPub()" style="flex:1;padding:6px 0;font-family:system-ui,sans-serif;font-size:.9375rem;color:#65676b;cursor:pointer;">Quoi de neuf ?</div>
-  <label style="display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:8px;cursor:pointer;border:1px solid #e4e6eb;flex-shrink:0;" title="Ajouter une photo/vidéo">
-    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#45bd62" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    <span style="font-size:.8rem;font-weight:600;color:#45bd62;">Photo</span>
+  <label style="display:flex;align-items:center;padding:7px;border-radius:8px;cursor:pointer;flex-shrink:0;" title="Ajouter une photo/vidéo">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1c1e21" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
     <input type="file" accept="image/*,video/*" style="display:none" onchange="openPubWithMedia(this)">
   </label>
 </div>
@@ -404,10 +403,10 @@
       <img id="story-preview-img" style="width:100%;max-height:320px;object-fit:cover;display:none;" alt="">
       <video id="story-preview-vid" style="width:100%;max-height:320px;display:none;" controls playsinline></video>
     </div>
-    <!-- Choix quartier -->
+    <!-- Choix quartier — select natif iOS -->
     <div style="padding:20px 16px 32px;">
-      <div style="font-size:11px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">Poster dans</div>
-      <div id="story-quartier-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;"></div>
+      <div style="font-size:11px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Poster dans</div>
+      <select id="story-quartier-select" style="width:100%;padding:13px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;font-size:15px;color:var(--txt1);font-family:inherit;margin-bottom:16px;-webkit-appearance:none;appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2365676b%22 stroke-width=%222%22><polyline points=%2218 9 12 15 6 9%22/></svg>');background-repeat:no-repeat;background-position:right 12px center;background-size:18px;"></select>
       <div id="story-msg" style="font-size:.85rem;color:var(--rouge);margin-bottom:8px;"></div>
       <button onclick="Stories.publish()" style="width:100%;background:#C8102E;color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">Envoyer la story</button>
     </div>
