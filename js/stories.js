@@ -41,13 +41,11 @@ const Stories = (() => {
 
     // Card "Créer ma story" en premier
     const createCard = `
-      <label class="add-story" style="cursor:pointer;">
+      <div class="add-story" style="cursor:pointer;" onclick="if(Auth.getCode()){Stories.openCompose()}else{window.location.href='profil.html'}">
         <div class="add-story-photo">${photo ? `<img src="${Utils.esc(photo)}" alt="">` : ''}</div>
         <div class="add-story-ring">+</div>
         <div class="add-story-txt">Créer une<br>story</div>
-        <input type="file" accept="image/*,video/*" style="display:none"
-          onchange="if(Auth.getCode()){Stories.previewFile(this)}else{window.location.href='profil.html'}">
-      </label>`
+      </div>`
 
     // Cards quartier
     const quartierCards = QUARTIERS.map(q => {
