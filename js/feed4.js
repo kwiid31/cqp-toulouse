@@ -159,6 +159,18 @@ const Feed = (() => {
     const img = p.video_url
       ? `<div class="card-img-wrap"><video src="${Utils.esc(p.video_url)}" playsinline controls preload="auto" style="width:100%;max-height:500px;display:block;background:#000;"></video></div>`
       : (p.photo_url ? `<div class="card-img-wrap"><img src="${Utils.esc(p.photo_url)}" loading="lazy" style="width:100%;display:block;max-height:500px;object-fit:cover;"></div>` : '')
+    // Post texte sans photo — visuel immersif auto
+    const textCard = (!p.video_url && !p.photo_url && p.contenu) ? (() => {
+      const txt = p.contenu
+      const isShort = txt.length < 80
+      const fontSize = isShort ? '1.5rem' : (txt.length < 160 ? '1.15rem' : '.95rem')
+      const quartier = p.quartier || ''
+      return `<div style="background:#1c1e21;padding:28px 20px 24px;position:relative;min-height:160px;display:flex;flex-direction:column;justify-content:space-between;">
+        <div style="font-size:9px;font-weight:700;color:#C8102E;letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;">${Utils.esc(quartier)}</div>
+        <div style="font-size:${fontSize};font-weight:700;color:#fff;line-height:1.35;flex:1;display:flex;align-items:center;">${Utils.esc(txt)}</div>
+        <div style="margin-top:16px;width:28px;height:2px;background:#C8102E;"></div>
+      </div>`
+    })() : ''
     return `
     <article class="card" id="card-${p.id}">
       <div class="card-head">
@@ -186,8 +198,8 @@ const Feed = (() => {
           </div>
         </div>` : '')}
       </div>
-      ${img}
-      ${p.contenu ? `<div class="card-text" style="padding:10px 14px 4px;">${Utils.esc(p.contenu)}</div>` : ''}
+      ${textCard || img}
+      ${(img || textCard) ? '' : (p.contenu ? `<div class="card-text" style="padding:10px 14px 4px;">${Utils.esc(p.contenu)}</div>` : '')}
       ${(likeCount > 0 || cmtCount > 0) ? `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px 4px;">
         <div style="display:flex;align-items:center;gap:4px;">
