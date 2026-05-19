@@ -532,13 +532,15 @@ const Feed = (() => {
 
   const hideAnnonce = async (id) => {
     await window.__sb.from('annonces').update({visible:false}).eq('id',id)
-    // Retirer le bloc du DOM
-    document.querySelectorAll('[id^="amenu-' + id + '"]').forEach(el => el.closest('[style*="border-bottom"]')?.remove())
+    // Retirer uniquement la card (width:88vw) pas tout le bloc
+    const menu = document.getElementById('amenu-' + id)
+    if (menu) menu.closest('[style*="88vw"]')?.remove()
     Utils.toast('Annonce masquée')
   }
   const hideEvt = async (id) => {
     await window.__sb.from('evenements').update({visible:false}).eq('id',id)
-    document.querySelectorAll('[id^="emenu-' + id + '"]').forEach(el => el.closest('[style*="border-bottom"]')?.remove())
+    const menu = document.getElementById('emenu-' + id)
+    if (menu) menu.closest('[style*="48vw"]')?.remove()
     Utils.toast('Événement masqué')
   }
   return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh, hideAnnonce, hideEvt }
