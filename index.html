@@ -731,7 +731,7 @@ async function submitPost() {
     }
     if (_postType === 'story') {
       if (!photo_url && !video_url) throw new Error('Photo ou vidéo obligatoire pour une story')
-      const { error } = await Api.createStory({ prenom, photo_url, video_url })
+      const { error } = await Api.createStory({ prenom: prenom || 'Anonyme', photo_url, video_url, quartier: localStorage.getItem('cqp_quartier') || 'Autre' })
       if (error) throw error
       Utils.toast('Story publiée !', 'success')
     } else {
