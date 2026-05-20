@@ -119,7 +119,7 @@ const Stories = (() => {
     const svBg = document.getElementById('sv-bg')
     if (svBg) {
       if (s.video_url) {
-        svBg.innerHTML = `<video id="sv-video" src="${Utils.esc(s.video_url)}" autoplay muted playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>`
+        svBg.innerHTML = `<video id="sv-video" src="${Utils.esc(s.video_url)}" autoplay muted playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;"></video>`
         const soundBtn = document.getElementById('sv-sound-btn')
         if (soundBtn) { soundBtn.style.display = 'flex'; soundBtn.textContent = '🔇' }
         // Dès que l'utilisateur touche le bouton volume physique → activer le son
@@ -132,7 +132,7 @@ const Stories = (() => {
           }, { once: true })
         })
       } else if (s.photo_url) {
-        svBg.innerHTML = `<img src="${Utils.esc(s.photo_url)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`
+        svBg.innerHTML = `<img src="${Utils.esc(s.photo_url)}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;">`
         const soundBtn = document.getElementById('sv-sound-btn')
         if (soundBtn) soundBtn.style.display = 'none'
       } else {
