@@ -174,7 +174,6 @@ const Feed = (() => {
     return `
     <article class="card" id="card-${p.id}">
       <div class="card-head">
-        ${av}
         <div class="card-meta">
           <div class="card-author">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</div>
           <div class="card-ts">${p.quartier ? Utils.esc(p.prenom||'Anonyme') + ' · ' : ''}${Utils.timeAgo(p.created_at)}</div>
