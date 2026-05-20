@@ -191,9 +191,8 @@ const Feed = (() => {
     return `
     <article id="card-${p.id}" style="padding:14px 16px 0;background:#fff;">
       <div style="display:flex;gap:10px;">
-        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-          <div style="width:36px;height:36px;border-radius:50%;background:#e4e6eb;flex-shrink:0;"></div>
-          <div style="width:1.5px;flex:1;background:#e4e6eb;margin:4px 0;min-height:20px;"></div>
+        <div style="flex-shrink:0;width:36px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:#e4e6eb;"></div>
         </div>
         <div style="flex:1;min-width:0;padding-bottom:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
