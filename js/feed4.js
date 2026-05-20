@@ -191,8 +191,9 @@ const Feed = (() => {
     return `
     <article id="card-${p.id}" style="padding:14px 16px 0;background:#fff;">
       <div style="display:flex;gap:10px;">
-        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:2px;">
-          <div style="width:1.5px;flex:1;background:#e4e6eb;margin-top:24px;min-height:20px;"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:36px;height:36px;border-radius:50%;background:#e4e6eb;flex-shrink:0;"></div>
+          <div style="width:1.5px;flex:1;background:#e4e6eb;margin:4px 0;min-height:20px;"></div>
         </div>
         <div style="flex:1;min-width:0;padding-bottom:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
@@ -478,11 +479,11 @@ const Feed = (() => {
         + '</div></div>'
     }).join('')
     return '<div style="background:#fff;border-bottom:4px solid #e4e6eb;padding:0 0 12px;">'
-      + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px 10px 62px;">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px;">'
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Annonces du quartier</span>'
       + '<a href="annonces.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
       + '</div>'
-      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 0 62px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
+      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
       + cards
       + '<div style="flex-shrink:0;width:8px;"></div>'
       + '</div></div>'
@@ -523,11 +524,11 @@ const Feed = (() => {
         + '</div></div>'
     }).join('')
     return '<div style="background:#fff;border-bottom:4px solid #e4e6eb;padding:14px 0;">'
-      + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px 10px 62px;">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px;">'
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Cette semaine</span>'
       + '<a href="evenements.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
       + '</div>'
-      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 0 62px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
+      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 14px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
       + cards
       + '</div></div>'
   }
