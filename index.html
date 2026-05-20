@@ -798,9 +798,6 @@ let _sheetItemType = 'post'
 async function openSheet(itemType, itemId) {
   _sheetPostId = itemId
   _sheetItemType = itemType || 'post' 
-  const prenom = Auth.getPrenom()
-  const av = document.getElementById('sheet-av')
-  av.textContent = (prenom || '?')[0].toUpperCase()
   document.getElementById('sheet').classList.add('open')
   document.body.style.overflow = 'hidden'
   history.pushState({ sheet: true }, '')
