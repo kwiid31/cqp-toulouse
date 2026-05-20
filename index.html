@@ -865,13 +865,6 @@ async function init() {
   const code = Auth.getCode()
   if (!code) { window.location.href = 'profil.html'; return }
 
-  // Avatar topbar
-  const prenom = Auth.getPrenom()
-  const photo = Auth.getPhoto()
-  const av = document.getElementById('c-av')
-  if (photo) { av.innerHTML = `<img src="${esc(photo)}" alt="" style="width:100%;height:100%;object-fit:cover;">`; av.classList.remove('c-av-init') }
-  else if (prenom) av.textContent = prenom[0].toUpperCase()
-
   // Feed en priorité
   Feed.init(document.getElementById('feed'))
   Feed.setupDoubleTap(document.getElementById('feed'))
