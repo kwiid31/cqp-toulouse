@@ -475,7 +475,7 @@ const Feed = (() => {
         + '<a href="annonces.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:11px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Voir l&#39;annonce</a>'
         + '</div></div>'
     }).join('')
-    return '<div style="background:#fff;border-bottom:8px solid #e4e6eb;padding:0 0 12px;">'
+    return '<div style="background:#fff;border-bottom:4px solid #e4e6eb;padding:0 0 12px;">'
       + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px;">'
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Annonces du quartier</span>'
       + '<a href="annonces.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
@@ -520,7 +520,7 @@ const Feed = (() => {
         + '<a href="evenements.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Je participe</a>'
         + '</div></div>'
     }).join('')
-    return '<div style="background:#fff;border-bottom:8px solid #e4e6eb;padding:14px 0;">'
+    return '<div style="background:#fff;border-bottom:4px solid #e4e6eb;padding:14px 0;">'
       + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px;">'
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Cette semaine</span>'
       + '<a href="evenements.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
