@@ -863,26 +863,57 @@ async function refreshComments() {
     target.innerHTML = '<div style="padding:24px 16px;text-align:center;color:#65676b;font-size:13px;">Soyez le premier à répondre</div>'
     return
   }
-  target.innerHTML = data.map((cmt, i) => {
-    const isLast = i === data.length - 1
+  // Séparer commentaires principaux et réponses (@mention)
+  const mains = data.filter(c => !(c.message||c.contenu||'').startsWith('@'))
+  const replies = data.filter(c => (c.message||c.contenu||'').startsWith('@'))
+
+  target.innerHTML = mains.map((cmt, i) => {
     const init = (cmt.prenom || '?')[0].toUpperCase()
+    // Trouver les réponses à ce commentaire
+    const cmtReplies = replies.filter(r => {
+      const msg = r.message||r.contenu||''
+      return msg.startsWith('@' + (cmt.prenom||''))
+    })
+    const repliesHtml = cmtReplies.map(r => {
+      const rInit = (r.prenom||'?')[0].toUpperCase()
+      const rMsg = (r.message||r.contenu||'').replace(/^@\S+\s?/, '')
+      const rMention = (r.message||r.contenu||'').match(/^(@\S+)/)?.[1] || ''
+      return `
+      <div style="display:flex;gap:8px;padding-top:10px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:#e4e6eb;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#65676b;flex-shrink:0;">${esc(rInit)}</div>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
+            <span style="font-size:12px;font-weight:500;color:#1c1e21;">${esc(r.prenom||'Anonyme')}</span>
+            <span style="font-size:10px;color:#65676b;">${Utils.timeAgo(r.created_at)}</span>
+          </div>
+          ${rMention ? `<span style="font-size:12px;color:#C8102E;">${esc(rMention)} </span>` : ''}
+          <span style="font-size:12px;color:#1c1e21;line-height:1.5;">${esc(rMsg)}</span>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:5px;">
+            <i class="ti ti-heart" style="font-size:14px;color:#65676b;cursor:pointer;" aria-hidden="true"></i>
+            <button onclick="setReplyTo('${esc(r.prenom||'')}')" style="font-size:11px;color:#65676b;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;">Répondre</button>
+          </div>
+        </div>
+      </div>`
+    }).join('')
+
     return `
-    <div style="padding:12px 16px 0;">
+    <div style="padding:14px 16px 0;">
       <div style="display:flex;gap:10px;">
         <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
-          <div style="width:32px;height:32px;border-radius:50%;background:#e4e6eb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#65676b;flex-shrink:0;">${esc(init)}</div>
-          ${!isLast ? '<div style="width:1.5px;flex:1;background:#e4e6eb;margin:4px 0;min-height:20px;"></div>' : ''}
+          <div style="width:34px;height:34px;border-radius:50%;background:#e4e6eb;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#65676b;flex-shrink:0;">${esc(init)}</div>
+          ${cmtReplies.length > 0 ? '<div style="width:1.5px;flex:1;background:#e4e6eb;margin:4px 0;"></div>' : ''}
         </div>
-        <div style="flex:1;padding-bottom:${isLast?'16':'10'}px;">
+        <div style="flex:1;padding-bottom:4px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
             <span style="font-size:13px;font-weight:500;color:#1c1e21;">${esc(cmt.prenom||'Anonyme')}</span>
             <span style="font-size:11px;color:#65676b;">${Utils.timeAgo(cmt.created_at)}</span>
           </div>
           <p style="font-size:13px;color:#1c1e21;line-height:1.5;margin-bottom:7px;">${esc(cmt.message||cmt.contenu||'')}</p>
           <div style="display:flex;gap:12px;align-items:center;">
-            <i class="ti ti-heart" style="font-size:15px;color:#65676b;" aria-hidden="true"></i>
+            <i class="ti ti-heart" style="font-size:15px;color:#65676b;cursor:pointer;" aria-hidden="true"></i>
             <button onclick="setReplyTo('${esc(cmt.prenom||'')}')" style="font-size:12px;color:#65676b;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;">Répondre</button>
           </div>
+          ${cmtReplies.length > 0 ? `<div style="padding-left:0;margin-top:0;">${repliesHtml}</div>` : ''}
         </div>
       </div>
     </div>`
