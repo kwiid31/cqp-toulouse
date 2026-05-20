@@ -309,7 +309,7 @@ img { max-width:100%; display:block; }
 }
 /* ── Stories — style cartes verticales Facebook ──────────────── */
 :root {
-  --stories-h: 180px;
+  --stories-h: 155px;
 }
 .stories-bar {
   background:#fff; border-bottom:4px solid #E4E6EB;
@@ -318,8 +318,8 @@ img { max-width:100%; display:block; }
 }
 .stories-bar::-webkit-scrollbar { display:none; }
 .story-thumb {
-  flex-shrink:0; width:102px; height:190px; cursor:pointer;
-  border-radius:12px; overflow:hidden; position:relative;
+  flex-shrink:0; width:80px; height:130px; cursor:pointer;
+  border-radius:10px; overflow:hidden; position:relative;
   background:var(--bg3);
 }
 .story-thumb-bg {
