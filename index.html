@@ -360,7 +360,6 @@
     <button onclick="closeSheet()" style="background:none;border:none;padding:0;cursor:pointer;">
       <svg viewBox="0 0 24 24" width="22" height="22" stroke="#1c1e21" fill="none" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
-    <h3 style="font-size:16px;font-weight:600;color:#1c1e21;margin:0;">Discussion</h3>
   </div>
   <div class="sheet-body" id="sheet-body" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;"></div>
   <div class="sheet-foot" id="sheet-foot" style="border-top:0.5px solid #e4e6eb;padding:10px 16px;padding-bottom:max(10px,env(safe-area-inset-bottom));flex-shrink:0;background:#fff;">
@@ -811,12 +810,35 @@ let _sheetPostId = null
 let _sheetItemType = 'post'
 async function openSheet(itemType, itemId) {
   _sheetPostId = itemId
-  _sheetItemType = itemType || 'post' 
+  _sheetItemType = itemType || 'post'
   document.getElementById('sheet').classList.add('open')
   document.body.style.overflow = 'hidden'
   history.pushState({ sheet: true }, '')
+  const body = document.getElementById('sheet-body')
+  body.innerHTML = '<div style="padding:20px;text-align:center;color:#65676b;font-size:13px;">Chargement…</div>'
+  if (itemType === 'post') {
+    const { data: post } = await window.__sb.from('posts').select('*').eq('id', itemId).single()
+    if (post) {
+      const hasPhoto = !!post.photo_url
+      const img = post.photo_url ? `<div style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;margin:8px 0;"><img src="${Utils.esc(post.photo_url)}" style="width:100%;height:auto;display:block;max-height:400px;object-fit:cover;"></div>` : ''
+      const dark = (!hasPhoto && !post.video_url && post.contenu) ? `<div style="background:#1c1e21;padding:20px 16px;border-radius:10px;margin:8px 0;"><div style="font-size:9px;font-weight:700;color:#C8102E;letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;">${Utils.esc(post.quartier||'')}</div><div style="font-size:18px;font-weight:700;color:#fff;line-height:1.35;">${Utils.esc(post.contenu)}</div></div>` : ''
+      body.innerHTML = `
+        <div style="padding:14px 16px;border-bottom:0.5px solid #e4e6eb;">
+          <div style="display:flex;gap:10px;margin-bottom:8px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:#e4e6eb;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:600;color:#1c1e21;">${Utils.esc(post.quartier||post.prenom||'')}</div>
+              <div style="font-size:12px;color:#65676b;">${Utils.esc(post.prenom||'')} · ${Utils.timeAgo(post.created_at)}</div>
+            </div>
+          </div>
+          ${post.contenu && !dark ? `<p style="font-size:14px;color:#1c1e21;line-height:1.5;margin-bottom:8px;">${Utils.esc(post.contenu)}</p>` : ''}
+          ${dark || img}
+        </div>
+        <div id="disc-comments"></div>`
+    }
+  }
   await refreshComments()
-  setTimeout(() => document.getElementById('sheet-input').focus(), 200)
+  setTimeout(() => document.getElementById('sheet-input')?.focus(), 200)
 }
 function closeSheet() {
   document.getElementById('sheet').classList.remove('open')
@@ -829,34 +851,64 @@ window.addEventListener('popstate', e => {
   }
 })
 async function refreshComments() {
-  const body = document.getElementById('sheet-body')
-  body.innerHTML = '<div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>'
+  const target = document.getElementById('disc-comments') || document.getElementById('sheet-body')
+  if (!target) return
   const { data } = await Api.getComments(_sheetItemType, _sheetPostId)
-  if (!data?.length) { body.innerHTML = '<div class="empty">Aucun commentaire — soyez le premier !</div>'; return }
-  body.innerHTML = data.map(c => `
-    <div class="cmt-item">
-      <div class="c-av c-av-28 c-av-init">${esc((c.prenom || '?')[0].toUpperCase())}</div>
-      <div class="cmt-bubble">
-        <span class="cmt-name">${esc(c.prenom || 'Anonyme')}</span>
-        <span class="cmt-text">${esc(c.message || c.contenu || '')}</span>
-        <span class="cmt-ts">${timeAgo(c.created_at)}</span>
+  if (!data?.length) {
+    target.innerHTML = '<div style="padding:24px 16px;text-align:center;color:#65676b;font-size:13px;">Soyez le premier à répondre</div>'
+    return
+  }
+  target.innerHTML = data.map((cmt, i) => {
+    const isLast = i === data.length - 1
+    const init = (cmt.prenom || '?')[0].toUpperCase()
+    return `
+    <div style="padding:12px 16px 0;">
+      <div style="display:flex;gap:10px;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:32px;height:32px;border-radius:50%;background:#e4e6eb;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#65676b;flex-shrink:0;">${esc(init)}</div>
+          ${!isLast ? '<div style="width:1.5px;flex:1;background:#e4e6eb;margin:4px 0;min-height:20px;"></div>' : ''}
+        </div>
+        <div style="flex:1;padding-bottom:${isLast?'16':'10'}px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+            <span style="font-size:13px;font-weight:500;color:#1c1e21;">${esc(cmt.prenom||'Anonyme')}</span>
+            <span style="font-size:11px;color:#65676b;">${Utils.timeAgo(cmt.created_at)}</span>
+          </div>
+          <p style="font-size:13px;color:#1c1e21;line-height:1.5;margin-bottom:7px;">${esc(cmt.message||cmt.contenu||'')}</p>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <i class="ti ti-heart" style="font-size:15px;color:#65676b;" aria-hidden="true"></i>
+            <button onclick="setReplyTo('${esc(cmt.prenom||'')}')" style="font-size:12px;color:#65676b;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;">Répondre</button>
+          </div>
+        </div>
       </div>
-    </div>`).join('')
-  body.scrollTop = body.scrollHeight
+    </div>`
+  }).join('')
+  target.scrollTop = target.scrollHeight
 }
+let _replyTo = null
+function setReplyTo(prenom) {
+  _replyTo = prenom
+  const inp = document.getElementById('sheet-input')
+  if (inp) {
+    inp.placeholder = `Répondre à ${prenom}…`
+    inp.focus()
+  }
+}
+
 async function sendComment() {
   const prenom = Auth.getPrenom() || 'Anonyme'
   const inp = document.getElementById('sheet-input')
   const message = inp.value.trim()
   if (!message || !_sheetPostId) return
-  if (!Auth.getCode()) { Utils.toast('Connecte-toi pour commenter', 'error'); return }
+  if (!Auth.getCode()) { Utils.toast('Connecte-toi pour répondre', 'error'); return }
+  const fullMessage = _replyTo ? `@${_replyTo} ${message}` : message
   inp.value = ''
-  const { error } = await Api.addComment({ itemType: _sheetItemType, itemId: _sheetPostId, message, prenom })
-  if (error) { Utils.toast('Erreur envoi commentaire', 'error'); inp.value = message; return }
+  inp.placeholder = 'Ajouter votre réponse…'
+  _replyTo = null
+  const { error } = await Api.addComment({ itemType: _sheetItemType, itemId: _sheetPostId, message: fullMessage, prenom })
+  if (error) { Utils.toast('Erreur envoi', 'error'); inp.value = message; return }
   await refreshComments()
   const cc = document.getElementById(`cc-${_sheetPostId}`)
   if (cc) { const cur = parseInt(cc.textContent)||0; cc.textContent = (cur+1) + ' commentaire' + (cur+1>1?'s':'') }
-  Utils.toast('Commentaire publié ✅')
 }
 
 // ── NOTIFICATIONS ─────────────────────────────────────────────
