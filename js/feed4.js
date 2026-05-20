@@ -165,7 +165,7 @@ const Feed = (() => {
       const isShort = txt.length < 80
       const fontSize = isShort ? '1.5rem' : (txt.length < 160 ? '1.15rem' : '.95rem')
       const quartier = p.quartier || ''
-      return `<div style="background:#1c1e21;padding:28px 20px 24px;position:relative;min-height:160px;display:flex;flex-direction:column;justify-content:space-between;">
+      return `<div style="background:#1c1e21;padding:28px 20px 24px;position:relative;min-height:160px;display:flex;flex-direction:column;justify-content:space-between;border-radius:10px;overflow:hidden;border:0.5px solid #333;">
         <div style="font-size:9px;font-weight:700;color:#C8102E;letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;">${Utils.esc(quartier)}</div>
         <div style="font-size:${fontSize};font-weight:700;color:#fff;line-height:1.35;flex:1;display:flex;align-items:center;">${Utils.esc(txt)}</div>
         <div style="margin-top:16px;width:28px;height:2px;background:#C8102E;"></div>
