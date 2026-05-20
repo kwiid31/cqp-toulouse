@@ -171,55 +171,58 @@ const Feed = (() => {
         <div style="margin-top:16px;width:28px;height:2px;background:#C8102E;"></div>
       </div>`
     })() : ''
-    return `
-    <article class="card" id="card-${p.id}">
-      <div class="card-head">
-        <div class="card-meta">
-          <div class="card-author">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</div>
-          <div class="card-ts">${p.quartier ? Utils.esc(p.prenom||'Anonyme') + ' · ' : ''}${Utils.timeAgo(p.created_at)}</div>
-        </div>
-        ${isMine ? `<div style="position:relative;">
-          <button class="card-more" onclick="Feed.toggleMenu(${p.id},event)" aria-label="Options" style="font-size:1.2rem;color:var(--txt3);letter-spacing:1px;padding:4px 8px;">···</button>
+    const menuBtn = isMine
+      ? `<div style="position:relative;">
+          <button onclick="Feed.toggleMenu(${p.id},event)" style="background:none;border:none;color:var(--txt3);font-size:1.1rem;letter-spacing:1px;padding:4px 6px;cursor:pointer;line-height:1;">···</button>
           <div id="menu-${p.id}" style="display:none;position:absolute;right:0;top:100%;background:#fff;border:0.5px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:100;min-width:140px;">
-            <button onclick="Feed.deletePost(${p.id})" style="width:100%;padding:11px 14px;background:none;border:none;text-align:left;font-family:'Barlow',sans-serif;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
-              Supprimer
+            <button onclick="Feed.deletePost(${p.id})" style="width:100%;padding:11px 14px;background:none;border:none;text-align:left;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Supprimer
             </button>
           </div>
-        </div>` : (_isAdmin ? `<div style="position:relative;">
-          <button class="card-more" onclick="Feed.toggleMenu(${p.id},event)" aria-label="Options admin" style="font-size:1.2rem;color:#C8102E;letter-spacing:1px;padding:4px 8px;">···</button>
+        </div>`
+      : (_isAdmin ? `<div style="position:relative;">
+          <button onclick="Feed.toggleMenu(${p.id},event)" style="background:none;border:none;color:#C8102E;font-size:1.1rem;letter-spacing:1px;padding:4px 6px;cursor:pointer;line-height:1;">···</button>
           <div id="menu-${p.id}" style="display:none;position:absolute;right:0;top:100%;background:#fff;border:0.5px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:100;min-width:160px;">
-            <div style="padding:6px 14px 4px;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;">Admin</div>
-            <button onclick="Feed.adminHidePost(${p.id})" style="width:100%;padding:9px 14px;background:none;border:none;text-align:left;font-family:'Barlow',sans-serif;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              Masquer ce post
+            <button onclick="Feed.adminHidePost(${p.id})" style="width:100%;padding:9px 14px;background:none;border:none;text-align:left;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>Masquer
             </button>
           </div>
-        </div>` : '')}
-      </div>
-      ${textCard || img}
-      ${(img || textCard) ? '' : (p.contenu ? `<div class="card-text" style="padding:10px 14px 4px;">${Utils.esc(p.contenu)}</div>` : '')}
-      ${(likeCount > 0 || cmtCount > 0) ? `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px 4px;">
-        <div style="display:flex;align-items:center;gap:4px;">
-          ${likeCount > 0 ? `<div style="width:18px;height:18px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" width="10" height="10" fill="#fff" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><span id="lc-${p.id}" style="font-size:.82rem;color:var(--txt3);">${likeCount}</span>` : `<span id="lc-${p.id}" style="display:none;">${likeCount}</span>`}
+        </div>` : '')
+    return `
+    <article id="card-${p.id}" style="padding:14px 16px 0;background:#fff;">
+      <div style="display:flex;gap:10px;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+          <div style="width:36px;height:36px;border-radius:50%;background:#e4e6eb;flex-shrink:0;"></div>
+          <div style="width:1.5px;flex:1;background:#e4e6eb;margin:4px 0;min-height:20px;"></div>
         </div>
-        ${cmtCount > 0 ? `<span style="font-size:.82rem;color:var(--txt3);cursor:pointer;" id="cc-${p.id}" onclick="openSheet('post',${p.id})">${cmtCount} commentaire${cmtCount > 1 ? 's' : ''}</span>` : `<span id="cc-${p.id}" style="display:none;">${cmtCount}</span>`}
-      </div>` : `<span id="lc-${p.id}" style="display:none;">${likeCount}</span><span id="cc-${p.id}" style="display:none;">${cmtCount}</span>`}
-      <div style="height:0.5px;background:var(--bg3);margin:0 14px;"></div>
-      <div class="card-actions">
-        <button class="action-btn ${liked?'liked':''}" id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)">
-          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="${liked?'currentColor':'none'}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          J'aime
-        </button>
-        <button class="action-btn" onclick="openSheet('post',${p.id})">
-          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Commenter
-        </button>
-        <button class="action-btn" onclick="Feed.share(${p.id})">
-          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          Partager
-        </button>
+        <div style="flex:1;min-width:0;padding-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+            <div>
+              <span style="font-size:14px;font-weight:600;color:#1c1e21;">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</span>
+              <span style="font-size:12px;color:#65676b;margin-left:6px;">${p.quartier && p.prenom ? Utils.esc(p.prenom) + ' · ' : ''}${Utils.timeAgo(p.created_at)}</span>
+            </div>
+            ${menuBtn}
+          </div>
+          ${p.contenu && !textCard ? `<p style="font-size:14px;color:#1c1e21;margin:4px 0 8px;line-height:1.5;">${Utils.esc(p.contenu)}</p>` : ''}
+          ${textCard ? textCard.replace('</div>', '') + '</div>' : ''}
+          ${img ? img.replace('class="card-img-wrap"', 'style="border-radius:10px;overflow:hidden;margin-bottom:10px;"') : ''}
+          <div style="display:flex;gap:14px;margin-top:8px;align-items:center;">
+            <button id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;gap:5px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="${liked?'#C8102E':'#65676b'}" fill="${liked?'#C8102E':'none'}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <button onclick="openSheet('post',${p.id})" style="background:none;border:none;padding:0;cursor:pointer;">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </button>
+            <button onclick="Feed.share(${p.id})" style="background:none;border:none;padding:0;cursor:pointer;">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+          </div>
+          ${(likeCount > 0 || cmtCount > 0) ? `<div style="margin-top:5px;font-size:12px;color:#65676b;">
+            ${likeCount > 0 ? `<span id="lc-${p.id}">${likeCount} j'aime</span>` : `<span id="lc-${p.id}" style="display:none;">${likeCount}</span>`}
+            ${likeCount > 0 && cmtCount > 0 ? ' · ' : ''}
+            ${cmtCount > 0 ? `<span id="cc-${p.id}" style="cursor:pointer;" onclick="openSheet('post',${p.id})">${cmtCount} commentaire${cmtCount>1?'s':''}</span>` : `<span id="cc-${p.id}" style="display:none;">${cmtCount}</span>`}
+          </div>` : `<span id="lc-${p.id}" style="display:none;">${likeCount}</span><span id="cc-${p.id}" style="display:none;">${cmtCount}</span>`}
+        </div>
       </div>
     </article>`
   }
