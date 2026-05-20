@@ -50,7 +50,7 @@ const Feed = (() => {
       const ids = posts.map(p => p._data.id)
       const [{ data: likesData }, { data: cmtData }] = await Promise.all([
         Api.getLikesForFeed(ids),
-        sb.from('commentaires').select('item_id').eq('item_type','post').eq('visible',true).in('item_id', ids)
+        window.__sb.from('commentaires').select('item_id').eq('item_type','post').eq('visible',true).in('item_id', ids)
       ])
       const likeCounts = {}, cmtCounts = {}
       ;(likesData || []).forEach(l => {
