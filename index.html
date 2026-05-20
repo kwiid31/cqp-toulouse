@@ -815,9 +815,8 @@ async function openSheet(itemType, itemId) {
   _sheetItemType = itemType || 'post'
   const sheet = document.getElementById('sheet')
   sheet.classList.add('open')
+  document.documentElement.style.overflow = 'hidden'
   document.body.style.overflow = 'hidden'
-  document.body.style.position = 'fixed'
-  document.body.style.width = '100%'
   history.pushState({ sheet: true }, '')
   const body = document.getElementById('sheet-body')
   body.innerHTML = '<div style="padding:20px;text-align:center;color:#65676b;font-size:13px;">Chargement…</div>'
@@ -847,9 +846,8 @@ async function openSheet(itemType, itemId) {
 }
 function closeSheet() {
   document.getElementById('sheet').classList.remove('open')
+  document.documentElement.style.overflow = ''
   document.body.style.overflow = ''
-  document.body.style.position = ''
-  document.body.style.width = ''
   _sheetPostId = null
 }
 window.addEventListener('popstate', e => {
