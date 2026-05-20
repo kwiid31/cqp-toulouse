@@ -87,7 +87,7 @@
 .pub-opt-label{font-weight:600;font-size:.88rem;color:var(--txt);}
 .pub-opt-sub{font-size:.75rem;color:var(--txt3);}
 /* ── SHEET COMMENTAIRES ── */
-.sheet{display:none;position:fixed;inset:0;z-index:500;background:#fff;overflow:hidden;flex-direction:column;}
+.sheet{display:none;position:fixed;inset:0;z-index:500;background:#fff;overflow:hidden;flex-direction:column;height:100%;height:100dvh;}
 .sheet.open{display:flex;}
 .sheet-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
 .sheet-head h3{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;flex:1;margin:0;}
@@ -811,8 +811,11 @@ let _sheetItemType = 'post'
 async function openSheet(itemType, itemId) {
   _sheetPostId = itemId
   _sheetItemType = itemType || 'post'
-  document.getElementById('sheet').classList.add('open')
+  const sheet = document.getElementById('sheet')
+  sheet.classList.add('open')
   document.body.style.overflow = 'hidden'
+  document.body.style.position = 'fixed'
+  document.body.style.width = '100%'
   history.pushState({ sheet: true }, '')
   const body = document.getElementById('sheet-body')
   body.innerHTML = '<div style="padding:20px;text-align:center;color:#65676b;font-size:13px;">Chargement…</div>'
@@ -843,6 +846,8 @@ async function openSheet(itemType, itemId) {
 function closeSheet() {
   document.getElementById('sheet').classList.remove('open')
   document.body.style.overflow = ''
+  document.body.style.position = ''
+  document.body.style.width = ''
   _sheetPostId = null
 }
 window.addEventListener('popstate', e => {
