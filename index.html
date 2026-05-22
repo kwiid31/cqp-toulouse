@@ -874,15 +874,17 @@ async function refreshComments() {
   }
   
   // Séparer commentaires principaux et réponses (@mention)
-  const mains = data.filter(c => !(c.message||c.contenu||'').startsWith('@'))
-  const replies = data.filter(c => (c.message||c.contenu||'').startsWith('@'))
+  const isReply = (msg) => /^@\S+ /.test(msg||'') || /^@\S+$/.test(msg||'') || (msg||'').includes('__photo__') && (msg||'').startsWith('@')
+  const mains = data.filter(c => !isReply(c.message||c.contenu||''))
+  const replies = data.filter(c => isReply(c.message||c.contenu||''))
 
   target.innerHTML = mains.map((cmt, i) => {
     const init = (cmt.prenom || '?')[0].toUpperCase()
-    // Trouver les réponses à ce commentaire
+    // Trouver les réponses à ce commentaire (match exact du prénom + espace)
+    const cmtPrenom = (cmt.prenom||'').toLowerCase()
     const cmtReplies = replies.filter(r => {
-      const msg = r.message||r.contenu||''
-      return msg.startsWith('@' + (cmt.prenom||''))
+      const msg = (r.message||r.contenu||'').toLowerCase()
+      return msg.startsWith('@' + cmtPrenom + ' ') || msg === '@' + cmtPrenom
     })
     const repliesHtml = cmtReplies.map((r, ri) => {
       const rInit = (r.prenom||'?')[0].toUpperCase()
