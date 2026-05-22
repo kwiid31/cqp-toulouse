@@ -488,4 +488,106 @@ const Stories = (() => {
     .subscribe()
 
   return { load, openQuartier, openCompose, closeCompose, previewFile, selectQuartier, backToStep1, close, next, prev, publish, toggleSound, adminDeleteCurrent, QUARTIERS }
-})()
+})()  // Cube 3D deux faces — face actuelle + face suivante overlay
+  const _initSwipe = () => {
+    const sv = document.getElementById('sv')
+    if (!sv || sv.dataset.swipe) return
+    sv.dataset.swipe = '1'
+
+    let startX = 0, startY = 0, moveDx = 0, active = false, nextEl = null
+
+    const getQs = () => QUARTIERS.filter(q => (_storiesByQuartier[q]||[]).length > 0)
+
+    const buildNext = (q, dir) => {
+      const el = document.createElement('div')
+      const W = window.innerWidth
+      const stories = _storiesByQuartier[q] || []
+      const s = stories[0]
+      el.style.cssText = 'position:fixed;top:0;height:100%;width:100%;background:#111;z-index:8999;overflow:hidden;'
+      if (dir === 'left') el.style.left = W + 'px'
+      else el.style.left = -W + 'px'
+      if (s && s.photo_url) { el.style.backgroundImage = 'url(' + s.photo_url + ')'; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center' }
+      const lbl = document.createElement('div')
+      lbl.textContent = q
+      lbl.style.cssText = 'position:absolute;bottom:60px;left:16px;color:#fff;font-size:18px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.7);'
+      el.appendChild(lbl)
+      document.body.appendChild(el)
+      return el
+    }
+
+    sv.addEventListener('touchstart', function(e) {
+      if (active) return
+      startX = e.touches[0].clientX
+      startY = e.touches[0].clientY
+      moveDx = 0
+    }, { passive: true })
+
+    sv.addEventListener('touchmove', function(e) {
+      if (active) return
+      moveDx = e.touches[0].clientX - startX
+      const dy = e.touches[0].clientY - startY
+      if (Math.abs(moveDx) < Math.abs(dy)) return
+      if (!nextEl && Math.abs(moveDx) > 10) {
+        const qs = getQs()
+        const idx = qs.indexOf(_currentQuartier)
+        const dir = moveDx < 0 ? 'left' : 'right'
+        const nq = dir === 'left' ? qs[idx+1] : qs[idx-1]
+        if (nq) nextEl = buildNext(nq, dir)
+      }
+      if (!nextEl) return
+      const W = window.innerWidth
+      const pct = moveDx / W
+      const rot = pct * 90
+      sv.style.transition = 'none'
+      sv.style.transformOrigin = moveDx < 0 ? 'right center' : 'left center'
+      sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + rot + 'deg)'
+      nextEl.style.transition = 'none'
+      if (moveDx < 0) {
+        nextEl.style.transformOrigin = 'left center'
+        nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + (90+rot) + 'deg)'
+      } else {
+        nextEl.style.transformOrigin = 'right center'
+        nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + (-90+rot) + 'deg)'
+      }
+    }, { passive: true })
+
+    sv.addEventListener('touchend', function(e) {
+      if (active) return
+      const W = window.innerWidth
+      const qs = getQs()
+      const idx = qs.indexOf(_currentQuartier)
+      const thresh = W * 0.25
+
+      function cleanup(openQ) {
+        active = false
+        sv.style.transform = ''
+        sv.style.transformOrigin = ''
+        sv.style.transition = ''
+        if (nextEl) { nextEl.remove(); nextEl = null }
+        sv.dataset.swipe = ''
+        _initSwipe()
+        if (openQ) openQuartier(openQ)
+      }
+
+      if (moveDx < -thresh && idx < qs.length - 1) {
+        active = true
+        sv.style.transition = 'transform 0.28s cubic-bezier(.4,0,.2,1)'
+        sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(-90deg)'
+        if (nextEl) { nextEl.style.transition = 'transform 0.28s cubic-bezier(.4,0,.2,1)'; nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)' }
+        setTimeout(function() { cleanup(qs[idx+1]) }, 280)
+      } else if (moveDx > thresh && idx > 0) {
+        active = true
+        sv.style.transition = 'transform 0.28s cubic-bezier(.4,0,.2,1)'
+        sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(90deg)'
+        if (nextEl) { nextEl.style.transition = 'transform 0.28s cubic-bezier(.4,0,.2,1)'; nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)' }
+        setTimeout(function() { cleanup(qs[idx-1]) }, 280)
+      } else {
+        sv.style.transition = 'transform 0.22s cubic-bezier(.4,0,.2,1)'
+        sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)'
+        if (nextEl) { nextEl.style.transition = 'transform 0.22s cubic-bezier(.4,0,.2,1)'; nextEl.style.transform = moveDx < 0 ? 'perspective(' + (W*2) + 'px) rotateY(90deg)' : 'perspective(' + (W*2) + 'px) rotateY(-90deg)' }
+        setTimeout(function() { cleanup(null) }, 220)
+      }
+    }, { passive: true })
+  }
+
+
