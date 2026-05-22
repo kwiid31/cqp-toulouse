@@ -233,30 +233,76 @@ const Stories = (() => {
     if (_currentIdx > 0) { _currentIdx--; _renderViewer(stories) }
   }
 
-  // Touch swipe gauche/droite sur le viewer — change de QUARTIER
+  // Cube 3D qui suit le doigt en temps réel — comme Facebook
   const _initSwipe = () => {
     const sv = document.getElementById('sv')
     if (!sv || sv.dataset.swipe) return
     sv.dataset.swipe = '1'
-    let startX = 0, startY = 0
+
+    let startX = 0, startY = 0, currentDx = 0, animating = false
+
     sv.addEventListener('touchstart', e => {
+      if (animating) return
       startX = e.touches[0].clientX
       startY = e.touches[0].clientY
+      currentDx = 0
+      sv.style.transition = 'none'
     }, { passive: true })
+
+    sv.addEventListener('touchmove', e => {
+      if (animating) return
+      const dx = e.touches[0].clientX - startX
+      const dy = e.touches[0].clientY - startY
+      if (Math.abs(dy) > Math.abs(dx)) return // scroll vertical — ignorer
+      currentDx = dx
+      // Rotation max 90deg suivant le doigt
+      const rot = (dx / window.innerWidth) * 90
+      sv.style.transformOrigin = dx < 0 ? 'right center' : 'left center'
+      sv.style.transform = `perspective(1200px) rotateY(${rot}deg)`
+    }, { passive: true })
+
     sv.addEventListener('touchend', e => {
-      const dx = e.changedTouches[0].clientX - startX
-      const dy = e.changedTouches[0].clientY - startY
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 60) {
-        // Trouver les quartiers qui ont des stories
-        const quartiersAvecStories = QUARTIERS.filter(q => (_storiesByQuartier[q] || []).length > 0)
-        const idx = quartiersAvecStories.indexOf(_currentQuartier)
-        if (dx < 0 && idx < quartiersAvecStories.length - 1) {
-          // Swipe gauche → quartier suivant
-          _cubeTransition('left', () => openQuartier(quartiersAvecStories[idx + 1]))
-        } else if (dx > 0 && idx > 0) {
-          // Swipe droite → quartier précédent
-          _cubeTransition('right', () => openQuartier(quartiersAvecStories[idx - 1]))
-        }
+      if (animating) return
+      const dx = currentDx
+      const quartiersAvecStories = QUARTIERS.filter(q => (_storiesByQuartier[q] || []).length > 0)
+      const idx = quartiersAvecStories.indexOf(_currentQuartier)
+      const threshold = window.innerWidth * 0.25
+
+      if (dx < -threshold && idx < quartiersAvecStories.length - 1) {
+        // Swipe gauche → quartier suivant
+        animating = true
+        sv.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)'
+        sv.style.transform = 'perspective(1200px) rotateY(-90deg)'
+        setTimeout(() => {
+          sv.style.transition = 'none'
+          sv.style.transform = 'perspective(1200px) rotateY(90deg)'
+          openQuartier(quartiersAvecStories[idx + 1])
+          requestAnimationFrame(() => {
+            sv.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)'
+            sv.style.transform = 'perspective(1200px) rotateY(0deg)'
+            setTimeout(() => { sv.style.transform = ''; sv.style.transition = ''; animating = false }, 300)
+          })
+        }, 300)
+      } else if (dx > threshold && idx > 0) {
+        // Swipe droite → quartier précédent
+        animating = true
+        sv.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)'
+        sv.style.transform = 'perspective(1200px) rotateY(90deg)'
+        setTimeout(() => {
+          sv.style.transition = 'none'
+          sv.style.transform = 'perspective(1200px) rotateY(-90deg)'
+          openQuartier(quartiersAvecStories[idx - 1])
+          requestAnimationFrame(() => {
+            sv.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)'
+            sv.style.transform = 'perspective(1200px) rotateY(0deg)'
+            setTimeout(() => { sv.style.transform = ''; sv.style.transition = ''; animating = false }, 300)
+          })
+        }, 300)
+      } else {
+        // Pas assez de swipe — revenir en place
+        sv.style.transition = 'transform 0.25s cubic-bezier(.4,0,.2,1)'
+        sv.style.transform = 'perspective(1200px) rotateY(0deg)'
+        setTimeout(() => { sv.style.transform = ''; sv.style.transition = '' }, 250)
       }
     }, { passive: true })
   }
