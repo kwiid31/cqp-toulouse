@@ -134,20 +134,21 @@ const Api = (() => {
     sb.from('annonces').select('*').eq('validee', false)
       .order('created_at', { ascending: false })
 
-  const createAnnonce = ({ prenom, nom = '', email = '', quartier = '', categorie, titre, description, contenu, telephone }) =>
+  const createAnnonce = ({ prenom, nom = '', email = '', quartier = '', categorie, titre, description, contenu, telephone, photo_url }) =>
     sb.from('annonces').insert({
       prenom,
-      nom,                             // ⚠️ NOT NULL (peut être vide)
-      email,                           // ⚠️ NOT NULL
-      quartier,                        // ⚠️ NOT NULL
-      categorie,                       // ⚠️ NOT NULL
-      titre,                           // ⚠️ NOT NULL
-      description: description || contenu || '', // ⚠️ NOT NULL
+      nom,
+      email,
+      quartier,
+      categorie,
+      titre,
+      description: description || contenu || '',
       contenu: contenu || description || null,
       telephone: telephone || null,
+      photo_url: photo_url || null,
       profil_code: Auth.getCode() || null,
-      visible: false,
-      validee: false,
+      visible: true,
+      validee: true,
     })
 
   const approveAnnonce = id =>
@@ -177,8 +178,8 @@ const Api = (() => {
       prenom: Auth.getPrenom() || null,
       profil_code: Auth.getCode() || null,
       photo_url: photo_url || null,
-      visible: false,
-      validee: false,
+      visible: true,
+      validee: true,
     })
 
   const approveEvenement = id =>

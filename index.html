@@ -583,7 +583,7 @@ async function submitPubForm() {
         categorie, titre,
         description: desc||(prix ? 'Prix : '+prix : ''),
         contenu: desc||(prix ? 'Prix : '+prix : ''),
-        telephone: null
+        telephone: null, photo_url: photo_url||null
       })
       if (error) throw error
     } else {
