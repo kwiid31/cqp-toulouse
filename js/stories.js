@@ -233,7 +233,7 @@ const Stories = (() => {
     if (_currentIdx > 0) { _currentIdx--; _renderViewer(stories) }
   }
 
-  // Cube 3D qui suit le doigt en temps réel — comme Facebook
+  // Vrai cube 3D à deux faces — comme Facebook
   const _initSwipe = () => {
     const sv = document.getElementById('sv')
     if (!sv || sv.dataset.swipe) return
@@ -241,68 +241,120 @@ const Stories = (() => {
 
     let startX = 0, startY = 0, currentDx = 0, animating = false
 
+    // Créer le conteneur cube
+    const setupCube = () => {
+      if (document.getElementById('sv-cube')) return
+      const W = sv.offsetWidth || window.innerWidth
+      const cube = document.createElement('div')
+      cube.id = 'sv-cube'
+      cube.style.cssText = `position:absolute;inset:0;transform-style:preserve-3d;width:${W}px;`
+
+      // Face front — contient tout le viewer actuel (on clone le contenu)
+      const front = document.createElement('div')
+      front.id = 'sv-face-front'
+      front.style.cssText = `position:absolute;width:${W}px;height:100%;top:0;left:0;backface-visibility:hidden;overflow:hidden;`
+      // Copier le contenu visuel du sv dans la face front
+      const svBg = document.getElementById('sv-bg')
+      const svMeta = document.getElementById('sv-meta')
+      const svBars = document.getElementById('sv-bars')
+      if (svBg) front.appendChild(svBg.cloneNode(true))
+
+      // Face suivante — à 90deg sur la droite du cube
+      const next = document.createElement('div')
+      next.id = 'sv-face-next'
+      next.style.cssText = `position:absolute;width:${W}px;height:100%;top:0;left:0;backface-visibility:hidden;overflow:hidden;transform:rotateY(90deg) translateZ(${W/2}px) translateX(-${W/2}px);background:#111;display:flex;align-items:center;justify-content:center;`
+
+      cube.appendChild(front)
+      cube.appendChild(next)
+      sv.style.perspective = `${W * 2}px`
+      sv.style.perspectiveOrigin = 'center center'
+      sv.style.position = 'relative'
+      sv.appendChild(cube)
+    }
+
     sv.addEventListener('touchstart', e => {
       if (animating) return
       startX = e.touches[0].clientX
       startY = e.touches[0].clientY
       currentDx = 0
-      sv.style.transition = 'none'
+      setupCube()
     }, { passive: true })
 
     sv.addEventListener('touchmove', e => {
       if (animating) return
       const dx = e.touches[0].clientX - startX
       const dy = e.touches[0].clientY - startY
-      if (Math.abs(dy) > Math.abs(dx)) return // scroll vertical — ignorer
+      if (Math.abs(dy) > Math.abs(dx) && Math.abs(currentDx) < 10) return
       currentDx = dx
-      // Rotation max 90deg suivant le doigt
+
+      const cube = document.getElementById('sv-cube')
+      const nextFace = document.getElementById('sv-face-next')
+      if (!cube) return
+
+      // Rotation max ±90deg
       const rot = (dx / window.innerWidth) * 90
-      sv.style.transformOrigin = dx < 0 ? 'right center' : 'left center'
-      sv.style.transform = `perspective(1200px) rotateY(${rot}deg)`
+
+      // Préparer la face suivante
+      const quartiersAvecStories = QUARTIERS.filter(q => (_storiesByQuartier[q] || []).length > 0)
+      const idx = quartiersAvecStories.indexOf(_currentQuartier)
+      const nextQ = dx < 0 ? quartiersAvecStories[idx + 1] : quartiersAvecStories[idx - 1]
+      if (nextFace && nextQ) {
+        const bg = '#1c1e21'
+        const stories = _storiesByQuartier[nextQ] || []
+        const s = stories[0]
+        if (s?.photo_url) {
+          nextFace.style.backgroundImage = `url(${s.photo_url})`
+          nextFace.style.backgroundSize = 'cover'
+          nextFace.style.backgroundPosition = 'center'
+        } else {
+          nextFace.style.background = '#1c1e21'
+          nextFace.innerHTML = `<div style="color:#fff;font-size:18px;font-weight:700;">${nextQ}</div>`
+        }
+        // Positionner la face selon la direction
+        const W = sv.offsetWidth || window.innerWidth
+        if (dx < 0) {
+          nextFace.style.transform = `rotateY(90deg) translateZ(${W/2}px) translateX(-${W/2}px)`
+        } else {
+          nextFace.style.transform = `rotateY(-90deg) translateZ(${W/2}px) translateX(${W/2}px)`
+        }
+      }
+
+      cube.style.transition = 'none'
+      cube.style.transform = `rotateY(${rot}deg)`
     }, { passive: true })
 
     sv.addEventListener('touchend', e => {
       if (animating) return
       const dx = currentDx
+      const cube = document.getElementById('sv-cube')
       const quartiersAvecStories = QUARTIERS.filter(q => (_storiesByQuartier[q] || []).length > 0)
       const idx = quartiersAvecStories.indexOf(_currentQuartier)
       const threshold = window.innerWidth * 0.25
 
+      const cleanup = () => {
+        if (cube) cube.remove()
+        sv.style.perspective = ''
+        sv.dataset.swipe = ''
+        animating = false
+        _initSwipe()
+      }
+
       if (dx < -threshold && idx < quartiersAvecStories.length - 1) {
-        // Swipe gauche → quartier suivant
         animating = true
-        sv.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)'
-        sv.style.transform = 'perspective(1200px) rotateY(-90deg)'
-        setTimeout(() => {
-          sv.style.transition = 'none'
-          sv.style.transform = 'perspective(1200px) rotateY(90deg)'
-          openQuartier(quartiersAvecStories[idx + 1])
-          requestAnimationFrame(() => {
-            sv.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)'
-            sv.style.transform = 'perspective(1200px) rotateY(0deg)'
-            setTimeout(() => { sv.style.transform = ''; sv.style.transition = ''; animating = false }, 300)
-          })
-        }, 300)
+        cube.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)'
+        cube.style.transform = 'rotateY(-90deg)'
+        setTimeout(() => { openQuartier(quartiersAvecStories[idx + 1]); cleanup() }, 300)
       } else if (dx > threshold && idx > 0) {
-        // Swipe droite → quartier précédent
         animating = true
-        sv.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)'
-        sv.style.transform = 'perspective(1200px) rotateY(90deg)'
-        setTimeout(() => {
-          sv.style.transition = 'none'
-          sv.style.transform = 'perspective(1200px) rotateY(-90deg)'
-          openQuartier(quartiersAvecStories[idx - 1])
-          requestAnimationFrame(() => {
-            sv.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)'
-            sv.style.transform = 'perspective(1200px) rotateY(0deg)'
-            setTimeout(() => { sv.style.transform = ''; sv.style.transition = ''; animating = false }, 300)
-          })
-        }, 300)
+        cube.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)'
+        cube.style.transform = 'rotateY(90deg)'
+        setTimeout(() => { openQuartier(quartiersAvecStories[idx - 1]); cleanup() }, 300)
       } else {
-        // Pas assez de swipe — revenir en place
-        sv.style.transition = 'transform 0.25s cubic-bezier(.4,0,.2,1)'
-        sv.style.transform = 'perspective(1200px) rotateY(0deg)'
-        setTimeout(() => { sv.style.transform = ''; sv.style.transition = '' }, 250)
+        if (cube) {
+          cube.style.transition = 'transform 0.25s cubic-bezier(.4,0,.2,1)'
+          cube.style.transform = 'rotateY(0deg)'
+          setTimeout(cleanup, 250)
+        }
       }
     }, { passive: true })
   }
