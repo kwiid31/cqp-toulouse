@@ -92,7 +92,7 @@
 .sheet.open{display:flex;}
 .sheet-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 /* ── STORY VIEWER ── */
-#sv{display:none;position:fixed;inset:0;z-index:600;background:#000;flex-direction:column;}
+#sv{display:none;position:fixed;inset:0;z-index:600;background:#000;flex-direction:column;transform-style:preserve-3d;perspective:1200px;}
 #sv.open{display:flex;}
 .sv-bars{display:flex;gap:4px;padding:env(safe-area-inset-top) 12px 0;padding-top:max(12px,env(safe-area-inset-top));}
 .sv-bar{flex:1;height:2px;background:rgba(255,255,255,.3);border-radius:2px;overflow:hidden;}
@@ -375,7 +375,7 @@
 <!-- STORY VIEWER -->
 <div id="sv">
   <div class="sv-bars" id="sv-bars"></div>
-  <div class="sv-body">
+  <div class="sv-body" style="transform-style:preserve-3d;">
     <!-- Media background -->
     <div id="sv-bg" style="position:absolute;inset:0;background:#111;overflow:hidden;"></div>
     <!-- Overlay gradient -->

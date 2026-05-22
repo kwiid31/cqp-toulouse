@@ -233,25 +233,26 @@ const Stories = (() => {
     if (_currentIdx > 0) { _currentIdx--; _renderViewer(stories) }
   }
 
-  // Cube 3D deux faces — face actuelle + face suivante overlay
+  // Swipe : cube gauche/droite entre quartiers + swipe bas pour fermer
   const _initSwipe = () => {
     const sv = document.getElementById('sv')
     if (!sv || sv.dataset.swipe) return
     sv.dataset.swipe = '1'
 
-    let startX = 0, startY = 0, moveDx = 0, active = false, nextEl = null
+    let startX = 0, startY = 0, dx = 0, dy = 0, active = false, nextEl = null, mode = null
 
     const getQs = () => QUARTIERS.filter(q => (_storiesByQuartier[q]||[]).length > 0)
 
-    const buildNext = (q, dir) => {
+    const buildNext = (q) => {
       const el = document.createElement('div')
-      const W = window.innerWidth
       const stories = _storiesByQuartier[q] || []
       const s = stories[0]
-      el.style.cssText = 'position:fixed;top:0;height:100%;width:100%;background:#111;z-index:8999;overflow:hidden;'
-      if (dir === 'left') el.style.left = W + 'px'
-      else el.style.left = -W + 'px'
-      if (s && s.photo_url) { el.style.backgroundImage = 'url(' + s.photo_url + ')'; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = 'center' }
+      el.style.cssText = 'position:fixed;inset:0;z-index:599;background:#111;overflow:hidden;'
+      if (s && s.photo_url) {
+        el.style.backgroundImage = 'url(' + s.photo_url + ')'
+        el.style.backgroundSize = 'cover'
+        el.style.backgroundPosition = 'center'
+      }
       const lbl = document.createElement('div')
       lbl.textContent = q
       lbl.style.cssText = 'position:absolute;bottom:60px;left:16px;color:#fff;font-size:18px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,.7);'
@@ -264,33 +265,55 @@ const Stories = (() => {
       if (active) return
       startX = e.touches[0].clientX
       startY = e.touches[0].clientY
-      moveDx = 0
+      dx = 0; dy = 0; mode = null
+      sv.style.transition = 'none'
     }, { passive: true })
 
     sv.addEventListener('touchmove', function(e) {
       if (active) return
-      moveDx = e.touches[0].clientX - startX
-      const dy = e.touches[0].clientY - startY
-      if (Math.abs(moveDx) < Math.abs(dy)) return
-      if (!nextEl && Math.abs(moveDx) > 10) {
+      dx = e.touches[0].clientX - startX
+      dy = e.touches[0].clientY - startY
+
+      // Déterminer le mode au premier mouvement significatif
+      if (!mode && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        mode = Math.abs(dy) > Math.abs(dx) ? 'vertical' : 'horizontal'
+      }
+      if (!mode) return
+
+      if (mode === 'vertical') {
+        // Swipe bas — fermer
+        if (dy < 0) return
+        sv.style.transition = 'none'
+        sv.style.transform = 'translateY(' + dy + 'px)'
+        sv.style.opacity = String(1 - dy / 400)
+        return
+      }
+
+      // Mode horizontal — cube entre quartiers
+      if (!nextEl && Math.abs(dx) > 10) {
         const qs = getQs()
         const idx = qs.indexOf(_currentQuartier)
-        const dir = moveDx < 0 ? 'left' : 'right'
-        const nq = dir === 'left' ? qs[idx+1] : qs[idx-1]
-        if (nq) nextEl = buildNext(nq, dir)
+        const nq = dx < 0 ? qs[idx+1] : qs[idx-1]
+        if (nq) {
+          nextEl = buildNext(nq)
+        }
       }
       if (!nextEl) return
+
       const W = window.innerWidth
-      const pct = moveDx / W
+      const pct = Math.min(Math.abs(dx) / W, 1)
       const rot = pct * 90
-      sv.style.transition = 'none'
-      sv.style.transformOrigin = moveDx < 0 ? 'right center' : 'left center'
-      sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + rot + 'deg)'
-      nextEl.style.transition = 'none'
-      if (moveDx < 0) {
+
+      if (dx < 0) {
+        // Swipe gauche : sv pivote sur bord droit, next arrive de droite
+        sv.style.transformOrigin = 'right center'
+        sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + (-rot) + 'deg)'
         nextEl.style.transformOrigin = 'left center'
-        nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + (90+rot) + 'deg)'
+        nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + (90-rot) + 'deg)'
       } else {
+        // Swipe droite : sv pivote sur bord gauche, next arrive de gauche
+        sv.style.transformOrigin = 'left center'
+        sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + rot + 'deg)'
         nextEl.style.transformOrigin = 'right center'
         nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + (-90+rot) + 'deg)'
       }
@@ -299,38 +322,63 @@ const Stories = (() => {
     sv.addEventListener('touchend', function(e) {
       if (active) return
       const W = window.innerWidth
-      const qs = getQs()
-      const idx = qs.indexOf(_currentQuartier)
-      const thresh = W * 0.25
 
       function cleanup(openQ) {
         active = false
         sv.style.transform = ''
         sv.style.transformOrigin = ''
         sv.style.transition = ''
+        sv.style.opacity = ''
         if (nextEl) { nextEl.remove(); nextEl = null }
         sv.dataset.swipe = ''
         _initSwipe()
         if (openQ) openQuartier(openQ)
       }
 
-      if (moveDx < -thresh && idx < qs.length - 1) {
-        active = true
-        sv.style.transition = 'transform 0.28s cubic-bezier(.4,0,.2,1)'
-        sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(-90deg)'
-        if (nextEl) { nextEl.style.transition = 'transform 0.28s cubic-bezier(.4,0,.2,1)'; nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)' }
-        setTimeout(function() { cleanup(qs[idx+1]) }, 280)
-      } else if (moveDx > thresh && idx > 0) {
-        active = true
-        sv.style.transition = 'transform 0.28s cubic-bezier(.4,0,.2,1)'
-        sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(90deg)'
-        if (nextEl) { nextEl.style.transition = 'transform 0.28s cubic-bezier(.4,0,.2,1)'; nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)' }
-        setTimeout(function() { cleanup(qs[idx-1]) }, 280)
-      } else {
-        sv.style.transition = 'transform 0.22s cubic-bezier(.4,0,.2,1)'
-        sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)'
-        if (nextEl) { nextEl.style.transition = 'transform 0.22s cubic-bezier(.4,0,.2,1)'; nextEl.style.transform = moveDx < 0 ? 'perspective(' + (W*2) + 'px) rotateY(90deg)' : 'perspective(' + (W*2) + 'px) rotateY(-90deg)' }
-        setTimeout(function() { cleanup(null) }, 220)
+      if (mode === 'vertical') {
+        if (dy > 120) {
+          // Fermer
+          active = true
+          sv.style.transition = 'transform 0.25s ease,opacity 0.25s ease'
+          sv.style.transform = 'translateY(100vh)'
+          sv.style.opacity = '0'
+          setTimeout(function() { cleanup(null); close() }, 250)
+        } else {
+          sv.style.transition = 'transform 0.2s ease,opacity 0.2s ease'
+          sv.style.transform = 'translateY(0)'
+          sv.style.opacity = '1'
+          setTimeout(function() { sv.style.transition = '' }, 200)
+        }
+        return
+      }
+
+      if (mode === 'horizontal') {
+        const qs = getQs()
+        const idx = qs.indexOf(_currentQuartier)
+        const thresh = W * 0.25
+        const T = 'transform 0.28s cubic-bezier(.4,0,.2,1)'
+
+        if (dx < -thresh && idx < qs.length - 1) {
+          active = true
+          sv.style.transition = T
+          sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(-90deg)'
+          if (nextEl) { nextEl.style.transition = T; nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)' }
+          setTimeout(function() { cleanup(qs[idx+1]) }, 300)
+        } else if (dx > thresh && idx > 0) {
+          active = true
+          sv.style.transition = T
+          sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(90deg)'
+          if (nextEl) { nextEl.style.transition = T; nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)' }
+          setTimeout(function() { cleanup(qs[idx-1]) }, 300)
+        } else {
+          sv.style.transition = 'transform 0.22s cubic-bezier(.4,0,.2,1)'
+          sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)'
+          if (nextEl) {
+            nextEl.style.transition = 'transform 0.22s cubic-bezier(.4,0,.2,1)'
+            nextEl.style.transform = dx < 0 ? 'perspective(' + (W*2) + 'px) rotateY(90deg)' : 'perspective(' + (W*2) + 'px) rotateY(-90deg)'
+          }
+          setTimeout(function() { cleanup(null) }, 240)
+        }
       }
     }, { passive: true })
   }
