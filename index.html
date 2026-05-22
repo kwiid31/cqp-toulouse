@@ -847,21 +847,69 @@ async function openSheet(itemType, itemId) {
   setTimeout(() => document.getElementById('sheet-input')?.focus(), 200)
 }
 function openMedia(url, type) {
-  // Créer ou réutiliser le viewer plein écran
-  let viewer = document.getElementById('media-viewer')
-  if (!viewer) {
-    viewer = document.createElement('div')
-    viewer.id = 'media-viewer'
-    viewer.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;'
-    viewer.onclick = () => { viewer.remove() }
-    document.body.appendChild(viewer)
-  }
+  // Supprimer un viewer existant
+  const old = document.getElementById('media-viewer')
+  if (old) old.remove()
+
+  const viewer = document.createElement('div')
+  viewer.id = 'media-viewer'
+  viewer.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;transition:transform .25s,opacity .25s;touch-action:none;'
+
+  const inner = document.createElement('div')
+  inner.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;'
+
   if (type === 'video') {
-    viewer.innerHTML = '<video src="' + url + '" autoplay controls playsinline loop style="max-width:100%;max-height:100%;"></video>'
+    inner.innerHTML = '<video src="' + url + '" autoplay controls playsinline loop style="max-width:100%;max-height:100%;"></video>'
   } else {
-    viewer.innerHTML = '<img src="' + url + '" style="max-width:100%;max-height:100%;object-fit:contain;">'
+    inner.innerHTML = '<img src="' + url + '" style="max-width:100%;max-height:100%;object-fit:contain;user-select:none;">'
   }
+  viewer.appendChild(inner)
   document.body.appendChild(viewer)
+
+  // Swipe down to dismiss — comme Instagram/Threads
+  let startY = 0, startX = 0, isDragging = false
+
+  viewer.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY
+    startX = e.touches[0].clientX
+    isDragging = true
+    viewer.style.transition = 'none'
+  }, { passive: true })
+
+  viewer.addEventListener('touchmove', e => {
+    if (!isDragging) return
+    const dy = e.touches[0].clientY - startY
+    const dx = e.touches[0].clientX - startX
+    if (dy < 0) return // bloquer swipe vers le haut
+    const progress = Math.min(dy / 300, 1)
+    const scale = 1 - progress * 0.3
+    viewer.style.transform = 'translateY(' + dy + 'px)'
+    viewer.style.opacity = 1 - progress * 0.6
+    viewer.style.background = 'rgba(0,0,0,' + (1 - progress * 0.8) + ')'
+  }, { passive: true })
+
+  viewer.addEventListener('touchend', e => {
+    if (!isDragging) return
+    isDragging = false
+    const dy = e.changedTouches[0].clientY - startY
+    viewer.style.transition = 'transform .25s,opacity .25s,background .25s'
+    if (dy > 100) {
+      // Fermer
+      viewer.style.transform = 'translateY(100vh)'
+      viewer.style.opacity = '0'
+      setTimeout(() => viewer.remove(), 250)
+    } else {
+      // Revenir
+      viewer.style.transform = ''
+      viewer.style.opacity = '1'
+      viewer.style.background = '#000'
+    }
+  }, { passive: true })
+
+  // Tap simple pour fermer (pas un swipe)
+  viewer.addEventListener('click', e => {
+    if (e.target === viewer || e.target === inner) viewer.remove()
+  })
 }
 
 function closeSheet() {
