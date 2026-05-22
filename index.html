@@ -88,7 +88,7 @@
 .pub-opt-label{font-weight:600;font-size:.88rem;color:var(--txt);}
 .pub-opt-sub{font-size:.75rem;color:var(--txt3);}
 /* ── SHEET COMMENTAIRES ── */
-.sheet{display:none;position:fixed;inset:0;z-index:500;background:#fff;overflow:hidden;flex-direction:column;height:100%;height:100dvh;}
+.sheet{display:none;position:fixed;top:0;left:0;width:100%;height:100%;height:100dvh;z-index:9000;background:#fff;overflow:hidden;flex-direction:column;}
 .sheet.open{display:flex;}
 .sheet-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 /* ── STORY VIEWER ── */
@@ -814,10 +814,12 @@ async function openSheet(itemType, itemId) {
   _sheetPostId = itemId
   _sheetItemType = itemType || 'post'
   const sheet = document.getElementById('sheet')
+  // Forcer la page à se cacher complètement
+  document.getElementById('feed').style.visibility = 'hidden'
+  sheet.style.display = 'flex'
   sheet.classList.add('open')
   document.documentElement.style.overflow = 'hidden'
   document.body.style.overflow = 'hidden'
-  history.pushState({ sheet: true }, '')
   const body = document.getElementById('sheet-body')
   body.innerHTML = '<div style="padding:20px;text-align:center;color:#65676b;font-size:13px;">Chargement…</div>'
   if (itemType === 'post') {
@@ -845,16 +847,15 @@ async function openSheet(itemType, itemId) {
   setTimeout(() => document.getElementById('sheet-input')?.focus(), 200)
 }
 function closeSheet() {
-  document.getElementById('sheet').classList.remove('open')
+  const s = document.getElementById('sheet')
+  s.classList.remove('open')
+  s.style.display = ''
+  document.getElementById('feed').style.visibility = ''
   document.documentElement.style.overflow = ''
   document.body.style.overflow = ''
   _sheetPostId = null
 }
-window.addEventListener('popstate', e => {
-  if (document.getElementById('sheet').classList.contains('open')) {
-    closeSheet()
-  }
-})
+
 async function refreshComments() {
   const target = document.getElementById('disc-comments') || document.getElementById('sheet-body')
   if (!target) return
