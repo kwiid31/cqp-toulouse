@@ -937,3 +937,60 @@ async function refreshComments() {
 }
 
 
+async function init() {
+  const code = Auth.getCode()
+  if (!code) { window.location.href = 'profil.html'; return }
+
+  // Feed en priorité — s'assurer qu'il est visible
+  document.getElementById('feed').style.visibility = ''
+  Feed.init(document.getElementById('feed'))
+  Feed.setupDoubleTap(document.getElementById('feed'))
+  Feed.setupPullToRefresh()
+
+  // Non-bloquant
+  setTimeout(() => Stories.load(document.getElementById('stories-bar')), 300)
+  const topbarEl = document.querySelector('.topbar')
+  window.addEventListener('scroll', () => {
+    topbarEl?.classList.toggle('scrolled', window.scrollY > 10)
+  }, { passive: true })
+
+  // Profil en arrière-plan
+  Api.getProfil(code).then(p => {
+    if (!p) return
+    Auth.save(p)
+    if (p.is_admin) { const al = document.getElementById('admin-link'); if(al) al.style.display = 'flex' }
+  }).catch(() => {})
+
+  Api.trackView('index')
+}
+init()
+</script>
+<!-- CONFIRM BOTTOM SHEET -->
+<div id="confirm-sheet">
+  <div class="sheet-inner">
+    <p class="sheet-title" id="confirm-title">Supprimer ?</p>
+    <p class="sheet-msg" id="confirm-msg">Cette action est irréversible.</p>
+    <button class="btn-danger" id="confirm-ok">Supprimer</button>
+    <button class="btn-cancel" onclick="closeConfirm()">Annuler</button>
+  </div>
+</div>
+<script>
+window._confirmResolve = null
+function showConfirm(title, msg) {
+  return new Promise(resolve => {
+    window._confirmResolve = resolve
+    document.getElementById('confirm-title').textContent = title || 'Supprimer ?'
+    document.getElementById('confirm-msg').textContent = msg || 'Cette action est irréversible.'
+    document.getElementById('confirm-ok').onclick = () => { closeConfirm(); resolve(true) }
+    document.getElementById('confirm-sheet').classList.add('open')
+  })
+}
+function closeConfirm() {
+  document.getElementById('confirm-sheet').classList.remove('open')
+  if (window._confirmResolve) { window._confirmResolve(false); window._confirmResolve = null }
+}
+document.getElementById('confirm-sheet').addEventListener('click', e => { if (e.target === e.currentTarget) closeConfirm() })
+</script>
+
+</body>
+</html>
