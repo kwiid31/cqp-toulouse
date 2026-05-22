@@ -856,6 +856,50 @@ function closeSheet() {
   _sheetPostId = null
 }
 
+let _replyTo = null
+let _replyToId = null
+
+async function sendPhotoComment(inp) {
+  const file = inp.files[0]
+  if (!file || !_sheetPostId) return
+  if (!Auth.getCode()) { Utils.toast('Connecte-toi pour répondre', 'error'); return }
+  const prenom = Auth.getPrenom() || 'Anonyme'
+  Utils.toast('Envoi en cours…', 'info')
+  try {
+    const photo_url = await Api.uploadPhoto(file, 'comments')
+    const message = '__photo__' + photo_url
+    const parentId = _replyToId
+    _replyTo = null; _replyToId = null
+    const { error } = await Api.addComment({ itemType: _sheetItemType, itemId: _sheetPostId, message, prenom, parentId })
+    if (error) throw error
+    await refreshComments()
+  } catch(e) { Utils.toast('Erreur envoi photo', 'error') }
+}
+
+function setReplyTo(prenom, id) {
+  _replyTo = prenom
+  _replyToId = id || null
+  const inp = document.getElementById('sheet-input')
+  if (inp) { inp.placeholder = 'Répondre à ' + prenom + '…'; inp.focus() }
+}
+
+async function sendComment() {
+  const prenom = Auth.getPrenom() || 'Anonyme'
+  const inp = document.getElementById('sheet-input')
+  const message = inp.value.trim()
+  if (!message || !_sheetPostId) return
+  if (!Auth.getCode()) { Utils.toast('Connecte-toi pour répondre', 'error'); return }
+  inp.value = ''
+  inp.placeholder = 'Ajouter votre réponse…'
+  const parentId = _replyToId
+  _replyTo = null; _replyToId = null
+  const { error } = await Api.addComment({ itemType: _sheetItemType, itemId: _sheetPostId, message, prenom, parentId })
+  if (error) { Utils.toast('Erreur envoi', 'error'); inp.value = message; return }
+  await refreshComments()
+  const cc = document.getElementById('cc-' + _sheetPostId)
+  if (cc) { const cur = parseInt(cc.textContent)||0; cc.textContent = (cur+1) + ' commentaire' + (cur+1>1?'s':'') }
+}
+
 async function refreshComments() {
   const target = document.getElementById('disc-comments') || document.getElementById('sheet-body')
   if (!target) return
