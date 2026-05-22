@@ -99,6 +99,7 @@ const Stories = (() => {
       return
     }
     _renderViewer(stories)
+    _initSwipe()
   }
 
   const _renderViewer = stories => {
@@ -193,6 +194,26 @@ const Stories = (() => {
     }
   }
 
+  const _cubeTransition = (direction, callback) => {
+    const sv = document.getElementById('sv')
+    if (!sv) { callback(); return }
+    // direction: 'left' (next) ou 'right' (prev)
+    const rotY = direction === 'left' ? -90 : 90
+    sv.style.transition = 'transform 0.35s cubic-bezier(.4,0,.2,1)'
+    sv.style.transformOrigin = direction === 'left' ? 'right center' : 'left center'
+    sv.style.transform = `perspective(1200px) rotateY(${rotY}deg)`
+    setTimeout(() => {
+      sv.style.transition = 'none'
+      sv.style.transform = `perspective(1200px) rotateY(${-rotY}deg)`
+      callback()
+      requestAnimationFrame(() => {
+        sv.style.transition = 'transform 0.35s cubic-bezier(.4,0,.2,1)'
+        sv.style.transform = 'perspective(1200px) rotateY(0deg)'
+        setTimeout(() => { sv.style.transform = ''; sv.style.transition = '' }, 350)
+      })
+    }, 350)
+  }
+
   const close = () => {
     clearTimeout(_timer)
     document.getElementById('sv')?.classList.remove('open')
@@ -202,14 +223,37 @@ const Stories = (() => {
   const next = () => {
     clearTimeout(_timer)
     const stories = _storiesByQuartier[_currentQuartier] || []
-    if (_currentIdx < stories.length - 1) { _currentIdx++; _renderViewer(stories) }
-    else close()
+    if (_currentIdx < stories.length - 1) {
+      _cubeTransition('left', () => { _currentIdx++; _renderViewer(stories) })
+    } else close()
   }
 
   const prev = () => {
     clearTimeout(_timer)
     const stories = _storiesByQuartier[_currentQuartier] || []
-    if (_currentIdx > 0) { _currentIdx--; _renderViewer(stories) }
+    if (_currentIdx > 0) {
+      _cubeTransition('right', () => { _currentIdx--; _renderViewer(stories) })
+    }
+  }
+
+  // Touch swipe gauche/droite sur le viewer
+  const _initSwipe = () => {
+    const sv = document.getElementById('sv')
+    if (!sv || sv.dataset.swipe) return
+    sv.dataset.swipe = '1'
+    let startX = 0, startY = 0
+    sv.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX
+      startY = e.touches[0].clientY
+    }, { passive: true })
+    sv.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX
+      const dy = e.changedTouches[0].clientY - startY
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+        if (dx < 0) next()
+        else prev()
+      }
+    }, { passive: true })
   }
 
   // ── COMPOSE ──────────────────────────────────────────────────
