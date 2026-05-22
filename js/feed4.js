@@ -303,6 +303,31 @@ const Feed = (() => {
       const bottom = window.scrollY + window.innerHeight
       if (document.documentElement.scrollHeight - bottom < 500) _renderChunk()
     }, { passive: true })
+
+    // Auto play/pause vidéos selon visibilité
+    const videoObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const vid = entry.target
+        if (entry.isIntersecting) {
+          vid.muted = true
+          vid.play().catch(() => {})
+        } else {
+          vid.pause()
+        }
+      })
+    }, { threshold: 0.3 })
+
+    // Observer les vidéos existantes et futures
+    const observeVideos = () => {
+      _el.querySelectorAll('video').forEach(v => {
+        if (!v.dataset.observed) {
+          videoObserver.observe(v)
+          v.dataset.observed = '1'
+        }
+      })
+    }
+    observeVideos()
+    new MutationObserver(observeVideos).observe(_el, { childList: true, subtree: true })
   }
 
   // ── LIKES ────────────────────────────────────────────────────
