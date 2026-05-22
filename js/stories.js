@@ -305,16 +305,16 @@ const Stories = (() => {
       const rot = pct * 90
 
       if (dx < 0) {
-        // Swipe gauche : sv pivote sur bord droit, next arrive de droite
+        // Swipe gauche : sv pivote bord droit vers toi, next arrive depuis derrière à droite
         sv.style.transformOrigin = 'right center'
         sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + (-rot) + 'deg)'
-        nextEl.style.transformOrigin = 'left center'
+        nextEl.style.transformOrigin = 'right center'
         nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + (90-rot) + 'deg)'
       } else {
-        // Swipe droite : sv pivote sur bord gauche, next arrive de gauche
+        // Swipe droite : sv pivote bord gauche vers toi, next arrive depuis derrière à gauche
         sv.style.transformOrigin = 'left center'
         sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + rot + 'deg)'
-        nextEl.style.transformOrigin = 'right center'
+        nextEl.style.transformOrigin = 'left center'
         nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + (-90+rot) + 'deg)'
       }
     }, { passive: true })
@@ -360,15 +360,15 @@ const Stories = (() => {
 
         if (dx < -thresh && idx < qs.length - 1) {
           active = true
-          sv.style.transition = T
+          sv.style.transition = T; sv.style.transformOrigin = 'right center'
           sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(-90deg)'
-          if (nextEl) { nextEl.style.transition = T; nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)' }
+          if (nextEl) { nextEl.style.transition = T; nextEl.style.transformOrigin = 'right center'; nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)' }
           setTimeout(function() { cleanup(qs[idx+1]) }, 300)
         } else if (dx > thresh && idx > 0) {
           active = true
-          sv.style.transition = T
+          sv.style.transition = T; sv.style.transformOrigin = 'left center'
           sv.style.transform = 'perspective(' + (W*2) + 'px) rotateY(90deg)'
-          if (nextEl) { nextEl.style.transition = T; nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)' }
+          if (nextEl) { nextEl.style.transition = T; nextEl.style.transformOrigin = 'left center'; nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(0deg)' }
           setTimeout(function() { cleanup(qs[idx-1]) }, 300)
         } else {
           sv.style.transition = 'transform 0.22s cubic-bezier(.4,0,.2,1)'
