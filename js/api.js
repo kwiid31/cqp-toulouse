@@ -73,12 +73,13 @@ const Api = (() => {
       .eq('item_type', itemType).eq('item_id', itemId).eq('visible', true)
       .order('created_at', { ascending: true })
 
-  const addComment = ({ itemType, itemId, message, prenom }) =>
+  const addComment = ({ itemType, itemId, message, prenom, parentId }) =>
     sb.from('commentaires').insert({
       item_type: itemType,
       item_id: itemId,
-      message,                         // ⚠️ "message" pas "contenu"
+      message,
       prenom,
+      parent_id: parentId || null,
       profil_code: Auth.getCode() || null,
       visible: true,
     }).select().single()

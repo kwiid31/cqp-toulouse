@@ -863,239 +863,76 @@ async function refreshComments() {
     target.innerHTML = '<div style="padding:24px 16px;text-align:center;color:#65676b;font-size:13px;">Soyez le premier à répondre</div>'
     return
   }
-  // Helper — rendu du contenu message (texte ou photo)
+
+  // Séparer commentaires principaux et réponses via parent_id
+  const mains = data.filter(c => !c.parent_id)
+  const repliesMap = {}
+  data.filter(c => c.parent_id).forEach(r => {
+    if (!repliesMap[r.parent_id]) repliesMap[r.parent_id] = []
+    repliesMap[r.parent_id].push(r)
+  })
+
   const _renderMsg = (msg) => {
     if (!msg) return ''
     const photoMatch = msg.match(/__photo__(.+)/)
     if (photoMatch) return `<img src="${esc(photoMatch[1])}" style="max-width:200px;border-radius:10px;border:0.5px solid #e4e6eb;display:block;margin:4px 0;">`
     const isUrl = msg.startsWith('https://') && !msg.includes(' ')
     if (isUrl) return `<img src="${esc(msg)}" style="max-width:200px;border-radius:10px;border:0.5px solid #e4e6eb;display:block;margin:4px 0;">`
-    return `<span style="font-size:13px;color:#1c1e21;line-height:1.5;">${esc(msg)}</span>`
+    return `<p style="font-size:13px;color:#1c1e21;line-height:1.5;margin-bottom:7px;">${esc(msg)}</p>`
   }
-  
-  // Séparer commentaires principaux et réponses (@mention)
-  const isReply = (msg) => /^@\S+ /.test(msg||'') || /^@\S+$/.test(msg||'') || (msg||'').includes('__photo__') && (msg||'').startsWith('@')
-  const mains = data.filter(c => !isReply(c.message||c.contenu||''))
-  const replies = data.filter(c => isReply(c.message||c.contenu||''))
 
-  target.innerHTML = mains.map((cmt, i) => {
-    const init = (cmt.prenom || '?')[0].toUpperCase()
-    // Trouver les réponses à ce commentaire (match exact du prénom + espace)
-    const cmtPrenom = (cmt.prenom||'').toLowerCase()
-    const cmtReplies = replies.filter(r => {
-      const msg = (r.message||r.contenu||'').toLowerCase()
-      return msg.startsWith('@' + cmtPrenom + ' ') || msg === '@' + cmtPrenom
-    })
+  target.innerHTML = mains.map(cmt => {
+    const init = (cmt.prenom||'?')[0].toUpperCase()
+    const cmtReplies = repliesMap[cmt.id] || []
+    const hasReplies = cmtReplies.length > 0
+
     const repliesHtml = cmtReplies.map((r, ri) => {
       const rInit = (r.prenom||'?')[0].toUpperCase()
-      const isLastReply = ri === cmtReplies.length - 1
-      const rMsg = (r.message||r.contenu||'').replace(/^@[^ ]+ ?/, '')
-      const rMention = ((r.message||r.contenu||'').match(/^(@[^ ]+)/) || [])[1] || ''
+      const isLast = ri === cmtReplies.length - 1
       return `
-      <div style="display:flex;padding:8px 16px 0;gap:0;">
-        <!-- Colonne gauche : 34px alignée avec le parent, coude L -->
-        <div style="width:34px;flex-shrink:0;position:relative;display:flex;justify-content:center;">
-          <!-- Coude : ligne verticale à gauche qui descend + horizontale vers la droite -->
-          <svg viewBox="0 0 34 26" width="34" height="26" style="overflow:visible;position:absolute;top:0;left:0;">
-            <path d="M17 0 L17 18 Q17 26 26 26" fill="none" stroke="#e4e6eb" stroke-width="1.5" stroke-linecap="round"/>
+      <div style="display:flex;padding:8px 16px ${isLast?'14':'0'}px;gap:0;">
+        <div style="width:34px;flex-shrink:0;display:flex;justify-content:center;">
+          <svg viewBox="0 0 34 28" width="34" height="28" style="overflow:visible;">
+            <path d="M17 0 L17 18 Q17 28 27 28" fill="none" stroke="#e4e6eb" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </div>
-        <!-- Rond + contenu de la réponse -->
-        <div style="display:flex;gap:8px;flex:1;padding-left:4px;padding-bottom:${isLastReply?'14':'4'}px;">
+        <div style="display:flex;gap:8px;flex:1;padding-left:4px;">
           <div style="width:26px;height:26px;border-radius:50%;background:#e4e6eb;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#65676b;flex-shrink:0;">${esc(rInit)}</div>
           <div style="flex:1;">
             <div style="display:flex;justify-content:space-between;margin-bottom:2px;">
               <span style="font-size:12px;font-weight:500;color:#1c1e21;">${esc(r.prenom||'Anonyme')}</span>
               <span style="font-size:10px;color:#65676b;">${Utils.timeAgo(r.created_at)}</span>
             </div>
-            ${rMention ? '<span style="font-size:12px;color:#C8102E;font-weight:500;">'+esc(rMention)+' </span>' : ''}${_renderMsg(rMsg)}
-            <div style="display:flex;gap:10px;align-items:center;margin-top:5px;">
+            ${_renderMsg(r.message||r.contenu||'')}
+            <div style="display:flex;gap:10px;align-items:center;margin-top:4px;">
               <i class="ti ti-heart" style="font-size:14px;color:#65676b;cursor:pointer;" aria-hidden="true"></i>
-              <button onclick="setReplyTo('${esc(r.prenom||'')}')" style="font-size:11px;color:#65676b;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;">Répondre</button>
+              <button onclick="setReplyTo('${esc(r.prenom||'')}', ${cmt.id})" style="font-size:11px;color:#65676b;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;">Répondre</button>
             </div>
           </div>
         </div>
       </div>`
     }).join('')
 
-    const hasReplies = cmtReplies.length > 0
     return `
     <div style="padding:14px 16px 0;display:flex;gap:0;">
-      <!-- Colonne gauche : rond + SVG connecteur -->
       <div style="width:34px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;">
         <div style="width:34px;height:34px;border-radius:50%;background:#e4e6eb;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#65676b;">${esc(init)}</div>
-        ${hasReplies ? '<div style="width:1.5px;background:#e4e6eb;flex:1;margin-top:4px;"></div>' : ''}
+        ${hasReplies ? '<div style="width:1.5px;flex:1;background:#e4e6eb;margin-top:4px;"></div>' : ''}
       </div>
-      <!-- Contenu -->
       <div style="flex:1;padding-left:10px;padding-bottom:${hasReplies?'0':'14'}px;">
         <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
           <span style="font-size:13px;font-weight:500;color:#1c1e21;">${esc(cmt.prenom||'Anonyme')}</span>
           <span style="font-size:11px;color:#65676b;">${Utils.timeAgo(cmt.created_at)}</span>
         </div>
-        ${_renderMsg(cmt.message||cmt.contenu||'')} 
-        <div style="display:flex;gap:12px;align-items:center;">
+        ${_renderMsg(cmt.message||cmt.contenu||'')}
+        <div style="display:flex;gap:12px;align-items:center;margin-top:4px;">
           <i class="ti ti-heart" style="font-size:15px;color:#65676b;cursor:pointer;" aria-hidden="true"></i>
-          <button onclick="setReplyTo('${esc(cmt.prenom||'')}')" style="font-size:12px;color:#65676b;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;">Répondre</button>
+          <button onclick="setReplyTo('${esc(cmt.prenom||'')}', ${cmt.id})" style="font-size:12px;color:#65676b;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;">Répondre</button>
         </div>
       </div>
     </div>
-    ${hasReplies ? repliesHtml : ''}
-    `
+    ${hasReplies ? repliesHtml : ''}`
   }).join('')
-  target.scrollTop = target.scrollHeight
-}
-let _replyTo = null
-
-async function sendPhotoComment(inp) {
-  const file = inp.files[0]
-  if (!file || !_sheetPostId) return
-  if (!Auth.getCode()) { Utils.toast('Connecte-toi pour répondre', 'error'); return }
-  const prenom = Auth.getPrenom() || 'Anonyme'
-  Utils.toast('Envoi en cours…', 'info')
-  try {
-    const photo_url = await Api.uploadPhoto(file, 'comments')
-    const message = (_replyTo ? '@' + _replyTo + ' ' : '') + '__photo__' + photo_url
-    const { error } = await Api.addComment({ 
-      itemType: _sheetItemType, itemId: _sheetPostId, 
-      message: message, prenom 
-    })
-    if (error) throw error
-    _replyTo = null
-    await refreshComments()
-  } catch(e) {
-    Utils.toast('Erreur envoi photo', 'error')
-  }
 }
 
-function setReplyTo(prenom) {
-  _replyTo = prenom
-  const inp = document.getElementById('sheet-input')
-  if (inp) {
-    inp.placeholder = `Répondre à ${prenom}…`
-    inp.focus()
-  }
-}
 
-async function sendComment() {
-  const prenom = Auth.getPrenom() || 'Anonyme'
-  const inp = document.getElementById('sheet-input')
-  const message = inp.value.trim()
-  if (!message || !_sheetPostId) return
-  if (!Auth.getCode()) { Utils.toast('Connecte-toi pour répondre', 'error'); return }
-  const fullMessage = _replyTo ? `@${_replyTo} ${message}` : message
-  inp.value = ''
-  inp.placeholder = 'Ajouter votre réponse…'
-  _replyTo = null
-  const { error } = await Api.addComment({ itemType: _sheetItemType, itemId: _sheetPostId, message: fullMessage, prenom })
-  if (error) { Utils.toast('Erreur envoi', 'error'); inp.value = message; return }
-  await refreshComments()
-  const cc = document.getElementById(`cc-${_sheetPostId}`)
-  if (cc) { const cur = parseInt(cc.textContent)||0; cc.textContent = (cur+1) + ' commentaire' + (cur+1>1?'s':'') }
-}
-
-// ── NOTIFICATIONS ─────────────────────────────────────────────
-function openNotifs() { Utils.toast('Notifications bientôt disponibles', 'info') }
-
-// ── TICKER ────────────────────────────────────────────────────
-async function loadTicker() {
-  const { data } = await Api.getActus(null, 5)
-  if (!data?.length) return
-  const ticker = document.getElementById('ticker')
-  const inner = document.getElementById('ticker-inner')
-  inner.textContent = data.map(a => `📣 ${a.titre}`).join('  ·  ')
-  ticker.style.display = 'flex'
-}
-
-// ── INIT ──────────────────────────────────────────────────────
-async function init() {
-  const code = Auth.getCode()
-  if (!code) { window.location.href = 'profil.html'; return }
-
-  // Feed en priorité
-  Feed.init(document.getElementById('feed'))
-  Feed.setupDoubleTap(document.getElementById('feed'))
-  Feed.setupPullToRefresh()
-
-  // Non-bloquant
-  setTimeout(() => Stories.load(document.getElementById('stories-bar')), 300)
-  // Ombre topbar au scroll — comme Facebook
-  const topbarEl = document.querySelector('.topbar')
-  window.addEventListener('scroll', () => {
-    topbarEl?.classList.toggle('scrolled', window.scrollY > 10)
-  }, { passive: true })
-  const updateStoriesH = () => document.documentElement.style.setProperty('--stories-h', storiesBar.offsetHeight + 'px')
-  updateStoriesH()
-  new ResizeObserver(updateStoriesH).observe(storiesBar)
-  setTimeout(() => loadTicker(), 600)
-
-  // Profil en arrière-plan
-  Api.getProfil(code).then(p => {
-    if (!p) return
-    Auth.save(p)
-    if (p.is_admin) document.getElementById('admin-link').style.display = 'flex'
-    if (p.photo_url) {
-      const av2 = document.getElementById('c-av')
-      av2.innerHTML = `<img src="${esc(p.photo_url)}" alt="" style="width:100%;height:100%;object-fit:cover;">`
-      av2.classList.remove('c-av-init')
-    }
-  }).catch(() => {})
-
-  Api.trackView('index')
-
-  // ── TRACKING VISITE ──────────────────────────────────────────
-  const trackCode = Auth.getCode()
-  const trackPrenom = Auth.getPrenom()
-  if (trackCode) {
-    sb.from('visites').insert({ profil_code: trackCode, prenom: trackPrenom, page: 'feed' }).then(() => {})
-    sb.from('presences').upsert({ profil_code: trackCode, prenom: trackPrenom, last_seen: new Date().toISOString() }).then(() => {})
-    setInterval(() => {
-      sb.from('presences').upsert({ profil_code: trackCode, prenom: trackPrenom, last_seen: new Date().toISOString() }).then(() => {})
-    }, 30000)
-  }
-
-  // ── COMPTEUR TEMPS RÉEL ───────────────────────────────────────
-  const updateOnlineCount = async () => {
-    // Compter les profils vus dans les 3 dernières minutes
-    const since = new Date(Date.now() - 3 * 60 * 1000).toISOString()
-    const { data } = await sb.from('presences').select('profil_code', { count: 'exact' }).gte('last_seen', since)
-    const n = data?.length || 0
-    const el = document.getElementById('online-count')
-    if (el) el.textContent = n + ' en ligne'
-    el?.style && (el.style.display = n > 0 ? 'flex' : 'none')
-  }
-  updateOnlineCount()
-  setInterval(updateOnlineCount, 15000)
-  // Écouter les changements realtime sur presences
-  sb.channel('presences').on('postgres_changes', { event: '*', schema: 'public', table: 'presences' }, updateOnlineCount).subscribe()
-}
-init()
-</script>
-<!-- CONFIRM BOTTOM SHEET -->
-<div id="confirm-sheet">
-  <div class="sheet-inner">
-    <p class="sheet-title" id="confirm-title">Supprimer ?</p>
-    <p class="sheet-msg" id="confirm-msg">Cette action est irréversible.</p>
-    <button class="btn-danger" id="confirm-ok">Supprimer</button>
-    <button class="btn-cancel" onclick="closeConfirm()">Annuler</button>
-  </div>
-</div>
-<script>
-window._confirmResolve = null
-function showConfirm(title, msg) {
-  return new Promise(resolve => {
-    window._confirmResolve = resolve
-    document.getElementById('confirm-title').textContent = title || 'Supprimer ?'
-    document.getElementById('confirm-msg').textContent = msg || 'Cette action est irréversible.'
-    document.getElementById('confirm-ok').onclick = () => { closeConfirm(); resolve(true) }
-    document.getElementById('confirm-sheet').classList.add('open')
-  })
-}
-function closeConfirm() {
-  document.getElementById('confirm-sheet').classList.remove('open')
-  if (window._confirmResolve) { window._confirmResolve(false); window._confirmResolve = null }
-}
-document.getElementById('confirm-sheet').addEventListener('click', e => { if (e.target === e.currentTarget) closeConfirm() })
-</script>
-
-</body>
-</html>
