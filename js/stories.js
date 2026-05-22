@@ -223,20 +223,17 @@ const Stories = (() => {
   const next = () => {
     clearTimeout(_timer)
     const stories = _storiesByQuartier[_currentQuartier] || []
-    if (_currentIdx < stories.length - 1) {
-      _cubeTransition('left', () => { _currentIdx++; _renderViewer(stories) })
-    } else close()
+    if (_currentIdx < stories.length - 1) { _currentIdx++; _renderViewer(stories) }
+    else close()
   }
 
   const prev = () => {
     clearTimeout(_timer)
     const stories = _storiesByQuartier[_currentQuartier] || []
-    if (_currentIdx > 0) {
-      _cubeTransition('right', () => { _currentIdx--; _renderViewer(stories) })
-    }
+    if (_currentIdx > 0) { _currentIdx--; _renderViewer(stories) }
   }
 
-  // Touch swipe gauche/droite sur le viewer
+  // Touch swipe gauche/droite sur le viewer — change de QUARTIER
   const _initSwipe = () => {
     const sv = document.getElementById('sv')
     if (!sv || sv.dataset.swipe) return
@@ -249,9 +246,17 @@ const Stories = (() => {
     sv.addEventListener('touchend', e => {
       const dx = e.changedTouches[0].clientX - startX
       const dy = e.changedTouches[0].clientY - startY
-      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
-        if (dx < 0) next()
-        else prev()
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 60) {
+        // Trouver les quartiers qui ont des stories
+        const quartiersAvecStories = QUARTIERS.filter(q => (_storiesByQuartier[q] || []).length > 0)
+        const idx = quartiersAvecStories.indexOf(_currentQuartier)
+        if (dx < 0 && idx < quartiersAvecStories.length - 1) {
+          // Swipe gauche → quartier suivant
+          _cubeTransition('left', () => openQuartier(quartiersAvecStories[idx + 1]))
+        } else if (dx > 0 && idx > 0) {
+          // Swipe droite → quartier précédent
+          _cubeTransition('right', () => openQuartier(quartiersAvecStories[idx - 1]))
+        }
       }
     }, { passive: true })
   }
