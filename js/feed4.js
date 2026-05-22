@@ -157,7 +157,7 @@ const Feed = (() => {
       ? `<div class="c-av c-av-40"><img src="${Utils.esc(p.photo_url)}" alt=""></div>`
       : `<div class="c-av c-av-40 c-av-init">${Utils.esc((p.prenom||'?')[0].toUpperCase())}</div>`
     const img = p.video_url
-      ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(p.video_url)}','video')"><video src="${Utils.esc(p.video_url)}" autoplay muted loop playsinline preload="auto" style="width:100%;height:auto;display:block;max-height:500px;object-fit:cover;"></video></div>`
+      ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(p.video_url)}','video')"><video src="${Utils.esc(p.video_url)}" autoplay muted loop playsinline preload="auto" style="width:100%;height:auto;display:block;max-height:500px;object-fit:cover;" onended="this.currentTime=0;this.play()" oncanplay="this.muted=true;this.play()"></video></div>`
       : (p.photo_url ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(p.photo_url)}','image')"><img src="${Utils.esc(p.photo_url)}" loading="lazy" style="width:100%;height:auto;display:block;min-height:150px;max-height:600px;object-fit:cover;"></div>` : '')
     // Post texte sans photo — visuel immersif auto
     const textCard = (!p.video_url && !p.photo_url && p.contenu) ? (() => {
