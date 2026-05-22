@@ -846,6 +846,24 @@ async function openSheet(itemType, itemId) {
   await refreshComments()
   setTimeout(() => document.getElementById('sheet-input')?.focus(), 200)
 }
+function openMedia(url, type) {
+  // Créer ou réutiliser le viewer plein écran
+  let viewer = document.getElementById('media-viewer')
+  if (!viewer) {
+    viewer = document.createElement('div')
+    viewer.id = 'media-viewer'
+    viewer.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;cursor:pointer;'
+    viewer.onclick = () => { viewer.remove() }
+    document.body.appendChild(viewer)
+  }
+  if (type === 'video') {
+    viewer.innerHTML = '<video src="' + url + '" autoplay controls playsinline loop style="max-width:100%;max-height:100%;"></video>'
+  } else {
+    viewer.innerHTML = '<img src="' + url + '" style="max-width:100%;max-height:100%;object-fit:contain;">'
+  }
+  document.body.appendChild(viewer)
+}
+
 function closeSheet() {
   const s = document.getElementById('sheet')
   s.classList.remove('open')
