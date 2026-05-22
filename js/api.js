@@ -147,8 +147,8 @@ const Api = (() => {
       telephone: telephone || null,
       photo_url: photo_url || null,
       profil_code: Auth.getCode() || null,
-      visible: true,
-      validee: true,
+      visible: false,
+      validee: false,
     })
 
   const approveAnnonce = id =>
@@ -178,8 +178,8 @@ const Api = (() => {
       prenom: Auth.getPrenom() || null,
       profil_code: Auth.getCode() || null,
       photo_url: photo_url || null,
-      visible: true,
-      validee: true,
+      visible: false,
+      validee: false,
     })
 
   const approveEvenement = id =>
