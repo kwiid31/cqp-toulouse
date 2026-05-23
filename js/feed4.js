@@ -159,26 +159,28 @@ const Feed = (() => {
     // Carousel multi-médias
     const carousel = p.media_urls && p.media_urls.length > 0 ? (() => {
       const items = p.media_urls
-      const id = 'car-' + p.id
+      const cid = 'car-' + p.id
       let slides = ''
-      items.forEach((m, i) => {
+      items.forEach(function(m, i) {
         if (m.type === 'video') {
-          slides += '<div style="flex-shrink:0;width:100%;height:300px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;background:#000;">'
-          slides += '<video src="' + Utils.esc(m.url) + '" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;"></video>'
-          slides += '</div>'
+          slides += `<div style="flex-shrink:0;width:100%;height:300px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;background:#000;">`
+          slides += `<video src="${Utils.esc(m.url)}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;"></video></div>`
         } else {
-          slides += '<div style="flex-shrink:0;width:100%;height:300px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('' + Utils.esc(m.url) + '','image')">'
-          slides += '<img src="' + Utils.esc(m.url) + '" style="width:100%;height:100%;object-fit:cover;">'
-          slides += '</div>'
+          slides += `<div style="flex-shrink:0;width:100%;height:300px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(m.url)}','image')">`
+          slides += `<img src="${Utils.esc(m.url)}" style="width:100%;height:100%;object-fit:cover;"></div>`
         }
       })
-      const dots = items.length > 1 ? '<div style="display:flex;justify-content:center;gap:4px;margin-top:6px;">'
-        + items.map((_, i) => '<div style="width:6px;height:6px;border-radius:50%;background:' + (i===0?'#1c1e21':'#e4e6eb') + ';" id="dot-' + id + '-' + i + '"></div>').join('')
-        + '</div>' : ''
-      return '<div style="margin-bottom:6px;">'
-        + '<div id="' + id + '" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;" onscroll="Feed.updateDots('' + id + '',' + items.length + ',this)">'
-        + slides + '</div>' + dots + '</div>'
+      let dots = ''
+      if (items.length > 1) {
+        dots = '<div style="display:flex;justify-content:center;gap:4px;margin-top:6px;">'
+        items.forEach(function(_, i) {
+          dots += `<div style="width:6px;height:6px;border-radius:50%;background:${i===0?'#1c1e21':'#e4e6eb'};" id="dot-${cid}-${i}"></div>`
+        })
+        dots += '</div>'
+      }
+      return `<div style="margin-bottom:6px;"><div id="${cid}" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;" onscroll="Feed.updateDots('${cid}',${items.length},this)">${slides}</div>${dots}</div>`
     })() : null
+
 
     const img = p.video_url
       ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;position:relative;cursor:pointer;" onclick="openMedia('${Utils.esc(p.video_url)}','video')"><video src="${Utils.esc(p.video_url)}" autoplay muted loop playsinline preload="auto" style="width:100%;height:auto;display:block;max-height:500px;object-fit:contain;" onended="this.currentTime=0;this.play()" oncanplay="this.muted=true;this.play()"></video><button onclick="event.stopPropagation();var v=this.previousElementSibling;v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊'" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;">🔇</button></div>`
