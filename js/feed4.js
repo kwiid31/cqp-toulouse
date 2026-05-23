@@ -166,10 +166,10 @@ const Feed = (() => {
         const onload = isFirst ? `onload="Feed.carouselFitHeight(this,'` + cid + `')"` : ''
         const onmeta = isFirst ? `onloadedmetadata="Feed.carouselFitHeight(this,'` + cid + `')"` : ''
         if (m.type === 'video') {
-          slides += `<div style="flex-shrink:0;width:85vw;max-width:400px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;background:#000;scroll-snap-align:center;">`
+          slides += `<div style="flex-shrink:0;width:50vw;max-width:240px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;background:#000;scroll-snap-align:center;">`
           slides += `<video src="${Utils.esc(m.url)}" autoplay muted loop playsinline ${onmeta} style="width:100%;display:block;object-fit:cover;"></video></div>`
         } else {
-          slides += `<div style="flex-shrink:0;width:85vw;max-width:400px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;scroll-snap-align:center;" onclick="openMedia('${Utils.esc(m.url)}','image')">`
+          slides += `<div style="flex-shrink:0;width:50vw;max-width:240px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;scroll-snap-align:center;" onclick="openMedia('${Utils.esc(m.url)}','image')">`
           slides += `<img src="${Utils.esc(m.url)}" ${onload} style="width:100%;display:block;object-fit:cover;"></div>`
         }
       })
