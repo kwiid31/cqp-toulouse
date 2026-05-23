@@ -1209,6 +1209,14 @@ async function init() {
   const code = Auth.getCode()
   if (!code) { window.location.href = 'profil.html'; return }
 
+  // Attendre que __sb soit prêt (CDN parfois lent sur Safari)
+  let waited = 0
+  while (!window.__sb && waited < 3000) {
+    await new Promise(r => setTimeout(r, 100))
+    waited += 100
+  }
+  if (!window.__sb) { location.reload(); return }
+
   // Feed en priorité — s'assurer qu'il est visible
   document.getElementById('feed').style.visibility = ''
   Feed.init(document.getElementById('feed'))
