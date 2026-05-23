@@ -859,10 +859,16 @@ function openMedia(url, type) {
     mediaEl = document.createElement('video')
     mediaEl.src = url
     mediaEl.autoplay = true
-    mediaEl.controls = true
+    mediaEl.controls = false
     mediaEl.setAttribute('playsinline','')
     mediaEl.loop = true
-    mediaEl.style.cssText = 'max-width:100%;max-height:100%;display:block;border-radius:10px;overflow:hidden;'
+    mediaEl.style.cssText = 'max-width:100%;max-height:100%;display:block;border-radius:10px;'
+    // Bouton son en plein écran
+    const soundBtn = document.createElement('button')
+    soundBtn.textContent = '🔊'
+    soundBtn.style.cssText = 'position:fixed;bottom:40px;right:20px;z-index:10000;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:40px;height:40px;font-size:16px;cursor:pointer;color:#fff;'
+    soundBtn.onclick = (e) => { e.stopPropagation(); mediaEl.muted = !mediaEl.muted; soundBtn.textContent = mediaEl.muted ? '🔇' : '🔊' }
+    viewer.appendChild(soundBtn)
   } else {
     mediaEl = document.createElement('img')
     mediaEl.src = url
