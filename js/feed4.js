@@ -163,10 +163,10 @@ const Feed = (() => {
       let slides = ''
       items.forEach(function(m, i) {
         if (m.type === 'video') {
-          slides += `<div style="flex-shrink:0;width:100%;height:300px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;background:#000;">`
+          slides += `<div style="flex-shrink:0;width:100%;height:200px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;background:#000;">`
           slides += `<video src="${Utils.esc(m.url)}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;"></video></div>`
         } else {
-          slides += `<div style="flex-shrink:0;width:100%;height:300px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(m.url)}','image')">`
+          slides += `<div style="flex-shrink:0;width:100%;height:200px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(m.url)}','image')">`
           slides += `<img src="${Utils.esc(m.url)}" style="width:100%;height:100%;object-fit:cover;"></div>`
         }
       })
