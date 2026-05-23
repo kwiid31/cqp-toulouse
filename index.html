@@ -947,6 +947,64 @@ async function openSheet(itemType, itemId) {
   await refreshComments()
   setTimeout(() => document.getElementById('sheet-input')?.focus(), 200)
 }
+function openAnnonce(id) {
+  const data = window._annoncesCache && window._annoncesCache[id]
+  if (!data) return
+  const existing = document.getElementById('annonce-viewer')
+  if (existing) existing.remove()
+
+  const viewer = document.createElement('div')
+  viewer.id = 'annonce-viewer'
+  viewer.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#fff;display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;'
+
+  const header = document.createElement('div')
+  header.style.cssText = 'display:flex;align-items:center;padding:14px 16px;border-bottom:0.5px solid #e4e6eb;flex-shrink:0;position:sticky;top:0;background:#fff;z-index:1;'
+  header.innerHTML = '<button onclick="document.getElementById('annonce-viewer').remove()" style="background:none;border:none;padding:0;cursor:pointer;"><svg viewBox="0 0 24 24" width="22" height="22" stroke="#1c1e21" fill="none" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>'
+  viewer.appendChild(header)
+
+  if (data.photo_url) {
+    const img = document.createElement('img')
+    img.src = data.photo_url
+    img.style.cssText = 'width:100%;max-height:300px;object-fit:cover;display:block;flex-shrink:0;'
+    viewer.appendChild(img)
+  }
+
+  const content = document.createElement('div')
+  content.style.cssText = 'padding:20px 16px;flex:1;'
+  const desc = data.description || data.contenu || ''
+  const tel = data.telephone || ''
+  content.innerHTML = '<div style="font-size:11px;font-weight:700;color:#C8102E;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">' + Utils.esc(data.categorie||'Annonce') + (data.quartier ? ' · ' + Utils.esc(data.quartier) : '') + '</div>'
+    + '<h2 style="font-size:20px;font-weight:700;color:#1c1e21;line-height:1.3;margin-bottom:12px;">' + Utils.esc(data.titre||'') + '</h2>'
+    + (desc ? '<p style="font-size:15px;color:#444;line-height:1.6;margin-bottom:16px;">' + Utils.esc(desc) + '</p>' : '')
+    + '<div style="font-size:13px;color:#65676b;">Publié par <strong>' + Utils.esc(data.prenom||'') + '</strong></div>'
+    + (tel ? '<a href="tel:' + Utils.esc(tel) + '" style="display:inline-block;margin-top:16px;background:#C8102E;color:#fff;padding:12px 24px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;">📞 Contacter</a>' : '')
+  viewer.appendChild(content)
+  document.body.appendChild(viewer)
+
+  // Swipe bas pour fermer
+  let startY = 0, dy = 0
+  viewer.addEventListener('touchstart', function(e) { startY = e.touches[0].clientY; dy = 0 }, { passive: true })
+  viewer.addEventListener('touchmove', function(e) {
+    dy = e.touches[0].clientY - startY
+    if (viewer.scrollTop <= 0 && dy > 0) {
+      e.preventDefault()
+      viewer.style.transform = 'translateY(' + dy + 'px)'
+      viewer.style.transition = 'none'
+    }
+  }, { passive: false })
+  viewer.addEventListener('touchend', function() {
+    if (dy > 100) {
+      viewer.style.transition = 'transform 0.25s ease'
+      viewer.style.transform = 'translateY(100vh)'
+      setTimeout(function() { viewer.remove() }, 250)
+    } else {
+      viewer.style.transition = 'transform 0.2s ease'
+      viewer.style.transform = 'translateY(0)'
+    }
+    dy = 0
+  }, { passive: true })
+}
+
 function openMedia(url, type) {
   const existing = document.getElementById('media-viewer')
   if (existing) existing.remove()

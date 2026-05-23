@@ -494,6 +494,7 @@ const Feed = (() => {
 
   // ── BLOC ANNONCES (scroll horizontal, peek) ───────────────────
   const _blocAnnonces = (annonces) => {
+    window._annoncesCache = window._annoncesCache || {}
     const cards = annonces.slice(0, 6).map(a => {
       const hasPhoto = !!a._data.photo_url
       const icon = _annonceIcon(a._data.categorie)
@@ -511,12 +512,12 @@ const Feed = (() => {
           + '<span style="font-size:.72rem;color:#adb5bd;font-weight:600;">' + Utils.esc(a._data.categorie||'Annonce') + '</span>'
           + '</div>'
       }
-      return '<div style="flex-shrink:0;width:88vw;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;box-shadow:0 1px 4px rgba(0,0,0,.08);">'
+      window._annoncesCache['ann'+a._data.id] = a._data
+      return '<div style="flex-shrink:0;width:88vw;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer;" onclick="openAnnonce(\'ann'+a._data.id+'\')">'  
         + photoZone
         + '<div style="padding:12px 14px 14px;">'
         + '<div style="font-size:.92rem;font-weight:700;color:#1c1e21;line-height:1.35;margin-bottom:3px;">' + Utils.esc(a._data.titre) + '</div>'
-        + '<div style="font-size:.75rem;color:#65676b;margin-bottom:12px;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
-        + '<a href="annonces.html" style="display:block;background:#C8102E;color:#fff;text-align:center;padding:11px;border-radius:8px;font-size:.85rem;font-weight:700;text-decoration:none;font-family:-apple-system,system-ui,sans-serif;">Voir l&#39;annonce</a>'
+        + '<div style="font-size:.75rem;color:#65676b;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
         + '</div></div>'
     }).join('')
     return '<div style="background:#fff;border-bottom:4px solid #e4e6eb;padding:0 0 12px;">'
