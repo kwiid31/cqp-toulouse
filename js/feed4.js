@@ -519,7 +519,6 @@ const Feed = (() => {
         + '<div style="font-size:.75rem;color:#65676b;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
         + '</div></div>'
     }).join('')
-    }).join('')
     return '<div style="background:#fff;border-bottom:4px solid #e4e6eb;padding:0 0 12px;">'
       + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px;">'
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Annonces du quartier</span>'
