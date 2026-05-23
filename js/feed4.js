@@ -156,18 +156,21 @@ const Feed = (() => {
     const av = p.photo_url
       ? `<div class="c-av c-av-40"><img src="${Utils.esc(p.photo_url)}" alt=""></div>`
       : `<div class="c-av c-av-40 c-av-init">${Utils.esc((p.prenom||'?')[0].toUpperCase())}</div>`
-    // Carousel multi-médias
+    // Carousel multi-médias — hauteur adaptée au ratio de la première image
     const carousel = p.media_urls && p.media_urls.length > 0 ? (() => {
       const items = p.media_urls
       const cid = 'car-' + p.id
       let slides = ''
       items.forEach(function(m, i) {
+        const isFirst = i === 0
+        const onload = isFirst ? `onload="Feed.carouselFitHeight(this,'` + cid + `')"` : ''
+        const onmeta = isFirst ? `onloadedmetadata="Feed.carouselFitHeight(this,'` + cid + `')"` : ''
         if (m.type === 'video') {
-          slides += `<div style="flex-shrink:0;width:100%;height:200px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;background:#000;">`
-          slides += `<video src="${Utils.esc(m.url)}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;"></video></div>`
+          slides += `<div style="flex-shrink:0;width:85vw;max-width:400px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;background:#000;scroll-snap-align:center;">`
+          slides += `<video src="${Utils.esc(m.url)}" autoplay muted loop playsinline ${onmeta} style="width:100%;display:block;object-fit:cover;"></video></div>`
         } else {
-          slides += `<div style="flex-shrink:0;width:100%;height:200px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(m.url)}','image')">`
-          slides += `<img src="${Utils.esc(m.url)}" style="width:100%;height:100%;object-fit:cover;"></div>`
+          slides += `<div style="flex-shrink:0;width:85vw;max-width:400px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;scroll-snap-align:center;" onclick="openMedia('${Utils.esc(m.url)}','image')">`
+          slides += `<img src="${Utils.esc(m.url)}" ${onload} style="width:100%;display:block;object-fit:cover;"></div>`
         }
       })
       let dots = ''
@@ -180,7 +183,6 @@ const Feed = (() => {
       }
       return `<div style="margin-bottom:6px;"><div id="${cid}" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;" onscroll="Feed.updateDots('${cid}',${items.length},this)">${slides}</div>${dots}</div>`
     })() : null
-
 
     const img = p.video_url
       ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;position:relative;cursor:pointer;" onclick="openMedia('${Utils.esc(p.video_url)}','video')"><video src="${Utils.esc(p.video_url)}" autoplay muted loop playsinline preload="auto" style="width:100%;height:auto;display:block;max-height:500px;object-fit:contain;" onended="this.currentTime=0;this.play()" oncanplay="this.muted=true;this.play()"></video><button onclick="event.stopPropagation();var v=this.previousElementSibling;v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊'" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;">🔇</button></div>`
@@ -608,6 +610,21 @@ const Feed = (() => {
     if (menu) menu.closest('[style*="48vw"]')?.remove()
     Utils.toast('Événement masqué')
   }
+  const carouselFitHeight = (el, cid) => {
+    // Calculer la hauteur naturelle de la première image selon son ratio
+    const container = document.getElementById(cid)
+    if (!container) return
+    const w = el.offsetWidth || container.offsetWidth * 0.85
+    const h = el.tagName === 'VIDEO'
+      ? (el.videoHeight ? Math.round(w * el.videoHeight / el.videoWidth) : 260)
+      : Math.round(w * el.naturalHeight / el.naturalWidth)
+    const clampedH = Math.min(Math.max(h, 180), 500)
+    // Appliquer à toutes les slides du carousel
+    container.querySelectorAll('[style*="scroll-snap-align"]').forEach(slide => {
+      slide.style.height = clampedH + 'px'
+    })
+  }
+
   const updateDots = (id, count, el) => {
     const idx = Math.round(el.scrollLeft / el.offsetWidth)
     for (let i = 0; i < count; i++) {
@@ -616,5 +633,5 @@ const Feed = (() => {
     }
   }
 
-  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh, hideAnnonce, hideEvt, updateDots }
+  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh, hideAnnonce, hideEvt, updateDots, carouselFitHeight }
 })()
