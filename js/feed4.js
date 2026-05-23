@@ -189,7 +189,7 @@ const Feed = (() => {
           </div>
         </div>` : '')
     return `
-    <article id="card-${p.id}" style="padding:14px 16px 0;background:#fff;">
+    <article id="card-${p.id}" style="padding:14px 16px 0;background:#fff;border-radius:12px;margin:0 8px;box-shadow:0 1px 3px rgba(0,0,0,.08);">
       <div style="display:flex;gap:10px;">
         <div style="flex-shrink:0;width:36px;">
           <div style="width:36px;height:36px;border-radius:50%;background:#e4e6eb;"></div>

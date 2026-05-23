@@ -279,6 +279,8 @@ const Stories = (() => {
         mode = Math.abs(dy) > Math.abs(dx) ? 'vertical' : 'horizontal'
       }
       if (!mode) return
+      // Bloquer le scroll natif dès qu'on a un mode
+      e.preventDefault()
 
       if (mode === 'vertical') {
         if (dy < 0) return
@@ -317,7 +319,7 @@ const Stories = (() => {
         nextEl.style.transformOrigin = 'left center'
         nextEl.style.transform = 'perspective(' + (W*2) + 'px) rotateY(' + (-90+rot) + 'deg)'
       }
-    }, { passive: true })
+    }, { passive: false })
 
     sv.addEventListener('touchend', function(e) {
       if (active) return

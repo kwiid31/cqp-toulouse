@@ -171,7 +171,7 @@
 <div class="stories-bar" id="stories-bar"></div>
 
 <!-- FEED -->
-<div id="feed" style="max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:0;padding:0 0 8px;"></div>
+<div id="feed" style="max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:8px;padding:8px 0;background:#f2f3f5;"></div>
 
 <!-- BOTTOM NAV -->
 <!-- DESKTOP SIDEBAR -->
@@ -890,6 +890,7 @@ function openMedia(url, type) {
 
   viewer.addEventListener('touchmove', e => {
     if (!dragging || e.touches.length > 1) return
+    e.preventDefault()
     const x = e.touches[0].clientX
     const y = e.touches[0].clientY
     velX = x - lastX; velY = y - lastY
@@ -901,7 +902,7 @@ function openMedia(url, type) {
     const opacity = Math.max(0.2, 1 - dist / 400)
     mediaEl.style.transform = 'translate(' + curX + 'px,' + curY + 'px) scale(' + scale + ')'
     viewer.style.background = 'rgba(0,0,0,' + opacity + ')'
-  }, { passive: true })
+  }, { passive: false })
 
   viewer.addEventListener('touchend', e => {
     if (!dragging) return
