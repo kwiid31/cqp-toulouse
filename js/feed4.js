@@ -513,7 +513,7 @@ const Feed = (() => {
           + '</div>'
       }
       window._annoncesCache['ann'+a._data.id] = a._data
-      return '<div style="flex-shrink:0;width:88vw;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer;" onclick="openAnnonce(\'ann'+a._data.id+'\')">'  
+      return '<div style="flex-shrink:0;width:88vw;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer;" onclick="openAnnonce(\"ann' + a._data.id + '\")">'
         + photoZone
         + '<div style="padding:12px 14px 14px;">'
         + '<div style="font-size:.92rem;font-weight:700;color:#1c1e21;line-height:1.35;margin-bottom:3px;">' + Utils.esc(a._data.titre) + '</div>'
