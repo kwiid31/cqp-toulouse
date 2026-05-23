@@ -171,7 +171,7 @@ const Feed = (() => {
 
 
     const img = p.video_url
-      ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;position:relative;cursor:pointer;" onclick="openMedia('${Utils.esc(p.video_url)}','video')"><video src="${Utils.esc(p.video_url)}" autoplay muted loop playsinline preload="auto" style="width:100%;height:auto;display:block;max-height:500px;object-fit:cover;filter:brightness(1.05) saturate(1.15);" onended="this.currentTime=0;this.play()" oncanplay="this.muted=true;this.play()"></video><button onclick="event.stopPropagation();var v=this.previousElementSibling;v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊'" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;">🔇</button></div>`
+      ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;position:relative;cursor:pointer;" onclick="openMedia('${Utils.esc(p.video_url)}','video')"><video src="${Utils.esc(p.video_url)}" autoplay muted loop playsinline preload="none" style="width:100%;height:auto;display:block;max-height:500px;object-fit:cover;filter:brightness(1.05) saturate(1.15);" onended="this.currentTime=0;this.play()" oncanplay="this.muted=true;this.play()"></video><button onclick="event.stopPropagation();var v=this.previousElementSibling;v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊'" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;">🔇</button></div>`
       : (p.photo_url ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(p.photo_url)}','image')"><img src="${Utils.esc(p.photo_url)}" loading="lazy" style="width:100%;height:auto;display:block;max-height:600px;object-fit:cover;"></div>` : '')
     // Post texte sans photo — visuel immersif auto
     const textCard = (!p.video_url && !p.photo_url && p.contenu) ? (() => {
@@ -499,7 +499,7 @@ const Feed = (() => {
       if (hasPhoto) {
         photoZone = '<div style="height:52vw;max-height:210px;background:#111;display:flex;align-items:center;justify-content:center;position:relative;">'
           + _adminMenuAnnonce(a._data.id)
-          + '<img src="' + Utils.esc(a._data.photo_url) + '" style="width:100%;height:100%;object-fit:cover;">'
+          + '<img src="' + Utils.esc(a._data.photo_url) + '" style="width:100%;height:100%;loading="lazy" object-fit:cover;">'
           + '</div>'
       } else {
         photoZone = '<div style="height:52vw;max-height:210px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;position:relative;">' + _adminMenuAnnonce(a._data.id)
