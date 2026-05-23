@@ -897,17 +897,17 @@ async function init() {
   const nav = document.querySelector('.bottom-nav')
 
   if (!code) {
-    // Nouveau visiteur → landing épurée, navbar visible mais non cliquable
+    // Nouveau visiteur → landing épurée, navbar visible mais non cliquable sauf Accueil
     document.getElementById('view-welcome').style.display = 'flex'
     if (nav) {
       nav.style.display = 'flex'
-      nav.style.opacity = '0.4'
-      nav.style.pointerEvents = 'none'
+      nav.style.opacity = '1'
+      nav.style.pointerEvents = 'auto'
     }
     return
   }
 
-  if (nav) { nav.style.display = 'flex'; nav.style.opacity = '1'; nav.style.pointerEvents = '' }
+  if (nav) { nav.style.display = 'flex'; nav.style.opacity = '1'; nav.style.pointerEvents = 'auto' }
   document.getElementById('view-connect').style.display = 'none'
   document.getElementById('view-profil').style.display = 'block'
   document.getElementById('logout-btn').style.display = 'block'
