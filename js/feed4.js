@@ -181,7 +181,7 @@ const Feed = (() => {
         })
         dots += '</div>'
       }
-      return `<div style="margin-bottom:6px;margin-left:-16px;margin-right:-16px;"><div id="${cid}" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding:0 16px;" onscroll="Feed.updateDots('${cid}',${items.length},this)">${slides}</div>${dots}</div>`
+      return `<div style="margin-bottom:6px;margin-left:-16px;width:calc(100% + 32px);overflow:hidden;"><div id="${cid}" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding:0 16px 0 16px;" onscroll="Feed.updateDots('${cid}',${items.length},this)">${slides}<div style="flex-shrink:0;width:8px;"></div></div>${dots}</div>`
     })() : null
 
     const img = p.video_url
@@ -217,12 +217,12 @@ const Feed = (() => {
           </div>
         </div>` : '')
     return `
-    <article id="card-${p.id}" style="padding:14px 16px 0;background:#fff;">
+    <article id="card-${p.id}" style="padding:14px 16px 0;background:#fff;overflow:visible;">
       <div style="display:flex;gap:10px;">
         <div style="flex-shrink:0;width:36px;">
           <div style="width:36px;height:36px;border-radius:50%;background:#e4e6eb;"></div>
         </div>
-        <div style="flex:1;min-width:0;padding-bottom:14px;">
+        <div style="flex:1;min-width:0;padding-bottom:14px;overflow:visible;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
             <div>
               <span style="font-size:14px;font-weight:600;color:#1c1e21;">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</span>
