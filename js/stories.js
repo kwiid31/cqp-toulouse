@@ -281,11 +281,11 @@ const Stories = (() => {
       if (!mode) return
 
       if (mode === 'vertical') {
-        // Swipe bas — fermer
         if (dy < 0) return
+        const scale = Math.max(0.7, 1 - dy / 600)
         sv.style.transition = 'none'
-        sv.style.transform = 'translateY(' + dy + 'px)'
-        sv.style.opacity = String(1 - dy / 400)
+        sv.style.transform = 'translateY(' + dy + 'px) scale(' + scale + ')'
+        sv.style.opacity = String(Math.max(0.2, 1 - dy / 400))
         return
       }
 
@@ -336,18 +336,18 @@ const Stories = (() => {
       }
 
       if (mode === 'vertical') {
-        if (dy > 120) {
-          // Fermer
+        if (dy > 100) {
           active = true
-          sv.style.transition = 'transform 0.25s ease,opacity 0.25s ease'
-          sv.style.transform = 'translateY(100vh)'
+          sv.style.transition = 'transform 0.28s cubic-bezier(.2,0,.3,1),opacity 0.28s'
+          sv.style.transform = 'translateY(100vh) scale(0.5)'
           sv.style.opacity = '0'
-          setTimeout(function() { cleanup(null); close() }, 250)
+          setTimeout(function() { cleanup(null); close() }, 280)
         } else {
-          sv.style.transition = 'transform 0.2s ease,opacity 0.2s ease'
-          sv.style.transform = 'translateY(0)'
+          // Retour élastique
+          sv.style.transition = 'transform 0.4s cubic-bezier(.175,.885,.32,1.275),opacity 0.3s'
+          sv.style.transform = 'translateY(0) scale(1)'
           sv.style.opacity = '1'
-          setTimeout(function() { sv.style.transition = '' }, 200)
+          setTimeout(function() { sv.style.transition = '' }, 400)
         }
         return
       }
