@@ -839,29 +839,26 @@ async function submitPost() {
   const msg = document.getElementById('pf-msg')
   const btn = document.getElementById('pf-submit')
 
-  // CAS MULTI-FICHIERS
+  // CAS MULTI-FICHIERS — 1 seul post avec carousel
   if (_pfMultiFiles.length > 0) {
-    if (!text && !_pfMultiFiles.length) { msg.textContent = 'Contenu requis'; return }
     btn.textContent = '…'; btn.disabled = true
-    msg.textContent = 'Upload en cours…'
     try {
+      const mediaUrls = []
       for (let i = 0; i < _pfMultiFiles.length; i++) {
         const f = _pfMultiFiles[i]
-        const isVid = f.type.startsWith('video/')
         msg.textContent = 'Upload ' + (i+1) + '/' + _pfMultiFiles.length + '…'
         const url = await Api.uploadPhoto(f, 'posts')
-        const { data, error } = await Api.createPost({
-          prenom, contenu: i === 0 ? (text || null) : null,
-          photo_url: isVid ? null : url,
-          video_url: isVid ? url : null,
-          quartier: _pfLoc || null
-        })
-        if (error) throw error
-        if (data) Feed.prepend(data)
+        mediaUrls.push({ url, type: f.type.startsWith('video/') ? 'video' : 'image' })
       }
+      const { data, error } = await Api.createPost({
+        prenom, contenu: text || null,
+        media_urls: mediaUrls,
+        quartier: _pfLoc || null
+      })
+      if (error) throw error
+      if (data) Feed.prepend(data)
+      Utils.toast('Post publié !', 'success')
       _pfMultiFiles = []
-      document.getElementById('pf-preview-wrap').style.display = 'none'
-      Utils.toast(_pfMultiFiles.length + ' posts publiés !', 'success')
       closePostForm()
     } catch(e) {
       msg.textContent = 'Erreur : ' + e.message

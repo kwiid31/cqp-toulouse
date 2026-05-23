@@ -35,7 +35,7 @@ const Api = (() => {
     sb.from('posts').select('*').eq('profil_code', code).eq('visible', true)
       .order('created_at', { ascending: false }).limit(limit)
 
-  const createPost = ({ prenom, contenu, photo_url, video_url, quartier }) =>
+  const createPost = ({ prenom, contenu, photo_url, video_url, quartier, media_urls }) =>
     sb.from('posts').insert({
       session_id: sid(),
       profil_code: Auth.getCode() || null,
@@ -43,6 +43,7 @@ const Api = (() => {
       contenu: contenu || null,
       photo_url: photo_url || null,
       video_url: video_url || null,
+      media_urls: media_urls || null,
       quartier: quartier || null,
       visible: true,
     }).select().single()
