@@ -156,33 +156,22 @@ const Feed = (() => {
     const av = p.photo_url
       ? `<div class="c-av c-av-40"><img src="${Utils.esc(p.photo_url)}" alt=""></div>`
       : `<div class="c-av c-av-40 c-av-init">${Utils.esc((p.prenom||'?')[0].toUpperCase())}</div>`
-    // Carousel multi-médias — hauteur adaptée au ratio de la première image
+    // Carousel multi-médias
     const carousel = p.media_urls && p.media_urls.length > 0 ? (() => {
       const items = p.media_urls
       const cid = 'car-' + p.id
-      let slides = ''
-      items.forEach(function(m, i) {
-        const isFirst = i === 0
-        const onload = isFirst ? `onload="Feed.carouselFitHeight(this,'` + cid + `')"` : ''
-        const onmeta = isFirst ? `onloadedmetadata="Feed.carouselFitHeight(this,'` + cid + `')"` : ''
+      let slides = items.map(function(m) {
         if (m.type === 'video') {
-          slides += `<div style="flex-shrink:0;width:50vw;max-width:240px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;background:#000;scroll-snap-align:center;">`
-          slides += `<video src="${Utils.esc(m.url)}" autoplay muted loop playsinline ${onmeta} style="width:100%;display:block;object-fit:cover;"></video></div>`
-        } else {
-          slides += `<div style="flex-shrink:0;width:50vw;max-width:240px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;scroll-snap-align:center;" onclick="openMedia('${Utils.esc(m.url)}','image')">`
-          slides += `<img src="${Utils.esc(m.url)}" ${onload} style="width:100%;display:block;object-fit:cover;"></div>`
+          return `<div style="flex-shrink:0;width:70vw;max-width:280px;height:220px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;scroll-snap-align:start;background:#000;"><video src="${Utils.esc(m.url)}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>`
         }
-      })
-      let dots = ''
-      if (items.length > 1) {
-        dots = '<div style="display:flex;justify-content:center;gap:4px;margin-top:6px;">'
-        items.forEach(function(_, i) {
-          dots += `<div style="width:6px;height:6px;border-radius:50%;background:${i===0?'#1c1e21':'#e4e6eb'};" id="dot-${cid}-${i}"></div>`
-        })
-        dots += '</div>'
-      }
-      return `<div style="margin-bottom:6px;margin-left:-16px;width:calc(100% + 32px);overflow:hidden;"><div id="${cid}" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding:0 16px 0 16px;" onscroll="Feed.updateDots('${cid}',${items.length},this)">${slides}<div style="flex-shrink:0;width:8px;"></div></div>${dots}</div>`
+        return `<div style="flex-shrink:0;width:70vw;max-width:280px;height:220px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;scroll-snap-align:start;cursor:pointer;" onclick="openMedia('${Utils.esc(m.url)}','image')"><img src="${Utils.esc(m.url)}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
+      }).join('')
+      const dots = items.length > 1
+        ? `<div style="display:flex;justify-content:center;gap:4px;margin-top:6px;">${items.map(function(_,i){ return `<div style="width:5px;height:5px;border-radius:50%;background:${i===0?'#1c1e21':'#d0d0d0'};" id="dot-${cid}-${i}"></div>` }).join('')}</div>`
+        : ''
+      return `<div style="margin:6px -16px 6px -16px;"><div id="${cid}" style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding:0 16px;" onscroll="Feed.updateDots('${cid}',${items.length},this)">${slides}<div style="flex-shrink:0;width:1px;"></div></div>${dots}</div>`
     })() : null
+
 
     const img = p.video_url
       ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;position:relative;cursor:pointer;" onclick="openMedia('${Utils.esc(p.video_url)}','video')"><video src="${Utils.esc(p.video_url)}" autoplay muted loop playsinline preload="auto" style="width:100%;height:auto;display:block;max-height:500px;object-fit:cover;" onended="this.currentTime=0;this.play()" oncanplay="this.muted=true;this.play()"></video><button onclick="event.stopPropagation();var v=this.previousElementSibling;v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊'" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;">🔇</button></div>`
@@ -217,12 +206,12 @@ const Feed = (() => {
           </div>
         </div>` : '')
     return `
-    <article id="card-${p.id}" style="padding:14px 16px 0;background:#fff;overflow:visible;">
+    <article id="card-${p.id}" style="padding:14px 16px 0;background:#fff;">
       <div style="display:flex;gap:10px;">
         <div style="flex-shrink:0;width:36px;">
           <div style="width:36px;height:36px;border-radius:50%;background:#e4e6eb;"></div>
         </div>
-        <div style="flex:1;min-width:0;padding-bottom:14px;overflow:visible;">
+        <div style="flex:1;min-width:0;padding-bottom:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
             <div>
               <span style="font-size:14px;font-weight:600;color:#1c1e21;">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</span>
