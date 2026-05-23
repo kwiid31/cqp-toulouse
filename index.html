@@ -1203,6 +1203,10 @@ async function refreshComments() {
 
 
 async function init() {
+  // Attendre que Supabase soit prêt
+  let tries = 0
+  while (!window.__sb && tries++ < 20) await new Promise(r => setTimeout(r, 50))
+  
   const code = Auth.getCode()
   if (!code) { window.location.href = 'profil.html'; return }
 
@@ -1229,9 +1233,9 @@ async function init() {
   Api.trackView('index')
 }
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init)
+  document.addEventListener('DOMContentLoaded', () => setTimeout(init, 100))
 } else {
-  init()
+  setTimeout(init, 100)
 }
 </script>
 <!-- CONFIRM BOTTOM SHEET -->
