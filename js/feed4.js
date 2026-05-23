@@ -220,15 +220,15 @@ const Feed = (() => {
           ${p.contenu && !textCard ? `<p style="font-size:14px;color:#1c1e21;margin:4px 0 8px;line-height:1.5;">${Utils.esc(p.contenu)}</p>` : ''}
           ${textCard ? textCard.replace('</div>', '') + '</div>' : ''}
           ${img || ''}
-          <div style="display:flex;gap:14px;margin-top:8px;align-items:center;">
-            <button id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;gap:5px;">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="${liked?'#C8102E':'#65676b'}" fill="${liked?'#C8102E':'none'}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <div style="display:flex;gap:0;margin-top:8px;align-items:center;justify-content:space-between;max-width:200px;">
+            <button id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)" style="background:none;border:none;padding:8px;cursor:pointer;display:flex;align-items:center;gap:5px;">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="${liked?'#C8102E':'#65676b'}" fill="${liked?'#C8102E':'none'}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
-            <button onclick="openSheet('post',${p.id})" style="background:none;border:none;padding:0;cursor:pointer;">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <button onclick="openSheet('post',${p.id})" style="background:none;border:none;padding:8px;cursor:pointer;">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </button>
-            <button onclick="Feed.share(${p.id})" style="background:none;border:none;padding:0;cursor:pointer;">
-              <svg viewBox="0 0 24 24" width="20" height="20" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <button onclick="Feed.share(${p.id})" style="background:none;border:none;padding:8px;cursor:pointer;">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             </button>
           </div>
           ${(likeCount > 0 || cmtCount > 0) ? `<div style="margin-top:5px;font-size:12px;color:#65676b;">
