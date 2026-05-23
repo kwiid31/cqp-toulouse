@@ -950,22 +950,23 @@ function openMedia(url, type) {
 
   let mediaEl
   if (type === 'video') {
-    // Chercher la vidéo déjà chargée dans le feed pour éviter l'écran noir
-    const existing = document.querySelector(`video[src="${url}"]`)
-    if (existing) {
-      // Cloner la vidéo déjà chargée — pas de rechargement
-      mediaEl = existing.cloneNode(true)
-      mediaEl.currentTime = existing.currentTime
+    // Récupérer la vidéo déjà chargée dans le feed — zéro rechargement
+    const feedVid = document.querySelector('video[src="' + url + '"]')
+    if (feedVid) {
+      mediaEl = feedVid
+      const savedParent = feedVid.parentElement
+      const savedNext = feedVid.nextSibling
+      // Sauvegarder pour restaurer à la fermeture
+      viewer._savedParent = savedParent
+      viewer._savedNext = savedNext
+      viewer._feedVid = feedVid
       mediaEl.muted = false
-      mediaEl.controls = false
-      mediaEl.loop = true
-      mediaEl.style.cssText = 'max-width:100%;max-height:100%;display:block;border-radius:10px;'
+      mediaEl.style.cssText = 'max-width:100%;max-height:100%;display:block;border-radius:10px;filter:none;'
       mediaEl.play().catch(()=>{})
     } else {
       mediaEl = document.createElement('video')
       mediaEl.src = url
       mediaEl.autoplay = true
-      mediaEl.controls = false
       mediaEl.setAttribute('playsinline','')
       mediaEl.loop = true
       mediaEl.style.cssText = 'max-width:100%;max-height:100%;display:block;border-radius:10px;'
@@ -1033,7 +1034,16 @@ function openMedia(url, type) {
       viewer.style.transition = 'background 0.3s'
       mediaEl.style.transform = 'translate(' + flyX + 'px,' + flyY + 'px) scale(0.3)'
       viewer.style.background = 'rgba(0,0,0,0)'
-      setTimeout(() => viewer.remove(), 300)
+      setTimeout(() => {
+        // Restaurer la vidéo dans le feed
+        if (viewer._feedVid && viewer._savedParent) {
+          viewer._feedVid.muted = true
+          viewer._feedVid.style.cssText = 'width:100%;height:auto;display:block;max-height:500px;object-fit:cover;filter:brightness(1.05) saturate(1.15);'
+          if (viewer._savedNext) viewer._savedParent.insertBefore(viewer._feedVid, viewer._savedNext)
+          else viewer._savedParent.appendChild(viewer._feedVid)
+        }
+        viewer.remove()
+      }, 300)
     } else {
       // Revenir en place — élastique
       mediaEl.style.transition = 'transform 0.4s cubic-bezier(.175,.885,.32,1.275)'
@@ -1045,7 +1055,15 @@ function openMedia(url, type) {
 
   // Tap pour fermer
   viewer.addEventListener('click', e => {
-    if (e.target === viewer) viewer.remove()
+    if (e.target === viewer) {
+      if (viewer._feedVid && viewer._savedParent) {
+        viewer._feedVid.muted = true
+        viewer._feedVid.style.cssText = 'width:100%;height:auto;display:block;max-height:500px;object-fit:cover;filter:brightness(1.05) saturate(1.15);'
+        if (viewer._savedNext) viewer._savedParent.insertBefore(viewer._feedVid, viewer._savedNext)
+        else viewer._savedParent.appendChild(viewer._feedVid)
+      }
+      viewer.remove()
+    }
   })
 }
 
