@@ -181,7 +181,7 @@ const Feed = (() => {
         })
         dots += '</div>'
       }
-      return `<div style="margin-bottom:6px;"><div id="${cid}" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;" onscroll="Feed.updateDots('${cid}',${items.length},this)">${slides}</div>${dots}</div>`
+      return `<div style="margin-bottom:6px;margin-left:-16px;margin-right:-16px;"><div id="${cid}" style="display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding:0 16px;" onscroll="Feed.updateDots('${cid}',${items.length},this)">${slides}</div>${dots}</div>`
     })() : null
 
     const img = p.video_url
