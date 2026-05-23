@@ -23,7 +23,7 @@ const Utils = (() => {
   };
 
   // ── Compression image avant upload ────────────────────────────
-  const compressImage = (file, maxW = 1200, quality = 0.82) => {
+  const compressImage = (file, maxW = 900, quality = 0.72) => {
     if (!file?.type?.startsWith('image/')) return Promise.resolve(file);
     return new Promise((resolve) => {
       const img = new Image();
