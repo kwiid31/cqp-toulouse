@@ -1228,7 +1228,11 @@ async function init() {
 
   Api.trackView('index')
 }
-init()
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init)
+} else {
+  init()
+}
 </script>
 <!-- CONFIRM BOTTOM SHEET -->
 <div id="confirm-sheet">
