@@ -48,7 +48,12 @@ const Stories = (() => {
       </div>`
 
     // Cards quartier
-    const quartierCards = QUARTIERS.map(q => {
+    const quartiersSorted = [...QUARTIERS].sort((a, b) => {
+      const na = (_storiesByQuartier[a] || []).length
+      const nb = (_storiesByQuartier[b] || []).length
+      return nb - na
+    })
+    const quartierCards = quartiersSorted.map(q => {
       const stories = _storiesByQuartier[q] || []
       const latest = stories[0]
       const hasNew = stories.length > 0
