@@ -524,7 +524,7 @@ const Feed = (() => {
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Annonces du quartier</span>'
       + '<a href="annonces.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
       + '</div>'
-      + '<div id="bloc-annonces" style="display:flex;gap:10px;overflow-x:auto;padding:0 16px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;" onscroll="Feed.loopScroll(this)">'      + cards + cards + cards      + '<div style="flex-shrink:0;width:8px;"></div>'      + '</div></div>'
+      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'      + cards      + '<div style="flex-shrink:0;width:8px;"></div>'      + '</div></div>'
   }
 
   // ── BLOC ÉVÉNEMENTS (grille 2 col, grande hauteur, peek) ──────
@@ -566,7 +566,7 @@ const Feed = (() => {
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Cette semaine</span>'
       + '<a href="evenements.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
       + '</div>'
-      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 14px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;" onscroll="Feed.loopScroll(this)">'      + cards + cards + cards
+      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 14px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'      + cards
       + '</div></div>'
   }
 
