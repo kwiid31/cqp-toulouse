@@ -162,14 +162,11 @@ const Feed = (() => {
       const cid = 'car-' + p.id
       let slides = items.map(function(m) {
         if (m.type === 'video') {
-          return `<div style="flex-shrink:0;width:70vw;max-width:280px;height:220px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;scroll-snap-align:start;background:#000;"><video src="${Utils.esc(m.url)}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video></div>`
+          return `<div style="flex-shrink:0;width:70vw;max-width:280px;height:220px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;scroll-snap-align:start;background:#000;position:relative;cursor:pointer;" onclick="openMedia('${Utils.esc(m.url)}','video')"><video src="${Utils.esc(m.url)}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video><button onclick="event.stopPropagation();var v=this.previousElementSibling;v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊'" style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:28px;height:28px;font-size:12px;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;">🔇</button></div>`
         }
         return `<div style="flex-shrink:0;width:70vw;max-width:280px;height:220px;border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;scroll-snap-align:start;cursor:pointer;" onclick="openMedia('${Utils.esc(m.url)}','image')"><img src="${Utils.esc(m.url)}" style="width:100%;height:100%;object-fit:cover;display:block;"></div>`
       }).join('')
-      const dots = items.length > 1
-        ? `<div style="display:flex;justify-content:center;gap:4px;margin-top:6px;">${items.map(function(_,i){ return `<div style="width:5px;height:5px;border-radius:50%;background:${i===0?'#1c1e21':'#d0d0d0'};" id="dot-${cid}-${i}"></div>` }).join('')}</div>`
-        : ''
-      return `<div style="margin:6px -16px 6px -16px;"><div id="${cid}" style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding:0 16px;" onscroll="Feed.updateDots('${cid}',${items.length},this)">${slides}<div style="flex-shrink:0;width:1px;"></div></div>${dots}</div>`
+      return `<div style="margin:6px -16px 6px -16px;"><div style="display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;padding:0 16px;">${slides}<div style="flex-shrink:0;width:1px;"></div></div></div>`
     })() : null
 
 
