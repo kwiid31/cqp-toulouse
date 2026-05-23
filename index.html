@@ -947,7 +947,9 @@ async function openSheet(itemType, itemId) {
   await refreshComments()
   setTimeout(() => document.getElementById('sheet-input')?.focus(), 200)
 }
-function openAnnonce(data) {
+function openAnnonce(id) {
+  const data = (typeof id === 'object') ? id : (window._annoncesCache && window._annoncesCache[id])
+  if (!data) return
   const existing = document.getElementById('annonce-viewer')
   if (existing) existing.remove()
 

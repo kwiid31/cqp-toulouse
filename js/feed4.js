@@ -512,9 +512,9 @@ const Feed = (() => {
           + '</div>'
       }
       const ad = JSON.stringify(a._data).replace(/'/g, "&#39;")
-      return '<div style="flex-shrink:0;width:88vw;background:#fff;border-radius:12px;overflow:hidden;border:0.5px solid #e4e6eb;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer;" onclick="openAnnonce(JSON.parse(this.dataset.a))" data-a=\'' + ad + '\'>'
-        + photoZone
-        + '<div style="padding:12px 14px 10px;">'
+      window._annoncesCache = window._annoncesCache || {}
+      const aid = 'ann' + (a._data.id || Math.random().toString(36).slice(2))
+      window._annoncesCache[aid] = a._data
         + '<div style="font-size:.92rem;font-weight:700;color:#1c1e21;line-height:1.35;margin-bottom:3px;">' + Utils.esc(a._data.titre) + '</div>'
         + '<div style="font-size:.75rem;color:#65676b;">' + Utils.esc(a._data.categorie||'') + (a._data.quartier ? ' · ' + Utils.esc(a._data.quartier) : '') + '</div>'
         + '</div></div>'
