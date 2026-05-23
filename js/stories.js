@@ -72,7 +72,19 @@ const Stories = (() => {
         </div>`
     }).join('')
 
-    barEl.innerHTML = createCard + quartierCards
+    barEl.innerHTML = createCard + quartierCards + quartierCards + quartierCards
+
+    // Scroll infini — repositionner au milieu quand on approche des bords
+    const totalCards = quartiersSorted.length
+    barEl.scrollLeft = 0
+    barEl.addEventListener('scroll', function() {
+      const cardW = barEl.scrollWidth / 3
+      if (barEl.scrollLeft >= cardW * 2) {
+        barEl.scrollLeft -= cardW
+      } else if (barEl.scrollLeft <= 0 && barEl.scrollLeft < cardW * 0.1) {
+        // déjà au début
+      }
+    }, { passive: true })
   }
 
   // ── OPEN QUARTIER ─────────────────────────────────────────────
