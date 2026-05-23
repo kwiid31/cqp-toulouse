@@ -347,6 +347,7 @@ const Feed = (() => {
 
   // ── LIKES ────────────────────────────────────────────────────
   const toggleLike = async (postId, btn) => {
+    if (!Auth.getCode()) { window.location.href = 'profil.html'; return }
     const liked = _myLikes.has(postId)
     const countEl = document.getElementById(`lc-${postId}`)
     const svg = btn.querySelector('svg')

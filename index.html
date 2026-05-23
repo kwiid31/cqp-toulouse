@@ -613,6 +613,7 @@ async function submitPubForm() {
 // ── POST FORM ─────────────────────────────────────────────────
 let _postType = 'post'
 function openPostForm(type) {
+  if (!Auth.getCode()) { window.location.href = 'profil.html'; return }
   closePub()
   _postType = type || 'post'
   if (type === 'story') { Stories.openCompose(); return }
@@ -910,6 +911,7 @@ async function submitPost() {
 let _sheetPostId = null
 let _sheetItemType = 'post'
 async function openSheet(itemType, itemId) {
+  if (!Auth.getCode()) { window.location.href = 'profil.html'; return }
   _sheetPostId = itemId
   _sheetItemType = itemType || 'post'
   const sheet = document.getElementById('sheet')
@@ -1209,7 +1211,19 @@ async function refreshComments() {
 
 async function init() {
   const code = Auth.getCode()
-  if (!code) { window.location.href = 'profil.html'; return }
+  const isGuest = !code
+
+  if (isGuest) {
+    // Mode visiteur — feed visible mais actions désactivées
+    document.getElementById('composer')?.style && (document.getElementById('composer').style.display = 'none')
+    document.getElementById('fab-btn')?.style && (document.getElementById('fab-btn').style.display = 'none')
+    // Ajouter bandeau connexion
+    const banner = document.createElement('div')
+    banner.style.cssText = 'position:fixed;bottom:60px;left:0;right:0;background:#C8102E;color:#fff;text-align:center;padding:10px 16px;font-size:14px;font-weight:600;z-index:200;cursor:pointer;'
+    banner.textContent = '👋 Rejoindre le réseau pour participer'
+    banner.onclick = () => window.location.href = 'profil.html'
+    document.body.appendChild(banner)
+  }
 
   // Feed en priorité — s'assurer qu'il est visible
   document.getElementById('feed').style.visibility = ''
