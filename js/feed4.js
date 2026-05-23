@@ -148,8 +148,6 @@ const Feed = (() => {
     })
 
     _loading = false
-    // Initialiser les blocs à scroll infini au milieu
-    setTimeout(() => initLoopScrolls(), 50)
   }
 
   // ── CARDS ────────────────────────────────────────────────────
@@ -524,7 +522,10 @@ const Feed = (() => {
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Annonces du quartier</span>'
       + '<a href="annonces.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
       + '</div>'
-      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'      + cards      + '<div style="flex-shrink:0;width:8px;"></div>'      + '</div></div>'
+      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
+      + cards
+      + '<div style="flex-shrink:0;width:8px;"></div>'
+      + '</div></div>'
   }
 
   // ── BLOC ÉVÉNEMENTS (grille 2 col, grande hauteur, peek) ──────
@@ -566,7 +567,8 @@ const Feed = (() => {
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Cette semaine</span>'
       + '<a href="evenements.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
       + '</div>'
-      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 14px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'      + cards
+      + '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 14px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
+      + cards
       + '</div></div>'
   }
 
@@ -617,28 +619,5 @@ const Feed = (() => {
     }
   }
 
-  const loopScroll = (el) => {
-    const third = el.scrollWidth / 3
-    if (el.scrollLeft < 1) {
-      el.scrollLeft = third
-    } else if (el.scrollLeft >= third * 2) {
-      el.scrollLeft = third
-    }
-  }
-
-  // Initialiser les blocs à scroll infini au milieu
-  const initLoopScrolls = () => {
-    document.querySelectorAll('[onscroll*="loopScroll"]').forEach(el => {
-      el.scrollLeft = el.scrollWidth / 3
-    })
-  }
-
-  const infiniteScroll = (el) => {
-    const half = (el.scrollWidth - el.clientWidth) / 2
-    if (el.scrollLeft >= half + (el.scrollWidth / 4)) {
-      el.scrollLeft -= half
-    }
-  }
-
-  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh, hideAnnonce, hideEvt, updateDots, carouselFitHeight, infiniteScroll, loopScroll, initLoopScrolls }
+  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh, hideAnnonce, hideEvt, updateDots, carouselFitHeight }
 })()
