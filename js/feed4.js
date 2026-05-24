@@ -530,6 +530,7 @@ const Feed = (() => {
   // ── BLOC ÉVÉNEMENTS (grille 2 col, grande hauteur, peek) ──────
   const _blocEvts = (evts) => {
     const cards = evts.slice(0, 6).map((e, i) => {
+      if (!e._data) e = { _data: e }
       const d = new Date(e._data.date_debut)
       const dateStr = d.toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' }).toUpperCase()
       const hasPhoto = !!e._data.photo_url
