@@ -83,8 +83,14 @@ const Feed = (() => {
     const result = []
     let aIdx = 0
     // Injecter un bloc annonces toutes les 4 posts, evenements toutes les 7 posts
-    var annoncesBloc = annonces.length ? { _type: 'bloc_annonces', _data: annonces } : null
-    var evtsBloc = evts && evts.length ? { _type: 'bloc_evts', _data: evts } : null
+    // Annonces et événements affichés en dehors du feed
+    if (annonces.length) {
+      const evtsBar = document.getElementById('evts-bar')
+      const annBar = document.getElementById('annonces-bar')
+      // Chargés séparément dans init
+    }
+    var annoncesBloc = null
+    var evtsBloc = null
     var annoncesInserted = false, evtsInserted = false
 
     posts.forEach((p, i) => {
@@ -140,10 +146,6 @@ const Feed = (() => {
         _el.insertAdjacentHTML('beforeend', _cardAnnonce(item._data))
       } else if (item._type === 'evenement') {
         _el.insertAdjacentHTML('beforeend', _cardEvenement(item._data))
-      } else if (item._type === 'bloc_annonces') {
-        _el.insertAdjacentHTML('beforeend', _blocAnnonces(item._data))
-      } else if (item._type === 'bloc_evts') {
-        _el.insertAdjacentHTML('beforeend', _blocEvts(item._data))
       }
     })
 
@@ -616,5 +618,5 @@ const Feed = (() => {
     }
   }
 
-  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh, hideAnnonce, hideEvt, updateDots, carouselFitHeight }
+  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh, hideAnnonce, hideEvt, updateDots, carouselFitHeight, renderAnnonces: _blocAnnonces, renderEvts: _blocEvts }
 })()
