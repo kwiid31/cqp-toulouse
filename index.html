@@ -471,7 +471,9 @@ const timeAgo = d => Utils.timeAgo(d)
 // ── PUB MENU ──────────────────────────────────────────────────
 function openPub() {
   if (!Auth.getCode()) { window.location.href = 'profil.html'; return }
-  openPostForm('post')
+  document.getElementById('pub-overlay').classList.add('open')
+  document.getElementById('pub-menu').classList.add('open')
+  document.body.style.overflow = 'hidden'
 }
 function openPubWithMedia(inp) {
   if (!Auth.getCode()) { window.location.href = 'profil.html'; return }

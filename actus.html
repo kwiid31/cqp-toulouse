@@ -121,6 +121,10 @@ load();Api.trackView('actus')
 <script>
 function openPub() {
   if (!Auth.getCode()) { window.location.href = 'profil.html'; return }
+  document.getElementById('pub-overlay').classList.add('open')
+  document.getElementById('pub-menu').classList.add('open')
+  document.body.style.overflow = 'hidden'
+}
   openPostForm('post')
 }
 function openPubWithMedia(inp) {
