@@ -843,12 +843,27 @@ function renderOnboarding(postCount, p) {
 
 function renderMyPosts(posts) {
   const el = document.getElementById('my-posts-list')
-  if (!posts.length) { el.innerHTML = ''; return }
+  if (!posts.length) {
+    el.innerHTML = '<div style="padding:24px 16px;text-align:center;color:#65676b;font-size:14px;">Aucune publication pour l'instant</div>'
+    return
+  }
   el.innerHTML = posts.map(p => {
-    const media = p.photo_url ? `<img src="${esc(p.photo_url)}?width=200&quality=70" style="width:100%;height:100%;object-fit:cover;">` 
-      : p.video_url ? `<video src="${esc(p.video_url)}" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>`
-      : `<div style="width:100%;height:100%;background:#f0f2f5;display:flex;align-items:center;justify-content:center;font-size:13px;color:#65676b;padding:8px;text-align:center;">${esc((p.contenu||'').slice(0,40))}</div>`
-    return `<div style="display:inline-block;width:calc(33.33% - 2px);aspect-ratio:1;overflow:hidden;margin:1px;vertical-align:top;cursor:pointer;">${media}</div>`
+    const img = p.photo_url
+      ? `<div style="border-radius:16px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${esc(p.photo_url)}','image')"><img src="${esc(p.photo_url)}?width=800&quality=70" loading="lazy" style="width:100%;height:auto;display:block;filter:brightness(1.06) saturate(1.2) contrast(1.05);"></div>`
+      : p.video_url
+      ? `<div style="border-radius:16px;overflow:hidden;border:0.5px solid #e4e6eb;position:relative;cursor:pointer;" onclick="openMedia('${esc(p.video_url)}','video')"><video src="${esc(p.video_url)}" autoplay muted loop playsinline style="width:100%;height:auto;display:block;max-height:350px;object-fit:cover;filter:brightness(1.06) saturate(1.2) contrast(1.05);" onended="this.currentTime=0;this.play()"></video></div>`
+      : ''
+    const textCard = !p.photo_url && !p.video_url && p.contenu
+      ? `<div style="border-radius:16px;padding:20px;background:#1c1e21;"><p style="font-size:18px;font-weight:700;color:#fff;line-height:1.4;">${esc(p.contenu)}</p></div>`
+      : ''
+    return `<div style="padding:12px 16px;border-bottom:1px solid #f0f2f5;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:12px;color:#65676b;">${Utils.timeAgo(p.created_at)}</span>
+        <span style="font-size:11px;color:#C8102E;font-weight:600;">${esc(p.quartier||'')}</span>
+      </div>
+      ${p.contenu && (p.photo_url||p.video_url) ? `<p style="font-size:15px;color:#000;font-weight:500;margin-bottom:8px;line-height:1.5;">${esc(p.contenu)}</p>` : ''}
+      ${img || textCard}
+    </div>`
   }).join('')
 }
 
@@ -960,6 +975,132 @@ async function init() {
   Api.trackView('profil')
 }
 init()
+function openMedia(url, type) {
+  const existing = document.getElementById('media-viewer')
+  if (existing) existing.remove()
+
+  const viewer = document.createElement('div')
+  viewer.id = 'media-viewer'
+  viewer.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;'
+
+  let mediaEl
+  if (type === 'video') {
+    // Récupérer la vidéo déjà chargée dans le feed — zéro rechargement
+    const feedVid = document.querySelector('video[src="' + url + '"]')
+    if (feedVid) {
+      mediaEl = feedVid
+      const savedParent = feedVid.parentElement
+      const savedNext = feedVid.nextSibling
+      // Sauvegarder pour restaurer à la fermeture
+      viewer._savedParent = savedParent
+      viewer._savedNext = savedNext
+      viewer._feedVid = feedVid
+      mediaEl.muted = false
+      mediaEl.style.cssText = 'max-width:100%;max-height:100%;display:block;border-radius:10px;filter:none;'
+      mediaEl.play().catch(()=>{})
+    } else {
+      mediaEl = document.createElement('video')
+      mediaEl.src = url
+      mediaEl.autoplay = true
+      mediaEl.setAttribute('playsinline','')
+      mediaEl.loop = true
+      mediaEl.style.cssText = 'max-width:100%;max-height:100%;display:block;border-radius:10px;'
+    }
+    // Bouton son
+    const soundBtn = document.createElement('button')
+    soundBtn.textContent = mediaEl.muted ? '🔇' : '🔊'
+    soundBtn.style.cssText = 'position:fixed;bottom:40px;right:20px;z-index:10000;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:40px;height:40px;font-size:16px;cursor:pointer;color:#fff;'
+    soundBtn.onclick = (e) => { e.stopPropagation(); mediaEl.muted = !mediaEl.muted; soundBtn.textContent = mediaEl.muted ? '🔇' : '🔊' }
+    viewer.appendChild(soundBtn)
+  } else {
+    mediaEl = document.createElement('img')
+    mediaEl.src = url
+    mediaEl.style.cssText = 'max-width:100%;max-height:100%;object-fit:cover;display:block;border-radius:10px;touch-action:none;user-select:none;'
+    mediaEl.draggable = false
+  }
+  viewer.appendChild(mediaEl)
+  document.body.appendChild(viewer)
+
+  // Pan to dismiss — l'image suit le doigt dans toutes les directions
+  let startX = 0, startY = 0, curX = 0, curY = 0
+  let velX = 0, velY = 0, lastX = 0, lastY = 0
+  let dragging = false
+
+  viewer.addEventListener('touchstart', e => {
+    if (e.touches.length > 1) return
+    startX = e.touches[0].clientX
+    startY = e.touches[0].clientY
+    lastX = startX; lastY = startY
+    curX = 0; curY = 0; velX = 0; velY = 0
+    dragging = true
+    mediaEl.style.transition = 'none'
+    viewer.style.transition = 'none'
+  }, { passive: true })
+
+  viewer.addEventListener('touchmove', e => {
+    if (!dragging || e.touches.length > 1) return
+    e.preventDefault()
+    const x = e.touches[0].clientX
+    const y = e.touches[0].clientY
+    velX = x - lastX; velY = y - lastY
+    lastX = x; lastY = y
+    curX = x - startX
+    curY = y - startY
+    const dist = Math.sqrt(curX*curX + curY*curY)
+    const scale = Math.max(0.5, 1 - dist / 800)
+    const opacity = Math.max(0.2, 1 - dist / 400)
+    mediaEl.style.transform = 'translate(' + curX + 'px,' + curY + 'px) scale(' + scale + ')'
+    viewer.style.background = 'rgba(0,0,0,' + opacity + ')'
+  }, { passive: false })
+
+  viewer.addEventListener('touchend', e => {
+    if (!dragging) return
+    dragging = false
+    const dist = Math.sqrt(curX*curX + curY*curY)
+    const speed = Math.sqrt(velX*velX + velY*velY)
+    const T = 'transform 0.3s cubic-bezier(.2,0,.3,1)'
+
+    if (dist > 120 || speed > 15) {
+      // Lancer — continuer dans la direction du doigt et fermer
+      const angle = Math.atan2(curY, curX)
+      const flyX = curX + Math.cos(angle) * 400
+      const flyY = curY + Math.sin(angle) * 400
+      mediaEl.style.transition = T
+      viewer.style.transition = 'background 0.3s'
+      mediaEl.style.transform = 'translate(' + flyX + 'px,' + flyY + 'px) scale(0.3)'
+      viewer.style.background = 'rgba(0,0,0,0)'
+      setTimeout(() => {
+        // Restaurer la vidéo dans le feed
+        if (viewer._feedVid && viewer._savedParent) {
+          viewer._feedVid.muted = true
+          viewer._feedVid.style.cssText = 'width:100%;height:auto;display:block;max-height:500px;object-fit:cover;filter:brightness(1.05) saturate(1.15);'
+          if (viewer._savedNext) viewer._savedParent.insertBefore(viewer._feedVid, viewer._savedNext)
+          else viewer._savedParent.appendChild(viewer._feedVid)
+        }
+        viewer.remove()
+      }, 300)
+    } else {
+      // Revenir en place — élastique
+      mediaEl.style.transition = 'transform 0.4s cubic-bezier(.175,.885,.32,1.275)'
+      viewer.style.transition = 'background 0.4s'
+      mediaEl.style.transform = 'translate(0,0) scale(1)'
+      viewer.style.background = 'rgba(0,0,0,1)'
+    }
+  }, { passive: true })
+
+  // Tap pour fermer
+  viewer.addEventListener('click', e => {
+    if (e.target === viewer) {
+      if (viewer._feedVid && viewer._savedParent) {
+        viewer._feedVid.muted = true
+        viewer._feedVid.style.cssText = 'width:100%;height:auto;display:block;max-height:500px;object-fit:cover;filter:brightness(1.05) saturate(1.15);'
+        if (viewer._savedNext) viewer._savedParent.insertBefore(viewer._feedVid, viewer._savedNext)
+        else viewer._savedParent.appendChild(viewer._feedVid)
+      }
+      viewer.remove()
+    }
+  })
+}
 </script>
 </body>
 </html>
