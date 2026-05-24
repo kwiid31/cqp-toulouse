@@ -1233,8 +1233,8 @@ async function init() {
     ])
     const evtsBar = document.getElementById('evts-bar')
     const annBar = document.getElementById('annonces-bar')
-    if (evtsRes.data?.length && evtsBar) evtsBar.innerHTML = Feed.renderEvts(evtsRes.data)
-    if (annRes.data?.length && annBar) annBar.innerHTML = Feed.renderAnnonces(annRes.data)
+    if (evtsRes.data?.length && evtsBar) evtsBar.innerHTML = Feed.renderEvts(evtsRes.data.map(x=>({_data:x})))
+    if (annRes.data?.length && annBar) annBar.innerHTML = Feed.renderAnnonces(annRes.data.map(x=>({_data:x})))
   } catch(e) {}
 
   // Non-bloquant
