@@ -64,7 +64,7 @@ const Stories = (() => {
         <div class="story-thumb" onclick="Stories.openQuartier('${q.replace(/'/g,"\\'")}')">
           ${latest?.photo_url
             ? `<img class="story-thumb-bg" src="${Utils.esc(latest.photo_url)}" alt="">`
-            : (latest?.video_url ? `<video class="story-thumb-bg" src="${Utils.esc(latest.video_url)}" muted playsinline preload="metadata" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"></video>` : `<div style="position:absolute;inset:0;background:${bg};"></div>`)
+            : (latest?.video_url ? `<div style="position:absolute;inset:0;background:${bg};display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" width="28" height="28" fill="rgba(255,255,255,.8)"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>` : `<div style="position:absolute;inset:0;background:${bg};"></div>`)
           }
           <div class="story-thumb-overlay"></div>
           ${count > 0 ? `<div style="position:absolute;top:6px;right:6px;background:#C8102E;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:2px 6px;">${count}</div>` : ''}
