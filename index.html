@@ -1221,23 +1221,21 @@ async function init() {
 
   // Feed en priorité — s'assurer qu'il est visible
   document.getElementById('feed').style.visibility = ''
-  Feed.init(document.getElementById('feed'))
+  await Feed.init(document.getElementById('feed'))
   Feed.setupDoubleTap(document.getElementById('feed'))
   Feed.setupPullToRefresh()
 
-  // Événements et annonces en blocs séparés
-  setTimeout(async () => {
-    try {
-      const [evtsRes, annRes] = await Promise.all([
-        Api.getEvenements(null, 6),
-        Api.getAnnonces(null, 6)
-      ])
-      const evtsBar = document.getElementById('evts-bar')
-      const annBar = document.getElementById('annonces-bar')
-      if (evtsRes.data?.length && evtsBar) evtsBar.innerHTML = Feed.renderEvts(evtsRes.data)
-      if (annRes.data?.length && annBar) annBar.innerHTML = Feed.renderAnnonces(annRes.data)
-    } catch(e) {}
-  }, 500)
+  // Événements et annonces en blocs séparés après le feed
+  try {
+    const [evtsRes, annRes] = await Promise.all([
+      Api.getEvenements(null, 6),
+      Api.getAnnonces(null, 6)
+    ])
+    const evtsBar = document.getElementById('evts-bar')
+    const annBar = document.getElementById('annonces-bar')
+    if (evtsRes.data?.length && evtsBar) evtsBar.innerHTML = Feed.renderEvts(evtsRes.data)
+    if (annRes.data?.length && annBar) annBar.innerHTML = Feed.renderAnnonces(annRes.data)
+  } catch(e) {}
 
   // Non-bloquant
   setTimeout(() => Stories.load(document.getElementById('stories-bar')), 300)
