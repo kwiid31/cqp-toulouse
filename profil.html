@@ -18,843 +18,352 @@
 <script src="/js/auth.js?v=20260514"></script>
 <script src="/js/api.js?v=20260514"></script>
 <style>
+* { box-sizing: border-box; }
+body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
+#avatar-file { display: none; }
 .code-inputs{display:flex;gap:8px;justify-content:center;margin-bottom:18px;}
-.code-digit{width:44px;height:54px;border:2px solid var(--border);border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.8rem;text-align:center;color:var(--txt);background:var(--bg3);outline:none;transition:border .15s;-webkit-appearance:none;}
-.code-digit:focus{border-color:var(--rouge);background:#fff;}
-.profil-hero{background:var(--rouge);padding:20px 16px 16px;position:relative;}
-.profil-hero-inner{display:flex;align-items:center;gap:14px;margin-top:24px;}
-.profil-av-wrap{position:relative;width:60px;height:60px;flex-shrink:0;}
-.profil-av{width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#fff;overflow:hidden;}
-.profil-av img{width:100%;height:100%;object-fit:cover;}
-.profil-av-edit{position:absolute;bottom:0;right:0;width:20px;height:20px;background:rgba(0,0,0,.5);border:1.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-.profil-info{flex:1;min-width:0;}
-.profil-stats{display:grid;grid-template-columns:1fr 1fr 1fr;background:#fff;border-bottom:1px solid var(--border);}
-.pstat{padding:12px 0;text-align:center;}
-.pstat-n{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--rouge);line-height:1;}
-.pstat-l{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-top:2px;}
-.connect-box{background:#fff;padding:28px 24px;}
-.divider{display:flex;align-items:center;gap:12px;margin:18px 0;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
-#avatar-file{display:none;}
+.code-digit{width:44px;height:54px;border:2px solid #e4e6eb;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.8rem;text-align:center;color:#000;background:#f9f9f9;outline:none;}
+.code-digit:focus{border-color:#C8102E;background:#fff;}
 </style>
 </head>
 <body>
 
-<header class="topbar">
-  <div class="topbar-logo">
-    <a href="index.html" style="display:flex;align-items:center;gap:10px;">
-      <span class="logo-pill">CQP</span>
-      <div class="logo-text"><span class="logo-name">Toulouse</span><span class="logo-sub">Quartiers Populaires</span></div>
-    </a>
-  </div>
-  <button id="logout-btn" onclick="doLogout()" style="display:none;padding:7px 14px;background:none;border:1.5px solid var(--border);border-radius:20px;color:var(--txt2);font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Déconnexion</button>
-</header>
-
-<!-- ÉCRAN D'ACCUEIL — visible uniquement aux nouveaux visiteurs -->
-<div id="view-welcome" style="display:none;flex-direction:column;background:#fff;font-family:-apple-system,system-ui,sans-serif;min-height:100vh;">
-
-  <!-- Corps centré -->
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px 48px;text-align:center;">
-
-    <div style="font-size:2.6rem;font-weight:800;color:#111;line-height:1.1;letter-spacing:-.8px;margin-bottom:16px;">
-      Le quartier,<br>c'est <span style="color:#C8102E;">nous.</span>
-    </div>
-
-    <div style="width:36px;height:3px;background:#C8102E;border-radius:2px;margin:0 auto 20px;"></div>
-
-    <div style="font-size:1rem;color:#555;line-height:1.7;margin-bottom:56px;">
-      Parlons. Partageons. Avançons <span style="color:#C8102E;font-weight:600;">ensemble.</span>
-    </div>
-
-    <div style="width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px;">
-      <button onclick="goConnect('signup')" style="width:100%;background:#C8102E;border:none;border-radius:12px;color:#fff;font-size:1rem;font-weight:600;padding:16px 24px;cursor:pointer;font-family:-apple-system,system-ui,sans-serif;">
-        Rejoindre le réseau →
-      </button>
-      <button onclick="goConnect('login')" style="width:100%;background:none;border:1.5px solid #dbdbdb;border-radius:12px;color:#333;font-size:.95rem;font-weight:500;padding:14px 24px;cursor:pointer;font-family:-apple-system,system-ui,sans-serif;">
-        J'ai déjà un identifiant
-      </button>
-    </div>
-
+<!-- VUE WELCOME — non connecté -->
+<div id="view-welcome" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;background:#fff;">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:#C8102E;letter-spacing:2px;margin-bottom:8px;">CQP</div>
+  <div style="font-size:14px;color:#65676b;margin-bottom:48px;text-align:center;">Le réseau des quartiers populaires de Toulouse</div>
+  <div style="width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;">
+    <button onclick="goConnect('signup')" style="width:100%;background:#C8102E;border:none;border-radius:12px;color:#fff;font-size:1rem;font-weight:600;padding:16px;cursor:pointer;">Rejoindre le réseau →</button>
+    <button onclick="goConnect('login')" style="width:100%;background:none;border:1.5px solid #e4e6eb;border-radius:12px;color:#333;font-size:.95rem;font-weight:500;padding:14px;cursor:pointer;">J'ai déjà un identifiant</button>
+    <button onclick="window.location.href='index.html'" style="background:none;border:none;color:#999;font-size:.85rem;padding:8px;cursor:pointer;">Juste regarder →</button>
   </div>
 </div>
 
 <!-- VUE CONNEXION -->
-<div id="view-connect" style="display:none;">
-  <div style="max-width:400px;margin:0 auto;">
-
-    <div id="panel-login" class="connect-box">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;margin-bottom:6px;">Mon Code</div>
-      <div style="font-size:.85rem;color:var(--txt2);margin-bottom:24px;line-height:1.6;">Entre tes 6 chiffres pour accéder à ton profil CQP.</div>
-      <div class="code-inputs" id="code-inputs">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        <input class="code-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-      </div>
-      <button class="btn-rouge" id="login-btn" onclick="doLogin()">Accéder à mon profil</button>
-      <div class="form-msg" id="login-msg"></div>
-      <div style="text-align:center;margin-top:10px;">
-        <button onclick="doForgotCode()" style="background:none;border:none;color:var(--txt3);font-size:.78rem;cursor:pointer;text-decoration:underline;font-family:'Barlow',sans-serif;">Code oublié ? Retrouve-le par email</button>
-      </div>
-      <div class="divider">ou</div>
-      <button class="btn-outline" onclick="switchPanel('signup')">Créer un nouveau profil</button>
+<div id="view-connect" style="display:none;min-height:100vh;background:#fff;">
+  <div style="padding:24px 16px;">
+    <button onclick="goWelcome()" style="background:none;border:none;cursor:pointer;margin-bottom:20px;">
+      <svg viewBox="0 0 24 24" width="22" stroke="#000" fill="none" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <div id="panel-login" style="display:none;">
+      <h2 style="font-size:22px;font-weight:700;margin-bottom:6px;">Mon code d'accès</h2>
+      <p style="font-size:14px;color:#65676b;margin-bottom:24px;">Entre ton code à 6 chiffres</p>
+      <div class="code-inputs" id="login-inputs"></div>
+      <button id="login-btn" onclick="doLogin()" disabled style="width:100%;background:#C8102E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;opacity:.4;">Accéder à mon profil</button>
+      <div id="login-msg" style="margin-top:12px;text-align:center;font-size:13px;color:#C8102E;min-height:18px;"></div>
     </div>
-
-    <div id="panel-signup" class="connect-box" style="display:none;">
-      <div style="text-align:center;margin-bottom:28px;">
-        <div style="background:#C8102E;border-radius:14px;width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;color:#fff;letter-spacing:.5px;margin:0 auto 16px;">CQP</div>
-        <div style="font-size:1.3rem;font-weight:700;color:#111;letter-spacing:-.3px;">Crée ton profil</div>
-        <div style="font-size:.85rem;color:var(--txt2);margin-top:4px;">Juste ton prénom et un code à 6 chiffres</div>
-      </div>
-      <div class="fg"><input id="s-prenom" placeholder="Ton prénom" maxlength="30" style="width:100%;padding:14px 16px;background:#fff;border:1.5px solid #dbdbdb;border-radius:12px;font-family:-apple-system,system-ui,sans-serif;font-size:1rem;outline:none;box-sizing:border-box;"></div>
-      <div class="fg"><select id="s-quartier" style="width:100%;padding:14px 16px;background:#fff;border:1.5px solid #dbdbdb;border-radius:12px;font-family:-apple-system,system-ui,sans-serif;font-size:1rem;outline:none;box-sizing:border-box;color:#1c1e21;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2212%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2365676b%22 stroke-width=%222%22><polyline points=%226 9 12 15 18 9%22/></svg>');background-repeat:no-repeat;background-position:right 14px center;">
-        <option value="" disabled selected>Ton quartier</option>
-        <option>Bagatelle</option>
-        <option>Faourette</option>
-        <option>Reynerie</option>
-        <option>Bellefontaine</option>
-        <option>Papus</option>
-        <option>Empalot</option>
-        <option>Izards</option>
-        <option>Croix d'Aurade</option>
-        <option>Arènes</option>
-        <option>Bourbaki</option>
-        <option>Grand Mirail</option>
-        <option>Autre</option>
-      </select></div>
-      <div class="fg">
-        <div style="font-size:.78rem;color:var(--txt2);margin-bottom:8px;text-align:center;letter-spacing:.3px;">TON IDENTIFIANT — 6 CHIFFRES</div>
-        <div class="code-inputs" id="signup-code-inputs">
-          <input class="code-digit" id="sc0" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-          <input class="code-digit" id="sc1" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-          <input class="code-digit" id="sc2" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-          <input class="code-digit" id="sc3" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-          <input class="code-digit" id="sc4" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-          <input class="code-digit" id="sc5" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="off">
-        </div>
-        <div style="display:flex;gap:7px;align-items:flex-start;background:#fff8e1;border-radius:8px;padding:9px 11px;margin-top:10px;">
-          <span style="font-size:13px;flex-shrink:0;">💡</span>
-          <span style="font-size:.75rem;color:#7a6020;line-height:1.5;">Note-le — il te servira si tu changes de téléphone.</span>
-        </div>
-      </div>
-      <button class="btn-rouge" id="signup-btn" onclick="doSignup()" style="border-radius:12px;font-size:1rem;padding:15px;">Entrer dans le réseau</button>
-      <div class="form-msg" id="signup-msg"></div>
-      <div class="divider">ou</div>
-      <button class="btn-outline" onclick="switchPanel('login')" style="border-radius:12px;">J'ai déjà un identifiant</button>
+    <div id="panel-signup" style="display:none;">
+      <h2 style="font-size:22px;font-weight:700;margin-bottom:6px;">Rejoindre CQP</h2>
+      <p style="font-size:14px;color:#65676b;margin-bottom:24px;">Choisis un prénom et un quartier</p>
+      <input id="s-prenom" placeholder="Ton prénom" style="width:100%;border:1.5px solid #e4e6eb;border-radius:10px;padding:12px;font-size:15px;margin-bottom:12px;">
+      <select id="s-quartier" style="width:100%;border:1.5px solid #e4e6eb;border-radius:10px;padding:12px;font-size:15px;margin-bottom:20px;background:#fff;">
+        <option value="">Choisir un quartier</option>
+        <option>Bagatelle</option><option>Bellefontaine</option><option>Reynerie</option>
+        <option>Mirail</option><option>Faourette</option><option>Papus</option>
+        <option>Bordelongue</option><option>Empalot</option><option>Autre</option>
+      </select>
+      <button id="signup-btn" onclick="doSignup()" style="width:100%;background:#C8102E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">Créer mon profil</button>
+      <div id="signup-msg" style="margin-top:12px;text-align:center;font-size:13px;color:#C8102E;min-height:18px;"></div>
     </div>
-
-    <div id="panel-code" class="connect-box" style="display:none;"></div>
   </div>
 </div>
 
-<!-- POPUP CONFIRMATION CODE -->
-<div id="code-popup" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#fff;border-radius:20px;padding:28px 22px;width:100%;max-width:340px;text-align:center;animation:popIn .3s ease;">
-    <div style="font-size:2rem;margin-bottom:8px;">🎉</div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--rouge);margin-bottom:4px;" id="popup-welcome">Bienvenue !</div>
-    <div style="font-size:.85rem;color:var(--txt2);margin-bottom:20px;">Tu fais partie du réseau CQP.</div>
-    <div style="background:#fff5f5;border:2px dashed var(--rouge);border-radius:14px;padding:14px 10px;margin-bottom:12px;">
-      <div style="font-size:.65rem;color:var(--rouge);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:8px;">Ton identifiant CQP</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:10px;color:var(--rouge);" id="popup-code"></div>
-    </div>
-    <button onclick="copyPopupCode()" id="popup-copy-btn" style="width:100%;padding:10px;background:#f4f4f4;border:none;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;color:#555;cursor:pointer;margin-bottom:12px;">📋 Copier mon identifiant</button>
-    <button onclick="goToFeed()" class="btn-rouge" style="width:100%;">Accéder au réseau →</button>
-    <div style="font-size:.72rem;color:var(--txt3);margin-top:10px;">Note-le ou fais une capture avant de continuer</div>
-  </div>
-</div>
-<style>
-@keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
-/* ── PROFIL TABS ────────────────────────────── */
-.profil-tab{flex:1;padding:12px 4px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;font-weight:700;background:none;border:none;border-bottom:2px solid transparent;color:var(--txt3);cursor:pointer;transition:all .2s}
-.profil-tab-active{color:var(--rouge);border-bottom-color:var(--rouge)}
-.streak-day{display:flex;flex-direction:column;align-items:center;gap:3px}
-.streak-dot{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px}
-.notif-item{display:flex;align-items:center;gap:12px;padding:13px 16px;background:#fff;border-bottom:1px solid var(--bg3);position:relative;overflow:hidden;transition:transform .25s ease;touch-action:pan-y}
-.notif-item.swiped{transform:translateX(-80px)}
-.swipe-delete{position:absolute;right:-80px;top:0;bottom:0;width:80px;background:#E24B4A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:right .25s ease}
-.notif-item.swiped .swipe-delete,.conv-item.swiped .swipe-delete{right:0}
-.notif-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
-.notif-body{flex:1;min-width:0}
-.notif-text{font-size:.85rem;color:var(--txt1);line-height:1.4}
-.notif-time{font-size:.72rem;color:var(--txt3);margin-top:2px}
-.notif-reward{background:#FFF8E1;border-left:3px solid #D97706}
-.conv-item{display:flex;align-items:center;gap:12px;padding:13px 16px;background:#fff;border-bottom:1px solid var(--bg3);cursor:pointer;position:relative;overflow:hidden;transition:transform .25s ease;touch-action:pan-y}
-.conv-item.swiped{transform:translateX(-80px)}
-.conv-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
-.conv-body{flex:1;min-width:0}
-.conv-name{font-size:.88rem;font-weight:700;color:var(--txt1)}
-.conv-last{font-size:.78rem;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-.conv-time{font-size:.7rem;color:var(--txt3)}
-.conv-unread-dot{width:8px;height:8px;background:var(--rouge);border-radius:50%}
-.bubble{max-width:78%;padding:9px 13px;font-size:.85rem;line-height:1.45;border-radius:14px}
-.bubble-other{background:#fff;color:var(--txt1);border-radius:14px 14px 14px 3px;align-self:flex-start;border:1px solid var(--border)}
-.bubble-me{background:var(--rouge);color:#fff;border-radius:14px 14px 3px 14px;align-self:flex-end}
-.bubble-time{font-size:.65rem;color:var(--txt3);margin-top:2px}
-.av-gold{outline:3px solid rgba(255,200,0,.85);outline-offset:3px;animation:goldPulse 2s infinite}
-@keyframes goldPulse{0%,100%{outline-color:rgba(255,200,0,.85)}50%{outline-color:rgba(255,200,0,.3)}}
-@keyframes breathe{0%,100%{border-color:rgba(255,255,255,.25);box-shadow:none}50%{border-color:rgba(255,200,0,.55);box-shadow:0 0 14px rgba(255,200,0,.2)}}
-@keyframes pulseRing{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.7);opacity:0}}
-.no-scrollbar::-webkit-scrollbar{display:none}
-.level-wrap{margin-top:10px;width:100%}
-.level-label{font-size:.68rem;color:rgba(255,255,255,.4);display:flex;justify-content:space-between;margin-bottom:4px}
-.level-bar-bg{background:rgba(255,255,255,.1);border-radius:4px;height:4px;overflow:hidden}
-.level-bar-fill{height:4px;border-radius:4px;background:linear-gradient(90deg,rgba(255,200,0,.5),rgba(255,200,0,1));transition:width .6s ease}
-.member-search-inp{width:100%;padding:10px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:20px;font-family:'Barlow',sans-serif;font-size:.85rem;outline:none;}
-.member-result{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#fff;border-bottom:1px solid var(--bg3);cursor:pointer;transition:background .15s}
-.member-result:active{background:var(--bg3)}
-</style>
-
-<!-- VUE PROFIL -->
-<div id="view-profil" style="display:none;">
+<!-- VUE PROFIL — connecté -->
+<div id="view-profil" style="display:none;background:#fff;min-height:100vh;padding-bottom:80px;">
 
   <!-- HEADER -->
-  <div class="profil-hero">
-    <!-- Streak badge haut droite -->
-    <div style="position:absolute;top:14px;right:14px;z-index:2;">
-      <div style="display:flex;align-items:center;gap:4px;background:rgba(0,0,0,.22);border-radius:20px;padding:5px 11px;">
-        <span id="streak-icon" style="font-size:15px;">🌱</span>
-        <span id="streak-count" style="font-size:13px;font-weight:900;color:#fff;">1</span>
-        <span style="font-size:8px;color:rgba(255,255,255,.45);">jours</span>
+  <div style="padding:20px 16px 0;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+      <div style="flex:1;">
+        <div style="font-size:24px;font-weight:700;color:#000;line-height:1.2;" id="p-name">…</div>
+        <div style="font-size:14px;color:#65676b;margin-top:2px;" id="p-quartier"></div>
       </div>
-    </div>
-
-    <!-- Avatar + Infos côte à côte -->
-    <div class="profil-hero-inner">
-      <label for="avatar-file" style="cursor:pointer;">
-        <div class="profil-av-wrap" id="av-ring-wrap">
-          <div class="profil-av" id="profil-av">?</div>
-          <div class="profil-av-edit"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#fff" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
-        </div>
+      <label for="avatar-file" style="cursor:pointer;flex-shrink:0;margin-left:12px;">
+        <div style="width:72px;height:72px;border-radius:50%;background:#e4e6eb;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#65676b;" id="profil-av">?</div>
       </label>
       <input type="file" id="avatar-file" accept="image/*" onchange="uploadAvatar(this)">
-      <div class="profil-info">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:#fff;letter-spacing:.5px;line-height:1;" id="p-name">…</div>
-        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;color:rgba(255,255,255,.7);margin-top:3px;" id="p-quartier"></div>
-        <!-- Barre niveau -->
-        <div class="level-wrap">
-          <div class="level-label">
-            <span id="level-label-txt">Niveau 1 · Nouveau</span>
-            <span id="level-pts-txt"></span>
-          </div>
-          <div class="level-bar-bg"><div class="level-bar-fill" id="level-bar" style="width:0%"></div></div>
-        </div>
-      </div>
     </div>
 
-    <!-- FLAMME ZONE -->
-    <div id="flamme-zone" style="background:rgba(0,0,0,.22);border-radius:14px 14px 0 0;margin:14px -16px 0;padding:14px 0 16px;">
-      <p id="flamme-phrase" style="font-size:.78rem;color:#fff;line-height:1.6;text-align:center;margin-bottom:14px;padding:0 16px;font-family:'Barlow',sans-serif;min-height:38px;"></p>
-      <div id="streak-week" style="display:flex;gap:10px;overflow-x:auto;padding:0 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;" class="no-scrollbar"></div>
+    <!-- Bio -->
+    <div id="p-bio" style="font-size:14px;color:#000;line-height:1.5;margin-bottom:14px;"></div>
+
+    <!-- Stats -->
+    <div style="display:flex;gap:24px;margin-bottom:16px;">
+      <div><div style="font-size:18px;font-weight:700;color:#000;" id="p-stat-posts">0</div><div style="font-size:12px;color:#65676b;">Posts</div></div>
+      <div><div style="font-size:18px;font-weight:700;color:#000;" id="p-stat-likes">0</div><div style="font-size:12px;color:#65676b;">J'aimes</div></div>
+      <div><div style="font-size:18px;font-weight:700;color:#000;" id="p-stat-comments">0</div><div style="font-size:12px;color:#65676b;">Commentaires</div></div>
     </div>
+
+    <!-- Bouton modifier -->
+    <button onclick="openEdit()" style="width:100%;border:1.5px solid #e4e6eb;background:#fff;border-radius:10px;padding:10px;font-size:14px;font-weight:600;color:#000;cursor:pointer;margin-bottom:20px;">Modifier le profil</button>
   </div>
 
-  <!-- ONGLETS -->
-  <div style="display:flex;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;">
-    <button onclick="switchTab('activite')" id="tab-activite" class="profil-tab profil-tab-active">
-      Activité <span id="notif-dot" style="display:none;width:6px;height:6px;background:var(--rouge);border-radius:50%;display:inline-block;margin-left:4px;vertical-align:middle;"></span>
-    </button>
-    <button onclick="switchTab('messages')" id="tab-messages" class="profil-tab">
-      Messages <span id="msg-dot" style="display:none;width:6px;height:6px;background:var(--rouge);border-radius:50%;display:inline-block;margin-left:4px;vertical-align:middle;"></span>
-    </button>
-    <button onclick="switchTab('mon-profil')" id="tab-mon-profil" class="profil-tab">Mon profil</button>
+  <div style="height:1px;background:#e4e6eb;"></div>
+
+  <!-- ONBOARDING -->
+  <div id="onboarding-section" style="padding:16px;">
+    <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:12px;">Découvre le réseau</div>
+    <div id="onboarding-steps"></div>
   </div>
 
-  <!-- TAB ACTIVITÉ -->
-  <div id="tab-content-activite" class="section">
-    <div id="notifs-list"></div>
+  <div style="height:8px;background:#f0f2f5;"></div>
+
+  <!-- MES PUBLICATIONS -->
+  <div id="my-posts-section" style="padding-top:4px;">
+    <div style="padding:14px 16px 10px;font-size:14px;font-weight:700;color:#000;">Mes publications</div>
+    <div id="my-posts-list"></div>
   </div>
 
-  <!-- TAB MESSAGES -->
-  <div id="tab-content-messages" class="section" style="display:none;">
-    <!-- VUE LISTE -->
-    <div id="conv-list-view">
-      <div style="padding:12px 16px;background:#fff;border-bottom:1px solid var(--bg3);">
-        <input class="member-search-inp" id="member-search" placeholder="🔍 Chercher quelqu'un par prénom…" oninput="searchMember(this.value)">
-      </div>
-      <div id="member-results" style="display:none;"></div>
-      <div id="conv-list"></div>
-      <div style="padding:16px;text-align:center;font-size:.78rem;color:var(--txt3);line-height:1.6;">
-        Tu peux écrire à quelqu'un dès que vous avez interagi dans le flux
-      </div>
-    </div>
-    <!-- VUE CONVERSATION -->
-    <div id="conv-detail-view" style="display:none;">
-      <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:49px;z-index:10;">
-        <button onclick="closeConv()" style="background:none;border:none;font-size:1.3rem;color:var(--txt2);cursor:pointer;padding:0;">‹</button>
-        <div id="conv-av" style="width:34px;height:34px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;"></div>
-        <div><div id="conv-name" style="font-size:.9rem;font-weight:700;color:var(--txt1);"></div><div id="conv-loc" style="font-size:.72rem;color:var(--txt3);"></div></div>
-      </div>
-      <div id="conv-bubbles" style="padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-height:200px;"></div>
-      <div style="padding:10px 14px;background:#fff;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;position:sticky;bottom:60px;">
-        <input id="msg-input" placeholder="Écrire un message..." maxlength="500" style="flex:1;padding:10px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:20px;font-family:'Barlow',sans-serif;font-size:.85rem;outline:none;" onkeydown="if(event.key==='Enter')sendMsg()">
-        <button onclick="sendMsg()" style="width:36px;height:36px;background:var(--rouge);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-    </div>
+  <!-- DÉCONNEXION -->
+  <div style="padding:24px 16px 40px;text-align:center;">
+    <button onclick="doLogout()" style="background:none;border:1.5px solid #e4e6eb;border-radius:10px;padding:10px 24px;font-size:14px;color:#65676b;cursor:pointer;">Se déconnecter</button>
   </div>
-
-  <!-- TAB MON PROFIL -->
-  <div id="tab-content-mon-profil" class="section" style="display:none;">
-    <div class="section-title">Modifier mon profil</div>
-    <div class="pcard pcard-pad">
-      <div class="fg"><label>Prénom</label><input id="e-prenom" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <div class="fg"><label>Quartier</label><input id="e-quartier" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <div class="fg"><label>Bio</label><textarea id="e-bio" rows="2" maxlength="200" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;resize:none;"></textarea></div>
-      <div class="fg"><label>Email <span style="color:var(--txt3);font-weight:400;">(pour retrouver ton identifiant si perdu)</span></label><input id="e-email" type="email" maxlength="100" placeholder="ton@email.fr" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <button class="btn-rouge" onclick="saveProfil()">Enregistrer</button>
-      <div class="form-msg" id="edit-msg"></div>
-    </div>
-    <div class="section-title">Mon identifiant CQP</div>
-    <div class="pcard pcard-pad" style="text-align:center;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:8px;color:var(--rouge);" id="code-display">——</div>
-      <div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-top:4px;">Note-le si tu changes de téléphone</div>
-      <button onclick="copyCode()" style="margin-top:12px;padding:8px 20px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1px;color:var(--txt2);cursor:pointer;" id="copy-btn">Copier</button>
-    </div>
-    <div class="section-title">Mes publications</div>
-    <div id="mes-posts"></div>
-  </div>
-
 </div>
 
-<nav class="bottom-nav">
-  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
-  <a class="nav-item" href="groupes.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Groupes</a>
-  <a class="nav-item" href="annonces2.html"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>Annonces</a>
-  <div class="nav-center"><a href="index.html" class="nav-pub" aria-label="Accueil"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></a></div>
-  <a class="nav-item" href="evenements.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-  <a class="nav-item" href="actus2.html"><svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>Actus</a>
-  <a class="nav-item active" href="profil.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
-</nav>
+<!-- PANEL MODIFIER PROFIL -->
+<div id="edit-panel" style="display:none;position:fixed;inset:0;z-index:9999;background:#fff;overflow-y:auto;">
+  <div style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #e4e6eb;position:sticky;top:0;background:#fff;z-index:1;">
+    <button onclick="closeEdit()" style="background:none;border:none;cursor:pointer;margin-right:12px;">
+      <svg viewBox="0 0 24 24" width="22" stroke="#000" fill="none" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <span style="font-size:17px;font-weight:700;">Modifier le profil</span>
+  </div>
+  <div style="padding:20px 16px;display:flex;flex-direction:column;gap:16px;">
+    <div><label style="font-size:13px;font-weight:600;color:#65676b;display:block;margin-bottom:6px;">Prénom</label>
+    <input id="e-prenom" style="width:100%;border:1.5px solid #e4e6eb;border-radius:10px;padding:12px;font-size:15px;" placeholder="Ton prénom"></div>
+    <div><label style="font-size:13px;font-weight:600;color:#65676b;display:block;margin-bottom:6px;">Quartier</label>
+    <select id="e-quartier" style="width:100%;border:1.5px solid #e4e6eb;border-radius:10px;padding:12px;font-size:15px;background:#fff;">
+      <option value="">Choisir</option>
+      <option>Bagatelle</option><option>Bellefontaine</option><option>Reynerie</option>
+      <option>Mirail</option><option>Faourette</option><option>Papus</option>
+      <option>Bordelongue</option><option>Empalot</option><option>Autre</option>
+    </select></div>
+    <div><label style="font-size:13px;font-weight:600;color:#65676b;display:block;margin-bottom:6px;">Bio</label>
+    <textarea id="e-bio" style="width:100%;border:1.5px solid #e4e6eb;border-radius:10px;padding:12px;font-size:15px;min-height:80px;resize:none;" placeholder="Parle de toi..."></textarea></div>
+    <div id="edit-msg" style="font-size:13px;text-align:center;min-height:16px;color:#C8102E;"></div>
+    <button onclick="saveProfil()" style="width:100%;background:#000;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">Enregistrer</button>
+  </div>
+</div>
 
 <script>
 const esc = s => Utils.esc(s)
-const timeAgo = d => Utils.timeAgo(d)
 
-// ── CODE INPUTS ──────────────────────────────────────────────
-// Login digits
-const digits = [...document.querySelectorAll('#code-inputs .code-digit')]
-digits.forEach((inp, i) => {
-  inp.addEventListener('input', e => {
-    const v = e.target.value.replace(/\D/g, '')
-    inp.value = v.slice(-1)
-    if (v && i < 5) digits[i + 1].focus()
+// Navigation entre vues
+function showView(id) {
+  ['view-welcome','view-connect','view-profil'].forEach(v => {
+    const el = document.getElementById(v)
+    if (el) el.style.display = v === id ? (id === 'view-welcome' ? 'flex' : 'block') : 'none'
   })
-  inp.addEventListener('keydown', e => {
-    if (e.key === 'Backspace' && !inp.value && i > 0) digits[i - 1].focus()
-    if (e.key === 'Enter') doLogin()
-  })
-  inp.addEventListener('paste', e => {
-    e.preventDefault()
-    const txt = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6)
-    digits.forEach((d, j) => d.value = txt[j] || '')
-    if (txt.length === 6) doLogin()
-  })
-})
+}
 
-// Signup digits
-const signupDigits = [...document.querySelectorAll('#signup-code-inputs .code-digit')]
-signupDigits.forEach((inp, i) => {
-  inp.addEventListener('input', e => {
-    const v = e.target.value.replace(/\D/g, '')
-    inp.value = v.slice(-1)
-    if (v && i < 5) signupDigits[i + 1].focus()
-  })
-  inp.addEventListener('keydown', e => {
-    if (e.key === 'Backspace' && !inp.value && i > 0) signupDigits[i - 1].focus()
-    if (e.key === 'Enter') doSignup()
-  })
-})
+function goWelcome() { showView('view-welcome') }
+function goConnect(panel) {
+  showView('view-connect')
+  document.getElementById('panel-login').style.display = panel === 'login' ? 'block' : 'none'
+  document.getElementById('panel-signup').style.display = panel === 'signup' ? 'block' : 'none'
+  if (panel === 'login') buildCodeInputs()
+}
 
-const getCodeInput = () => digits.map(d => d.value).join('')
-
-// ── CODE OUBLIÉ ───────────────────────────────────────────────
-async function doForgotCode() {
-  const email = prompt('Entre ton adresse email pour recevoir ton identifiant :')
-  if (!email) return
-  try {
-    const data = await Auth.recoverByEmail(email)
-    alert(`Bonjour ${data.prenom} ! Ton identifiant est : ${data.code}\n\nNote-le — il te servira si tu changes de téléphone.`)
-  } catch(e) {
-    alert(e.message)
+// Inputs code 6 chiffres
+function buildCodeInputs() {
+  const wrap = document.getElementById('login-inputs')
+  if (wrap.children.length) return
+  for (let i = 0; i < 6; i++) {
+    const inp = document.createElement('input')
+    inp.className = 'code-digit'
+    inp.maxLength = 1
+    inp.inputMode = 'numeric'
+    inp.addEventListener('input', () => {
+      if (inp.value && inp.nextElementSibling) inp.nextElementSibling.focus()
+      checkLoginReady()
+    })
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !inp.value && inp.previousElementSibling) inp.previousElementSibling.focus()
+    })
+    wrap.appendChild(inp)
   }
 }
 
-function switchPanel(name) {
-  ['login', 'signup', 'code'].forEach(p => document.getElementById(`panel-${p}`).style.display = p === name ? 'block' : 'none')
+function checkLoginReady() {
+  const code = [...document.querySelectorAll('.code-digit')].map(i => i.value).join('')
+  const btn = document.getElementById('login-btn')
+  btn.disabled = code.length < 6
+  btn.style.opacity = code.length < 6 ? '0.4' : '1'
 }
 
 async function doLogin() {
-  const code = getCodeInput()
-  const msg = document.getElementById('login-msg')
+  const code = [...document.querySelectorAll('.code-digit')].map(i => i.value).join('')
+  if (code.length < 6) return
   const btn = document.getElementById('login-btn')
-  if (code.length !== 6) { msg.style.color = 'var(--rouge)'; msg.textContent = 'Entre tes 6 chiffres.'; return }
-  btn.disabled = true; btn.textContent = '…'
-  msg.style.color = 'var(--txt3)'; msg.textContent = 'Vérification…'
-  try {
-    const profil = await Auth.login(code)
-    msg.style.color = 'var(--green)'; msg.textContent = '✅ Connexion réussie !'
-    setTimeout(() => window.location.href = 'index.html', 500)
-  } catch (e) {
-    msg.style.color = 'var(--rouge)'; msg.textContent = e.message || 'Code introuvable.'
-    btn.disabled = false; btn.textContent = 'Accéder à mon profil'
-  }
+  const msg = document.getElementById('login-msg')
+  btn.textContent = '…'; btn.disabled = true
+  const p = await Api.getProfil(code)
+  if (!p) { msg.textContent = 'Code invalide'; btn.textContent = 'Accéder'; btn.disabled = false; return }
+  Auth.save(p)
+  window.location.reload()
 }
 
 async function doSignup() {
   const prenom = document.getElementById('s-prenom').value.trim()
   const quartier = document.getElementById('s-quartier').value
   const msg = document.getElementById('signup-msg')
+  if (!prenom) { msg.textContent = 'Prénom obligatoire'; return }
   const btn = document.getElementById('signup-btn')
-
-  const digits = ['sc0','sc1','sc2','sc3','sc4','sc5'].map(id => document.getElementById(id).value)
-  const code = digits.join('')
-
-  if (!prenom) { msg.style.color='var(--rouge)'; msg.textContent='Ton prénom est obligatoire.'; return }
-  if (!quartier) { msg.style.color='var(--rouge)'; msg.textContent='Choisis ton quartier.'; return }
-  if (code.length !== 6 || !/^\d{6}$/.test(code)) { msg.style.color='var(--rouge)'; msg.textContent='Choisis un identifiant à 6 chiffres.'; return }
-
-  btn.disabled = true; btn.textContent = '…'
-  msg.style.color = 'var(--txt3)'; msg.textContent = 'Création…'
+  btn.textContent = '…'; btn.disabled = true
   try {
-    const data = await Auth.signup({ prenom, quartier, bio: '', code, email: '' })
-    document.getElementById('popup-welcome').textContent = `Bienvenue ${prenom} !`
-    document.getElementById('popup-code').textContent = data.code.split('').join(' ')
-    const popup = document.getElementById('code-popup')
-    popup.style.display = 'flex'
-  } catch (e) {
-    msg.style.color = 'var(--rouge)'; msg.textContent = e.message
-    btn.disabled = false; btn.textContent = 'Entrer dans le réseau'
-  }
+    const { data, error } = await Api.createProfil({ prenom, quartier: quartier || null })
+    if (error) throw error
+    Auth.save(data)
+    showCodePopup(data.code)
+  } catch(e) { msg.textContent = 'Erreur: ' + e.message; btn.textContent = 'Créer'; btn.disabled = false }
 }
 
-function copyPopupCode() {
-  const code = document.getElementById('popup-code').textContent.replace(/\s/g,'')
-  if (navigator.clipboard) navigator.clipboard.writeText(code)
-  const btn = document.getElementById('popup-copy-btn')
-  btn.textContent = '✅ Code copié !'
-  setTimeout(() => { btn.textContent = '📋 Copier mon identifiant' }, 2000)
+function showCodePopup(code) {
+  const html = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">'
+    + '<div style="background:#fff;border-radius:16px;padding:28px 24px;width:100%;max-width:320px;text-align:center;">'
+    + '<div style="font-size:40px;margin-bottom:12px;">🎉</div>'
+    + '<h3 style="font-size:20px;font-weight:700;margin-bottom:8px;">Bienvenue !</h3>'
+    + '<p style="font-size:14px;color:#65676b;margin-bottom:20px;">Note ton code — il te permettra de te connecter depuis n\'importe quel appareil</p>'
+    + '<div style="font-family:monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#C8102E;background:#fff0f2;border-radius:10px;padding:16px;margin-bottom:20px;">' + esc(code) + '</div>'
+    + '<button onclick="this.parentElement.parentElement.remove();window.location.reload()" style="width:100%;background:#000;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">C\'est parti !</button>'
+    + '</div></div>'
+  document.body.insertAdjacentHTML('beforeend', html)
 }
 
-function goToFeed() {
-  window.location.href = 'index.html'
-}
-
-// ── TABS ──────────────────────────────────────────────────────
-function switchTab(tab) {
-  ['activite','messages','mon-profil'].forEach(t => {
-    document.getElementById('tab-content-' + t).style.display = t === tab ? 'block' : 'none'
-    const btn = document.getElementById('tab-' + t)
-    btn.classList.toggle('profil-tab-active', t === tab)
-  })
-  if (tab === 'messages') loadConvList()
-}
-
-// ── STREAK ────────────────────────────────────────────────────
-const STREAK_REWARDS = [
-  { days: 7,   icon: '🔥', label: 'Anneau doré débloqué !', ring: true },
-  { days: 30,  icon: '⭐', label: 'Titre "Habitant fidèle" débloqué !' },
-  { days: 100, icon: '🏆', label: 'Avatar exclusif débloqué !' },
-]
-
-async function initStreak(code) {
-  const today = new Date().toISOString().split('T')[0]
-  let streak = null
-  try {
-    const res = await sb.from('streaks').select('*').eq('code', code).single()
-    if (!res.error) streak = res.data
-  } catch(e) {}
-  if (!streak) {
-    await sb.from('streaks').insert({ code, current_streak: 1, last_visit: today, longest_streak: 1 })
-    streak = { current_streak: 1, last_visit: today, longest_streak: 1 }
-  } else {
-    const last = new Date(streak.last_visit)
-    const diff = Math.floor((new Date(today) - last) / 86400000)
-    if (diff === 1) {
-      streak.current_streak++
-      streak.longest_streak = Math.max(streak.longest_streak, streak.current_streak)
-      await sb.from('streaks').update({ current_streak: streak.current_streak, longest_streak: streak.longest_streak, last_visit: today }).eq('code', code)
-      // Vérif récompenses
-      for (const r of STREAK_REWARDS) {
-        if (streak.current_streak === r.days) {
-          await sb.from('notifications').insert({ dest_code: code, type: 'streak', message: r.icon + ' ' + r.label })
-        }
-      }
-    } else if (diff > 1) {
-      streak.current_streak = 1
-      await sb.from('streaks').update({ current_streak: 1, last_visit: today }).eq('code', code)
-    }
-  }
-  renderStreak(streak.current_streak)
-}
-
-function renderStreak(n) {
-  const icon = document.getElementById('streak-icon')
-  const count = document.getElementById('streak-count')
-  if (count) count.textContent = n
-  if (icon) icon.textContent = n >= 7 ? '🔥' : n >= 3 ? '🔥' : '🌱'
-  if (n >= 7) document.querySelector('.profil-av')?.classList.add('av-gold')
-
-  const phrase = document.getElementById('flamme-phrase')
-  if (phrase) {
-    if (n === 0) phrase.innerHTML = `Appuie pour allumer<br><span style="color:rgba(255,255,255,.5);font-size:.7rem">ta flamme dans le réseau</span>`
-    else if (n === 1) phrase.innerHTML = `Ta flamme vient de naître dans le réseau.<br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Reviens demain pour la garder vivante.</span>`
-    else if (n < 7) phrase.innerHTML = `Tu alimentes la flamme <strong style="color:#FFD700">${n} jours de suite.</strong><br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Elle grandit avec toi, chaque jour.</span>`
-    else if (n < 30) phrase.innerHTML = `<strong style="color:#FFD700">Semaine complète 🏆</strong><br><span style="color:rgba(255,255,255,.75)">Tu fais partie du cœur du réseau.</span>`
-    else phrase.innerHTML = `<strong style="color:#FFD700">${n} jours — la flamme ne s'éteint plus.</strong><br><span style="color:rgba(255,255,255,.7)">Le réseau brûle grâce à toi.</span>`
-  }
-
-  const flameSVG = (bodyColor, glowColor, size=28) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none"><path d="M12 2c0 6-8 8-8 14a8 8 0 0016 0c0-6-8-8-8-14z" fill="${bodyColor}"/><path d="M12 10c0 3-3 4-3 7a3 3 0 006 0c0-3-3-4-3-7z" fill="${glowColor}"/></svg>`
-
-  const today = new Date().toISOString().split('T')[0]
-  const alreadyLit = localStorage.getItem('flamme_lit_' + today) === '1'
-  const todayIdx = (new Date().getDay() + 6) % 7
-  const dayNames = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim']
-
-  const wrap = document.getElementById('streak-week')
-  if (!wrap) return
-  wrap.innerHTML = ''
-
-  dayNames.forEach((d, i) => {
-    const isDone = i < todayIdx && i >= Math.max(0, todayIdx - n + 1)
-    const isToday = i === todayIdx
-    const isLit = isToday && (alreadyLit || n > 1)
-
-    const el = document.createElement('div')
-    el.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;scroll-snap-align:center;'
-
-    let circle, lblStyle
-    if (isDone || (isToday && isLit)) {
-      const bg = isToday ? '#FFD700' : 'rgba(255,200,0,.18)'
-      const border = isToday ? 'none' : '2px solid rgba(255,200,0,.65)'
-      const flame = isToday ? flameSVG('#C8102E','rgba(255,255,255,.4)',30) : flameSVG('rgba(255,200,0,.95)','rgba(255,255,255,.3)',26)
-      circle = `<div id="circle-${i}" style="width:60px;height:60px;border-radius:50%;background:${bg};border:${border};display:flex;align-items:center;justify-content:center;position:relative;">${flame}</div>`
-      lblStyle = isToday ? 'color:#FFD700;font-weight:700' : 'color:rgba(255,200,0,.65)'
-    } else if (isToday) {
-      // Pas encore allumé — pulse
-      circle = `<div id="circle-${i}" style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.07);border:2px dashed rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;animation:breathe 2s ease-in-out infinite;position:relative;">${flameSVG('rgba(255,255,255,.2)','rgba(255,255,255,.1)',22)}</div>`
-      lblStyle = 'color:rgba(255,255,255,.5);font-weight:700'
-    } else {
-      circle = `<div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);"></div>`
-      lblStyle = 'color:rgba(255,255,255,.2)'
-    }
-
-    const lbl = isToday && !isLit ? 'Appuie' : isToday ? 'Auj' : d.charAt(0)
-    el.innerHTML = `${circle}<span style="font-size:8px;text-transform:uppercase;letter-spacing:.3px;${lblStyle}">${lbl}</span>`
-
-    if (isToday && !isLit) {
-      const circleEl = el.querySelector(`#circle-${i}`)
-      if (circleEl) {
-        circleEl.addEventListener('click', () => lightFlamme(i, n, circleEl))
-        circleEl.addEventListener('touchend', (e) => { e.preventDefault(); lightFlamme(i, n, circleEl) })
-      }
-    }
-    wrap.appendChild(el)
-  })
-
-  // Scroll vers aujourd'hui
-  setTimeout(() => {
-    const todayEl = wrap.children[todayIdx]
-    if (todayEl) todayEl.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' })
-  }, 100)
-}
-
-function lightFlamme(idx, n, el) {
-  // Vibration
-  if (navigator.vibrate) navigator.vibrate([30, 20, 60])
-
-  // Animation allumage
-  el.style.animation = 'none'
-  el.style.background = '#FFD700'
-  el.style.border = 'none'
-  el.style.cursor = 'default'
-  el.innerHTML = `<div style="position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(255,200,0,.8);animation:pulseRing .6s ease-out forwards;"></div><svg width="30" height="30" viewBox="0 0 24 24"><path d="M12 2c0 6-8 8-8 14a8 8 0 0016 0c0-6-8-8-8-14z" fill="#C8102E"/><path d="M12 10c0 3-3 4-3 7a3 3 0 006 0c0-3-3-4-3-7z" fill="rgba(255,255,255,.4)"/></svg>`
-
-  // Sauver en localStorage
-  const today = new Date().toISOString().split('T')[0]
-  localStorage.setItem('flamme_lit_' + today, '1')
-
-  // Mettre à jour la phrase
-  const newN = n + 1
-  const phrase = document.getElementById('flamme-phrase')
-  if (phrase) {
-    if (newN === 1) phrase.innerHTML = `Ta flamme vient de naître dans le réseau.<br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Reviens demain pour la garder vivante.</span>`
-    else phrase.innerHTML = `Tu alimentes la flamme <strong style="color:#FFD700">${newN} jours de suite.</strong><br><span style="color:rgba(255,255,255,.5);font-size:.7rem">Elle grandit avec toi, chaque jour.</span>`
-  }
-
-  // Badge streak
-  const count = document.getElementById('streak-count')
-  if (count) count.textContent = newN
-  const icon = document.getElementById('streak-icon')
-  if (icon) icon.textContent = newN >= 7 ? '🔥' : newN >= 3 ? '🔥' : '🌱'
-
-  // Sauver streak en DB
-  const code = Auth.getCode()
-  if (code) sb.from('streaks').upsert({ code, current_streak: newN, last_visit: today, longest_streak: newN }).then(() => {})
-}
-
-
-// ── NOTIFS ────────────────────────────────────────────────────
-const NOTIF_COLORS = { like:'#C8102E', comment:'#1877F2', streak:'#D97706', reward:'#D97706', message:'#7C3AED' }
-const NOTIF_ICONS  = { like:'❤️', comment:'💬', streak:'🔥', reward:'🏆', message:'✉️' }
-
-async function loadNotifs(code) {
-  const { data } = await sb.from('notifications').select('*').eq('dest_code', code).order('created_at', { ascending: false }).limit(30)
-  const list = document.getElementById('notifs-list')
-  if (!data?.length) {
-    list.innerHTML = `
-      <div style="padding:28px 20px;text-align:center;">
-        <div style="font-size:2rem;margin-bottom:10px;">🌱</div>
-        <div style="font-size:.88rem;font-weight:600;color:var(--txt1);margin-bottom:6px;">Rien encore par ici</div>
-        <div style="font-size:.8rem;color:var(--txt3);line-height:1.6;margin-bottom:18px;">Quand quelqu'un aimera ou commentera<br>ton post, tu le verras ici.</div>
-        <a href="index.html" style="display:inline-block;background:var(--rouge);color:#fff;padding:11px 22px;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:1px;font-weight:700;text-decoration:none;">Voir le flux →</a>
-      </div>`
-    return
-  }
-  const unread = data.filter(n => !n.read).length
-  document.getElementById('notif-dot').style.display = unread ? 'inline-block' : 'none'
-  list.innerHTML = data.map(n => {
-    const color = NOTIF_COLORS[n.type] || '#888'
-    const icon = NOTIF_ICONS[n.type] || '•'
-    const initials = (n.from_prenom || '?').charAt(0).toUpperCase()
-    const cls = n.type === 'streak' || n.type === 'reward' ? 'notif-item notif-reward' : 'notif-item'
-    return `
-    <div class="${cls}" id="notif-${n.id}" data-id="${n.id}">
-      <div class="swipe-delete" onclick="deleteNotif(${n.id})">Supprimer</div>
-      <div class="notif-av" style="background:${color}">${n.type === 'streak' || n.type === 'reward' ? icon : initials}</div>
-      <div class="notif-body">
-        <div class="notif-text">${n.message || ''}</div>
-        <div class="notif-time">${timeAgo(n.created_at)}</div>
-      </div>
-      <span style="font-size:16px;">${icon}</span>
-    </div>`
-  }).join('')
-  // Mark as read
-  await sb.from('notifications').update({ read: true }).eq('dest_code', code).eq('read', false)
-  // Swipe
-  list.querySelectorAll('.notif-item').forEach(el => addSwipe(el))
-}
-
-async function deleteNotif(id) {
-  await sb.from('notifications').delete().eq('id', id)
-  const el = document.getElementById('notif-' + id)
-  el?.remove()
-}
-
-// ── SWIPE HELPER ──────────────────────────────────────────────
-function addSwipe(el) {
-  let startX = 0, dx = 0
-  el.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dx = 0 }, { passive: true })
-  el.addEventListener('touchmove', e => {
-    dx = e.touches[0].clientX - startX
-    if (dx < -20) el.style.transform = `translateX(${Math.max(dx, -80)}px)`
-    else if (dx > 10) el.style.transform = 'translateX(0)'
-  }, { passive: true })
-  el.addEventListener('touchend', () => {
-    if (dx < -60) el.classList.add('swiped')
-    else el.style.transform = 'translateX(0)'
-  })
-}
-
-// ── MESSAGES PRIVÉS ───────────────────────────────────────────
-let currentConvCode = null
-let currentConvPrenom = null
-
-async function loadConvList() {
-  const code = Auth.getCode()
-  const { data } = await sb.from('messages_prives')
-    .select('*')
-    .or(`from_code.eq.${code},to_code.eq.${code}`)
-    .order('created_at', { ascending: false })
-  const convMap = {}
-  data?.forEach(m => {
-    const other = m.from_code === code ? m.to_code : m.from_code
-    const otherPrenom = m.from_code === code ? (m.to_prenom || other) : m.from_prenom
-    if (!convMap[other]) convMap[other] = { code: other, prenom: otherPrenom, last: m.contenu, time: m.created_at, unread: 0 }
-    if (!m.read && m.to_code === code) convMap[other].unread++
-  })
-  const convs = Object.values(convMap)
-  const list = document.getElementById('conv-list')
-  const unreadTotal = convs.reduce((a, c) => a + c.unread, 0)
-  document.getElementById('msg-dot').style.display = unreadTotal ? 'inline-block' : 'none'
-  if (!convs.length) { list.innerHTML = '<div style="padding:32px;text-align:center;color:var(--txt3);font-size:.85rem;">Aucun message pour l\'instant</div>'; return }
-  list.innerHTML = convs.map(c => `
-    <div class="conv-item" id="conv-${c.code}" data-code="${c.code}" onclick="openConv('${c.code}','${esc(c.prenom)}')">
-      <div class="swipe-delete" onclick="event.stopPropagation();deleteConv('${c.code}')">Supprimer</div>
-      <div class="conv-av" style="background:var(--rouge)">${c.prenom.charAt(0).toUpperCase()}</div>
-      <div class="conv-body">
-        <div class="conv-name">${esc(c.prenom)}</div>
-        <div class="conv-last">${esc(c.last)}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-        <div class="conv-time">${timeAgo(c.time)}</div>
-        ${c.unread ? '<div class="conv-unread-dot"></div>' : ''}
-      </div>
-    </div>`).join('')
-  list.querySelectorAll('.conv-item').forEach(el => addSwipe(el))
-}
-
-async function openConv(toCode, toPrenom) {
-  currentConvCode = toCode
-  currentConvPrenom = toPrenom
-  document.getElementById('conv-list-view').style.display = 'none'
-  document.getElementById('conv-detail-view').style.display = 'block'
-  document.getElementById('conv-name').textContent = toPrenom
-  const avEl = document.getElementById('conv-av')
-  avEl.textContent = toPrenom.charAt(0).toUpperCase()
-  const code = Auth.getCode()
-  const { data } = await sb.from('messages_prives')
-    .select('*')
-    .or(`and(from_code.eq.${code},to_code.eq.${toCode}),and(from_code.eq.${toCode},to_code.eq.${code})`)
-    .order('created_at', { ascending: true })
-  const bubbles = document.getElementById('conv-bubbles')
-  bubbles.innerHTML = (data || []).map(m => {
-    const isMe = m.from_code === code
-    return `<div style="display:flex;flex-direction:column;">
-      <div class="bubble ${isMe ? 'bubble-me' : 'bubble-other'}">${esc(m.contenu)}</div>
-      <div class="bubble-time" style="${isMe ? 'text-align:right' : ''}">${timeAgo(m.created_at)}</div>
-    </div>`
-  }).join('')
-  bubbles.scrollTop = bubbles.scrollHeight
-  // Mark read
-  await sb.from('messages_prives').update({ read: true }).eq('from_code', toCode).eq('to_code', code).eq('read', false)
-}
-
-function closeConv() {
-  currentConvCode = null
-  document.getElementById('conv-list-view').style.display = 'block'
-  document.getElementById('conv-detail-view').style.display = 'none'
-  loadConvList()
-}
-
-async function sendMsg() {
-  const input = document.getElementById('msg-input')
-  const contenu = input.value.trim()
-  if (!contenu || !currentConvCode) return
-  const code = Auth.getCode()
-  const prenom = Auth.getPrenom()
-  input.value = ''
-  const { error } = await sb.from('messages_prives').insert({
-    from_code: code,
-    from_prenom: prenom,
-    to_code: currentConvCode,
-    to_prenom: currentConvPrenom,
-    contenu
-  })
-  if (error) { console.warn('msg error:', error); return }
-  await sb.from('notifications').insert({
-    dest_code: currentConvCode,
-    from_code: code,
-    from_prenom: prenom,
-    type: 'message',
-    message: (prenom || 'Quelqu\'un') + ' t\'a envoyé un message'
-  })
-  openConv(currentConvCode, currentConvPrenom)
-}
-
-async function deleteConv(otherCode) {
-  const code = Auth.getCode()
-  await sb.from('messages_prives').delete()
-    .or(`and(from_code.eq.${code},to_code.eq.${otherCode}),and(from_code.eq.${otherCode},to_code.eq.${code})`)
-  loadConvList()
-}
-
-// ── NIVEAU ────────────────────────────────────────────────────
-const LEVELS = [
-  { n: 1, label: 'Nouveau',         pts: 100 },
-  { n: 2, label: 'Habitant actif',  pts: 300 },
-  { n: 3, label: 'Voix du quartier',pts: 700 },
-  { n: 4, label: 'Pilier',          pts: 1500 },
-  { n: 5, label: 'Légende',         pts: 99999 },
-]
-
-function calcPoints(streak, posts, likes, cmts) {
-  return (streak * 10) + (posts * 30) + (likes * 5) + (cmts * 15)
-}
-
-function renderLevel(streak, posts = 0, likes = 0, cmts = 0) {
-  const pts = calcPoints(streak, posts, likes, cmts)
-  let lvl = LEVELS[0]
-  let next = LEVELS[1]
-  for (let i = 0; i < LEVELS.length - 1; i++) {
-    if (pts >= LEVELS[i].pts) { lvl = LEVELS[i + 1] || LEVELS[LEVELS.length - 1]; next = LEVELS[i + 2] || null }
-    else { lvl = LEVELS[i]; next = LEVELS[i + 1]; break }
-  }
-  const prevPts = LEVELS[LEVELS.indexOf(lvl) - 1]?.pts || 0
-  const pct = next ? Math.min(100, Math.round(((pts - prevPts) / (next.pts - prevPts)) * 100)) : 100
-  const el_lbl = document.getElementById('level-label-txt')
-  const el_pts = document.getElementById('level-pts-txt')
-  const el_bar = document.getElementById('level-bar')
-  if (el_lbl) el_lbl.textContent = `Niveau ${lvl.n} · ${lvl.label}`
-  if (el_pts) el_pts.textContent = next ? `${pts} / ${next.pts} pts` : 'Niveau max !'
-  if (el_bar) el_bar.style.width = pct + '%'
-}
-
-// ── RECHERCHE MEMBRE ──────────────────────────────────────────
-let searchTimeout = null
-async function searchMember(q) {
-  const results = document.getElementById('member-results')
-  if (!q || q.length < 2) { results.style.display = 'none'; return }
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(async () => {
-    const myCode = Auth.getCode()
-    const { data } = await sb.from('profils').select('code,prenom,quartier').ilike('prenom', `%${q}%`).neq('code', myCode).limit(8)
-    if (!data?.length) { results.innerHTML = '<div style="padding:12px 16px;font-size:.82rem;color:var(--txt3);">Aucun résultat</div>'; results.style.display = 'block'; return }
-    results.style.display = 'block'
-    results.innerHTML = data.map(p => `
-      <div class="member-result" onclick="openConv('${p.code}','${esc(p.prenom)}')">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--rouge);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">${p.prenom.charAt(0).toUpperCase()}</div>
-        <div>
-          <div style="font-size:.88rem;font-weight:700;color:var(--txt1);">${esc(p.prenom)}</div>
-          ${p.quartier ? `<div style="font-size:.75rem;color:var(--txt3);">📍 ${esc(p.quartier)}</div>` : ''}
-        </div>
-      </div>`).join('')
-  }, 300)
-}
-
-// ── RECHERCHE MEMBRE ──────────────────────────────────────────
 function doLogout() {
-  Auth.logout()
+  Auth.clear ? Auth.clear() : localStorage.clear()
+  window.location.reload()
 }
 
-// ── PROFIL VIEW ──────────────────────────────────────────────
+// Profil
 function renderProfil(p) {
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val }
   set('p-name', p.prenom || 'Anonyme')
-  set('p-quartier', p.quartier ? '📍 ' + p.quartier : '')
-  const cd = document.getElementById('code-display'); if (cd) cd.textContent = p.code
-  const ep = document.getElementById('e-prenom'); if (ep) ep.value = p.prenom || ''
-  const eq = document.getElementById('e-quartier'); if (eq) eq.value = p.quartier || ''
-  const eb = document.getElementById('e-bio'); if (eb) eb.value = p.bio || ''
-  const ee = document.getElementById('e-email'); if (ee) ee.value = p.email || ''
+  set('p-quartier', p.quartier || '')
+  set('p-bio', p.bio || '')
+  if (document.getElementById('e-prenom')) document.getElementById('e-prenom').value = p.prenom || ''
+  if (document.getElementById('e-quartier')) document.getElementById('e-quartier').value = p.quartier || ''
+  if (document.getElementById('e-bio')) document.getElementById('e-bio').value = p.bio || ''
   const av = document.getElementById('profil-av')
-  if (av) { if (p.photo_url) av.innerHTML = `<img src="${esc(p.photo_url)}" alt="">` ; else av.textContent = (p.prenom || '?')[0].toUpperCase() }
+  if (av) {
+    if (p.photo_url) av.innerHTML = '<img src="' + esc(p.photo_url) + '" style="width:100%;height:100%;object-fit:cover;">'
+    else av.textContent = (p.prenom || '?')[0].toUpperCase()
+  }
+  loadProfilData(p)
 }
+
+async function loadProfilData(p) {
+  const code = Auth.getCode()
+  if (!code) return
+  try {
+    const { data: posts } = await sb.from('posts').select('id').eq('profil_code', code).eq('visible', true)
+    const ids = (posts || []).map(x => x.id)
+    document.getElementById('p-stat-posts').textContent = ids.length
+
+    if (ids.length) {
+      const [lRes, cRes] = await Promise.all([
+        sb.from('likes').select('id', {count:'exact',head:true}).eq('item_type','post').in('item_id', ids),
+        sb.from('commentaires').select('id', {count:'exact',head:true}).eq('item_type','post').eq('visible',true).in('item_id', ids)
+      ])
+      document.getElementById('p-stat-likes').textContent = lRes.count || 0
+      document.getElementById('p-stat-comments').textContent = cRes.count || 0
+    }
+
+    renderOnboarding(ids.length, p)
+
+    const { data: myPosts } = await sb.from('posts').select('*').eq('profil_code', code).eq('visible', true).order('created_at', {ascending:false}).limit(20)
+    renderMyPosts(myPosts || [], ids)
+  } catch(e) { console.warn(e) }
+}
+
+function renderOnboarding(postCount, p) {
+  const steps = [
+    { done: !!p.photo_url, icon: '📸', label: 'Ajoute une photo de profil', action: "document.getElementById('avatar-file').click()" },
+    { done: !!p.bio, icon: '✍️', label: 'Ecris ta bio', action: "openEdit()" },
+    { done: postCount > 0, icon: '💬', label: 'Publie ton premier post', action: "window.location.href='index.html'" },
+    { done: false, icon: '📸', label: 'Cree ta premiere story', action: "window.location.href='index.html'" },
+    { done: false, icon: '📋', label: 'Depose une annonce', action: "window.location.href='annonces2.html'" },
+    { done: false, icon: '📅', label: 'Organise un evenement', action: "window.location.href='evenements.html'" },
+  ]
+  const todo = steps.filter(s => !s.done)
+  if (!todo.length) { document.getElementById('onboarding-section').style.display = 'none'; return }
+  document.getElementById('onboarding-steps').innerHTML = todo.map(s =>
+    '<div onclick="' + s.action + '" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;">'
+    + '<div style="width:38px;height:38px;border-radius:50%;background:#f0f2f5;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">' + s.icon + '</div>'
+    + '<div style="flex:1;font-size:14px;color:#000;">' + s.label + '</div>'
+    + '<svg viewBox="0 0 24 24" width="16" height="16" stroke="#ccc" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>'
+    + '</div>'
+  ).join('')
+}
+
+function renderMyPosts(posts, allIds) {
+  const el = document.getElementById('my-posts-list')
+  if (!posts.length) {
+    el.innerHTML = '<div style="padding:32px 16px;text-align:center;color:#65676b;font-size:14px;">Aucune publication</div>'
+    return
+  }
+  el.innerHTML = posts.map(p => {
+    const img = p.photo_url
+      ? '<div style="border-radius:16px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia(\'' + esc(p.photo_url) + '\',\'image\')"><img src="' + esc(p.photo_url) + '?width=800&quality=70" loading="lazy" style="width:100%;height:auto;display:block;filter:brightness(1.06) saturate(1.2) contrast(1.05);"></div>'
+      : p.video_url
+      ? '<div style="border-radius:16px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia(\'' + esc(p.video_url) + '\',\'video\')"><video src="' + esc(p.video_url) + '" autoplay muted loop playsinline style="width:100%;height:auto;display:block;max-height:350px;object-fit:cover;filter:brightness(1.06) saturate(1.2) contrast(1.05);" onended="this.currentTime=0;this.play()"></video></div>'
+      : ''
+    const textCard = !p.photo_url && !p.video_url && p.contenu
+      ? '<div style="border-radius:16px;padding:20px;background:#1c1e21;"><p style="font-size:18px;font-weight:700;color:#fff;line-height:1.4;">' + esc(p.contenu) + '</p></div>'
+      : ''
+    return '<div style="padding:12px 16px;border-bottom:1px solid #f0f2f5;">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+      + '<span style="font-size:12px;color:#65676b;">' + Utils.timeAgo(p.created_at) + '</span>'
+      + '<span style="font-size:11px;color:#C8102E;font-weight:600;">' + esc(p.quartier || '') + '</span>'
+      + '</div>'
+      + (p.contenu && (p.photo_url || p.video_url) ? '<p style="font-size:15px;color:#000;font-weight:500;margin-bottom:8px;line-height:1.5;">' + esc(p.contenu) + '</p>' : '')
+      + (img || textCard)
+      + '<div style="display:flex;gap:0;margin-top:10px;align-items:center;max-width:220px;">'
+      + '<button style="background:none;border:none;padding:8px;cursor:pointer;display:flex;align-items:center;gap:5px;"><svg viewBox="0 0 24 24" width="22" height="22" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span id="plc-' + p.id + '" style="font-size:13px;color:#65676b;"></span></button>'
+      + '<button style="background:none;border:none;padding:8px;cursor:pointer;display:flex;align-items:center;gap:5px;"><svg viewBox="0 0 24 24" width="22" height="22" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span id="pcc-' + p.id + '" style="font-size:13px;color:#65676b;"></span></button>'
+      + '</div>'
+      + '</div>'
+  }).join('')
+
+  // Charger compteurs
+  setTimeout(async () => {
+    for (const post of posts) {
+      const [lRes, cRes] = await Promise.all([
+        sb.from('likes').select('id', {count:'exact',head:true}).eq('item_type','post').eq('item_id', post.id),
+        sb.from('commentaires').select('id', {count:'exact',head:true}).eq('item_type','post').eq('item_id', post.id).eq('visible', true)
+      ])
+      const lEl = document.getElementById('plc-' + post.id)
+      const cEl = document.getElementById('pcc-' + post.id)
+      if (lEl && lRes.count) lEl.textContent = lRes.count
+      if (cEl && cRes.count) cEl.textContent = cRes.count
+    }
+  }, 200)
+}
+
+// Edit profil
+function openEdit() { document.getElementById('edit-panel').style.display = 'block' }
+function closeEdit() { document.getElementById('edit-panel').style.display = 'none' }
 
 async function saveProfil() {
   const code = Auth.getCode()
   if (!code) return
   const prenom = document.getElementById('e-prenom').value.trim()
-  const quartier = document.getElementById('e-quartier').value.trim()
+  const quartier = document.getElementById('e-quartier').value
   const bio = document.getElementById('e-bio').value.trim()
-  const email = document.getElementById('e-email').value.trim()
   const msg = document.getElementById('edit-msg')
-  if (!prenom) { msg.style.color = 'var(--rouge)'; msg.textContent = 'Prénom obligatoire.'; return }
-  const updateData = { prenom, quartier: quartier || null, bio: bio || null }
-  if (email) updateData.email = email.toLowerCase()
-  const { error } = await Api.updateProfil(code, updateData)
-  if (error) { msg.style.color = 'var(--rouge)'; msg.textContent = 'Erreur.'; return }
+  if (!prenom) { msg.textContent = 'Prenom obligatoire'; return }
+  const { error } = await Api.updateProfil(code, { prenom, quartier: quartier || null, bio: bio || null })
+  if (error) { msg.textContent = 'Erreur'; return }
   Auth.save({ code, prenom, photo_url: Auth.getPhoto() })
   document.getElementById('p-name').textContent = prenom
-  document.getElementById('p-quartier').textContent = quartier ? '📍 ' + quartier : ''
-  msg.style.color = 'var(--green)'; msg.textContent = '✅ Mis à jour !'
-  setTimeout(() => msg.textContent = '', 2500)
+  document.getElementById('p-quartier').textContent = quartier || ''
+  document.getElementById('p-bio').textContent = bio || ''
+  msg.style.color = 'green'; msg.textContent = 'Mis a jour !'
+  setTimeout(() => { msg.textContent = ''; closeEdit() }, 1500)
 }
 
 async function uploadAvatar(inp) {
-  const file = inp.files?.[0]
+  const file = inp.files && inp.files[0]
   if (!file) return
   const code = Auth.getCode()
   if (!code) return
@@ -862,82 +371,58 @@ async function uploadAvatar(inp) {
     const url = await Api.uploadPhoto(file, 'avatars')
     await Api.updateProfil(code, { photo_url: url })
     Auth.save({ code, prenom: Auth.getPrenom(), photo_url: url })
-    document.getElementById('profil-av').innerHTML = `<img src="${esc(url)}" alt="">`
-    Utils.toast('Photo mise à jour !', 'success')
-  } catch (e) { Utils.toast('Erreur upload', 'error') }
+    document.getElementById('profil-av').innerHTML = '<img src="' + esc(url) + '" style="width:100%;height:100%;object-fit:cover;">'
+    Utils.toast('Photo mise a jour !', 'success')
+  } catch(e) { Utils.toast('Erreur upload', 'error') }
 }
 
-function copyCode() {
-  const code = document.getElementById('code-display').textContent
-  Utils.copy(code).then(() => {
-    const btn = document.getElementById('copy-btn')
-    btn.textContent = '✅ Copié !'; setTimeout(() => btn.textContent = 'Copier le code', 1500)
-  })
+// openMedia simplifié
+function openMedia(url, type) {
+  const existing = document.getElementById('media-viewer')
+  if (existing) existing.remove()
+  const viewer = document.createElement('div')
+  viewer.id = 'media-viewer'
+  viewer.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;'
+  let el
+  if (type === 'video') {
+    el = document.createElement('video')
+    el.src = url; el.autoplay = true; el.controls = false; el.loop = true
+    el.setAttribute('playsinline','')
+    el.style.cssText = 'max-width:100%;max-height:100%;border-radius:10px;'
+  } else {
+    el = document.createElement('img')
+    el.src = url
+    el.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;border-radius:10px;'
+  }
+  viewer.appendChild(el)
+  viewer.addEventListener('click', () => viewer.remove())
+  document.body.appendChild(viewer)
 }
 
-async function loadMesPosts(code) {
-  const el = document.getElementById('mes-posts')
-  const { data } = await Api.getMesPosts(code, 10)
-  if (!data?.length) { el.innerHTML = '<div class="empty">Aucune publication pour l\'instant</div>'; return }
-  el.innerHTML = data.map(p => `
-    <div class="pcard pcard-pad" style="margin-bottom:10px;">
-      <div style="font-size:.88rem;color:var(--txt);line-height:1.65;white-space:pre-wrap;">${esc(p.contenu || '')}</div>
-      ${p.photo_url ? `<img src="${esc(p.photo_url)}" style="width:100%;border-radius:8px;margin-top:10px;max-height:200px;object-fit:cover;" loading="lazy">` : ''}
-      <div style="font-size:.72rem;color:var(--txt3);margin-top:8px;">${timeAgo(p.created_at)}</div>
-    </div>`).join('')
-}
-
-// ── INIT ──────────────────────────────────────────────────────
-function goConnect(panel = 'login') {
-  document.getElementById('view-welcome').style.display = 'none'
-  document.getElementById('view-connect').style.display = 'block'
-  switchPanel(panel)
-}
-
+// Init
 async function init() {
   const code = Auth.getCode()
-  const nav = document.querySelector('.bottom-nav')
-
-  if (!code) {
-    // Nouveau visiteur → landing épurée, navbar visible mais non cliquable
-    document.getElementById('view-welcome').style.display = 'flex'
-    if (nav) {
-      nav.style.display = 'flex'
-      nav.style.opacity = '0.4'
-      nav.style.pointerEvents = 'none'
-    }
-    return
-  }
-
-  if (nav) { nav.style.display = 'flex'; nav.style.opacity = '1'; nav.style.pointerEvents = '' }
-  document.getElementById('view-connect').style.display = 'none'
-  document.getElementById('view-profil').style.display = 'block'
-  document.getElementById('logout-btn').style.display = 'block'
-
-  // Afficher depuis le cache immédiatement
+  if (!code) { showView('view-welcome'); return }
+  showView('view-profil')
   renderProfil({ code, prenom: Auth.getPrenom(), quartier: '', bio: '', photo_url: Auth.getPhoto() })
-
-  // Charger depuis la DB
   try {
     const p = await Api.getProfil(code)
     if (p) { Auth.save(p); renderProfil(p) }
-    await loadMesPosts(code)
-  } catch (e) { console.warn(e) }
-
-  // Streak + Notifs + Level
-  try {
-    await initStreak(code)
-    await loadNotifs(code)
-    // Stats pour le niveau
-    const stats = await Api.getProfilStats(code)
-    const streakData = await sb.from('streaks').select('current_streak').eq('code', code).single()
-    renderLevel(streakData.data?.current_streak || 1, stats.posts, stats.likes, stats.commentaires)
-  } catch(e) { console.warn('streak/notifs:', e) }
-
-  Api.trackView('profil')
+  } catch(e) { console.warn(e) }
 }
+
 init()
 </script>
+
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
+  <a class="nav-item" href="groupes.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Groupes</a>
+  <a class="nav-item" href="annonces2.html"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>Annonces</a>
+  <div class="nav-center"><button class="nav-pub" onclick="openPubForm('annonce')"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
+  <a class="nav-item" href="evenements.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a class="nav-item" href="actus2.html"><svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>Actus</a>
+  <a class="nav-item active" href="profil2.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
+</nav>
+
 </body>
 </html>
-<!-- bust1779622880 -->
