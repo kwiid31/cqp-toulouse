@@ -216,7 +216,7 @@ const Feed = (() => {
             </div>
             ${menuBtn}
           </div>
-          ${p.contenu && !textCard ? `<p style="font-size:14px;color:#1c1e21;margin:4px 0 8px;line-height:1.5;">${Utils.esc(p.contenu)}</p>` : ''}
+          ${p.contenu && !textCard ? `<p style="font-size:15px;color:#000;margin:4px 0 8px;line-height:1.55;font-weight:500;">${Utils.esc(p.contenu)}</p>` : ''}
           ${carousel || ''}
           ${textCard ? textCard.replace('</div>', '') + '</div>' : ''}
           ${img || ''}
