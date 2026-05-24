@@ -291,7 +291,7 @@ const Feed = (() => {
         <div class="c-av c-av-40 c-av-init" class="c-av c-av-40 c-av-init card-av-evenement-v2">${av}</div>
         <div class="card-meta">
           <div class="card-author" class="card-author-evenement">📅 ÉVÉNEMENT${dateStr ? ' · ' + dateStr : ''}</div>
-          <div class="card-ts">${heureStr ? '🕐 ' + heureStr : ''}${lieu ? ' · 📍 ' + lieu : ''}</div>
+          <div class="card-ts">${heureStr ? '🕐 ' + heureStr : ''}${lieu ? ' · ' + lieu : ''}</div>
         </div>
         <span class="card-link-bleu">Voir →</span>
       </div>

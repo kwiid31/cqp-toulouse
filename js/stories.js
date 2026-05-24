@@ -69,7 +69,7 @@ const Stories = (() => {
               : `<div style="position:absolute;inset:0;background:${bg};"></div>`)
           }
           <div class="story-thumb-overlay"></div>
-          ${count > 0 ? `<div style="position:absolute;top:6px;right:6px;background:#C8102E;color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:2px 6px;">${count}</div>` : ''}
+
           <div class="story-name">${q}</div>
         </div>`
     }).join('')
