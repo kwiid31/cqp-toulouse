@@ -985,7 +985,6 @@ async function init() {
   try {
     const p = await Api.getProfil(code)
     if (p) { Auth.save(p); renderProfil(p) }
-    await loadMesPosts(code)
   } catch (e) { console.warn(e) }
 
   // Streak + Notifs + Level
