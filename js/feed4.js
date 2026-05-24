@@ -172,9 +172,9 @@ const Feed = (() => {
 
     const img = p.video_url
       ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;position:relative;cursor:pointer;" onclick="openMedia('${Utils.esc(p.video_url)}','video')"><video src="${Utils.esc(p.video_url)}" autoplay muted loop playsinline preload="auto" style="width:100%;height:auto;display:block;max-height:500px;object-fit:cover;filter:brightness(1.05) saturate(1.15);" onended="this.currentTime=0;this.play()" oncanplay="this.muted=true;this.play()"></video><button onclick="event.stopPropagation();var v=this.previousElementSibling;v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊'" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;">🔇</button></div>`
-      : (p.photo_url ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(p.photo_url)}','image')"><img src="${Utils.esc(p.photo_url) + (p.photo_url.includes('supabase') ? '?width=800&quality=70' : '')}" loading="lazy" style="width:100%;height:auto;display:block;max-height:600px;object-fit:cover;"></div>` : '')
+      : (p.photo_url ? `<div class="card-img-wrap" style="border-radius:10px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(p.photo_url)}','image')"><img src="${Utils.esc(p.photo_url)}" loading="lazy" style="width:100%;height:auto;display:block;max-height:600px;object-fit:cover;"></div>` : '')
     // Post texte sans photo — visuel immersif auto
-    const textCard = (!p.video_url && !p.photo_url && !p.media_urls && p.contenu) ? (() => {
+    const textCard = (!p.video_url && !p.photo_url && p.contenu) ? (() => {
       const txt = p.contenu
       const isShort = txt.length < 80
       const fontSize = isShort ? '1.5rem' : (txt.length < 160 ? '1.15rem' : '.95rem')
@@ -216,19 +216,19 @@ const Feed = (() => {
             </div>
             ${menuBtn}
           </div>
-          ${p.contenu && !textCard ? `<p style="font-size:14px;color:#1c1e21;margin:4px 0 8px;line-height:1.5;">${Utils.esc(p.contenu)}</p>` : ''}
           ${carousel || ''}
+          ${p.contenu && !textCard ? `<p style="font-size:14px;color:#1c1e21;margin:4px 0 8px;line-height:1.5;">${Utils.esc(p.contenu)}</p>` : ''}
           ${textCard ? textCard.replace('</div>', '') + '</div>' : ''}
           ${img || ''}
-          <div style="display:flex;gap:0;margin-top:8px;align-items:center;justify-content:space-between;max-width:200px;">
-            <button id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)" style="background:none;border:none;padding:8px;cursor:pointer;display:flex;align-items:center;gap:5px;">
-              <svg viewBox="0 0 24 24" width="22" height="22" stroke="${liked?'#C8102E':'#65676b'}" fill="${liked?'#C8102E':'none'}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <div style="display:flex;gap:14px;margin-top:8px;align-items:center;">
+            <button id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)" style="background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;gap:5px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="${liked?'#C8102E':'#65676b'}" fill="${liked?'#C8102E':'none'}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
-            <button onclick="openSheet('post',${p.id})" style="background:none;border:none;padding:8px;cursor:pointer;">
-              <svg viewBox="0 0 24 24" width="22" height="22" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <button onclick="openSheet('post',${p.id})" style="background:none;border:none;padding:0;cursor:pointer;">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </button>
-            <button onclick="Feed.share(${p.id})" style="background:none;border:none;padding:8px;cursor:pointer;">
-              <svg viewBox="0 0 24 24" width="22" height="22" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            <button onclick="Feed.share(${p.id})" style="background:none;border:none;padding:0;cursor:pointer;">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="#65676b" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             </button>
           </div>
           ${(likeCount > 0 || cmtCount > 0) ? `<div style="margin-top:5px;font-size:12px;color:#65676b;">
@@ -347,7 +347,6 @@ const Feed = (() => {
 
   // ── LIKES ────────────────────────────────────────────────────
   const toggleLike = async (postId, btn) => {
-    if (!Auth.getCode()) { window.location.href = 'profil.html'; return }
     const liked = _myLikes.has(postId)
     const countEl = document.getElementById(`lc-${postId}`)
     const svg = btn.querySelector('svg')
