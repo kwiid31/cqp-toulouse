@@ -186,35 +186,30 @@ if (typeof Api !== 'undefined' && Api.trackView) Api.trackView('actus');
 setTimeout(function(){ var h=location.hash.replace('#act-',''); if(h&&!isNaN(h)) openActu(parseInt(h)); }, 600);
 </script>
 
-<div class="pub-overlay" id="pub-overlay" onclick="closePub()"></div>
+<div class="pub-overlay" id="pub-overlay" onclick="document.getElementById('pub-overlay').classList.remove('open');document.getElementById('pub-menu').classList.remove('open');document.body.style.overflow=''"></div>
 <div class="pub-menu" id="pub-menu">
   <div class="pub-menu-title">Que voulez-vous partager ?</div>
   <div class="pub-options">
-    <button class="pub-opt" onclick="openPostForm('post')">
+    <button class="pub-opt" onclick="location.href='index.html'">
       <div class="pub-opt-icon" style="background:#fff0f2;">💬</div>
       <div><div class="pub-opt-label">Post</div><div class="pub-opt-sub">Texte ou photo</div></div>
+    </button>
+    <button class="pub-opt" onclick="location.href='annonces2.html'">
+      <div class="pub-opt-icon" style="background:#f0fdf4;">📋</div>
+      <div><div class="pub-opt-label">Annonce</div><div class="pub-opt-sub">Vente, service…</div></div>
+    </button>
+    <button class="pub-opt" onclick="location.href='evenements.html'">
+      <div class="pub-opt-icon" style="background:#fff7ed;">📅</div>
+      <div><div class="pub-opt-label">Événement</div><div class="pub-opt-sub">Organiser…</div></div>
+    </button>
+  </div>
+</div>
 <script>
-function openPubForm(tab) {
-  if (!Auth.getCode()) { window.location.href = 'profil.html'; return }
-  _pubTab = tab || 'annonce'
-  switchPubTab(_pubTab)
-  document.getElementById('pub-form').classList.add('open')
+function openPubForm() {
+  if (!Auth || !Auth.getCode()) { window.location.href = 'profil.html'; return }
+  document.getElementById('pub-overlay').classList.add('open')
+  document.getElementById('pub-menu').classList.add('open')
   document.body.style.overflow = 'hidden'
-  setTimeout(function(){ document.getElementById('pub-titre').focus() }, 100)
-}
-function closePubForm() {
-  document.getElementById('pub-form').classList.remove('open')
-  document.body.style.overflow = ''
-  document.getElementById('pub-titre').value = ''
-  document.getElementById('pub-desc').value = ''
-  document.getElementById('pub-prix').value = ''
-  document.getElementById('pub-date').value = ''
-  document.getElementById('pub-lieu').value = ''
-  document.getElementById('pub-photo').value = ''
-  document.getElementById('pub-photo-preview').style.display = 'none'
-  document.getElementById('pub-photo-label').textContent = 'Ajouter une photo'
-  document.getElementById('pub-categorie').selectedIndex = 0
-  pubCheckSubmit()
 }
 </script>
 </body>
