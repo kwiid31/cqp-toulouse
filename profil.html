@@ -857,7 +857,7 @@ function renderOnboarding(postCount, p) {
 function renderMyPosts(posts) {
   const el = document.getElementById('my-posts-list')
   if (!posts.length) {
-    el.innerHTML = '<div style="padding:24px 16px;text-align:center;color:#65676b;font-size:14px;">Aucune publication pour l'instant</div>'
+    el.innerHTML = "<div style=\"padding:24px 16px;text-align:center;color:#65676b;font-size:14px;\">Aucune publication</div>"
     return
   }
   el.innerHTML = posts.map(p => {
@@ -942,7 +942,7 @@ function copyCode() {
 async function loadMesPosts(code) {
   const el = document.getElementById('mes-posts')
   const { data } = await Api.getMesPosts(code, 10)
-  if (!data?.length) { el.innerHTML = '<div class="empty">Aucune publication pour l\'instant</div>'; return }
+  if (!data?.length) { el.innerHTML = '<div class="empty">Aucune publication pour linstant</div>'; return }
   el.innerHTML = data.map(p => `
     <div class="pcard pcard-pad" style="margin-bottom:10px;">
       <div style="font-size:.88rem;color:var(--txt);line-height:1.65;white-space:pre-wrap;">${esc(p.contenu || '')}</div>
