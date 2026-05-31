@@ -6,7 +6,6 @@
 const Api = (() => {
 
   // ── UTILITAIRE SESSION ─────────────────────────────────────────
-  // session_id = code si connecté, sinon UUID anonyme
   const sid = () => Auth.getCode() || Auth.getSid()
 
   // ── PROFILS ───────────────────────────────────────────────────
@@ -90,7 +89,7 @@ const Api = (() => {
       .order('created_at', { ascending: false }).limit(20)
 
   const createStory = ({ prenom, photo_url, video_url, texte, quartier }) => {
-    if (!photo_url && !video_url) throw new Error('Photo ou vidéo obligatoire pour une story')
+    if (!photo_url && !video_url) throw new Error('Photo ou video obligatoire pour une story')
     return sb.from('stories').insert({
       session_id: sid(),
       profil_code: Auth.getCode() || null,
@@ -153,7 +152,7 @@ const Api = (() => {
   const rejectAnnonce = id =>
     sb.from('annonces').update({ visible: false }).eq('id', id)
 
-  // ── ÉVÉNEMENTS ────────────────────────────────────────────────
+  // ── EVENEMENTS ────────────────────────────────────────────────
   const getEvenements = (cat, limit = 20) => {
     let q = sb.from('evenements').select('*').eq('visible', true).eq('validee', true)
       .gte('date_debut', new Date().toISOString())
@@ -170,7 +169,7 @@ const Api = (() => {
     sb.from('evenements').insert({
       titre,
       date_debut,
-      categorie: categorie || 'Événement',
+      categorie: categorie || 'Evenement',
       lieu: lieu || null,
       description: description || null,
       propose_par: propose_par || Auth.getPrenom() || null,
@@ -189,10 +188,7 @@ const Api = (() => {
 
   const createInscription = ({ evenement_id, prenom, nom = '', email = '', telephone }) =>
     sb.from('inscriptions_evenements').insert({
-      evenement_id,
-      prenom,
-      nom,
-      email,
+      evenement_id, prenom, nom, email,
       telephone: telephone || null,
     })
 
@@ -266,7 +262,7 @@ const Api = (() => {
   const hidePostAdmin = id =>
     sb.from('posts').update({ visible: false }).eq('id', id)
 
-  // ── UPLOAD VERS CLOUDINARY — zéro bande passante Supabase ─────
+  // ── UPLOAD VERS CLOUDINARY — zero bande passante Supabase ─────
   const CLOUDINARY_CLOUD = 'dbpe9xree'
   const CLOUDINARY_PRESET = 'cqp_toulouse'
 
@@ -278,7 +274,7 @@ const Api = (() => {
     fd.append('upload_preset', CLOUDINARY_PRESET)
     fd.append('folder', 'cqp/' + folder)
     const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: fd })
-    if (!res.ok) throw new Error('Upload Cloudinary échoué: ' + res.status)
+    if (!res.ok) throw new Error('Upload Cloudinary echoue: ' + res.status)
     const data = await res.json()
     if (data.error) throw new Error(data.error.message)
     return data.secure_url
@@ -291,7 +287,7 @@ const Api = (() => {
     fd.append('folder', 'cqp/' + folder)
     fd.append('resource_type', 'video')
     const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/video/upload`, { method: 'POST', body: fd })
-    if (!res.ok) throw new Error('Upload vidéo Cloudinary échoué: ' + res.status)
+    if (!res.ok) throw new Error('Upload video Cloudinary echoue: ' + res.status)
     const data = await res.json()
     if (data.error) throw new Error(data.error.message)
     return data.secure_url
@@ -313,7 +309,7 @@ const Api = (() => {
     getLikesForFeed, addLike, removeLike,
     getComments, addComment,
     getStories, createStory,
-    getActus, createActu, deleteActu, createAnnonce, createEvenement,
+    getActus, createActu, deleteActu,
     getAnnonces, getPendingAnnonces, createAnnonce, approveAnnonce, rejectAnnonce,
     getEvenements, getPendingEvenements, createEvenement, approveEvenement, rejectEvenement,
     createInscription,
