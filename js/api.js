@@ -51,7 +51,6 @@ const Api = (() => {
   const hidePost = id => sb.from('posts').update({ visible: false }).eq('id', id)
 
   // ── LIKES ─────────────────────────────────────────────────────
-  // DB: likes(item_type, item_id, session_id, profil_code)
   const getLikesForFeed = ids =>
     sb.from('likes').select('item_id, session_id').eq('item_type', 'post').in('item_id', ids)
 
@@ -59,7 +58,7 @@ const Api = (() => {
     sb.from('likes').insert({
       item_type: 'post',
       item_id: postId,
-      session_id: sid(),               // ⚠️ NOT NULL
+      session_id: sid(),
       profil_code: Auth.getCode() || null,
     })
 
@@ -67,8 +66,6 @@ const Api = (() => {
     sb.from('likes').delete().eq('item_type', 'post').eq('item_id', postId).eq('session_id', sid())
 
   // ── COMMENTAIRES ──────────────────────────────────────────────
-  // DB: commentaires(item_type, item_id, message, prenom, profil_code)
-  // ⚠️ champ = "message" pas "contenu"
   const getComments = (itemType, itemId) =>
     sb.from('commentaires').select('*')
       .eq('item_type', itemType).eq('item_id', itemId).eq('visible', true)
@@ -86,7 +83,6 @@ const Api = (() => {
     }).select().single()
 
   // ── STORIES ───────────────────────────────────────────────────
-  // DB: stories(session_id, prenom, photo_url NOT NULL, expires_at, visible)
   const getStories = () =>
     sb.from('stories').select('*')
       .eq('visible', true)
@@ -123,8 +119,6 @@ const Api = (() => {
     sb.from('actus').update({ visible: false }).eq('id', id)
 
   // ── ANNONCES ──────────────────────────────────────────────────
-  // DB: annonces(prenom NOT NULL, nom NOT NULL, email NOT NULL, quartier NOT NULL,
-  //              categorie NOT NULL, titre NOT NULL, description NOT NULL)
   const getAnnonces = (cat, limit = 30) => {
     let q = sb.from('annonces').select('*').eq('visible', true).eq('validee', true)
       .order('created_at', { ascending: false }).limit(limit)
@@ -160,10 +154,13 @@ const Api = (() => {
     sb.from('annonces').update({ visible: false }).eq('id', id)
 
   // ── ÉVÉNEMENTS ────────────────────────────────────────────────
-  const getEvenements = (limit = 20) =>
-    sb.from('evenements').select('*').eq('visible', true).eq('validee', true)
+  const getEvenements = (cat, limit = 20) => {
+    let q = sb.from('evenements').select('*').eq('visible', true).eq('validee', true)
       .gte('date_debut', new Date().toISOString())
       .order('date_debut', { ascending: true }).limit(limit)
+    if (cat) q = q.eq('categorie', cat)
+    return q
+  }
 
   const getPendingEvenements = () =>
     sb.from('evenements').select('*').eq('validee', false)
@@ -190,7 +187,6 @@ const Api = (() => {
   const rejectEvenement = id =>
     sb.from('evenements').update({ visible: false }).eq('id', id)
 
-  // inscriptions_evenements: formulaire complet (nom/email obligatoires)
   const createInscription = ({ evenement_id, prenom, nom = '', email = '', telephone }) =>
     sb.from('inscriptions_evenements').insert({
       evenement_id,
@@ -223,7 +219,7 @@ const Api = (() => {
   const joinGroupe = (groupeId) =>
     sb.from('groupe_membres').insert({
       groupe_id: groupeId,
-      session_id: sid(),               // ⚠️ NOT NULL
+      session_id: sid(),
       profil_code: Auth.getCode() || null,
       prenom: Auth.getPrenom() || 'Anonyme',
     })
@@ -245,7 +241,7 @@ const Api = (() => {
   const sendMessage = ({ groupe_id, contenu, photo_url }) =>
     sb.from('groupe_messages').insert({
       groupe_id,
-      session_id: sid(),               // ⚠️ NOT NULL
+      session_id: sid(),
       profil_code: Auth.getCode() || null,
       prenom: Auth.getPrenom() || 'Anonyme',
       contenu: contenu || null,
@@ -270,38 +266,35 @@ const Api = (() => {
   const hidePostAdmin = id =>
     sb.from('posts').update({ visible: false }).eq('id', id)
 
-  // ── UPLOAD PHOTO ──────────────────────────────────────────────
+  // ── UPLOAD VERS CLOUDINARY — zéro bande passante Supabase ─────
+  const CLOUDINARY_CLOUD = 'dbpe9xree'
+  const CLOUDINARY_PRESET = 'cqp_toulouse'
+
   const uploadPhoto = async (file, folder = 'posts') => {
-    // Si c'est une vidéo — upload direct sans compression
-    if (file.type.startsWith('video/')) {
-      return uploadVideo(file, folder)
-    }
+    if (file.type.startsWith('video/')) return uploadVideo(file, folder)
     const compressed = await Utils.compressImage(file)
-    const name = `${folder}/${Date.now()}-${Auth.getSid().slice(0, 8)}.jpg`
-    const { error } = await sb.storage.from(CQP.BUCKET)
-      .upload(name, compressed, { contentType: 'image/jpeg', upsert: false })
-    if (error) throw error
-    return sb.storage.from(CQP.BUCKET).getPublicUrl(name).data.publicUrl
+    const fd = new FormData()
+    fd.append('file', compressed)
+    fd.append('upload_preset', CLOUDINARY_PRESET)
+    fd.append('folder', 'cqp/' + folder)
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: fd })
+    if (!res.ok) throw new Error('Upload Cloudinary échoué: ' + res.status)
+    const data = await res.json()
+    if (data.error) throw new Error(data.error.message)
+    return data.secure_url
   }
 
   const uploadVideo = async (file, folder = 'posts') => {
-    // iPhone filme en .mov (video/quicktime) — on garde le format natif
-    const mimeType = file.type || 'video/mp4'
-    const extMap = {
-      'video/mp4': 'mp4',
-      'video/quicktime': 'mov',
-      'video/mov': 'mov',
-      'video/webm': 'webm',
-      'video/x-m4v': 'm4v',
-      'video/3gpp': '3gp',
-      'video/mpeg': 'mpeg',
-    }
-    const ext = extMap[mimeType] || file.name.split('.').pop() || 'mp4'
-    const name = `${folder}/${Date.now()}-${Auth.getSid().slice(0, 8)}.${ext}`
-    const { error } = await sb.storage.from(CQP.BUCKET)
-      .upload(name, file, { contentType: mimeType, upsert: false })
-    if (error) throw new Error('Upload vidéo : ' + error.message)
-    return sb.storage.from(CQP.BUCKET).getPublicUrl(name).data.publicUrl
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('upload_preset', CLOUDINARY_PRESET)
+    fd.append('folder', 'cqp/' + folder)
+    fd.append('resource_type', 'video')
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/video/upload`, { method: 'POST', body: fd })
+    if (!res.ok) throw new Error('Upload vidéo Cloudinary échoué: ' + res.status)
+    const data = await res.json()
+    if (data.error) throw new Error(data.error.message)
+    return data.secure_url
   }
 
   // ── PAGE VIEW ─────────────────────────────────────────────────
