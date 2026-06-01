@@ -4,8 +4,8 @@
 // ═══════════════════════════════════════════════════════════════════
 
 const CQP = Object.freeze({
-  SBU: 'https://vzfwtyczqfbhbjzotjft.supabase.co',
-  SBK: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6Znd0eWN6cWZiaGJqem90amZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NDY0OTIsImV4cCI6MjA5MTMyMjQ5Mn0.heto5Qc6WdIjlurllzXhi1PmnRY7_x65Bdof-vKqyGk',
+  SBU: 'https://yjcbhtmpfhyjwuqfldsx.supabase.co',
+  SBK: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqY2JodG1wZmh5and1cWZsZHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzMzcyNjEsImV4cCI6MjA5NTkxMzI2MX0.23oZJLeOc--qxu3l4ivmbSYF0yUu_Mo7f5QqbGSkzto',
   BUCKET: 'site-photos',
   FEED_SIZE: 10,
   STORY_TTL: 24 * 60 * 60 * 1000,
