@@ -1,19 +1,30 @@
-// ═══════════════════════════════════════════════════════════════════
-// CQP TOULOUSE — api.js  (toutes les requêtes Supabase)
-// Schéma DB réel vérifié — session_id requis partout
-// ═══════════════════════════════════════════════════════════════════
+// CQP TOULOUSE — api.js (toutes les requetes Supabase)
+// Schema DB reel verifie — session_id requis partout
 
 const Api = (() => {
 
-  // ── UTILITAIRE SESSION ─────────────────────────────────────────
   const sid = () => Auth.getCode() || Auth.getSid()
 
-  // ── PROFILS ───────────────────────────────────────────────────
+  // PROFILS
   const getProfil = code =>
     sb.from('profils').select('*').eq('code', code).limit(1).then(r => r.data?.[0] ?? null)
 
   const updateProfil = (code, fields) =>
     sb.from('profils').update(fields).eq('code', code)
+
+  const createProfil = async ({ prenom, quartier, email }) => {
+    const code = String(Math.floor(100000 + Math.random() * 900000))
+    const { data, error } = await sb.from('profils').insert({
+      session_id: code,
+      prenom,
+      quartier: quartier || null,
+      email: email || null,
+      code,
+      is_admin: false,
+    }).select().single()
+    if (error) throw error
+    return data
+  }
 
   const getProfilStats = async code => {
     const [p, l, c] = await Promise.all([
@@ -24,7 +35,7 @@ const Api = (() => {
     return { posts: p.count ?? 0, likes: l.count ?? 0, commentaires: c.count ?? 0 }
   }
 
-  // ── FEED / POSTS ──────────────────────────────────────────────
+  // FEED / POSTS
   const getFeed = (page = 0, size = CQP.FEED_SIZE) =>
     sb.from('posts').select('*').eq('visible', true)
       .order('created_at', { ascending: false })
@@ -49,7 +60,7 @@ const Api = (() => {
 
   const hidePost = id => sb.from('posts').update({ visible: false }).eq('id', id)
 
-  // ── LIKES ─────────────────────────────────────────────────────
+  // LIKES
   const getLikesForFeed = ids =>
     sb.from('likes').select('item_id, session_id').eq('item_type', 'post').in('item_id', ids)
 
@@ -64,7 +75,7 @@ const Api = (() => {
   const removeLike = postId =>
     sb.from('likes').delete().eq('item_type', 'post').eq('item_id', postId).eq('session_id', sid())
 
-  // ── COMMENTAIRES ──────────────────────────────────────────────
+  // COMMENTAIRES
   const getComments = (itemType, itemId) =>
     sb.from('commentaires').select('*')
       .eq('item_type', itemType).eq('item_id', itemId).eq('visible', true)
@@ -81,7 +92,7 @@ const Api = (() => {
       visible: true,
     }).select().single()
 
-  // ── STORIES ───────────────────────────────────────────────────
+  // STORIES
   const getStories = () =>
     sb.from('stories').select('*')
       .eq('visible', true)
@@ -103,7 +114,7 @@ const Api = (() => {
     }).select().single()
   }
 
-  // ── ACTUS ─────────────────────────────────────────────────────
+  // ACTUS
   const getActus = (cat, limit = 30) => {
     let q = sb.from('actus').select('*').eq('visible', true)
       .order('date_publication', { ascending: false }).limit(limit)
@@ -117,7 +128,7 @@ const Api = (() => {
   const deleteActu = id =>
     sb.from('actus').update({ visible: false }).eq('id', id)
 
-  // ── ANNONCES ──────────────────────────────────────────────────
+  // ANNONCES
   const getAnnonces = (cat, limit = 30) => {
     let q = sb.from('annonces').select('*').eq('visible', true).eq('validee', true)
       .order('created_at', { ascending: false }).limit(limit)
@@ -131,19 +142,13 @@ const Api = (() => {
 
   const createAnnonce = ({ prenom, nom = '', email = '', quartier = '', categorie, titre, description, contenu, telephone, photo_url }) =>
     sb.from('annonces').insert({
-      prenom,
-      nom,
-      email,
-      quartier,
-      categorie,
-      titre,
+      prenom, nom, email, quartier, categorie, titre,
       description: description || contenu || '',
       contenu: contenu || description || null,
       telephone: telephone || null,
       photo_url: photo_url || null,
       profil_code: Auth.getCode() || null,
-      visible: false,
-      validee: false,
+      visible: false, validee: false,
     })
 
   const approveAnnonce = id =>
@@ -152,7 +157,7 @@ const Api = (() => {
   const rejectAnnonce = id =>
     sb.from('annonces').update({ visible: false }).eq('id', id)
 
-  // ── EVENEMENTS ────────────────────────────────────────────────
+  // EVENEMENTS
   const getEvenements = (cat, limit = 20) => {
     let q = sb.from('evenements').select('*').eq('visible', true).eq('validee', true)
       .gte('date_debut', new Date().toISOString())
@@ -167,8 +172,7 @@ const Api = (() => {
 
   const createEvenement = ({ titre, date_debut, categorie, lieu, description, propose_par, photo_url }) =>
     sb.from('evenements').insert({
-      titre,
-      date_debut,
+      titre, date_debut,
       categorie: categorie || 'Evenement',
       lieu: lieu || null,
       description: description || null,
@@ -176,8 +180,7 @@ const Api = (() => {
       prenom: Auth.getPrenom() || null,
       profil_code: Auth.getCode() || null,
       photo_url: photo_url || null,
-      visible: false,
-      validee: false,
+      visible: false, validee: false,
     })
 
   const approveEvenement = id =>
@@ -192,21 +195,19 @@ const Api = (() => {
       telephone: telephone || null,
     })
 
-  // ── GROUPES ───────────────────────────────────────────────────
+  // GROUPES
   const getGroupes = () =>
     sb.from('groupes').select('*').eq('visible', true)
       .order('created_at', { ascending: false })
 
   const createGroupe = ({ nom, description, categorie, quartier }) =>
     sb.from('groupes').insert({
-      nom,
-      description: description || null,
+      nom, description: description || null,
       categorie: categorie || null,
       quartier: quartier || null,
       created_by: sid(),
       created_by_prenom: Auth.getPrenom() || null,
-      membres_count: 1,
-      visible: true,
+      membres_count: 1, visible: true,
     }).select().single()
 
   const getMesGroupes = () =>
@@ -214,8 +215,7 @@ const Api = (() => {
 
   const joinGroupe = (groupeId) =>
     sb.from('groupe_membres').insert({
-      groupe_id: groupeId,
-      session_id: sid(),
+      groupe_id: groupeId, session_id: sid(),
       profil_code: Auth.getCode() || null,
       prenom: Auth.getPrenom() || 'Anonyme',
     })
@@ -228,7 +228,7 @@ const Api = (() => {
     sb.from('groupe_membres').select('*', { count:'exact', head:true })
       .eq('groupe_id', groupeId)
 
-  // ── MESSAGES GROUPES ──────────────────────────────────────────
+  // MESSAGES GROUPES
   const getMessages = (groupeId, limit = 60) =>
     sb.from('groupe_messages').select('*').eq('groupe_id', groupeId)
       .eq('visible', true)
@@ -236,8 +236,7 @@ const Api = (() => {
 
   const sendMessage = ({ groupe_id, contenu, photo_url }) =>
     sb.from('groupe_messages').insert({
-      groupe_id,
-      session_id: sid(),
+      groupe_id, session_id: sid(),
       profil_code: Auth.getCode() || null,
       prenom: Auth.getPrenom() || 'Anonyme',
       contenu: contenu || null,
@@ -245,9 +244,8 @@ const Api = (() => {
       visible: true,
     }).select().single()
 
-  // ── ADMIN ─────────────────────────────────────────────────────
-  const getStats = () =>
-    sb.from('v_stats_admin').select('*').single()
+  // ADMIN
+  const getStats = () => sb.from('v_stats_admin').select('*').single()
 
   const getAllPosts = (limit = 50) =>
     sb.from('posts').select('*').eq('visible', true)
@@ -262,7 +260,7 @@ const Api = (() => {
   const hidePostAdmin = id =>
     sb.from('posts').update({ visible: false }).eq('id', id)
 
-  // ── UPLOAD VERS CLOUDINARY — zero bande passante Supabase ─────
+  // UPLOAD CLOUDINARY
   const CLOUDINARY_CLOUD = 'dbpe9xree'
   const CLOUDINARY_PRESET = 'cqp_toulouse'
 
@@ -273,8 +271,8 @@ const Api = (() => {
     fd.append('file', compressed)
     fd.append('upload_preset', CLOUDINARY_PRESET)
     fd.append('folder', 'cqp/' + folder)
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: fd })
-    if (!res.ok) throw new Error('Upload Cloudinary echoue: ' + res.status)
+    const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload', { method: 'POST', body: fd })
+    if (!res.ok) throw new Error('Upload echoue: ' + res.status)
     const data = await res.json()
     if (data.error) throw new Error(data.error.message)
     return data.secure_url
@@ -286,14 +284,14 @@ const Api = (() => {
     fd.append('upload_preset', CLOUDINARY_PRESET)
     fd.append('folder', 'cqp/' + folder)
     fd.append('resource_type', 'video')
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/video/upload`, { method: 'POST', body: fd })
-    if (!res.ok) throw new Error('Upload video Cloudinary echoue: ' + res.status)
+    const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/video/upload', { method: 'POST', body: fd })
+    if (!res.ok) throw new Error('Upload video echoue: ' + res.status)
     const data = await res.json()
     if (data.error) throw new Error(data.error.message)
     return data.secure_url
   }
 
-  // ── PAGE VIEW ─────────────────────────────────────────────────
+  // PAGE VIEW
   const trackView = page => {
     sb.from('page_views').insert({
       session_id: sid(),
@@ -304,7 +302,7 @@ const Api = (() => {
 
   return {
     sid,
-    getProfil, updateProfil, getProfilStats,
+    getProfil, updateProfil, createProfil, getProfilStats,
     getFeed, getMesPosts, createPost, hidePost,
     getLikesForFeed, addLike, removeLike,
     getComments, addComment,
