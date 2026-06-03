@@ -173,20 +173,10 @@ const Feed = (() => {
 
 
     const img = p.video_url
-      ? `<div class="card-img-wrap" style="border-radius:16px;overflow:hidden;border:0.5px solid #e4e6eb;position:relative;cursor:pointer;" onclick="openMedia('${Utils.esc(p.video_url)}','video')"><video src="${Utils.esc(p.video_url)}" autoplay muted loop playsinline preload="auto" style="width:100%;height:auto;display:block;max-height:500px;filter:brightness(1.04) saturate(1.2) contrast(1.04);" onended="this.currentTime=0;this.play()" oncanplay="this.muted=true;this.play()"></video><button onclick="event.stopPropagation();var v=this.previousElementSibling;v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊'" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;">🔇</button></div>`
-      : (p.photo_url ? `<div class="card-img-wrap" style="border-radius:16px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(p.photo_url)}','image')"><img src="${Utils.esc(p.photo_url)}" loading="lazy" style="width:100%;height:auto;display:block;max-height:560px;filter:brightness(1.04) saturate(1.2) contrast(1.04);"></div>` : '')
+      ? `<div class="card-img-wrap" style="border-radius:16px;overflow:hidden;border:0.5px solid #e4e6eb;position:relative;cursor:pointer;" onclick="openMedia('${Utils.esc(p.video_url)}','video')"><video src="${Utils.esc(p.video_url)}" autoplay muted loop playsinline preload="auto" style="width:100%;height:auto;display:block;max-height:350px;object-fit:cover;filter:brightness(1.08) saturate(1.35) contrast(1.08);" onended="this.currentTime=0;this.play()" oncanplay="this.muted=true;this.play()"></video><button onclick="event.stopPropagation();var v=this.previousElementSibling;v.muted=!v.muted;this.textContent=v.muted?'🔇':'🔊'" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.5);border:none;border-radius:50%;width:32px;height:32px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;">🔇</button></div>`
+      : (p.photo_url ? `<div class="card-img-wrap" style="border-radius:16px;overflow:hidden;border:0.5px solid #e4e6eb;cursor:pointer;" onclick="openMedia('${Utils.esc(p.photo_url)}','image')"><img src="${Utils.esc(p.photo_url)}" loading="lazy" style="width:100%;height:auto;display:block;max-height:400px;object-fit:cover;filter:brightness(1.08) saturate(1.35) contrast(1.08);"></div>` : '')
     // Post texte sans photo — visuel immersif auto
-    const textCard = (!p.video_url && !p.photo_url && !p.media_urls && p.contenu) ? (() => {
-      const txt = p.contenu
-      const isShort = txt.length < 80
-      const fontSize = isShort ? '1.5rem' : (txt.length < 160 ? '1.15rem' : '.95rem')
-      const quartier = p.quartier || ''
-      return `<div style="background:#1c1e21;padding:28px 20px 24px;position:relative;min-height:160px;display:flex;flex-direction:column;justify-content:space-between;border-radius:10px;overflow:hidden;border:0.5px solid #333;">
-        <div style="font-size:9px;font-weight:700;color:#C8102E;letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;">${Utils.esc(quartier)}</div>
-        <div style="font-size:${fontSize};font-weight:700;color:#fff;line-height:1.35;flex:1;display:flex;align-items:center;">${Utils.esc(txt)}</div>
-        <div style="margin-top:16px;width:28px;height:2px;background:#C8102E;"></div>
-      </div>`
-    })() : ''
+    const textCard = ''
     const menuBtn = isMine
       ? `<div style="position:relative;">
           <button onclick="Feed.toggleMenu(${p.id},event)" style="background:none;border:none;color:var(--txt3);font-size:1.1rem;letter-spacing:1px;padding:4px 6px;cursor:pointer;line-height:1;">···</button>
@@ -218,9 +208,8 @@ const Feed = (() => {
             </div>
             ${menuBtn}
           </div>
-          ${p.contenu && !textCard ? `<p style="font-size:15px;color:#000;margin:4px 0 8px;line-height:1.55;font-weight:500;">${Utils.esc(p.contenu)}</p>` : ''}
+          ${p.contenu ? `<p style="font-size:15px;color:#000;margin:4px 0 8px;line-height:1.55;font-weight:500;">${Utils.esc(p.contenu)}</p>` : ''}
           ${carousel || ''}
-          ${textCard ? textCard.replace('</div>', '') + '</div>' : ''}
           ${img || ''}
           <div style="display:flex;gap:0;margin-top:8px;align-items:center;justify-content:space-between;max-width:220px;">
             <button id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)" style="background:none;border:none;padding:8px;cursor:pointer;display:flex;align-items:center;gap:5px;">
