@@ -99,7 +99,7 @@ textarea::placeholder{color:#8b98a5;font-size:16px}
     <div class="input-box">
       <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)">
       <button class="plus" onclick="openPhoto()" title="Ajouter une photo" aria-label="Ajouter une photo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#536471" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
-      <textarea id="ta" placeholder="Pose une question ou dis-moi ce que tu veux faire…" rows="1" oninput="resize(this)" onkeydown="kd(event)"></textarea>
+      <textarea id="ta" placeholder="Pose une question ou dis-moi ce que tu veux faire…" rows="2" oninput="resize(this)" onkeydown="kd(event)"></textarea>
       <button class="send" id="sbtn" onclick="send()" disabled><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button>
     </div>
   </div>
