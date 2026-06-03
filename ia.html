@@ -3,475 +3,223 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
-<title>IA — CQP</title>
+<title>IA CQP</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; background: #fff; font-family: -apple-system, system-ui, sans-serif; overflow: hidden; }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden}
+.wrap{display:flex;flex-direction:column;height:100dvh}
+.top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:.5px solid #eff3f4;flex-shrink:0}
+.back{background:none;border:none;cursor:pointer;padding:4px}
+.brand{display:flex;align-items:center;gap:8px}
+.logo{width:28px;height:28px;background:#C8102E;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.brand-name{font-size:15px;font-weight:700;color:#0f1419}
+.badge{font-size:12px;color:#536471;background:#f7f9f9;border:.5px solid #e4e6eb;border-radius:20px;padding:4px 10px;display:flex;align-items:center;gap:5px}
+.dot{width:6px;height:6px;border-radius:50%;background:#00ba7c}
+.conn-btn{background:none;border:.5px solid #e4e6eb;border-radius:20px;padding:5px 12px;font-size:12px;color:#0f1419;cursor:pointer;font-family:inherit;font-weight:600}
 
-.ia-wrap { display: flex; flex-direction: column; height: 100dvh; }
+.msgs{flex:1;overflow-y:auto;padding-bottom:8px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:32px 24px 0}
+.empty-logo{width:48px;height:48px;background:#C8102E;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.empty h1{font-size:24px;font-weight:700;color:#0f1419;margin-bottom:8px;line-height:1.3}
+.empty p{font-size:14px;color:#536471}
 
-/* TOPBAR */
-.ia-top {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px;
-  border-bottom: 0.5px solid #eff3f4;
-  background: #fff; flex-shrink: 0;
-}
-.ia-back { background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; }
-.ia-brand { display: flex; align-items: center; gap: 8px; }
-.ia-logo { width: 28px; height: 28px; background: #C8102E; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.ia-name { font-size: 15px; font-weight: 700; color: #0f1419; }
-.ia-user-badge {
-  font-size: 12px; color: #536471; background: #f7f9f9;
-  border: 0.5px solid #e4e6eb; border-radius: 20px;
-  padding: 4px 10px; display: flex; align-items: center; gap: 5px;
-}
-.ia-user-dot { width: 6px; height: 6px; border-radius: 50%; background: #00ba7c; }
+.msg{padding:16px 16px 0;display:flex;gap:10px;animation:up .2s ease}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.av.ia{background:#C8102E}
+.av.user{background:#e4e6eb;color:#536471}
+.mbody{flex:1;min-width:0;padding-bottom:14px;border-bottom:.5px solid #eff3f4}
+.msg:last-child .mbody{border-bottom:none}
+.mname{font-size:13px;font-weight:700;color:#0f1419;margin-bottom:4px}
+.mtext{font-size:15px;color:#0f1419;line-height:1.55;white-space:pre-wrap}
+.mtext.typing::after{content:'▋';animation:bl .7s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
 
-/* MESSAGES ZONE */
-.ia-messages {
-  flex: 1; overflow-y: auto; padding: 0 0 8px;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
+.preview{margin-top:12px;border:1px solid #e4e6eb;border-radius:12px;overflow:hidden;background:#f7f9f9}
+.preview-head{padding:8px 14px;background:#fff;border-bottom:.5px solid #e4e6eb;font-size:11px;font-weight:700;color:#536471;text-transform:uppercase;letter-spacing:1px}
+.preview-body{padding:12px 14px}
+.preview-q{font-size:15px;font-weight:800;color:#0f1419}
+.preview-p{font-size:13px;color:#536471;margin-left:6px}
+.preview-t{font-size:14px;color:#0f1419;margin-top:6px;line-height:1.5}
+.preview-acts{display:flex;gap:8px;padding:10px 14px;border-top:.5px solid #e4e6eb}
+.btn-pub{flex:1;background:#C8102E;color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-cancel{flex:1;background:none;color:#536471;border:1px solid #e4e6eb;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
 
-/* ÉTAT VIDE — style ChatGPT */
-.ia-empty {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  height: 100%; padding: 32px 24px 0;
-  text-align: center;
-}
-.ia-empty-logo { width: 48px; height: 48px; background: #C8102E; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-.ia-empty-title { font-size: 24px; font-weight: 700; color: #0f1419; margin-bottom: 8px; line-height: 1.3; }
-.ia-empty-sub { font-size: 14px; color: #536471; margin-bottom: 32px; }
+.actions{display:none;flex-direction:column;gap:2px;padding:8px;background:#fff;border:.5px solid #e4e6eb;border-radius:14px;margin:0 12px 8px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.actions.open{display:flex}
+.action{display:flex;align-items:center;gap:12px;padding:12px 14px;border:none;background:none;border-radius:10px;cursor:pointer;font-family:inherit;text-align:left;font-size:15px;color:#0f1419}
+.action:active{background:#f0f2f5}
+.action-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
 
-/* Messages */
-.msg { padding: 16px 16px 0; display: flex; gap: 10px; align-items: flex-start; animation: fadeUp .2s ease; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
-.msg-av { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
-.msg-av.ia { background: #C8102E; }
-.msg-av.user { background: #e4e6eb; color: #536471; font-size: 14px; }
-.msg-body { flex: 1; min-width: 0; padding-bottom: 12px; border-bottom: 0.5px solid #eff3f4; }
-.msg:last-child .msg-body { border-bottom: none; }
-.msg-meta { font-size: 13px; font-weight: 700; color: #0f1419; margin-bottom: 4px; }
-.msg-text { font-size: 15px; color: #0f1419; line-height: 1.55; white-space: pre-wrap; }
-.msg-text.typing::after { content: '▋'; animation: blink .7s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-/* APERÇU DE PUBLICATION */
-.pub-preview {
-  margin-top: 12px; border: 1px solid #e4e6eb; border-radius: 12px;
-  overflow: hidden; background: #f7f9f9;
-}
-.pub-preview-head {
-  padding: 10px 14px; background: #fff; border-bottom: 0.5px solid #e4e6eb;
-  font-size: 11px; font-weight: 700; color: #536471; text-transform: uppercase; letter-spacing: 1px;
-}
-.pub-preview-body { padding: 12px 14px; }
-.pub-preview-quartier { font-size: 15px; font-weight: 800; color: #0f1419; }
-.pub-preview-prenom { font-size: 13px; color: #536471; margin-left: 6px; }
-.pub-preview-text { font-size: 14px; color: #0f1419; margin-top: 6px; line-height: 1.5; }
-.pub-preview-actions { display: flex; gap: 8px; padding: 10px 14px; border-top: 0.5px solid #e4e6eb; }
-.pub-btn-ok {
-  flex: 1; background: #C8102E; color: #fff; border: none;
-  border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 700;
-  cursor: pointer; font-family: inherit;
-}
-.pub-btn-ok:active { opacity: .85; }
-.pub-btn-cancel {
-  flex: 1; background: none; color: #536471; border: 1px solid #e4e6eb;
-  border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 600;
-  cursor: pointer; font-family: inherit;
-}
-
-/* ACTIONS + */
-.ia-actions {
-  display: none; flex-direction: column; gap: 2px;
-  padding: 8px; background: #fff;
-  border: 0.5px solid #e4e6eb; border-radius: 14px;
-  margin: 0 12px 8px; box-shadow: 0 4px 16px rgba(0,0,0,.08);
-}
-.ia-actions.open { display: flex; }
-.ia-action-btn {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px; border: none; background: none;
-  border-radius: 10px; cursor: pointer; font-family: inherit;
-  text-align: left; font-size: 15px; color: #0f1419;
-  transition: background .1s;
-}
-.ia-action-btn:active { background: #f0f2f5; }
-.ia-action-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-
-/* INPUT */
-.ia-input-zone { padding: 8px 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); background: #fff; flex-shrink: 0; }
-.ia-input-box {
-  display: flex; align-items: flex-end; gap: 8px;
-  border: 1px solid #e4e6eb; border-radius: 24px;
-  padding: 8px 8px 8px 14px; background: #f7f9f9;
-  transition: border-color .15s, background .15s;
-}
-.ia-input-box:focus-within { border-color: #C8102E; background: #fff; }
-.ia-plus {
-  width: 32px; height: 32px; border-radius: 50%; background: none;
-  border: 1px solid #e4e6eb; cursor: pointer; display: flex;
-  align-items: center; justify-content: center; flex-shrink: 0;
-  transition: background .1s; margin-bottom: 2px;
-}
-.ia-plus:active { background: #f0f2f5; }
-.ia-textarea {
-  flex: 1; border: none; background: none; outline: none; resize: none;
-  font-size: 15px; font-family: inherit; color: #0f1419; line-height: 1.4;
-  max-height: 100px; overflow-y: auto; padding: 4px 0;
-}
-.ia-textarea::placeholder { color: #8b98a5; }
-.ia-send {
-  width: 32px; height: 32px; border-radius: 50%; background: #0f1419;
-  border: none; cursor: pointer; display: flex; align-items: center;
-  justify-content: center; flex-shrink: 0; transition: opacity .15s;
-}
-.ia-send:disabled { opacity: .3; }
-.ia-send:active { opacity: .7; }
+.input-zone{padding:8px 12px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:#fff;flex-shrink:0}
+.input-box{display:flex;align-items:flex-end;gap:8px;border:1px solid #e4e6eb;border-radius:24px;padding:8px 8px 8px 14px;background:#f7f9f9;transition:border-color .15s}
+.input-box:focus-within{border-color:#C8102E;background:#fff}
+.plus{width:32px;height:32px;border-radius:50%;background:none;border:1px solid #e4e6eb;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:2px}
+textarea{flex:1;border:none;background:none;outline:none;resize:none;font-size:15px;font-family:inherit;color:#0f1419;line-height:1.4;max-height:100px;overflow-y:auto;padding:4px 0}
+textarea::placeholder{color:#8b98a5}
+.send{width:32px;height:32px;border-radius:50%;background:#0f1419;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s}
+.send:disabled{opacity:.3}
 </style>
 </head>
 <body>
-<div class="ia-wrap">
-
-  <!-- TOPBAR -->
-  <div class="ia-top">
-    <button class="ia-back" onclick="history.back()">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0f1419" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-    </button>
-    <div class="ia-brand">
-      <div class="ia-logo">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
-      </div>
-      <span class="ia-name">CQP IA</span>
-    </div>
-    <div class="ia-user-badge" id="user-badge" style="display:none;">
-      <div class="ia-user-dot"></div>
-      <span id="user-name">...</span>
-    </div>
-    <div style="width:60px;" id="connect-btn-wrap">
-      <button onclick="window.location.href='profil.html'" style="background:none;border:0.5px solid #e4e6eb;border-radius:20px;padding:5px 12px;font-size:12px;color:#0f1419;cursor:pointer;font-family:inherit;font-weight:600;">Connexion</button>
+<div class="wrap">
+  <div class="top">
+    <button class="back" onclick="history.back()"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0f1419" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></div><span class="brand-name">CQP IA</span></div>
+    <div class="badge" id="badge" style="display:none"><div class="dot"></div><span id="uname"></span></div>
+    <button class="conn-btn" id="connbtn" onclick="location.href='profil.html'">Connexion</button>
+  </div>
+  <div class="msgs" id="msgs">
+    <div class="empty" id="empty">
+      <div class="empty-logo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></div>
+      <h1>Par quoi<br>commençons-nous ?</h1>
+      <p>Dis-moi ce que tu veux faire,<br>je m'occupe du reste.</p>
     </div>
   </div>
-
-  <!-- MESSAGES -->
-  <div class="ia-messages" id="messages">
-    <div class="ia-empty" id="empty-state">
-      <div class="ia-empty-logo">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
-      </div>
-      <div class="ia-empty-title">Par quoi<br>commençons-nous ?</div>
-      <div class="ia-empty-sub">Dis-moi ce que tu veux faire,<br>je m'occupe du reste.</div>
-    </div>
+  <div class="actions" id="actmenu">
+    <button class="action" onclick="qa('post')"><div class="action-icon" style="background:#fff0f2">💬</div><div><div style="font-weight:600">Publier un post</div><div style="font-size:13px;color:#536471">Texte, photo, vidéo</div></div></button>
+    <button class="action" onclick="qa('annonce')"><div class="action-icon" style="background:#fff3e0">📋</div><div><div style="font-weight:600">Déposer une annonce</div><div style="font-size:13px;color:#536471">Vente, service, emploi…</div></div></button>
+    <button class="action" onclick="qa('evenement')"><div class="action-icon" style="background:#e8f0fe">📅</div><div><div style="font-weight:600">Proposer un événement</div><div style="font-size:13px;color:#536471">Activité, sortie, réunion…</div></div></button>
   </div>
-
-  <!-- ACTIONS + -->
-  <div class="ia-actions" id="actions-menu">
-    <button class="ia-action-btn" onclick="quickAction('post')">
-      <div class="ia-action-icon" style="background:#fff0f2;">💬</div>
-      <div><div style="font-weight:600;">Publier un post</div><div style="font-size:13px;color:#536471;">Texte, photo, vidéo</div></div>
-    </button>
-    <button class="ia-action-btn" onclick="quickAction('annonce')">
-      <div class="ia-action-icon" style="background:#fff3e0;">📋</div>
-      <div><div style="font-weight:600;">Déposer une annonce</div><div style="font-size:13px;color:#536471;">Vente, service, emploi…</div></div>
-    </button>
-    <button class="ia-action-btn" onclick="quickAction('evenement')">
-      <div class="ia-action-icon" style="background:#e8f0fe;">📅</div>
-      <div><div style="font-weight:600;">Proposer un événement</div><div style="font-size:13px;color:#536471;">Activité, sortie, réunion…</div></div>
-    </button>
-  </div>
-
-  <!-- INPUT -->
-  <div class="ia-input-zone">
-    <div class="ia-input-box">
-      <button class="ia-plus" id="plus-btn" onclick="toggleActions()">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#536471" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
-      <textarea class="ia-textarea" id="input" placeholder="Pose une question ou dis-moi ce que tu veux faire…" rows="1"
-        oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
-      <button class="ia-send" id="send-btn" onclick="sendMessage()" disabled>
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-      </button>
+  <div class="input-zone">
+    <div class="input-box">
+      <button class="plus" onclick="toggleAct()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#536471" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+      <textarea id="ta" placeholder="Pose une question ou dis-moi ce que tu veux faire…" rows="1" oninput="resize(this)" onkeydown="kd(event)"></textarea>
+      <button class="send" id="sbtn" onclick="send()" disabled><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button>
     </div>
   </div>
 </div>
+<script>
+const SB_URL='https://rlrazcitmwxfaxlnnfau.supabase.co'
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'+'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1OTAzMjMsImV4cCI6MjA2MzE2NjMyM30.'+'V7Y-HJjHMtdSaO9MnWSnbFNmMnbqGqY8RMvRNHxqVMM'
+const PROXY='https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
 
-<script defer>
-const PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
-const SUPABASE_URL = 'https://rlrazcitmwxfaxlnnfau.supabase.co'
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1OTAzMjMsImV4cCI6MjA2MzE2NjMyM30.V7Y-HJjHMtdSaO9MnWSnbFNmMnbqGqY8RMvRNHxqVMM'
+const sbc=supabase.createClient(SB_URL,SB_KEY)
+const msgsEl=document.getElementById('msgs')
+const taEl=document.getElementById('ta')
+const sbtn=document.getElementById('sbtn')
+const actEl=document.getElementById('actmenu')
+const emptyEl=document.getElementById('empty')
 
-let profil = null
-let history = []
-let isTyping = false
-let pendingPublication = null
-let actionsOpen = false
+let profil=null,hist=[],typing=false,pending=null,actOpen=false
 
-const messagesEl = document.getElementById('messages')
-const inputEl = document.getElementById('input')
-const sendBtn = document.getElementById('send-btn')
-const emptyEl = document.getElementById('empty-state')
-const actionsEl = document.getElementById('actions-menu')
+function getSYS(){
+  const u=profil?`Utilisateur: ${profil.prenom}, quartier: ${profil.quartier||'Toulouse'}.`:"Utilisateur non connecte."
+  return `Tu es l'assistant IA de CQP, reseau social de quartier Toulouse. Tu aides a creer posts, annonces, evenements.
+${u}
+REGLES STRICTES: Sois bref max 2 phrases. Une question a la fois. Ne montre JAMAIS le JSON. Quand tu as assez d'infos, reponds UNIQUEMENT le JSON rien d'autre.
+JSON post: {"action":"publier","type":"post","contenu":"...","quartier":"..."}
+JSON annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"..."}
+JSON evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}
+Min requis: post=contenu, annonce=titre+description, evenement=titre+date.`
+}
 
-// Initialiser Supabase et vérifier connexion
-const sbc = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
-async function init() {
-  const code = localStorage.getItem('cqp_code') || localStorage.getItem('profil_code') || localStorage.getItem('code') || localStorage.getItem('session_id')
-  if (code) {
-    const { data } = await sbc.from('profils').select('*').eq('code', code).single()
-    if (data) {
-      profil = data
-      document.getElementById('user-badge').style.display = 'flex'
-      document.getElementById('user-name').textContent = data.prenom
-      document.getElementById('connect-btn-wrap').style.display = 'none'
-    }
+async function init(){
+  const code=localStorage.getItem('cqp_code')||localStorage.getItem('profil_code')||localStorage.getItem('code')||localStorage.getItem('session_id')
+  if(code){
+    try{
+      const {data}=await sbc.from('profils').select('*').eq('code',code).single()
+      if(data){
+        profil=data
+        document.getElementById('badge').style.display='flex'
+        document.getElementById('uname').textContent=data.prenom
+        document.getElementById('connbtn').style.display='none'
+      }
+    }catch(e){}
   }
 }
 
-const SYSTEM = () => `Tu es l'assistant IA de CQP (Quartiers Populaires Toulouse), un réseau social de quartier.
-Tu aides les habitants à publier du contenu sur le réseau : posts, annonces, événements.
-${profil ? `L'utilisateur connecté s'appelle ${profil.prenom} et habite à ${profil.quartier || 'Toulouse'}.` : "L'utilisateur n'est pas connecté — il peut discuter mais pas publier."}
+function hideEmpty(){if(emptyEl)emptyEl.style.display='none'}
 
-Ton rôle :
-1. Comprendre ce que l'utilisateur veut faire (post, annonce, événement, ou juste discuter)
-2. Poser les questions nécessaires pour collecter les infos manquantes
-3. Quand tu as assez d'infos, générer un JSON de publication et demander confirmation
-
-Pour déclencher une publication, réponds UNIQUEMENT avec ce format JSON (sans texte avant ou après) :
-{"action":"publier","type":"post","contenu":"...","quartier":"..."}
-{"action":"publier","type":"annonce","titre":"...","categorie":"...","description":"...","quartier":"..."}
-{"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"...","description":"..."}
-
-Sinon réponds normalement en français, de façon naturelle et concise. Tu peux aussi juste converser.`
-
-inputEl.addEventListener('input', () => {
-  sendBtn.disabled = !inputEl.value.trim()
-})
-
-function autoResize(el) {
-  el.style.height = 'auto'
-  el.style.height = Math.min(el.scrollHeight, 100) + 'px'
-}
-
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault()
-    if (!sendBtn.disabled && !isTyping) sendMessage()
-  }
-}
-
-function toggleActions() {
-  actionsOpen = !actionsOpen
-  actionsEl.classList.toggle('open', actionsOpen)
-}
-
-function quickAction(type) {
-  actionsEl.classList.remove('open')
-  actionsOpen = false
-  const msgs = {
-    post: "Je veux publier un post",
-    annonce: "Je veux déposer une annonce",
-    evenement: "Je veux proposer un événement"
-  }
-  inputEl.value = msgs[type]
-  sendBtn.disabled = false
-  sendMessage()
-}
-
-function hideEmpty() {
-  if (emptyEl) emptyEl.style.display = 'none'
-}
-
-function addMsg(role, text) {
+function addMsg(role,txt){
   hideEmpty()
-  const isIA = role === 'ia'
-  const div = document.createElement('div')
-  div.className = 'msg'
-  const av = isIA
-    ? `<div class="msg-av ia"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></div>`
-    : `<div class="msg-av user">${profil ? profil.prenom[0].toUpperCase() : '?'}</div>`
-  div.innerHTML = `${av}<div class="msg-body"><div class="msg-meta">${isIA ? 'CQP IA' : (profil ? profil.prenom : 'Toi')}</div><div class="msg-text">${text}</div></div>`
-  messagesEl.appendChild(div)
-  messagesEl.scrollTop = messagesEl.scrollHeight
-  return div.querySelector('.msg-text')
+  const isIA=role==='ia'
+  const d=document.createElement('div')
+  d.className='msg'
+  d.innerHTML=`<div class="av ${isIA?'ia':'user'}">${isIA?'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>':(profil?profil.prenom[0].toUpperCase():'?')}</div><div class="mbody"><div class="mname">${isIA?'CQP IA':(profil?profil.prenom:'Toi')}</div><div class="mtext">${txt}</div></div>`
+  msgsEl.appendChild(d)
+  msgsEl.scrollTop=msgsEl.scrollHeight
+  return d.querySelector('.mtext')
 }
 
-function showPreview(data) {
-  const lastMsg = messagesEl.querySelector('.msg:last-child .msg-body')
-  if (!lastMsg) return
-
-  const q = data.quartier || profil?.quartier || ''
-  const p = profil?.prenom || ''
-
-  let previewHTML = ''
-  if (data.type === 'post') {
-    previewHTML = `<div class="pub-preview-quartier">${q}<span class="pub-preview-prenom">${p}</span></div><div class="pub-preview-text">${data.contenu}</div>`
-  } else if (data.type === 'annonce') {
-    previewHTML = `<div class="pub-preview-quartier">${data.titre}</div><div class="pub-preview-text">${data.categorie} · ${q}<br>${data.description}</div>`
-  } else if (data.type === 'evenement') {
-    previewHTML = `<div class="pub-preview-quartier">${data.titre}</div><div class="pub-preview-text">📍 ${data.lieu || ''} · ${data.date || ''}<br>${data.description || ''}</div>`
-  }
-
-  const preview = document.createElement('div')
-  preview.className = 'pub-preview'
-  preview.innerHTML = `
-    <div class="pub-preview-head">Aperçu · ${data.type}</div>
-    <div class="pub-preview-body">${previewHTML}</div>
-    <div class="pub-preview-actions">
-      <button class="pub-btn-cancel" onclick="cancelPub()">Modifier</button>
-      <button class="pub-btn-ok" onclick="confirmPub()">Publier ✓</button>
-    </div>`
-  lastMsg.appendChild(preview)
-  messagesEl.scrollTop = messagesEl.scrollHeight
-
-  pendingPublication = data
+function showPreview(data){
+  const last=msgsEl.querySelector('.msg:last-child .mbody')
+  if(!last)return
+  const q=data.quartier||profil?.quartier||''
+  const p=profil?.prenom||''
+  let body=''
+  if(data.type==='post')body=`<span class="preview-q">${q}</span><span class="preview-p">${p}</span><div class="preview-t">${data.contenu}</div>`
+  else if(data.type==='annonce')body=`<span class="preview-q">${data.titre}</span><div class="preview-t">${data.categorie} · ${q}<br>${data.description}</div>`
+  else if(data.type==='evenement')body=`<span class="preview-q">${data.titre}</span><div class="preview-t">📍${data.lieu||''} · ${data.date||''}<br>${data.description||''}</div>`
+  const pv=document.createElement('div')
+  pv.className='preview'
+  pv.innerHTML=`<div class="preview-head">Aperçu · ${data.type}</div><div class="preview-body">${body}</div><div class="preview-acts"><button class="btn-cancel" onclick="cancelPub()">Modifier</button><button class="btn-pub" onclick="confirmPub()">Publier ✓</button></div>`
+  last.appendChild(pv)
+  msgsEl.scrollTop=msgsEl.scrollHeight
+  pending=data
 }
 
-function cancelPub() {
-  pendingPublication = null
-  addMsg('ia', "D'accord, dis-moi ce que tu veux changer.")
+function cancelPub(){pending=null;addMsg('ia',"D'accord, dis-moi ce que tu veux changer.")}
+
+async function confirmPub(){
+  if(!profil){addMsg('ia',"Connecte-toi pour publier !");return}
+  if(!pending)return
+  const d=pending;pending=null
+  document.querySelector('.preview')?.remove()
+  try{
+    if(d.type==='post')await sbc.from('posts').insert({prenom:profil.prenom,contenu:d.contenu,quartier:d.quartier||profil.quartier,session_id:profil.code,profil_code:profil.code,visible:true})
+    else if(d.type==='annonce')await sbc.from('annonces').insert({prenom:profil.prenom,titre:d.titre,description:d.description,categorie:d.categorie||'Autre',quartier:d.quartier||profil.quartier,profil_code:profil.code,visible:true,validee:true})
+    else if(d.type==='evenement')await sbc.from('evenements').insert({titre:d.titre,description:d.description||'',lieu:d.lieu||'',date_debut:new Date(d.date||Date.now()).toISOString(),prenom:profil.prenom,profil_code:profil.code,visible:true,validee:true})
+    addMsg('ia',`Publié ! Ton ${d.type} est maintenant visible sur CQP.`)
+  }catch(e){addMsg('ia',"Erreur lors de la publication, réessaie.")}
 }
 
-async function confirmPub() {
-  if (!profil) {
-    addMsg('ia', "Tu dois te connecter pour publier. Va dans ton profil !")
-    return
-  }
-  if (!pendingPublication) return
+function toggleAct(){actOpen=!actOpen;actEl.classList.toggle('open',actOpen)}
 
-  const data = pendingPublication
-  pendingPublication = null
-
-  // Supprimer le preview
-  const preview = messagesEl.querySelector('.pub-preview')
-  if (preview) preview.remove()
-
-  try {
-    if (data.type === 'post') {
-      await sbc.from('posts').insert({
-        prenom: profil.prenom,
-        contenu: data.contenu,
-        quartier: data.quartier || profil.quartier,
-        session_id: profil.code,
-        profil_code: profil.code,
-        visible: true
-      })
-    } else if (data.type === 'annonce') {
-      await sbc.from('annonces').insert({
-        prenom: profil.prenom,
-        titre: data.titre,
-        description: data.description,
-        categorie: data.categorie || 'Autre',
-        quartier: data.quartier || profil.quartier,
-        profil_code: profil.code,
-        visible: true,
-        validee: true
-      })
-    } else if (data.type === 'evenement') {
-      await sbc.from('evenements').insert({
-        titre: data.titre,
-        description: data.description || '',
-        lieu: data.lieu || '',
-        date_debut: new Date(data.date || Date.now()).toISOString(),
-        prenom: profil.prenom,
-        profil_code: profil.code,
-        visible: true,
-        validee: true
-      })
-    }
-    addMsg('ia', `✅ Publié ! Ton ${data.type} est maintenant visible sur CQP.`)
-  } catch(e) {
-    addMsg('ia', "Oups, une erreur s'est produite. Réessaie.")
-  }
+function qa(type){
+  actEl.classList.remove('open');actOpen=false
+  const m={post:"je veux publier un post",annonce:"je veux déposer une annonce",evenement:"je veux proposer un événement"}
+  taEl.value=m[type];sbtn.disabled=false;send()
 }
 
-async function sendMessage() {
-  const text = inputEl.value.trim()
-  if (!text || isTyping) return
-  inputEl.value = ''; inputEl.style.height = 'auto'; sendBtn.disabled = true
-  actionsEl.classList.remove('open'); actionsOpen = false
-  isTyping = true
+function resize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px'}
+function kd(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!sbtn.disabled&&!typing)send()}}
+taEl.addEventListener('input',()=>{sbtn.disabled=!taEl.value.trim()})
 
-  addMsg('user', text)
-  history.push({ role: 'user', content: text })
-
-  const typingEl = addMsg('ia', '')
-  typingEl.classList.add('typing')
-
-  try {
-    const res = await fetch(PROXY, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'system', content: SYSTEM() }, ...history],
-        max_tokens: 500,
-        temperature: 0.7,
-        stream: true
-      })
-    })
-
-    typingEl.classList.remove('typing')
-    typingEl.textContent = ''
-    const reader = res.body.getReader()
-    const decoder = new TextDecoder()
-    let fullText = ''
-
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      const lines = decoder.decode(value).split('\n').filter(l => l.startsWith('data: '))
-      for (const line of lines) {
-        const d = line.slice(6)
-        if (d === '[DONE]') break
-        try {
-          const delta = JSON.parse(d).choices?.[0]?.delta?.content || ''
-          fullText += delta
-          typingEl.textContent = fullText
-          messagesEl.scrollTop = messagesEl.scrollHeight
-        } catch(e) {}
+async function send(){
+  const txt=taEl.value.trim()
+  if(!txt||typing)return
+  taEl.value='';taEl.style.height='auto';sbtn.disabled=true
+  actEl.classList.remove('open');actOpen=false;typing=true
+  addMsg('user',txt)
+  hist.push({role:'user',content:txt})
+  const tel=addMsg('ia','')
+  tel.classList.add('typing')
+  try{
+    const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:getSYS()},...hist],max_tokens:300,temperature:0.5,stream:true})})
+    tel.classList.remove('typing');tel.textContent=''
+    const reader=res.body.getReader();const dec=new TextDecoder();let full=''
+    while(true){
+      const{done,value}=await reader.read();if(done)break
+      for(const line of dec.decode(value).split('\n').filter(l=>l.startsWith('data: '))){
+        const d=line.slice(6);if(d==='[DONE]')break
+        try{const delta=JSON.parse(d).choices?.[0]?.delta?.content||'';full+=delta;tel.textContent=full;msgsEl.scrollTop=msgsEl.scrollHeight}catch(e){}
       }
     }
-
-    history.push({ role: 'assistant', content: fullText })
-
-    // Détecter si c'est une action de publication
-    const trimmed = fullText.trim()
-    const jsonMatch = trimmed.match(/\{[^{}]*"action"\s*:\s*"publier"[^{}]*\}/)
-    if (jsonMatch) {
-      try {
-        const pubData = JSON.parse(jsonMatch[0])
-        typingEl.textContent = ''
-        if (!profil) {
-          typingEl.textContent = "Tout est prêt ! Connecte-toi pour publier."
-        } else {
-          typingEl.textContent = "Voilà l'aperçu :"
-          showPreview(pubData)
-        }
-      } catch(e) {}
+    hist.push({role:'assistant',content:full})
+    const m=full.trim().match(/\{"action"\s*:\s*"publier"[^}]*\}/)
+    if(m){
+      try{const pd=JSON.parse(m[0]);tel.textContent='';if(!profil){tel.textContent="Tout est prêt ! Connecte-toi pour publier."}else{tel.textContent="Voilà l'aperçu :";showPreview(pd)}}catch(e){}
     }
-
-  } catch(e) {
-    typingEl.classList.remove('typing')
-    typingEl.textContent = "Désolé, une erreur s'est produite."
-  }
-
-  isTyping = false
+  }catch(e){tel.classList.remove('typing');tel.textContent="Erreur, réessaie."}
+  typing=false
 }
 
+// Exposer globalement
+window.send=send;window.qa=qa;window.confirmPub=confirmPub;window.cancelPub=cancelPub;window.toggleAct=toggleAct
+
 init()
-window.sendMessage = sendMessage
-window.quickAction = quickAction
-window.confirmPub = confirmPub
-window.cancelPub = cancelPub
-window.toggleActions = toggleActions
 </script>
 </body>
 </html>
