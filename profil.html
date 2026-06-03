@@ -24,6 +24,90 @@ body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
 .code-inputs{display:flex;gap:8px;justify-content:center;margin-bottom:18px;}
 .code-digit{width:44px;height:54px;border:2px solid #e4e6eb;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:1.8rem;text-align:center;color:#000;background:#f9f9f9;outline:none;}
 .code-digit:focus{border-color:#C8102E;background:#fff;}
+
+/* ── Onboarding Twitter style ── */
+.onboarding-wrap {
+  padding: 14px 0 14px 16px;
+}
+.onboarding-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-right: 16px;
+}
+.onboarding-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #000;
+  flex: 1;
+}
+.onboarding-counter {
+  font-size: 13px;
+  color: #536471;
+  font-weight: 500;
+}
+.onboarding-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-right: 16px;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.onboarding-scroll::-webkit-scrollbar { display: none; }
+
+.ob-card {
+  flex-shrink: 0;
+  width: 168px;
+  border-radius: 16px;
+  padding: 18px 16px 16px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 160px;
+  transition: transform .15s ease, opacity .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.ob-card:active { transform: scale(.97); opacity: .9; }
+
+.ob-card-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+  line-height: 1;
+}
+.ob-card-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+  flex: 1;
+}
+.ob-card-arrow {
+  margin-top: 12px;
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+}
+.ob-card-arrow svg {
+  stroke: #fff;
+}
+
+/* Gradients par step */
+.ob-grad-0 { background: linear-gradient(135deg, #1a8cff 0%, #0052cc 100%); }
+.ob-grad-1 { background: linear-gradient(135deg, #f7971e 0%, #e05d00 100%); }
+.ob-grad-2 { background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); }
+.ob-grad-3 { background: linear-gradient(135deg, #10b981 0%, #047857 100%); }
+.ob-grad-4 { background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%); }
+.ob-grad-5 { background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%); }
 </style>
 </head>
 <body>
@@ -100,11 +184,8 @@ body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
 
   <div style="height:1px;background:#e4e6eb;"></div>
 
-  <!-- ONBOARDING -->
-  <div id="onboarding-section" style="padding:16px;">
-    <div style="font-size:14px;font-weight:700;color:#000;margin-bottom:12px;">Découvre le réseau</div>
-    <div id="onboarding-steps"></div>
-  </div>
+  <!-- ONBOARDING Twitter style -->
+  <div id="onboarding-section"></div>
 
   <div style="height:8px;background:#f0f2f5;"></div>
 
@@ -148,7 +229,6 @@ body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
 <script>
 const esc = s => Utils.esc(s)
 
-// Navigation entre vues
 function showView(id) {
   ['view-welcome','view-connect','view-profil'].forEach(v => {
     const el = document.getElementById(v)
@@ -164,7 +244,6 @@ function goConnect(panel) {
   if (panel === 'login') buildCodeInputs()
 }
 
-// Inputs code 6 chiffres
 function buildCodeInputs() {
   const wrap = document.getElementById('login-inputs')
   if (wrap.children.length) return
@@ -235,7 +314,6 @@ function doLogout() {
   window.location.reload()
 }
 
-// Profil
 function renderProfil(p) {
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val }
   set('p-name', p.prenom || 'Anonyme')
@@ -277,23 +355,40 @@ async function loadProfilData(p) {
 }
 
 function renderOnboarding(postCount, p) {
-  const steps = [
-    { done: !!p.photo_url, icon: '📸', label: 'Ajoute une photo de profil', action: "document.getElementById('avatar-file').click()" },
-    { done: !!p.bio, icon: '✍️', label: 'Ecris ta bio', action: "openEdit()" },
-    { done: postCount > 0, icon: '💬', label: 'Publie ton premier post', action: "window.location.href='index.html'" },
-    { done: false, icon: '📸', label: 'Cree ta premiere story', action: "window.location.href='index.html'" },
-    { done: false, icon: '📋', label: 'Depose une annonce', action: "window.location.href='annonces2.html'" },
-    { done: false, icon: '📅', label: 'Organise un evenement', action: "window.location.href='evenements.html'" },
+  const allSteps = [
+    { icon: '📸', label: 'Ajoute une photo de profil', action: "document.getElementById('avatar-file').click()", done: !!p.photo_url },
+    { icon: '✍️', label: 'Écris ta bio', action: "openEdit()", done: !!p.bio },
+    { icon: '💬', label: 'Publie ton premier post', action: "window.location.href='index.html'", done: postCount > 0 },
+    { icon: '📸', label: 'Crée ta première story', action: "window.location.href='index.html'", done: false },
+    { icon: '📋', label: 'Dépose une annonce', action: "window.location.href='annonces2.html'", done: false },
+    { icon: '📅', label: 'Organise un événement', action: "window.location.href='evenements.html'", done: false },
   ]
-  const todo = steps.filter(s => !s.done)
-  if (!todo.length) { document.getElementById('onboarding-section').style.display = 'none'; return }
-  document.getElementById('onboarding-steps').innerHTML = todo.map(s =>
-    '<div onclick="' + s.action + '" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;cursor:pointer;">'
-    + '<div style="width:38px;height:38px;border-radius:50%;background:#f0f2f5;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">' + s.icon + '</div>'
-    + '<div style="flex:1;font-size:14px;color:#000;">' + s.label + '</div>'
-    + '<svg viewBox="0 0 24 24" width="16" height="16" stroke="#ccc" fill="none" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>'
-    + '</div>'
-  ).join('')
+  const todo = allSteps.filter(s => !s.done)
+  const section = document.getElementById('onboarding-section')
+  if (!todo.length) { section.style.display = 'none'; return }
+
+  const remaining = todo.length
+  const cards = todo.map((s, i) => `
+    <div class="ob-card ob-grad-${i}" onclick="${s.action}">
+      <div class="ob-card-icon">${s.icon}</div>
+      <div class="ob-card-label">${s.label}</div>
+      <div class="ob-card-arrow">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </div>
+    </div>
+  `).join('')
+
+  section.innerHTML = `
+    <div class="onboarding-wrap">
+      <div class="onboarding-header">
+        <div class="onboarding-title">Découvre le réseau</div>
+        <div class="onboarding-counter">${remaining} restant${remaining > 1 ? 's' : ''}</div>
+      </div>
+      <div class="onboarding-scroll">${cards}</div>
+    </div>
+  `
 }
 
 function renderMyPosts(posts, allIds) {
@@ -325,7 +420,6 @@ function renderMyPosts(posts, allIds) {
       + '</div>'
   }).join('')
 
-  // Charger compteurs
   setTimeout(async () => {
     for (const post of posts) {
       const [lRes, cRes] = await Promise.all([
@@ -340,7 +434,6 @@ function renderMyPosts(posts, allIds) {
   }, 200)
 }
 
-// Edit profil
 function openEdit() { document.getElementById('edit-panel').style.display = 'block' }
 function closeEdit() { document.getElementById('edit-panel').style.display = 'none' }
 
@@ -376,7 +469,6 @@ async function uploadAvatar(inp) {
   } catch(e) { Utils.toast('Erreur upload', 'error') }
 }
 
-// openMedia simplifié
 function openMedia(url, type) {
   const existing = document.getElementById('media-viewer')
   if (existing) existing.remove()
@@ -399,7 +491,6 @@ function openMedia(url, type) {
   document.body.appendChild(viewer)
 }
 
-// Init
 async function init() {
   const code = Auth.getCode()
   if (!code) { showView('view-welcome'); return }
