@@ -506,7 +506,7 @@ const Feed = (() => {
         + '</div></div>'
     }).join('')
     return '<div style="background:#fff;border-bottom:4px solid #e4e6eb;padding:0 0 12px;">'
-      + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 14px 10px;">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;padding:0 16px 10px 62px;">'
       + '<span style="font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#65676b;">Annonces du quartier</span>'
       + '<a href="annonces.html" style="font-size:.78rem;color:#C8102E;font-weight:600;text-decoration:none;">Voir tout</a>'
       + '</div>'
