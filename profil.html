@@ -97,11 +97,8 @@ body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
   justify-content: center;
   align-self: flex-end;
 }
-.ob-card-arrow svg {
-  stroke: #fff;
-}
+.ob-card-arrow svg { stroke: #fff; }
 
-/* Gradients par step */
 .ob-grad-0 { background: linear-gradient(135deg, #1a8cff 0%, #0052cc 100%); }
 .ob-grad-1 { background: linear-gradient(135deg, #f7971e 0%, #e05d00 100%); }
 .ob-grad-2 { background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); }
@@ -112,7 +109,7 @@ body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
 </head>
 <body>
 
-<!-- VUE WELCOME — non connecté -->
+<!-- VUE WELCOME -->
 <div id="view-welcome" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px 24px;background:#fff;">
   <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:#C8102E;letter-spacing:2px;margin-bottom:8px;">CQP</div>
   <div style="font-size:14px;color:#65676b;margin-bottom:48px;text-align:center;">Le réseau des quartiers populaires de Toulouse</div>
@@ -152,10 +149,9 @@ body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
   </div>
 </div>
 
-<!-- VUE PROFIL — connecté -->
+<!-- VUE PROFIL -->
 <div id="view-profil" style="display:none;background:#fff;min-height:100vh;padding-bottom:80px;">
 
-  <!-- HEADER -->
   <div style="padding:20px 16px 0;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
       <div style="flex:1;">
@@ -167,18 +163,12 @@ body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
       </label>
       <input type="file" id="avatar-file" accept="image/*" onchange="uploadAvatar(this)">
     </div>
-
-    <!-- Bio -->
     <div id="p-bio" style="font-size:14px;color:#000;line-height:1.5;margin-bottom:14px;"></div>
-
-    <!-- Stats -->
     <div style="display:flex;gap:24px;margin-bottom:16px;">
       <div><div style="font-size:18px;font-weight:700;color:#000;" id="p-stat-posts">0</div><div style="font-size:12px;color:#65676b;">Posts</div></div>
       <div><div style="font-size:18px;font-weight:700;color:#000;" id="p-stat-likes">0</div><div style="font-size:12px;color:#65676b;">J'aimes</div></div>
       <div><div style="font-size:18px;font-weight:700;color:#000;" id="p-stat-comments">0</div><div style="font-size:12px;color:#65676b;">Commentaires</div></div>
     </div>
-
-    <!-- Bouton modifier -->
     <button onclick="openEdit()" style="width:100%;border:1.5px solid #e4e6eb;background:#fff;border-radius:10px;padding:10px;font-size:14px;font-weight:600;color:#000;cursor:pointer;margin-bottom:20px;">Modifier le profil</button>
   </div>
 
@@ -189,13 +179,11 @@ body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
 
   <div style="height:8px;background:#f0f2f5;"></div>
 
-  <!-- MES PUBLICATIONS -->
   <div id="my-posts-section" style="padding-top:4px;">
     <div style="padding:14px 16px 10px;font-size:14px;font-weight:700;color:#000;">Mes publications</div>
     <div id="my-posts-list"></div>
   </div>
 
-  <!-- DÉCONNEXION -->
   <div style="padding:24px 16px 40px;text-align:center;">
     <button onclick="doLogout()" style="background:none;border:1.5px solid #e4e6eb;border-radius:10px;padding:10px 24px;font-size:14px;color:#65676b;cursor:pointer;">Se déconnecter</button>
   </div>
@@ -337,7 +325,6 @@ async function loadProfilData(p) {
     const { data: posts } = await sb.from('posts').select('id').eq('profil_code', code).eq('visible', true)
     const ids = (posts || []).map(x => x.id)
     document.getElementById('p-stat-posts').textContent = ids.length
-
     if (ids.length) {
       const [lRes, cRes] = await Promise.all([
         sb.from('likes').select('id', {count:'exact',head:true}).eq('item_type','post').in('item_id', ids),
@@ -346,9 +333,7 @@ async function loadProfilData(p) {
       document.getElementById('p-stat-likes').textContent = lRes.count || 0
       document.getElementById('p-stat-comments').textContent = cRes.count || 0
     }
-
     renderOnboarding(ids.length, p)
-
     const { data: myPosts } = await sb.from('posts').select('*').eq('profil_code', code).eq('visible', true).order('created_at', {ascending:false}).limit(20)
     renderMyPosts(myPosts || [], ids)
   } catch(e) { console.warn(e) }
@@ -357,7 +342,7 @@ async function loadProfilData(p) {
 function renderOnboarding(postCount, p) {
   const allSteps = [
     { icon: '📸', label: 'Ajoute une photo de profil', action: "document.getElementById('avatar-file').click()", done: !!p.photo_url },
-    { icon: '✍️', label: 'Écris ta bio', action: "openEdit()", done: !!p.bio },
+    { icon: '✍️', label: 'Écris ta bio', action: 'openEdit()', done: !!p.bio },
     { icon: '💬', label: 'Publie ton premier post', action: "window.location.href='index.html'", done: postCount > 0 },
     { icon: '📸', label: 'Crée ta première story', action: "window.location.href='index.html'", done: false },
     { icon: '📋', label: 'Dépose une annonce', action: "window.location.href='annonces2.html'", done: false },
@@ -366,29 +351,22 @@ function renderOnboarding(postCount, p) {
   const todo = allSteps.filter(s => !s.done)
   const section = document.getElementById('onboarding-section')
   if (!todo.length) { section.style.display = 'none'; return }
-
   const remaining = todo.length
-  const cards = todo.map((s, i) => `
-    <div class="ob-card ob-grad-${i}" onclick="${s.action}">
-      <div class="ob-card-icon">${s.icon}</div>
-      <div class="ob-card-label">${s.label}</div>
-      <div class="ob-card-arrow">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
-      </div>
-    </div>
-  `).join('')
-
-  section.innerHTML = `
-    <div class="onboarding-wrap">
-      <div class="onboarding-header">
-        <div class="onboarding-title">Découvre le réseau</div>
-        <div class="onboarding-counter">${remaining} restant${remaining > 1 ? 's' : ''}</div>
-      </div>
-      <div class="onboarding-scroll">${cards}</div>
-    </div>
-  `
+  const cards = todo.map((s, i) =>
+    '<div class="ob-card ob-grad-' + i + '" onclick="' + s.action + '">'
+    + '<div class="ob-card-icon">' + s.icon + '</div>'
+    + '<div class="ob-card-label">' + s.label + '</div>'
+    + '<div class="ob-card-arrow"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>'
+    + '</div>'
+  ).join('')
+  section.innerHTML =
+    '<div class="onboarding-wrap">'
+    + '<div class="onboarding-header">'
+    + '<div class="onboarding-title">Découvre le réseau</div>'
+    + '<div class="onboarding-counter">' + remaining + ' restant' + (remaining > 1 ? 's' : '') + '</div>'
+    + '</div>'
+    + '<div class="onboarding-scroll">' + cards + '</div>'
+    + '</div>'
 }
 
 function renderMyPosts(posts, allIds) {
@@ -419,7 +397,6 @@ function renderMyPosts(posts, allIds) {
       + '</div>'
       + '</div>'
   }).join('')
-
   setTimeout(async () => {
     for (const post of posts) {
       const [lRes, cRes] = await Promise.all([
