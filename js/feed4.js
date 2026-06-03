@@ -203,12 +203,12 @@ const Feed = (() => {
         <div style="flex:1;min-width:0;padding-bottom:4px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
             <div>
-              <span style="font-size:15px;font-weight:800;color:#0f1419;">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</span>
+              <span onclick="openSheet('post',${p.id})" style="font-size:15px;font-weight:800;color:#0f1419;cursor:pointer;">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</span>
               <span style="font-size:15px;color:#536471;margin-left:6px;font-weight:400;">${p.quartier && p.prenom ? Utils.esc(p.prenom)+' · ' : ''}${Utils.timeAgo(p.created_at)}</span>
             </div>
             ${menuBtn}
           </div>
-          ${p.contenu ? `<p style="font-size:17px;color:#0f1419;margin:4px 0 12px;line-height:1.5;font-weight:400;">${Utils.esc(p.contenu)}</p>` : ''}
+          ${p.contenu ? `<p onclick="openSheet('post',${p.id})" style="font-size:17px;color:#0f1419;margin:4px 0 12px;line-height:1.5;font-weight:400;cursor:pointer;">${Utils.esc(p.contenu)}</p>` : ''}
           ${carousel || ''}
           ${img || ''}
           <div style="display:flex;gap:0;margin-top:4px;margin-bottom:4px;align-items:center;justify-content:space-between;max-width:280px;">
