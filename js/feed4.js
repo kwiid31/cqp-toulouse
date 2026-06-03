@@ -195,10 +195,10 @@ const Feed = (() => {
           </div>
         </div>` : '')
     return `
-    <article id="card-${p.id}" style="padding:12px 12px 0;background:#fff;border-bottom:1px solid #eff3f4;">
-      <div style="display:flex;gap:8px;">
-        <div style="flex-shrink:0;width:38px;">
-          <div style="width:38px;height:38px;border-radius:50%;background:#cfd9de;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#536471;"></div>
+    <article id="card-${p.id}" style="padding:12px 16px 0;background:#fff;border-bottom:1px solid #eff3f4;">
+      <div style="display:flex;gap:10px;">
+        <div style="flex-shrink:0;width:42px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:#cfd9de;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#536471;"></div>
         </div>
         <div style="flex:1;min-width:0;padding-bottom:4px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
@@ -208,7 +208,7 @@ const Feed = (() => {
             </div>
             ${menuBtn}
           </div>
-          ${p.contenu ? `<p style="font-size:15px;color:#0f1419;margin:4px 0 12px;line-height:1.5625;font-weight:400;">${Utils.esc(p.contenu)}</p>` : ''}
+          ${p.contenu ? `<p style="font-size:17px;color:#0f1419;margin:4px 0 12px;line-height:1.5;font-weight:400;">${Utils.esc(p.contenu)}</p>` : ''}
           ${carousel || ''}
           ${img || ''}
           <div style="display:flex;gap:0;margin-top:4px;margin-bottom:4px;align-items:center;justify-content:space-between;max-width:280px;">
