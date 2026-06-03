@@ -248,6 +248,25 @@ function addPhotoToPending(){
   inp.click()
 }
 
+async function analyzeImageWithGroq(b64data, mime){
+  try{
+    const res=await fetch(PROXY,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'meta-llama/llama-4-scout-17b-16e-instruct',
+        messages:[{role:'user',content:[
+          {type:'image_url',image_url:{url:'data:'+mime+';base64,'+b64data}},
+          {type:'text',text:'Tu es l'assistant IA de CQP reseau social de quartier Toulouse. Analyse cette image et genere DIRECTEMENT le JSON de publication adapte. Utilisateur: '+(profil?profil.prenom:'Anonyme')+', quartier: '+(profil?profil.quartier:'Toulouse')+'. Si c'est un flyer d'evenement reponds uniquement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}. Si c'est une annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"'+(profil?profil.quartier:'Toulouse')+'"} . Sinon post: {"action":"publier","type":"post","contenu":"...","quartier":"'+(profil?profil.quartier:'Toulouse')+'"}. Reponds UNIQUEMENT avec le JSON.'}
+        ]}],
+        max_tokens:300
+      })
+    })
+    const d=await res.json()
+    return d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content||null
+  }catch(e){return null}
+}
+
 document.getElementById('photo-input').onchange=function(e){
   const file=e.target.files&&e.target.files[0]
   if(!file)return
@@ -264,8 +283,32 @@ document.getElementById('photo-input').onchange=function(e){
     window._pendingImg={b64:b64,b64data:b64.split(',')[1],mime:file.type||'image/jpeg'}
     const tel=addMsg('ia','')
     tel.classList.add('typing')
-    tel.textContent='Image reçue ! Dis-moi ce que tu veux en faire, ou décris ton contenu.'
-    tel.classList.remove('typing')
+    // Analyser l'image avec Groq Vision
+    tel.classList.add('typing')
+    typing=true
+    analyzeImageWithGroq(window._pendingImg.b64data, window._pendingImg.mime).then(function(vtext){
+      tel.classList.remove('typing')
+      typing=false
+      if(vtext){
+        const ft=vtext.trim()
+        const s=ft.indexOf('{'),e2=ft.lastIndexOf('}')
+        if(s>=0&&e2>s){
+          try{
+            let pd=JSON.parse(ft.slice(s,e2+1))
+            if(!pd.action)pd.action='publier'
+            if(pd.action==='publier'&&pd.type){
+              pd._imgB64=window._pendingImg.b64data
+              pd._imgMime=window._pendingImg.mime
+              window._pendingImg=null
+              tel.textContent="J'ai analysé le flyer, voilà l'aperçu :"
+              showPreview(pd)
+              return
+            }
+          }catch(ex){}
+        }
+      }
+      tel.textContent='Image reçue ! Dis-moi ce que tu veux en faire.'
+    })
     if(pending){pending._imgB64=window._pendingImg.b64data;pending._imgMime=window._pendingImg.mime}
   }
   reader.readAsDataURL(file)
