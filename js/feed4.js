@@ -80,33 +80,38 @@ const Feed = (() => {
 
   // ── CONSTRUCTION DU FEED MIXTE ────────────────────────────────
   const _buildFeed = (posts, actus, annonces, evts) => {
-    // Masquer les blocs séparés — tout est dans le feed unifié
-    const evtsBar = document.getElementById('evts-bar')
-    const annBar = document.getElementById('annonces-bar')
-    if (evtsBar) evtsBar.style.display = 'none'
-    if (annBar) annBar.style.display = 'none'
-
-    // Mélanger chronologiquement : 1 actu / 5 posts, 1 annonce / 4 posts, 1 evt / 6 posts
     const result = []
-    let aIdx = 0, anIdx = 0, evIdx = 0
+    let aIdx = 0
+    // Injecter un bloc annonces toutes les 4 posts, evenements toutes les 7 posts
+    // Annonces et événements affichés en dehors du feed
+    if (annonces.length) {
+      const evtsBar = document.getElementById('evts-bar')
+      const annBar = document.getElementById('annonces-bar')
+      // Chargés séparément dans init
+    }
+    var annoncesBloc = null
+    var evtsBloc = null
+    var annoncesInserted = false, evtsInserted = false
 
     posts.forEach((p, i) => {
       result.push(p)
-      // Toutes les 5 posts → actu
-      if ((i + 1) % 5 === 0 && aIdx < actus.length) {
+      // Toutes les 4 posts → actu
+      if ((i + 1) % 4 === 0 && aIdx < actus.length) {
         result.push(actus[aIdx++])
       }
-      // Toutes les 4 posts → annonce
-      if ((i + 1) % 4 === 0 && anIdx < annonces.length) {
-        result.push(annonces[anIdx++])
+      // Apres 3 posts → bloc annonces
+      if (i === 2 && annoncesBloc && !annoncesInserted) {
+        result.push(annoncesBloc)
+        annoncesInserted = true
       }
-      // Toutes les 6 posts → événement
-      if ((i + 1) % 6 === 0 && evIdx < evts.length) {
-        result.push(evts[evIdx++])
+      // Apres 7 posts → bloc evenements
+      if (i === 6 && evtsBloc && !evtsInserted) {
+        result.push(evtsBloc)
+        evtsInserted = true
       }
     })
 
-    // Restes à la fin
+    // Actus restantes a la fin
     while (aIdx < actus.length) result.push(actus[aIdx++])
 
     return result
@@ -139,7 +144,7 @@ const Feed = (() => {
         _el.insertAdjacentHTML('beforeend', _cardActu(item._data))
       } else if (item._type === 'annonce') {
         _el.insertAdjacentHTML('beforeend', _cardAnnonce(item._data))
-      } else if (item._type === 'evenement' || item._type === 'evt') {
+      } else if (item._type === 'evenement') {
         _el.insertAdjacentHTML('beforeend', _cardEvenement(item._data))
       }
     })
@@ -256,49 +261,44 @@ const Feed = (() => {
 
   const _cardAnnonce = a => {
     const qrt = Utils.esc(a.quartier || '')
+    const prenom = Utils.esc(a.prenom)
     const titre = Utils.esc(a.titre)
-    const prenom = Utils.esc(a.prenom || '')
-    const cat = Utils.esc(a.categorie || 'Annonce')
-    const CAT_ICONS = { Vente:'🛍️', Don:'🎁', Service:'🤝', Emploi:'💼', Logement:'🏠', Autre:'📌' }
-    const icon = CAT_ICONS[a.categorie] || '📋'
-    const time = Utils.timeAgo(a.created_at)
-    return `<article style="padding:12px 16px;background:#fff;border-bottom:0.5px solid #f0f2f5;display:flex;gap:10px;align-items:flex-start;cursor:pointer;" onclick="location.href='annonces2.html'">
-      <div style="width:36px;height:36px;border-radius:10px;background:#fff3e0;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem;">${icon}</div>
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
-          <span style="font-size:11px;font-weight:600;color:#e67e22;text-transform:uppercase;letter-spacing:.5px;">Annonce</span>
-          ${qrt ? `<span style="font-size:11px;color:#8a8d91;">· ${qrt}</span>` : ''}
-          <span style="font-size:11px;color:#8a8d91;margin-left:auto;">${time}</span>
+    const desc = Utils.esc((a.description || '').substring(0, 100)) + ((a.description || '').length > 100 ? '…' : '')
+    const av = prenom ? prenom[0].toUpperCase() : '?'
+    return `<article class="card" class="card-clickable card-border-vert" onclick="location.href='annonces.html#an-${a.id}'">
+      <div class="card-head">
+        <div class="c-av c-av-40 c-av-init" class="c-av c-av-40 c-av-init card-av-annonce-v2">${av}</div>
+        <div class="card-meta">
+          <div class="card-author" class="card-author-annonce">📋 ANNONCE${qrt ? ' · ' + qrt : ''}</div>
+          <div class="card-ts">${prenom}</div>
         </div>
-        <div style="font-size:14px;font-weight:600;color:#1c1e21;line-height:1.4;">${titre}</div>
-        <div style="font-size:12px;color:#65676b;margin-top:2px;">${cat}${prenom ? ' · ' + prenom : ''}</div>
+        <span class="card-link-annonce">Voir →</span>
       </div>
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:4px;"><polyline points="9 18 15 12 9 6"/></svg>
+      <div class="card-text" class="card-titre-lg">${titre}</div>
+      ${desc ? `<div class="card-text" class="card-desc">${desc}</div>` : ''}
     </article>`
   }
 
   const _cardEvenement = e => {
     const titre = Utils.esc(e.titre)
     const lieu = e.lieu ? Utils.esc(e.lieu) : ''
+    const desc = Utils.esc((e.description || '').substring(0, 100)) + ((e.description || '').length > 100 ? '…' : '')
     const d = e.date_debut ? new Date(e.date_debut) : null
-    const day = d ? d.getDate() : '?'
-    const mon = d ? d.toLocaleString('fr', {month:'short'}) : ''
-    const dateStr = d ? d.toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' }) : ''
-    const time = Utils.timeAgo(e.created_at)
-    return `<article style="padding:12px 16px;background:#fff;border-bottom:0.5px solid #f0f2f5;display:flex;gap:10px;align-items:flex-start;cursor:pointer;" onclick="location.href='evenements.html'">
-      <div style="width:36px;height:36px;border-radius:10px;background:#e8f0fe;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;">
-        <span style="font-size:.95rem;font-weight:700;color:#1877F2;line-height:1;">${day}</span>
-        <span style="font-size:.5rem;color:#1877F2;text-transform:uppercase;letter-spacing:.5px;">${mon}</span>
-      </div>
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
-          <span style="font-size:11px;font-weight:600;color:#1877F2;text-transform:uppercase;letter-spacing:.5px;">Événement</span>
-          <span style="font-size:11px;color:#8a8d91;margin-left:auto;">${dateStr}</span>
+    const dateStr = d ? d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' }) : ''
+    const heureStr = d ? d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' }) : ''
+    const prenom = Utils.esc(e.prenom || 'CQP')
+    const av = prenom[0].toUpperCase()
+    return `<article class="card" class="card-clickable card-border-bleu" onclick="location.href='evenements.html#evt-${e.id}'">
+      <div class="card-head">
+        <div class="c-av c-av-40 c-av-init" class="c-av c-av-40 c-av-init card-av-evenement-v2">${av}</div>
+        <div class="card-meta">
+          <div class="card-author" class="card-author-evenement">📅 ÉVÉNEMENT${dateStr ? ' · ' + dateStr : ''}</div>
+          <div class="card-ts">${heureStr ? '🕐 ' + heureStr : ''}${lieu ? ' · ' + lieu : ''}</div>
         </div>
-        <div style="font-size:14px;font-weight:600;color:#1c1e21;line-height:1.4;">${titre}</div>
-        ${lieu ? `<div style="font-size:12px;color:#65676b;margin-top:2px;">📍 ${lieu}</div>` : ''}
+        <span class="card-link-bleu">Voir →</span>
       </div>
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:4px;"><polyline points="9 18 15 12 9 6"/></svg>
+      <div class="card-text" class="card-titre-lg">${titre}</div>
+      ${desc ? `<div class="card-text" class="card-desc">${desc}</div>` : ''}
     </article>`
   }
 
