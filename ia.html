@@ -208,9 +208,20 @@ async function send(){
       }
     }
     hist.push({role:'assistant',content:full})
-    const m=full.trim().match(/\{"action"\s*:\s*"publier"[^}]*\}/)
-    if(m){
-      try{const pd=JSON.parse(m[0]);tel.textContent='';if(!profil){tel.textContent="Tout est prêt ! Connecte-toi pour publier."}else{tel.textContent="Voilà l'aperçu :";showPreview(pd)}}catch(e){}
+    // Détection JSON robuste
+    const ft=full.trim()
+    if(ft.includes('"action"')&&ft.includes('"publier"')){
+      const s=ft.indexOf('{'),e=ft.lastIndexOf('}')
+      if(s>=0&&e>s){
+        try{
+          const pd=JSON.parse(ft.slice(s,e+1))
+          if(pd.action==='publier'){
+            tel.textContent=''
+            if(!profil){tel.textContent="Tout est prêt ! Connecte-toi pour publier."}
+            else{tel.textContent="Voilà l'aperçu :";showPreview(pd)}
+          }
+        }catch(e2){}
+      }
     }
   }catch(e){tel.classList.remove('typing');tel.textContent="Erreur, réessaie."}
   typing=false
