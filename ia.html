@@ -45,6 +45,8 @@ html,body{height:100%;background:#fff;font-family:-apple-system,system-ui,sans-s
 .preview-acts{display:flex;gap:8px;padding:10px 14px;border-top:.5px solid #e4e6eb}
 .btn-pub{flex:1;background:#C8102E;color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
 .btn-cancel{flex:1;background:none;color:#536471;border:1px solid #e4e6eb;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-photo{width:100%;background:#f0fdf4;color:#16a34a;border:1px solid #86efac;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-photo:active{background:#dcfce7}
 
 .actions{display:none;flex-direction:column;gap:2px;padding:8px;background:#fff;border:.5px solid #e4e6eb;border-radius:14px;margin:0 12px 8px;box-shadow:0 4px 16px rgba(0,0,0,.08)}
 .actions.open{display:flex}
@@ -169,7 +171,9 @@ function showPreview(data){
   else if(data.type==='evenement')body=imgPreview+`<span class="preview-q">${data.titre}</span><div class="preview-t">📍${data.lieu||''} · ${data.date||''}<br>${data.description||''}</div>`
   const pv=document.createElement('div')
   pv.className='preview'
-  pv.innerHTML=`<div class="preview-head">Aperçu · ${data.type}</div><div class="preview-body">${body}</div><div class="preview-acts"><button class="btn-cancel" onclick="cancelPub()">Modifier</button><button class="btn-pub" onclick="confirmPub()">Publier ✓</button></div>`
+  const hasImg=data._imgB64?true:false
+  const photoBtn=hasImg?'':`<button class="btn-photo" onclick="addPhotoToPending()">🖼️ Ajouter une photo (optionnel)</button>`
+  pv.innerHTML=\`<div class="preview-head">Aperçu · \${data.type}</div><div class="preview-body">\${body}</div><div class="preview-acts" style="flex-direction:column;">\${photoBtn}<div style="display:flex;gap:8px;width:100%;"><button class="btn-cancel" onclick="cancelPub()">Modifier</button><button class="btn-pub" onclick="confirmPub()">Publier ✓</button></div></div>\`
   last.appendChild(pv)
   msgsEl.scrollTop=msgsEl.scrollHeight
   pending=data
@@ -348,8 +352,37 @@ Post: {"action":"publier","type":"post","contenu":"...","quartier":"${profil?.qu
   reader.readAsDataURL(file)
 }
 
+function addPhotoToPending(){
+  // Ouvrir le sélecteur de photo sans fermer l'aperçu
+  const inp=document.getElementById('photo-input')
+  inp.onchange=(e)=>{
+    const file=e.target.files&&e.target.files[0]
+    if(!file)return
+    inp.value=''
+    const reader=new FileReader()
+    reader.onload=(ev)=>{
+      const b64=ev.target.result
+      const b64data=b64.split(',')[1]
+      const mime=file.type||'image/jpeg'
+      // Injecter l'image dans le pending
+      if(pending){
+        pending._imgB64=b64data
+        pending._imgMime=mime
+        // Rafraîchir l'aperçu avec l'image
+        document.querySelector('.preview')?.remove()
+        showPreview(pending)
+        // Scroll
+        msgsEl.scrollTop=msgsEl.scrollHeight
+      }
+    }
+    reader.readAsDataURL(file)
+  }
+  inp.click()
+}
+
 // Exposer globalement
-window.send=send;window.qa=qa;window.confirmPub=confirmPub;window.cancelPub=cancelPub;window.toggleAct=toggleAct
+window.send=send
+window.addPhotoToPending=addPhotoToPending;window.qa=qa;window.confirmPub=confirmPub;window.cancelPub=cancelPub;window.toggleAct=toggleAct
 
 init()
 </script>
