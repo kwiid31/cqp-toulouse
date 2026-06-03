@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>IA — CQP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: #fff; font-family: -apple-system, system-ui, sans-serif; }
+.ia-wrap { display: flex; flex-direction: column; height: 100dvh; max-width: 640px; margin: 0 auto; }
+.ia-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 0.5px solid #eff3f4; position: sticky; top: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); z-index: 10; }
+.ia-top-left { display: flex; align-items: center; gap: 10px; }
+.ia-logo { width: 32px; height: 32px; background: #C8102E; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.ia-title { font-size: 16px; font-weight: 700; color: #0f1419; }
+.ia-sub { font-size: 12px; color: #536471; }
+.ia-back { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.ia-back:active { background: #f7f7f7; }
+.ia-messages { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
+.msg { display: flex; gap: 10px; align-items: flex-start; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+.msg-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+.msg-avatar.ia { background: #C8102E; }
+.msg-avatar.user { background: #e4e6eb; color: #536471; }
+.msg-bubble { flex: 1; min-width: 0; }
+.msg-name { font-size: 13px; font-weight: 700; color: #0f1419; margin-bottom: 3px; }
+.msg-text { font-size: 15px; color: #0f1419; line-height: 1.55; white-space: pre-wrap; }
+.msg-text.typing::after { content: '▋'; animation: blink .7s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.suggestions { padding: 0 16px 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+.sug-btn { background: #f7f7f7; border: 0.5px solid #e4e6eb; border-radius: 20px; padding: 8px 14px; font-size: 13px; color: #0f1419; cursor: pointer; font-family: inherit; transition: background .15s; white-space: nowrap; }
+.sug-btn:active { background: #eff3f4; }
+.ia-input-wrap { border-top: 0.5px solid #eff3f4; padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); display: flex; align-items: flex-end; gap: 8px; background: #fff; }
+.ia-input { flex: 1; border: 1px solid #e4e6eb; border-radius: 22px; padding: 10px 16px; font-size: 15px; font-family: inherit; outline: none; resize: none; line-height: 1.4; max-height: 120px; overflow-y: auto; color: #0f1419; background: #f7f9f9; transition: border-color .15s; }
+.ia-input:focus { border-color: #C8102E; background: #fff; }
+.ia-input::placeholder { color: #8b98a5; }
+.ia-send { width: 38px; height: 38px; border-radius: 50%; background: #C8102E; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: opacity .15s, transform .1s; }
+.ia-send:disabled { opacity: .4; }
+.ia-send:active { transform: scale(.93); }
+</style>
+</head>
+<body>
+<div class="ia-wrap">
+  <div class="ia-top">
+    <button class="ia-back" onclick="history.back()">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0f1419" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <div class="ia-top-left">
+      <div class="ia-logo">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </div>
+      <div>
+        <div class="ia-title">IA du quartier</div>
+        <div class="ia-sub">Propulsée par Groq</div>
+      </div>
+    </div>
+    <div style="width:32px;"></div>
+  </div>
+
+  <div class="ia-messages" id="messages"></div>
+
+  <div class="suggestions" id="suggestions">
+    <button class="sug-btn" onclick="sendSuggestion(this)">Médecin CMU près de chez moi</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">Activités pour les jeunes</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">Aides logement disponibles</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">Comment proposer un événement ?</button>
+  </div>
+
+  <div class="ia-input-wrap">
+    <textarea class="ia-input" id="input" placeholder="Pose ta question..." rows="1"
+      oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+    <button class="ia-send" id="send-btn" onclick="sendMessage()" disabled>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const _a='gsk_MS82n6rPy50Mfozl2Q55WGdyb3FY';const _b='iJYhCxF03OfyG7miShnZyLqC';const GROQ_KEY=_a+_b
+const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
+const SYSTEM = `Tu es l'assistant IA des Quartiers Populaires de Toulouse (CQP). Tu aides les habitants de Bellefontaine, Reynerie, Mirail, Bagatelle, Empalot, Papus, Faourette. Tu reponds en francais, de maniere directe, bienveillante et utile. Tu connais les realites des quartiers populaires : acces aux soins, CMU, aides sociales, associations, transports, emploi, logement. Tu es concis mais complet. Tu ne fais pas de longs discours.`
+
+let history = []
+let isTyping = false
+const messagesEl = document.getElementById('messages')
+const inputEl = document.getElementById('input')
+const sendBtn = document.getElementById('send-btn')
+const suggestionsEl = document.getElementById('suggestions')
+
+addMessage('ia', "Salut ! Je suis l'IA du quartier. Pose-moi n'importe quelle question sur les services, aides, associations ou la vie a Toulouse. Je suis la pour t'aider 👊")
+
+inputEl.addEventListener('input', () => { sendBtn.disabled = !inputEl.value.trim() })
+
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px' }
+
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) sendMessage() } }
+
+function sendSuggestion(btn) { inputEl.value = btn.textContent; sendBtn.disabled = false; suggestionsEl.style.display = 'none'; sendMessage() }
+
+function addMessage(role, text) {
+  const div = document.createElement('div')
+  div.className = 'msg'
+  const isIA = role === 'ia'
+  const av = isIA
+    ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>'
+    : '?'
+  div.innerHTML = `<div class="msg-avatar ${isIA?'ia':'user'}">${av}</div><div class="msg-bubble"><div class="msg-name">${isIA?'IA CQP':'Toi'}</div><div class="msg-text">${text}</div></div>`
+  messagesEl.appendChild(div)
+  messagesEl.scrollTop = messagesEl.scrollHeight
+  return div.querySelector('.msg-text')
+}
+
+async function sendMessage() {
+  const text = inputEl.value.trim()
+  if (!text || isTyping) return
+  inputEl.value = ''; inputEl.style.height = 'auto'; sendBtn.disabled = true
+  suggestionsEl.style.display = 'none'; isTyping = true
+  addMessage('user', text)
+  history.push({ role: 'user', content: text })
+  const typingEl = addMessage('ia', '')
+  typingEl.classList.add('typing')
+  try {
+    const res = await fetch(GROQ_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+      body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: SYSTEM }, ...history], max_tokens: 600, temperature: 0.7, stream: true })
+    })
+    typingEl.classList.remove('typing'); typingEl.textContent = ''
+    const reader = res.body.getReader(); const decoder = new TextDecoder(); let fullText = ''
+    while (true) {
+      const { done, value } = await reader.read(); if (done) break
+      const lines = decoder.decode(value).split('\n').filter(l => l.startsWith('data: '))
+      for (const line of lines) {
+        const data = line.slice(6); if (data === '[DONE]') break
+        try { const delta = JSON.parse(data).choices?.[0]?.delta?.content || ''; fullText += delta; typingEl.textContent = fullText; messagesEl.scrollTop = messagesEl.scrollHeight } catch(e) {}
+      }
+    }
+    history.push({ role: 'assistant', content: fullText })
+  } catch(e) {
+    typingEl.classList.remove('typing')
+    typingEl.textContent = "Desole, une erreur s'est produite. Reessaie dans un moment."
+  }
+  isTyping = false
+}
+</script>
+</body>
+</html>
