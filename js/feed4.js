@@ -197,21 +197,21 @@ const Feed = (() => {
     return `
     <article id="card-${p.id}" style="padding:12px 16px 0;background:#fff;border-bottom:1px solid #eff3f4;">
       <div style="display:flex;gap:10px;">
-        <div style="flex-shrink:0;width:36px;">
-          <div style="width:36px;height:36px;border-radius:50%;background:#e4e6eb;"></div>
+        <div style="flex-shrink:0;width:42px;">
+          <div style="width:42px;height:42px;border-radius:50%;background:#cfd9de;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#536471;"></div>
         </div>
-        <div style="flex:1;min-width:0;padding-bottom:14px;">
+        <div style="flex:1;min-width:0;padding-bottom:4px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
             <div>
-              <span style="font-size:15px;font-weight:700;color:#0f1419;">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</span>
-              <span style="font-size:14px;color:#536471;margin-left:5px;">${p.quartier && p.prenom ? Utils.esc(p.prenom) + ' · ' : ''}${Utils.timeAgo(p.created_at)}</span>
+              <span style="font-size:15px;font-weight:800;color:#0f1419;">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</span>
+              <span style="font-size:15px;color:#536471;margin-left:6px;font-weight:400;">${p.quartier && p.prenom ? Utils.esc(p.prenom)+' · ' : ''}${Utils.timeAgo(p.created_at)}</span>
             </div>
             ${menuBtn}
           </div>
-          ${p.contenu ? `<p style="font-size:15px;color:#0f1419;margin:4px 0 10px;line-height:1.5;font-weight:400;">${Utils.esc(p.contenu)}</p>` : ''}
+          ${p.contenu ? `<p style="font-size:15px;color:#0f1419;margin:4px 0 12px;line-height:1.5625;font-weight:400;">${Utils.esc(p.contenu)}</p>` : ''}
           ${carousel || ''}
           ${img || ''}
-          <div style="display:flex;gap:0;margin-top:8px;align-items:center;justify-content:space-between;max-width:220px;">
+          <div style="display:flex;gap:0;margin-top:4px;margin-bottom:4px;align-items:center;justify-content:space-between;max-width:280px;">
             <button id="like-${p.id}" onclick="Feed.toggleLike(${p.id},this)" style="background:none;border:none;padding:8px;cursor:pointer;display:flex;align-items:center;gap:5px;">
               <svg viewBox="0 0 24 24" width="22" height="22" stroke="${liked?'#C8102E':'#65676b'}" fill="${liked?'#C8102E':'none'}" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               <span id="lc-${p.id}" style="font-size:13px;color:#65676b;">${likeCount > 0 ? likeCount : ''}</span>
