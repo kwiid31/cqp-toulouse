@@ -122,6 +122,8 @@ Post: {"action":"publier","type":"post","contenu":"...","quartier":"${profil?.qu
 Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"${profil?.quartier||'Toulouse'}"}
 Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-07","description":"..."}
 
+ATTENTION: Le champ "action" est OBLIGATOIRE et doit toujours valoir exactement "publier". Ne l'oublie jamais.
+
 Si l'utilisateur veut juste discuter, reponds normalement en 1-2 phrases.`
 }
 
@@ -220,12 +222,14 @@ async function send(){
     hist.push({role:'assistant',content:full})
     // Détection JSON robuste
     const ft=full.trim()
-    if(ft.includes('"action"')&&ft.includes('"publier"')){
+    if(ft.includes('"publier"')&&ft.includes('"type"')){
       const s=ft.indexOf('{'),e=ft.lastIndexOf('}')
       if(s>=0&&e>s){
         try{
-          const pd=JSON.parse(ft.slice(s,e+1))
-          if(pd.action==='publier'){
+          let pd=JSON.parse(ft.slice(s,e+1))
+          // Corriger si action manquant
+          if(!pd.action && pd.type) pd.action='publier'
+          if(pd.action==='publier'&&pd.type){
             tel.textContent=''
             if(!profil){tel.textContent="Tout est prêt ! Connecte-toi pour publier."}
             else{tel.textContent="Voilà l'aperçu :";showPreview(pd)}
