@@ -225,7 +225,7 @@ const actionsEl = document.getElementById('actions-menu')
 const sbc = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
 async function init() {
-  const code = localStorage.getItem('cqp_code') || localStorage.getItem('profil_code')
+  const code = localStorage.getItem('cqp_code') || localStorage.getItem('profil_code') || localStorage.getItem('code') || localStorage.getItem('session_id')
   if (code) {
     const { data } = await sbc.from('profils').select('*').eq('code', code).single()
     if (data) {
