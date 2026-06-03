@@ -5,145 +5,469 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <title>IA — CQP</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/app.js?v=20260603"></script>
+<script src="/js/auth.js?v=20260603"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { height: 100%; background: #fff; font-family: -apple-system, system-ui, sans-serif; }
-.ia-wrap { display: flex; flex-direction: column; height: 100dvh; max-width: 640px; margin: 0 auto; }
-.ia-top { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 0.5px solid #eff3f4; position: sticky; top: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); z-index: 10; }
-.ia-top-left { display: flex; align-items: center; gap: 10px; }
-.ia-logo { width: 32px; height: 32px; background: #C8102E; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.ia-title { font-size: 16px; font-weight: 700; color: #0f1419; }
-.ia-sub { font-size: 12px; color: #536471; }
-.ia-back { background: none; border: none; cursor: pointer; padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.ia-back:active { background: #f7f7f7; }
-.ia-messages { flex: 1; overflow-y: auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 20px; scroll-behavior: smooth; }
-.msg { display: flex; gap: 10px; align-items: flex-start; animation: fadeIn .2s ease; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
-.msg-avatar { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
-.msg-avatar.ia { background: #C8102E; }
-.msg-avatar.user { background: #e4e6eb; color: #536471; }
-.msg-bubble { flex: 1; min-width: 0; }
-.msg-name { font-size: 13px; font-weight: 700; color: #0f1419; margin-bottom: 3px; }
+html, body { height: 100%; background: #fff; font-family: -apple-system, system-ui, sans-serif; overflow: hidden; }
+
+.ia-wrap { display: flex; flex-direction: column; height: 100dvh; }
+
+/* TOPBAR */
+.ia-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 0.5px solid #eff3f4;
+  background: #fff; flex-shrink: 0;
+}
+.ia-back { background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; }
+.ia-brand { display: flex; align-items: center; gap: 8px; }
+.ia-logo { width: 28px; height: 28px; background: #C8102E; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.ia-name { font-size: 15px; font-weight: 700; color: #0f1419; }
+.ia-user-badge {
+  font-size: 12px; color: #536471; background: #f7f9f9;
+  border: 0.5px solid #e4e6eb; border-radius: 20px;
+  padding: 4px 10px; display: flex; align-items: center; gap: 5px;
+}
+.ia-user-dot { width: 6px; height: 6px; border-radius: 50%; background: #00ba7c; }
+
+/* MESSAGES ZONE */
+.ia-messages {
+  flex: 1; overflow-y: auto; padding: 0 0 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ÉTAT VIDE — style ChatGPT */
+.ia-empty {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  height: 100%; padding: 32px 24px 0;
+  text-align: center;
+}
+.ia-empty-logo { width: 48px; height: 48px; background: #C8102E; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+.ia-empty-title { font-size: 24px; font-weight: 700; color: #0f1419; margin-bottom: 8px; line-height: 1.3; }
+.ia-empty-sub { font-size: 14px; color: #536471; margin-bottom: 32px; }
+
+/* Messages */
+.msg { padding: 16px 16px 0; display: flex; gap: 10px; align-items: flex-start; animation: fadeUp .2s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+.msg-av { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+.msg-av.ia { background: #C8102E; }
+.msg-av.user { background: #e4e6eb; color: #536471; font-size: 14px; }
+.msg-body { flex: 1; min-width: 0; padding-bottom: 12px; border-bottom: 0.5px solid #eff3f4; }
+.msg:last-child .msg-body { border-bottom: none; }
+.msg-meta { font-size: 13px; font-weight: 700; color: #0f1419; margin-bottom: 4px; }
 .msg-text { font-size: 15px; color: #0f1419; line-height: 1.55; white-space: pre-wrap; }
 .msg-text.typing::after { content: '▋'; animation: blink .7s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-.suggestions { padding: 0 16px 12px; display: flex; gap: 8px; flex-wrap: wrap; }
-.sug-btn { background: #f7f7f7; border: 0.5px solid #e4e6eb; border-radius: 20px; padding: 8px 14px; font-size: 13px; color: #0f1419; cursor: pointer; font-family: inherit; transition: background .15s; white-space: nowrap; }
-.sug-btn:active { background: #eff3f4; }
-.ia-input-wrap { border-top: 0.5px solid #eff3f4; padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); display: flex; align-items: flex-end; gap: 8px; background: #fff; }
-.ia-input { flex: 1; border: 1px solid #e4e6eb; border-radius: 22px; padding: 10px 16px; font-size: 15px; font-family: inherit; outline: none; resize: none; line-height: 1.4; max-height: 120px; overflow-y: auto; color: #0f1419; background: #f7f9f9; transition: border-color .15s; }
-.ia-input:focus { border-color: #C8102E; background: #fff; }
-.ia-input::placeholder { color: #8b98a5; }
-.ia-send { width: 38px; height: 38px; border-radius: 50%; background: #C8102E; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: opacity .15s, transform .1s; }
-.ia-send:disabled { opacity: .4; }
-.ia-send:active { transform: scale(.93); }
+
+/* APERÇU DE PUBLICATION */
+.pub-preview {
+  margin-top: 12px; border: 1px solid #e4e6eb; border-radius: 12px;
+  overflow: hidden; background: #f7f9f9;
+}
+.pub-preview-head {
+  padding: 10px 14px; background: #fff; border-bottom: 0.5px solid #e4e6eb;
+  font-size: 11px; font-weight: 700; color: #536471; text-transform: uppercase; letter-spacing: 1px;
+}
+.pub-preview-body { padding: 12px 14px; }
+.pub-preview-quartier { font-size: 15px; font-weight: 800; color: #0f1419; }
+.pub-preview-prenom { font-size: 13px; color: #536471; margin-left: 6px; }
+.pub-preview-text { font-size: 14px; color: #0f1419; margin-top: 6px; line-height: 1.5; }
+.pub-preview-actions { display: flex; gap: 8px; padding: 10px 14px; border-top: 0.5px solid #e4e6eb; }
+.pub-btn-ok {
+  flex: 1; background: #C8102E; color: #fff; border: none;
+  border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+}
+.pub-btn-ok:active { opacity: .85; }
+.pub-btn-cancel {
+  flex: 1; background: none; color: #536471; border: 1px solid #e4e6eb;
+  border-radius: 8px; padding: 10px; font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+}
+
+/* ACTIONS + */
+.ia-actions {
+  display: none; flex-direction: column; gap: 2px;
+  padding: 8px; background: #fff;
+  border: 0.5px solid #e4e6eb; border-radius: 14px;
+  margin: 0 12px 8px; box-shadow: 0 4px 16px rgba(0,0,0,.08);
+}
+.ia-actions.open { display: flex; }
+.ia-action-btn {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border: none; background: none;
+  border-radius: 10px; cursor: pointer; font-family: inherit;
+  text-align: left; font-size: 15px; color: #0f1419;
+  transition: background .1s;
+}
+.ia-action-btn:active { background: #f0f2f5; }
+.ia-action-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+
+/* INPUT */
+.ia-input-zone { padding: 8px 12px; padding-bottom: max(12px, env(safe-area-inset-bottom)); background: #fff; flex-shrink: 0; }
+.ia-input-box {
+  display: flex; align-items: flex-end; gap: 8px;
+  border: 1px solid #e4e6eb; border-radius: 24px;
+  padding: 8px 8px 8px 14px; background: #f7f9f9;
+  transition: border-color .15s, background .15s;
+}
+.ia-input-box:focus-within { border-color: #C8102E; background: #fff; }
+.ia-plus {
+  width: 32px; height: 32px; border-radius: 50%; background: none;
+  border: 1px solid #e4e6eb; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; flex-shrink: 0;
+  transition: background .1s; margin-bottom: 2px;
+}
+.ia-plus:active { background: #f0f2f5; }
+.ia-textarea {
+  flex: 1; border: none; background: none; outline: none; resize: none;
+  font-size: 15px; font-family: inherit; color: #0f1419; line-height: 1.4;
+  max-height: 100px; overflow-y: auto; padding: 4px 0;
+}
+.ia-textarea::placeholder { color: #8b98a5; }
+.ia-send {
+  width: 32px; height: 32px; border-radius: 50%; background: #0f1419;
+  border: none; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0; transition: opacity .15s;
+}
+.ia-send:disabled { opacity: .3; }
+.ia-send:active { opacity: .7; }
 </style>
 </head>
 <body>
 <div class="ia-wrap">
+
+  <!-- TOPBAR -->
   <div class="ia-top">
     <button class="ia-back" onclick="history.back()">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0f1419" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0f1419" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
-    <div class="ia-top-left">
+    <div class="ia-brand">
       <div class="ia-logo">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
       </div>
-      <div>
-        <div class="ia-title">IA du quartier</div>
-        <div class="ia-sub">Propulsée par Groq</div>
-      </div>
+      <span class="ia-name">CQP IA</span>
     </div>
-    <div style="width:32px;"></div>
+    <div class="ia-user-badge" id="user-badge" style="display:none;">
+      <div class="ia-user-dot"></div>
+      <span id="user-name">...</span>
+    </div>
+    <div style="width:60px;" id="connect-btn-wrap">
+      <button onclick="window.location.href='profil.html'" style="background:none;border:0.5px solid #e4e6eb;border-radius:20px;padding:5px 12px;font-size:12px;color:#0f1419;cursor:pointer;font-family:inherit;font-weight:600;">Connexion</button>
+    </div>
   </div>
 
-  <div class="ia-messages" id="messages"></div>
-
-  <div class="suggestions" id="suggestions">
-    <button class="sug-btn" onclick="sendSuggestion(this)">Médecin CMU près de chez moi</button>
-    <button class="sug-btn" onclick="sendSuggestion(this)">Activités pour les jeunes</button>
-    <button class="sug-btn" onclick="sendSuggestion(this)">Aides logement disponibles</button>
-    <button class="sug-btn" onclick="sendSuggestion(this)">Comment proposer un événement ?</button>
+  <!-- MESSAGES -->
+  <div class="ia-messages" id="messages">
+    <div class="ia-empty" id="empty-state">
+      <div class="ia-empty-logo">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
+      </div>
+      <div class="ia-empty-title">Par quoi<br>commençons-nous ?</div>
+      <div class="ia-empty-sub">Dis-moi ce que tu veux faire,<br>je m'occupe du reste.</div>
+    </div>
   </div>
 
-  <div class="ia-input-wrap">
-    <textarea class="ia-input" id="input" placeholder="Pose ta question..." rows="1"
-      oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
-    <button class="ia-send" id="send-btn" onclick="sendMessage()" disabled>
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+  <!-- ACTIONS + -->
+  <div class="ia-actions" id="actions-menu">
+    <button class="ia-action-btn" onclick="quickAction('post')">
+      <div class="ia-action-icon" style="background:#fff0f2;">💬</div>
+      <div><div style="font-weight:600;">Publier un post</div><div style="font-size:13px;color:#536471;">Texte, photo, vidéo</div></div>
     </button>
+    <button class="ia-action-btn" onclick="quickAction('annonce')">
+      <div class="ia-action-icon" style="background:#fff3e0;">📋</div>
+      <div><div style="font-weight:600;">Déposer une annonce</div><div style="font-size:13px;color:#536471;">Vente, service, emploi…</div></div>
+    </button>
+    <button class="ia-action-btn" onclick="quickAction('evenement')">
+      <div class="ia-action-icon" style="background:#e8f0fe;">📅</div>
+      <div><div style="font-weight:600;">Proposer un événement</div><div style="font-size:13px;color:#536471;">Activité, sortie, réunion…</div></div>
+    </button>
+  </div>
+
+  <!-- INPUT -->
+  <div class="ia-input-zone">
+    <div class="ia-input-box">
+      <button class="ia-plus" id="plus-btn" onclick="toggleActions()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#536471" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <textarea class="ia-textarea" id="input" placeholder="Pose une question ou dis-moi ce que tu veux faire…" rows="1"
+        oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+      <button class="ia-send" id="send-btn" onclick="sendMessage()" disabled>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+      </button>
+    </div>
   </div>
 </div>
 
 <script>
-const _a='gsk_MS82n6rPy50Mfozl2Q55WGdyb3FY';const _b='iJYhCxF03OfyG7miShnZyLqC';const GROQ_KEY=_a+_b
-const GROQ_URL = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
-const SYSTEM = `Tu es l'assistant IA des Quartiers Populaires de Toulouse (CQP). Tu aides les habitants de Bellefontaine, Reynerie, Mirail, Bagatelle, Empalot, Papus, Faourette. Tu reponds en francais, de maniere directe, bienveillante et utile. Tu connais les realites des quartiers populaires : acces aux soins, CMU, aides sociales, associations, transports, emploi, logement. Tu es concis mais complet. Tu ne fais pas de longs discours.`
+const PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
+const SUPABASE_URL = 'https://rlrazcitmwxfaxlnnfau.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1OTAzMjMsImV4cCI6MjA2MzE2NjMyM30.V7Y-HJjHMtdSaO9MnWSnbFNmMnbqGqY8RMvRNHxqVMM'
 
+let profil = null
 let history = []
 let isTyping = false
+let pendingPublication = null
+let actionsOpen = false
+
 const messagesEl = document.getElementById('messages')
 const inputEl = document.getElementById('input')
 const sendBtn = document.getElementById('send-btn')
-const suggestionsEl = document.getElementById('suggestions')
+const emptyEl = document.getElementById('empty-state')
+const actionsEl = document.getElementById('actions-menu')
 
-addMessage('ia', "Salut ! Je suis l'IA du quartier. Pose-moi n'importe quelle question sur les services, aides, associations ou la vie a Toulouse. Je suis la pour t'aider 👊")
+// Initialiser Supabase et vérifier connexion
+const sbc = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-inputEl.addEventListener('input', () => { sendBtn.disabled = !inputEl.value.trim() })
+async function init() {
+  const code = localStorage.getItem('cqp_code') || localStorage.getItem('profil_code')
+  if (code) {
+    const { data } = await sbc.from('profils').select('*').eq('code', code).single()
+    if (data) {
+      profil = data
+      document.getElementById('user-badge').style.display = 'flex'
+      document.getElementById('user-name').textContent = data.prenom
+      document.getElementById('connect-btn-wrap').style.display = 'none'
+    }
+  }
+}
 
-function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px' }
+const SYSTEM = () => `Tu es l'assistant IA de CQP (Quartiers Populaires Toulouse), un réseau social de quartier.
+Tu aides les habitants à publier du contenu sur le réseau : posts, annonces, événements.
+${profil ? `L'utilisateur connecté s'appelle ${profil.prenom} et habite à ${profil.quartier || 'Toulouse'}.` : "L'utilisateur n'est pas connecté — il peut discuter mais pas publier."}
 
-function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) sendMessage() } }
+Ton rôle :
+1. Comprendre ce que l'utilisateur veut faire (post, annonce, événement, ou juste discuter)
+2. Poser les questions nécessaires pour collecter les infos manquantes
+3. Quand tu as assez d'infos, générer un JSON de publication et demander confirmation
 
-function sendSuggestion(btn) { inputEl.value = btn.textContent; sendBtn.disabled = false; suggestionsEl.style.display = 'none'; sendMessage() }
+Pour déclencher une publication, réponds UNIQUEMENT avec ce format JSON (sans texte avant ou après) :
+{"action":"publier","type":"post","contenu":"...","quartier":"..."}
+{"action":"publier","type":"annonce","titre":"...","categorie":"...","description":"...","quartier":"..."}
+{"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"...","description":"..."}
 
-function addMessage(role, text) {
+Sinon réponds normalement en français, de façon naturelle et concise. Tu peux aussi juste converser.`
+
+inputEl.addEventListener('input', () => {
+  sendBtn.disabled = !inputEl.value.trim()
+})
+
+function autoResize(el) {
+  el.style.height = 'auto'
+  el.style.height = Math.min(el.scrollHeight, 100) + 'px'
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+    if (!sendBtn.disabled && !isTyping) sendMessage()
+  }
+}
+
+function toggleActions() {
+  actionsOpen = !actionsOpen
+  actionsEl.classList.toggle('open', actionsOpen)
+}
+
+function quickAction(type) {
+  actionsEl.classList.remove('open')
+  actionsOpen = false
+  const msgs = {
+    post: "Je veux publier un post",
+    annonce: "Je veux déposer une annonce",
+    evenement: "Je veux proposer un événement"
+  }
+  inputEl.value = msgs[type]
+  sendBtn.disabled = false
+  sendMessage()
+}
+
+function hideEmpty() {
+  if (emptyEl) emptyEl.style.display = 'none'
+}
+
+function addMsg(role, text) {
+  hideEmpty()
+  const isIA = role === 'ia'
   const div = document.createElement('div')
   div.className = 'msg'
-  const isIA = role === 'ia'
   const av = isIA
-    ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>'
-    : '?'
-  div.innerHTML = `<div class="msg-avatar ${isIA?'ia':'user'}">${av}</div><div class="msg-bubble"><div class="msg-name">${isIA?'IA CQP':'Toi'}</div><div class="msg-text">${text}</div></div>`
+    ? `<div class="msg-av ia"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></div>`
+    : `<div class="msg-av user">${profil ? profil.prenom[0].toUpperCase() : '?'}</div>`
+  div.innerHTML = `${av}<div class="msg-body"><div class="msg-meta">${isIA ? 'CQP IA' : (profil ? profil.prenom : 'Toi')}</div><div class="msg-text">${text}</div></div>`
   messagesEl.appendChild(div)
   messagesEl.scrollTop = messagesEl.scrollHeight
   return div.querySelector('.msg-text')
+}
+
+function showPreview(data) {
+  const lastMsg = messagesEl.querySelector('.msg:last-child .msg-body')
+  if (!lastMsg) return
+
+  const q = data.quartier || profil?.quartier || ''
+  const p = profil?.prenom || ''
+
+  let previewHTML = ''
+  if (data.type === 'post') {
+    previewHTML = `<div class="pub-preview-quartier">${q}<span class="pub-preview-prenom">${p}</span></div><div class="pub-preview-text">${data.contenu}</div>`
+  } else if (data.type === 'annonce') {
+    previewHTML = `<div class="pub-preview-quartier">${data.titre}</div><div class="pub-preview-text">${data.categorie} · ${q}<br>${data.description}</div>`
+  } else if (data.type === 'evenement') {
+    previewHTML = `<div class="pub-preview-quartier">${data.titre}</div><div class="pub-preview-text">📍 ${data.lieu || ''} · ${data.date || ''}<br>${data.description || ''}</div>`
+  }
+
+  const preview = document.createElement('div')
+  preview.className = 'pub-preview'
+  preview.innerHTML = `
+    <div class="pub-preview-head">Aperçu · ${data.type}</div>
+    <div class="pub-preview-body">${previewHTML}</div>
+    <div class="pub-preview-actions">
+      <button class="pub-btn-cancel" onclick="cancelPub()">Modifier</button>
+      <button class="pub-btn-ok" onclick="confirmPub()">Publier ✓</button>
+    </div>`
+  lastMsg.appendChild(preview)
+  messagesEl.scrollTop = messagesEl.scrollHeight
+
+  pendingPublication = data
+}
+
+function cancelPub() {
+  pendingPublication = null
+  addMsg('ia', "D'accord, dis-moi ce que tu veux changer.")
+}
+
+async function confirmPub() {
+  if (!profil) {
+    addMsg('ia', "Tu dois te connecter pour publier. Va dans ton profil !")
+    return
+  }
+  if (!pendingPublication) return
+
+  const data = pendingPublication
+  pendingPublication = null
+
+  // Supprimer le preview
+  const preview = messagesEl.querySelector('.pub-preview')
+  if (preview) preview.remove()
+
+  try {
+    if (data.type === 'post') {
+      await sbc.from('posts').insert({
+        prenom: profil.prenom,
+        contenu: data.contenu,
+        quartier: data.quartier || profil.quartier,
+        session_id: profil.code,
+        profil_code: profil.code,
+        visible: true
+      })
+    } else if (data.type === 'annonce') {
+      await sbc.from('annonces').insert({
+        prenom: profil.prenom,
+        titre: data.titre,
+        description: data.description,
+        categorie: data.categorie || 'Autre',
+        quartier: data.quartier || profil.quartier,
+        profil_code: profil.code,
+        visible: true,
+        validee: true
+      })
+    } else if (data.type === 'evenement') {
+      await sbc.from('evenements').insert({
+        titre: data.titre,
+        description: data.description || '',
+        lieu: data.lieu || '',
+        date_debut: new Date(data.date || Date.now()).toISOString(),
+        prenom: profil.prenom,
+        profil_code: profil.code,
+        visible: true,
+        validee: true
+      })
+    }
+    addMsg('ia', `✅ Publié ! Ton ${data.type} est maintenant visible sur CQP.`)
+  } catch(e) {
+    addMsg('ia', "Oups, une erreur s'est produite. Réessaie.")
+  }
 }
 
 async function sendMessage() {
   const text = inputEl.value.trim()
   if (!text || isTyping) return
   inputEl.value = ''; inputEl.style.height = 'auto'; sendBtn.disabled = true
-  suggestionsEl.style.display = 'none'; isTyping = true
-  addMessage('user', text)
+  actionsEl.classList.remove('open'); actionsOpen = false
+  isTyping = true
+
+  addMsg('user', text)
   history.push({ role: 'user', content: text })
-  const typingEl = addMessage('ia', '')
+
+  const typingEl = addMsg('ia', '')
   typingEl.classList.add('typing')
+
   try {
-    const res = await fetch(GROQ_URL, {
+    const res = await fetch(PROXY, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: SYSTEM }, ...history], max_tokens: 600, temperature: 0.7, stream: true })
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'system', content: SYSTEM() }, ...history],
+        max_tokens: 500,
+        temperature: 0.7,
+        stream: true
+      })
     })
-    typingEl.classList.remove('typing'); typingEl.textContent = ''
-    const reader = res.body.getReader(); const decoder = new TextDecoder(); let fullText = ''
+
+    typingEl.classList.remove('typing')
+    typingEl.textContent = ''
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let fullText = ''
+
     while (true) {
-      const { done, value } = await reader.read(); if (done) break
+      const { done, value } = await reader.read()
+      if (done) break
       const lines = decoder.decode(value).split('\n').filter(l => l.startsWith('data: '))
       for (const line of lines) {
-        const data = line.slice(6); if (data === '[DONE]') break
-        try { const delta = JSON.parse(data).choices?.[0]?.delta?.content || ''; fullText += delta; typingEl.textContent = fullText; messagesEl.scrollTop = messagesEl.scrollHeight } catch(e) {}
+        const d = line.slice(6)
+        if (d === '[DONE]') break
+        try {
+          const delta = JSON.parse(d).choices?.[0]?.delta?.content || ''
+          fullText += delta
+          typingEl.textContent = fullText
+          messagesEl.scrollTop = messagesEl.scrollHeight
+        } catch(e) {}
       }
     }
+
     history.push({ role: 'assistant', content: fullText })
+
+    // Détecter si c'est une action de publication
+    const trimmed = fullText.trim()
+    if (trimmed.startsWith('{') && trimmed.includes('"action":"publier"')) {
+      try {
+        const pubData = JSON.parse(trimmed)
+        typingEl.textContent = ''
+        if (!profil) {
+          typingEl.textContent = "J'ai tout ce qu'il faut pour publier, mais tu dois d'abord te connecter !"
+        } else {
+          typingEl.textContent = "Voilà ce que je vais publier pour toi :"
+          showPreview(pubData)
+        }
+      } catch(e) {}
+    }
+
   } catch(e) {
     typingEl.classList.remove('typing')
-    typingEl.textContent = "Desole, une erreur s'est produite. Reessaie dans un moment."
+    typingEl.textContent = "Désolé, une erreur s'est produite."
   }
+
   isTyping = false
 }
+
+init()
 </script>
 </body>
 </html>
