@@ -78,12 +78,14 @@ textarea::placeholder{color:#8b98a5}
     </div>
   </div>
   <div class="actions" id="actmenu">
+    <button class="action" onclick="openPhoto()"><div class="action-icon" style="background:#f0fdf4">🖼️</div><div><div style="font-weight:600">Ajouter une photo</div><div style="font-size:13px;color:#536471">Flyer, image, galerie…</div></div></button>
     <button class="action" onclick="qa('post')"><div class="action-icon" style="background:#fff0f2">💬</div><div><div style="font-weight:600">Publier un post</div><div style="font-size:13px;color:#536471">Texte, photo, vidéo</div></div></button>
     <button class="action" onclick="qa('annonce')"><div class="action-icon" style="background:#fff3e0">📋</div><div><div style="font-weight:600">Déposer une annonce</div><div style="font-size:13px;color:#536471">Vente, service, emploi…</div></div></button>
     <button class="action" onclick="qa('evenement')"><div class="action-icon" style="background:#e8f0fe">📅</div><div><div style="font-weight:600">Proposer un événement</div><div style="font-size:13px;color:#536471">Activité, sortie, réunion…</div></div></button>
   </div>
   <div class="input-zone">
     <div class="input-box">
+      <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)">
       <button class="plus" onclick="toggleAct()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#536471" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
       <textarea id="ta" placeholder="Pose une question ou dis-moi ce que tu veux faire…" rows="1" oninput="resize(this)" onkeydown="kd(event)"></textarea>
       <button class="send" id="sbtn" onclick="send()" disabled><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button>
@@ -161,9 +163,10 @@ function showPreview(data){
   const q=data.quartier||profil?.quartier||''
   const p=profil?.prenom||''
   let body=''
-  if(data.type==='post')body=`<span class="preview-q">${q}</span><span class="preview-p">${p}</span><div class="preview-t">${data.contenu}</div>`
-  else if(data.type==='annonce')body=`<span class="preview-q">${data.titre}</span><div class="preview-t">${data.categorie} · ${q}<br>${data.description}</div>`
-  else if(data.type==='evenement')body=`<span class="preview-q">${data.titre}</span><div class="preview-t">📍${data.lieu||''} · ${data.date||''}<br>${data.description||''}</div>`
+  const imgPreview=data._imgB64?`<img src="data:${data._imgMime||'image/jpeg'};base64,${data._imgB64}" style="width:100%;border-radius:8px;margin-bottom:8px;max-height:200px;object-fit:cover;">`:''
+  if(data.type==='post')body=imgPreview+`<span class="preview-q">${q}</span><span class="preview-p">${p}</span><div class="preview-t">${data.contenu||''}</div>`
+  else if(data.type==='annonce')body=imgPreview+`<span class="preview-q">${data.titre}</span><div class="preview-t">${data.categorie} · ${q}<br>${data.description}</div>`
+  else if(data.type==='evenement')body=imgPreview+`<span class="preview-q">${data.titre}</span><div class="preview-t">📍${data.lieu||''} · ${data.date||''}<br>${data.description||''}</div>`
   const pv=document.createElement('div')
   pv.className='preview'
   pv.innerHTML=`<div class="preview-head">Aperçu · ${data.type}</div><div class="preview-body">${body}</div><div class="preview-acts"><button class="btn-cancel" onclick="cancelPub()">Modifier</button><button class="btn-pub" onclick="confirmPub()">Publier ✓</button></div>`
@@ -174,15 +177,33 @@ function showPreview(data){
 
 function cancelPub(){pending=null;addMsg('ia',"D'accord, dis-moi ce que tu veux changer.")}
 
+async function uploadImgToSupabase(b64data, mime){
+  const ext=mime.split('/')[1]||'jpg'
+  const fname=`ia_${Date.now()}.${ext}`
+  const bytes=atob(b64data)
+  const arr=new Uint8Array(bytes.length)
+  for(let i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i)
+  const blob=new Blob([arr],{type:mime})
+  const {data,error}=await sbc.storage.from('site-photos').upload(`posts/${fname}`,blob,{contentType:mime,upsert:true})
+  if(error)throw error
+  const {data:url}=sbc.storage.from('site-photos').getPublicUrl(`posts/${fname}`)
+  return url.publicUrl
+}
+
 async function confirmPub(){
   if(!profil){addMsg('ia',"Connecte-toi pour publier !");return}
   if(!pending)return
   const d=pending;pending=null
   document.querySelector('.preview')?.remove()
   try{
-    if(d.type==='post')await sbc.from('posts').insert({prenom:profil.prenom,contenu:d.contenu,quartier:d.quartier||profil.quartier,session_id:profil.code,profil_code:profil.code,visible:true})
-    else if(d.type==='annonce')await sbc.from('annonces').insert({prenom:profil.prenom,titre:d.titre,description:d.description,categorie:d.categorie||'Autre',quartier:d.quartier||profil.quartier,profil_code:profil.code,visible:true,validee:true})
-    else if(d.type==='evenement')await sbc.from('evenements').insert({titre:d.titre,description:d.description||'',lieu:d.lieu||'',date_debut:new Date(d.date||Date.now()).toISOString(),prenom:profil.prenom,profil_code:profil.code,visible:true,validee:true})
+    // Upload image si présente
+    let photoUrl=null
+    if(d._imgB64&&d._imgMime){
+      try{photoUrl=await uploadImgToSupabase(d._imgB64,d._imgMime)}catch(e){console.warn('upload img failed',e)}
+    }
+    if(d.type==='post')await sbc.from('posts').insert({prenom:profil.prenom,contenu:d.contenu||'',quartier:d.quartier||profil.quartier,session_id:profil.code,profil_code:profil.code,visible:true,photo_url:photoUrl})
+    else if(d.type==='annonce')await sbc.from('annonces').insert({prenom:profil.prenom,titre:d.titre,description:d.description,categorie:d.categorie||'Autre',quartier:d.quartier||profil.quartier,profil_code:profil.code,visible:true,validee:true,photo_url:photoUrl||''})
+    else if(d.type==='evenement')await sbc.from('evenements').insert({titre:d.titre,description:d.description||'',lieu:d.lieu||'',date_debut:new Date(d.date||Date.now()).toISOString(),prenom:profil.prenom,profil_code:profil.code,visible:true,validee:true,photo_url:photoUrl||''})
     addMsg('ia',`Publié ! Ton ${d.type} est maintenant visible sur CQP.`)
   }catch(e){addMsg('ia',"Erreur lors de la publication, réessaie.")}
 }
@@ -239,6 +260,92 @@ async function send(){
     }
   }catch(e){tel.classList.remove('typing');tel.textContent="Erreur, réessaie."}
   typing=false
+}
+
+// ── Gestion photo ──
+function openPhoto(){
+  actEl.classList.remove('open');actOpen=false
+  document.getElementById('photo-input').click()
+}
+
+async function handlePhoto(inp){
+  const file=inp.files&&inp.files[0]
+  if(!file)return
+  inp.value=''
+
+  // Afficher preview locale
+  const reader=new FileReader()
+  reader.onload=async(e)=>{
+    const b64=e.target.result // data:image/...;base64,...
+    const b64data=b64.split(',')[1]
+    const mime=file.type||'image/jpeg'
+
+    // Montrer l'image dans le chat
+    hideEmpty()
+    const imgDiv=document.createElement('div')
+    imgDiv.className='msg'
+    imgDiv.innerHTML=`<div class="av user">${profil?profil.prenom[0].toUpperCase():'?'}</div><div class="mbody"><div class="mname">${profil?profil.prenom:'Toi'}</div><img src="${b64}" style="max-width:100%;border-radius:12px;margin-top:6px;max-height:300px;object-fit:contain;"></div>`
+    msgsEl.appendChild(imgDiv)
+    msgsEl.scrollTop=msgsEl.scrollHeight
+
+    // Stocker l'image pour publication
+    window._pendingImg={b64,b64data,mime,file}
+
+    // Analyser l'image avec Groq Vision
+    const tel=addMsg('ia','')
+    tel.classList.add('typing')
+    typing=true
+
+    try{
+      const visionRes=await fetch(PROXY,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          model:'meta-llama/llama-4-scout-17b-16e-instruct',
+          messages:[{
+            role:'user',
+            content:[
+              {type:'image_url',image_url:{url:b64}},
+              {type:'text',text:`Tu es l'assistant IA de CQP reseau social de quartier Toulouse. Analyse cette image et genere DIRECTEMENT le JSON de publication adapte (evenement si c'est un flyer d'evenement, annonce si c'est une annonce de vente/service, post sinon). Utilisateur: ${profil?profil.prenom:'Anonyme'}, quartier: ${profil?profil.quartier:'Toulouse'}.
+
+Reponds UNIQUEMENT avec le JSON (rien d'autre):
+Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"...","photo_url":"PENDING"}
+Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"${profil?.quartier||'Toulouse'}","photo_url":"PENDING"}
+Post: {"action":"publier","type":"post","contenu":"...","quartier":"${profil?.quartier||'Toulouse'}","photo_url":"PENDING"}`}
+            ]
+          }],
+          max_tokens:300
+        })
+      })
+
+      const vd=await visionRes.json()
+      const vtext=(vd.choices?.[0]?.message?.content||'').trim()
+
+      tel.classList.remove('typing')
+
+      // Parser le JSON
+      const vs=vtext.indexOf('{'),ve=vtext.lastIndexOf('}')
+      if(vs>=0&&ve>vs){
+        try{
+          let pd=JSON.parse(vtext.slice(vs,ve+1))
+          if(!pd.action)pd.action='publier'
+          if(pd.action==='publier'&&pd.type){
+            tel.textContent="J'ai analysé l'image, voilà l'aperçu :"
+            pd._imgB64=b64data
+            pd._imgMime=mime
+            showPreview(pd)
+          }else{tel.textContent=vtext}
+        }catch(ex){tel.textContent="Image reçue ! Dis-moi ce que tu veux en faire."}
+      }else{
+        tel.textContent=vtext||"Image reçue ! Dis-moi ce que tu veux en faire."
+      }
+    }catch(ex){
+      tel.classList.remove('typing')
+      tel.textContent="Image reçue ! Dis-moi ce que tu veux en faire."
+    }
+    typing=false
+  }
+  reader.readAsDataURL(file)
 }
 
 // Exposer globalement
