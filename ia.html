@@ -9,8 +9,6 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden}
 .wrap{display:flex;flex-direction:column;height:100dvh}
-
-/* TOP */
 .top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:.5px solid #eff3f4;flex-shrink:0}
 .back{background:none;border:none;cursor:pointer;padding:4px}
 .brand{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#0f1419}
@@ -18,14 +16,11 @@ html,body{height:100%;background:#fff;font-family:-apple-system,system-ui,sans-s
 .badge{font-size:12px;color:#536471;background:#f7f9f9;border:.5px solid #e4e6eb;border-radius:20px;padding:4px 10px;display:flex;align-items:center;gap:5px}
 .dot{width:6px;height:6px;border-radius:50%;background:#00ba7c}
 .conn-btn{background:none;border:.5px solid #e4e6eb;border-radius:20px;padding:5px 12px;font-size:12px;color:#0f1419;cursor:pointer;font-family:inherit;font-weight:600}
-
-/* MESSAGES */
-.msgs{flex:1;overflow-y:auto;padding-bottom:8px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
+.msgs{flex:1;overflow-y:auto;padding-bottom:8px;scroll-behavior:smooth}
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:32px 24px 0}
 .empty-logo{width:48px;height:48px;background:#C8102E;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
 .empty h1{font-size:24px;font-weight:700;color:#0f1419;margin-bottom:8px;line-height:1.3}
 .empty p{font-size:14px;color:#536471}
-
 .msg{padding:16px 16px 0;display:flex;gap:10px;animation:up .2s ease}
 @keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
@@ -37,8 +32,6 @@ html,body{height:100%;background:#fff;font-family:-apple-system,system-ui,sans-s
 .mtext{font-size:15px;color:#0f1419;line-height:1.55;white-space:pre-wrap}
 .mtext.typing::after{content:'▋';animation:bl .7s infinite}
 @keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
-
-/* APERCU */
 .preview{margin-top:12px;border:.5px solid #e4e6eb;border-radius:12px;overflow:hidden;background:#f7f9f9}
 .preview-head{padding:8px 14px;background:#fff;border-bottom:.5px solid #e4e6eb;font-size:11px;font-weight:700;color:#536471;text-transform:uppercase;letter-spacing:1px}
 .preview-body{padding:12px 14px}
@@ -46,38 +39,27 @@ html,body{height:100%;background:#fff;font-family:-apple-system,system-ui,sans-s
 .preview-p{font-size:13px;color:#536471;margin-left:6px}
 .preview-t{font-size:14px;color:#0f1419;margin-top:6px;line-height:1.5}
 .preview-acts{display:flex;flex-direction:column;gap:8px;padding:10px 14px;border-top:.5px solid #e4e6eb}
+.preview-row{display:flex;gap:8px}
 .btn-pub{flex:1;background:#C8102E;color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
 .btn-cancel{flex:1;background:none;color:#536471;border:.5px solid #e4e6eb;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
-.btn-photo{width:100%;background:#f0fdf4;color:#16a34a;border:.5px solid #86efac;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
-.preview-row{display:flex;gap:8px}
-
-/* CARDS */
+.btn-photo{width:100%;background:#f0fdf4;color:#16a34a;border:.5px solid #86efac;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
 .cards-zone{display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none}
 .cards-zone::-webkit-scrollbar{display:none}
 .ia-card{flex-shrink:0;background:#fff;border:.5px solid #e4e6eb;border-radius:12px;padding:12px 14px;cursor:pointer;font-family:inherit;text-align:left;width:136px;display:flex;flex-direction:column;gap:8px;transition:background .1s}
 .ia-card:active{background:#f7f9f9}
-.ia-card-icon{color:#536471;line-height:1}
 .ia-card-label{font-size:13px;font-weight:600;color:#0f1419;line-height:1.35}
-
-/* INPUT */
 .input-zone{padding:10px 16px;padding-bottom:max(14px,env(safe-area-inset-bottom));background:#fff;flex-shrink:0}
 .input-box{display:flex;align-items:flex-end;gap:10px;border:.5px solid #e4e6eb;border-radius:16px;padding:14px 12px 14px 14px;background:#f7f9f9;transition:border-color .15s}
 .input-box:focus-within{border-color:#C8102E;background:#fff}
 .clip-btn{background:none;border:none;cursor:pointer;padding:2px;flex-shrink:0;display:flex;align-items:center;margin-bottom:2px}
-.clip-btn:active{opacity:.6}
 textarea{flex:1;border:none;background:none;outline:none;resize:none;font-size:16px;font-family:inherit;color:#0f1419;line-height:1.5;min-height:48px;max-height:120px;overflow-y:auto;padding:0}
 textarea::placeholder{color:#8b98a5}
 .send{width:34px;height:34px;border-radius:50%;background:#0f1419;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;margin-bottom:2px}
 .send:disabled{opacity:.25}
-
-/* SVG icons */
-.svg-cal{display:block}
 </style>
 </head>
 <body>
 <div class="wrap">
-
-  <!-- TOP -->
   <div class="top">
     <button class="back" onclick="history.back()">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0f1419" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
@@ -90,7 +72,6 @@ textarea::placeholder{color:#8b98a5}
     <button class="conn-btn" id="connbtn" onclick="location.href='profil.html'">Connexion</button>
   </div>
 
-  <!-- MESSAGES -->
   <div class="msgs" id="msgs">
     <div class="empty" id="empty">
       <div class="empty-logo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></div>
@@ -99,31 +80,29 @@ textarea::placeholder{color:#8b98a5}
     </div>
   </div>
 
-  <!-- CARDS -->
   <div class="cards-zone" id="cards-zone">
-    <button class="ia-card" onclick="qa('evenement')">
-      <div class="ia-card-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#536471" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+    <button class="ia-card" id="card-evt">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#536471" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <span class="ia-card-label">Créer un événement</span>
     </button>
-    <button class="ia-card" onclick="qa('annonce')">
-      <div class="ia-card-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#536471" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg></div>
+    <button class="ia-card" id="card-ann">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#536471" stroke-width="1.5" stroke-linecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
       <span class="ia-card-label">Créer une annonce</span>
     </button>
-    <button class="ia-card" onclick="qa('post')">
-      <div class="ia-card-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#536471" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+    <button class="ia-card" id="card-post">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#536471" stroke-width="1.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span class="ia-card-label">Publier un post</span>
     </button>
   </div>
 
-  <!-- INPUT -->
   <input type="file" id="photo-input" accept="image/*" style="display:none">
   <div class="input-zone">
     <div class="input-box">
-      <button class="clip-btn" onclick="openPhoto()" aria-label="Ajouter une photo">
+      <button class="clip-btn" id="clip-btn" aria-label="Ajouter une photo">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#536471" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
       </button>
-      <textarea id="ta" placeholder="Pose une question ou dis-moi ce que tu veux faire…" rows="2" oninput="resize(this)" onkeydown="kd(event)"></textarea>
-      <button class="send" id="sbtn" onclick="send()" disabled aria-label="Envoyer">
+      <textarea id="ta" placeholder="Pose une question ou dis-moi ce que tu veux faire…" rows="2"></textarea>
+      <button class="send" id="sbtn" disabled aria-label="Envoyer">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
       </button>
     </div>
@@ -131,244 +110,285 @@ textarea::placeholder{color:#8b98a5}
 </div>
 
 <script>
-const SB_URL='https://rlrazcitmwxfaxlnnfau.supabase.co'
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzODU4MzQsImV4cCI6MjA5NTk2MTgzNH0.0SSaUUq4x_-Slr4QJ3XJlF0mu0Ub_-ouXD3EC2-PGG0'
-const PROXY='https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
-const sbc=supabase.createClient(SB_URL,SB_KEY)
+var SB_URL = 'https://rlrazcitmwxfaxlnnfau.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzODU4MzQsImV4cCI6MjA5NTk2MTgzNH0.0SSaUUq4x_-Slr4QJ3XJlF0mu0Ub_-ouXD3EC2-PGG0';
+var PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy';
+var sbc = supabase.createClient(SB_URL, SB_KEY);
 
-const msgsEl=document.getElementById('msgs')
-const taEl=document.getElementById('ta')
-const sbtn=document.getElementById('sbtn')
-const cardsEl=document.getElementById('cards-zone')
-const emptyEl=document.getElementById('empty')
+var msgsEl = document.getElementById('msgs');
+var taEl = document.getElementById('ta');
+var sbtn = document.getElementById('sbtn');
+var cardsEl = document.getElementById('cards-zone');
+var emptyEl = document.getElementById('empty');
+var photoInp = document.getElementById('photo-input');
 
-let profil=null,hist=[],typing=false,pending=null
+var profil = null;
+var hist = [];
+var typing = false;
+var pending = null;
+var pendingImg = null;
 
-function getSYS(){
-  const u=profil?'Utilisateur: '+profil.prenom+', quartier: '+(profil.quartier||'Toulouse')+'.':'Utilisateur non connecte.'
-  return 'Tu es l\'assistant IA de CQP, reseau social de quartier Toulouse.\n'+u+'\n\nCOMPORTEMENT: Analyse le message et extrait immediatement les infos. Si le message contient assez d\'infos, reponds DIRECTEMENT avec le JSON sans poser de questions. Ne demande des infos QUE si vraiment manquantes.\n\nPour un post: contenu suffit.\nPour une annonce: titre + description suffisent.\nPour un evenement: lieu + date approximative suffisent, genere le titre.\n\nNe montre JAMAIS le JSON. Reponds UNIQUEMENT le JSON quand tu publies:\nPost: {"action":"publier","type":"post","contenu":"...","quartier":"'+(profil?profil.quartier:'Toulouse')+'"}\nAnnonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"'+(profil?profil.quartier:'Toulouse')+'"}\nEvenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}\n\nSi l\'utilisateur veut juste discuter, reponds en 1-2 phrases.'
+function getSYS() {
+  var u = profil ? 'Utilisateur: ' + profil.prenom + ', quartier: ' + (profil.quartier || 'Toulouse') + '.' : 'Utilisateur non connecte.';
+  return 'Tu es l\'assistant IA de CQP, reseau social de quartier Toulouse.\n' + u + '\n\nCOMPORTEMENT: Si le message contient assez d\'infos, reponds DIRECTEMENT avec le JSON sans poser de questions. Ne demande des infos QUE si vraiment manquantes.\n\nPour un post: contenu suffit.\nPour une annonce: titre + description suffisent.\nPour un evenement: lieu + date suffisent, genere le titre.\n\nNe montre JAMAIS le JSON. Reponds UNIQUEMENT le JSON quand tu publies:\nPost: {"action":"publier","type":"post","contenu":"...","quartier":"' + (profil ? profil.quartier : 'Toulouse') + '"}\nAnnonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + (profil ? profil.quartier : 'Toulouse') + '"}\nEvenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}\n\nSi l\'utilisateur veut juste discuter, reponds en 1-2 phrases.';
 }
 
-async function init(){
-  const code=localStorage.getItem('cqp_code')||localStorage.getItem('profil_code')||localStorage.getItem('code')||localStorage.getItem('session_id')
-  if(!code)return
-  try{
-    const {data}=await sbc.from('profils').select('*').eq('code',code).maybeSingle()
-    if(data){
-      profil=data
-      document.getElementById('badge').style.display='flex'
-      document.getElementById('uname').textContent=data.prenom
-      document.getElementById('connbtn').style.display='none'
+function init() {
+  var code = localStorage.getItem('cqp_code') || localStorage.getItem('profil_code') || localStorage.getItem('code') || localStorage.getItem('session_id');
+  if (!code) return;
+  sbc.from('profils').select('*').eq('code', code).maybeSingle().then(function(res) {
+    if (res.data) {
+      profil = res.data;
+      document.getElementById('badge').style.display = 'flex';
+      document.getElementById('uname').textContent = res.data.prenom;
+      document.getElementById('connbtn').style.display = 'none';
     }
-  }catch(e){console.warn(e)}
+  });
 }
 
-function hideEmpty(){if(emptyEl)emptyEl.style.display='none'}
-
-function addMsg(role,txt){
-  hideEmpty()
-  const isIA=role==='ia'
-  const d=document.createElement('div')
-  d.className='msg'
-  const avContent=isIA?'<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>':(profil?profil.prenom[0].toUpperCase():'?')
-  d.innerHTML='<div class="av '+(isIA?'ia':'user')+'">'+avContent+'</div><div class="mbody"><div class="mname">'+(isIA?'CQP IA':(profil?profil.prenom:'Toi'))+'</div><div class="mtext">'+txt+'</div></div>'
-  msgsEl.appendChild(d)
-  msgsEl.scrollTop=msgsEl.scrollHeight
-  return d.querySelector('.mtext')
+function hideEmpty() {
+  if (emptyEl) emptyEl.style.display = 'none';
 }
 
-function showPreview(data){
-  const last=msgsEl.querySelector('.msg:last-child .mbody')
-  if(!last)return
-  const q=data.quartier||profil&&profil.quartier||''
-  const p=profil&&profil.prenom||''
-  let body=''
-  const imgHtml=data._imgB64?'<img src="data:'+(data._imgMime||'image/jpeg')+';base64,'+data._imgB64+'" style="width:100%;border-radius:8px;margin-bottom:8px;max-height:200px;object-fit:cover;">':''
-  if(data.type==='post')body=imgHtml+'<span class="preview-q">'+q+'</span><span class="preview-p">'+p+'</span><div class="preview-t">'+(data.contenu||'')+'</div>'
-  else if(data.type==='annonce')body=imgHtml+'<span class="preview-q">'+data.titre+'</span><div class="preview-t">'+data.categorie+' · '+q+'<br>'+(data.description||'')+'</div>'
-  else if(data.type==='evenement')body=imgHtml+'<span class="preview-q">'+data.titre+'</span><div class="preview-t">📍'+(data.lieu||'')+' · '+(data.date||'')+'<br>'+(data.description||'')+'</div>'
-  const photoBtn=data._imgB64?'':'<button class="btn-photo" onclick="addPhotoToPending()">🖼️ Ajouter une photo (optionnel)</button>'
-  const pv=document.createElement('div')
-  pv.className='preview'
-  pv.innerHTML='<div class="preview-head">Aperçu · '+data.type+'</div><div class="preview-body">'+body+'</div><div class="preview-acts">'+photoBtn+'<div class="preview-row"><button class="btn-cancel" onclick="cancelPub()">Modifier</button><button class="btn-pub" onclick="confirmPub()">Publier ✓</button></div></div>'
-  last.appendChild(pv)
-  msgsEl.scrollTop=msgsEl.scrollHeight
-  pending=data
+function addMsg(role, txt) {
+  hideEmpty();
+  var isIA = role === 'ia';
+  var d = document.createElement('div');
+  d.className = 'msg';
+  var av = isIA
+    ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>'
+    : (profil ? profil.prenom[0].toUpperCase() : '?');
+  var name = isIA ? 'CQP IA' : (profil ? profil.prenom : 'Toi');
+  d.innerHTML = '<div class="av ' + (isIA ? 'ia' : 'user') + '">' + av + '</div><div class="mbody"><div class="mname">' + name + '</div><div class="mtext">' + txt + '</div></div>';
+  msgsEl.appendChild(d);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+  return d.querySelector('.mtext');
 }
 
-function cancelPub(){pending=null;addMsg('ia',"D'accord, dis-moi ce que tu veux changer.")}
-
-async function uploadImg(b64data,mime){
-  const ext=mime.split('/')[1]||'jpg'
-  const fname='ia_'+Date.now()+'.'+ext
-  const bytes=atob(b64data)
-  const arr=new Uint8Array(bytes.length)
-  for(let i=0;i<bytes.length;i++)arr[i]=bytes.charCodeAt(i)
-  const blob=new Blob([arr],{type:mime})
-  const {data,error}=await sbc.storage.from('site-photos').upload('posts/'+fname,blob,{contentType:mime,upsert:true})
-  if(error)throw error
-  return sbc.storage.from('site-photos').getPublicUrl('posts/'+fname).data.publicUrl
+function showPreview(data) {
+  var last = msgsEl.querySelector('.msg:last-child .mbody');
+  if (!last) return;
+  var q = data.quartier || (profil && profil.quartier) || '';
+  var p = (profil && profil.prenom) || '';
+  var imgHtml = data._imgB64 ? '<img src="data:' + (data._imgMime || 'image/jpeg') + ';base64,' + data._imgB64 + '" style="width:100%;border-radius:8px;margin-bottom:8px;max-height:200px;object-fit:cover;">' : '';
+  var body = '';
+  if (data.type === 'post') body = imgHtml + '<span class="preview-q">' + q + '</span><span class="preview-p">' + p + '</span><div class="preview-t">' + (data.contenu || '') + '</div>';
+  else if (data.type === 'annonce') body = imgHtml + '<span class="preview-q">' + (data.titre || '') + '</span><div class="preview-t">' + (data.categorie || '') + ' · ' + q + '<br>' + (data.description || '') + '</div>';
+  else if (data.type === 'evenement') body = imgHtml + '<span class="preview-q">' + (data.titre || '') + '</span><div class="preview-t">📍' + (data.lieu || '') + ' · ' + (data.date || '') + '<br>' + (data.description || '') + '</div>';
+  var photoBtn = data._imgB64 ? '' : '<button class="btn-photo" onclick="addPhotoToPending()">🖼️ Ajouter une photo (optionnel)</button>';
+  var pv = document.createElement('div');
+  pv.className = 'preview';
+  pv.innerHTML = '<div class="preview-head">Aperçu · ' + data.type + '</div><div class="preview-body">' + body + '</div><div class="preview-acts">' + photoBtn + '<div class="preview-row"><button class="btn-cancel" onclick="cancelPub()">Modifier</button><button class="btn-pub" onclick="confirmPub()">Publier ✓</button></div></div>';
+  last.appendChild(pv);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+  pending = data;
 }
 
-async function confirmPub(){
-  if(!profil){addMsg('ia','Connecte-toi pour publier !');return}
-  if(!pending)return
-  const d=pending;pending=null
-  document.querySelector('.preview')?.remove()
-  try{
-    let photoUrl=null
-    if(d._imgB64&&d._imgMime)try{photoUrl=await uploadImg(d._imgB64,d._imgMime)}catch(e){console.warn(e)}
-    if(d.type==='post')await sbc.from('posts').insert({prenom:profil.prenom,contenu:d.contenu||'',quartier:d.quartier||profil.quartier,session_id:profil.code,profil_code:profil.code,visible:true,photo_url:photoUrl})
-    else if(d.type==='annonce')await sbc.from('annonces').insert({prenom:profil.prenom,titre:d.titre,description:d.description||'',categorie:d.categorie||'Autre',quartier:d.quartier||profil.quartier,profil_code:profil.code,visible:true,validee:true,photo_url:photoUrl||''})
-    else if(d.type==='evenement')await sbc.from('evenements').insert({titre:d.titre,description:d.description||'',lieu:d.lieu||'',date_debut:new Date(d.date||Date.now()).toISOString(),prenom:profil.prenom,profil_code:profil.code,visible:true,validee:true,photo_url:photoUrl||''})
-    addMsg('ia','Publié ! Ton '+d.type+' est maintenant visible sur CQP.')
-  }catch(e){addMsg('ia',"Erreur lors de la publication, réessaie.")}
+function cancelPub() {
+  pending = null;
+  addMsg('ia', "D'accord, dis-moi ce que tu veux changer.");
 }
 
-function openPhoto(){document.getElementById('photo-input').click()}
-
-function addPhotoToPending(){
-  const inp=document.getElementById('photo-input')
-  inp.onchange=function(e){
-    const file=e.target.files&&e.target.files[0]
-    if(!file)return
-    inp.value=''
-    const reader=new FileReader()
-    reader.onload=function(ev){
-      if(pending){
-        pending._imgB64=ev.target.result.split(',')[1]
-        pending._imgMime=file.type||'image/jpeg'
-        document.querySelector('.preview')?.remove()
-        showPreview(pending)
-        msgsEl.scrollTop=msgsEl.scrollHeight
-      }
-    }
-    reader.readAsDataURL(file)
-  }
-  inp.click()
-}
-
-async function analyzeImageWithGroq(b64data, mime){
-  try{
-    const res=await fetch(PROXY,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'meta-llama/llama-4-scout-17b-16e-instruct',
-        messages:[{role:'user',content:[
-          {type:'image_url',image_url:{url:'data:'+mime+';base64,'+b64data}},
-          {type:'text',text:'Tu es l'assistant IA de CQP reseau social de quartier Toulouse. Analyse cette image et genere DIRECTEMENT le JSON de publication adapte. Utilisateur: '+(profil?profil.prenom:'Anonyme')+', quartier: '+(profil?profil.quartier:'Toulouse')+'. Si c'est un flyer d'evenement reponds uniquement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}. Si c'est une annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"'+(profil?profil.quartier:'Toulouse')+'"} . Sinon post: {"action":"publier","type":"post","contenu":"...","quartier":"'+(profil?profil.quartier:'Toulouse')+'"}. Reponds UNIQUEMENT avec le JSON.'}
-        ]}],
-        max_tokens:300
-      })
-    })
-    const d=await res.json()
-    return d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content||null
-  }catch(e){return null}
-}
-
-document.getElementById('photo-input').onchange=function(e){
-  const file=e.target.files&&e.target.files[0]
-  if(!file)return
-  this.value=''
-  const reader=new FileReader()
-  reader.onload=function(ev){
-    const b64=ev.target.result
-    hideEmpty()
-    const imgDiv=document.createElement('div')
-    imgDiv.className='msg'
-    imgDiv.innerHTML='<div class="av user">'+(profil?profil.prenom[0].toUpperCase():'?')+'</div><div class="mbody"><div class="mname">'+(profil?profil.prenom:'Toi')+'</div><img src="'+b64+'" style="max-width:100%;border-radius:12px;margin-top:6px;max-height:280px;object-fit:contain;"></div>'
-    msgsEl.appendChild(imgDiv)
-    msgsEl.scrollTop=msgsEl.scrollHeight
-    window._pendingImg={b64:b64,b64data:b64.split(',')[1],mime:file.type||'image/jpeg'}
-    const tel=addMsg('ia','')
-    tel.classList.add('typing')
-    // Analyser l'image avec Groq Vision
-    tel.classList.add('typing')
-    typing=true
-    analyzeImageWithGroq(window._pendingImg.b64data, window._pendingImg.mime).then(function(vtext){
-      tel.classList.remove('typing')
-      typing=false
-      if(vtext){
-        const ft=vtext.trim()
-        const s=ft.indexOf('{'),e2=ft.lastIndexOf('}')
-        if(s>=0&&e2>s){
-          try{
-            let pd=JSON.parse(ft.slice(s,e2+1))
-            if(!pd.action)pd.action='publier'
-            if(pd.action==='publier'&&pd.type){
-              pd._imgB64=window._pendingImg.b64data
-              pd._imgMime=window._pendingImg.mime
-              window._pendingImg=null
-              tel.textContent="J'ai analysé le flyer, voilà l'aperçu :"
-              showPreview(pd)
-              return
-            }
-          }catch(ex){}
+function detectAndShow(fullText, tel) {
+  var ft = fullText.trim();
+  if (ft.indexOf('"publier"') >= 0 && ft.indexOf('"type"') >= 0) {
+    var s = ft.indexOf('{');
+    var e = ft.lastIndexOf('}');
+    if (s >= 0 && e > s) {
+      try {
+        var pd = JSON.parse(ft.slice(s, e + 1));
+        if (!pd.action) pd.action = 'publier';
+        if (pd.action === 'publier' && pd.type) {
+          if (pendingImg) { pd._imgB64 = pendingImg.b64data; pd._imgMime = pendingImg.mime; pendingImg = null; }
+          tel.textContent = '';
+          if (!profil) { tel.textContent = 'Tout est prêt ! Connecte-toi pour publier.'; }
+          else { tel.textContent = "Voilà l'aperçu :"; showPreview(pd); }
+          return true;
         }
-      }
-      tel.textContent='Image reçue ! Dis-moi ce que tu veux en faire.'
-    })
-    if(pending){pending._imgB64=window._pendingImg.b64data;pending._imgMime=window._pendingImg.mime}
+      } catch(ex) {}
+    }
   }
-  reader.readAsDataURL(file)
+  return false;
 }
 
-function resize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px'}
-function kd(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!sbtn.disabled&&!typing)send()}}
-taEl.addEventListener('input',function(){sbtn.disabled=!taEl.value.trim()})
-
-function qa(type){
-  cardsEl.style.display='none'
-  const m={post:'je veux publier un post',annonce:'je veux créer une annonce',evenement:'je veux proposer un événement'}
-  taEl.value=m[type];sbtn.disabled=false;send()
+function uploadImg(b64data, mime) {
+  var ext = mime.split('/')[1] || 'jpg';
+  var fname = 'ia_' + Date.now() + '.' + ext;
+  var bytes = atob(b64data);
+  var arr = new Uint8Array(bytes.length);
+  for (var i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+  var blob = new Blob([arr], { type: mime });
+  return sbc.storage.from('site-photos').upload('posts/' + fname, blob, { contentType: mime, upsert: true }).then(function(res) {
+    if (res.error) throw res.error;
+    return sbc.storage.from('site-photos').getPublicUrl('posts/' + fname).data.publicUrl;
+  });
 }
 
-async function send(){
-  const txt=taEl.value.trim()
-  if(!txt||typing)return
-  taEl.value='';taEl.style.height='auto';sbtn.disabled=true
-  cardsEl.style.display='none'
-  typing=true
-  addMsg('user',txt)
-  hist.push({role:'user',content:txt})
-  const tel=addMsg('ia','')
-  tel.classList.add('typing')
-  try{
-    const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:getSYS()},...hist],max_tokens:300,temperature:0.5,stream:true})})
-    tel.classList.remove('typing');tel.textContent=''
-    const reader=res.body.getReader();const dec=new TextDecoder();let full=''
-    while(true){
-      const{done,value}=await reader.read();if(done)break
-      for(const line of dec.decode(value).split('\n').filter(function(l){return l.startsWith('data: ')})){
-        const d=line.slice(6);if(d==='[DONE]')break
-        try{const delta=JSON.parse(d).choices&&JSON.parse(d).choices[0].delta&&JSON.parse(d).choices[0].delta.content||'';full+=delta;tel.textContent=full;msgsEl.scrollTop=msgsEl.scrollHeight}catch(ex){}
+function confirmPub() {
+  if (!profil) { addMsg('ia', 'Connecte-toi pour publier !'); return; }
+  if (!pending) return;
+  var d = pending; pending = null;
+  var pv = document.querySelector('.preview');
+  if (pv) pv.remove();
+  var uploadPromise = (d._imgB64 && d._imgMime) ? uploadImg(d._imgB64, d._imgMime).catch(function() { return null; }) : Promise.resolve(null);
+  uploadPromise.then(function(photoUrl) {
+    var p;
+    if (d.type === 'post') p = sbc.from('posts').insert({ prenom: profil.prenom, contenu: d.contenu || '', quartier: d.quartier || profil.quartier, session_id: profil.code, profil_code: profil.code, visible: true, photo_url: photoUrl });
+    else if (d.type === 'annonce') p = sbc.from('annonces').insert({ prenom: profil.prenom, titre: d.titre, description: d.description || '', categorie: d.categorie || 'Autre', quartier: d.quartier || profil.quartier, profil_code: profil.code, visible: true, validee: true, photo_url: photoUrl || '' });
+    else if (d.type === 'evenement') p = sbc.from('evenements').insert({ titre: d.titre, description: d.description || '', lieu: d.lieu || '', date_debut: new Date(d.date || Date.now()).toISOString(), prenom: profil.prenom, profil_code: profil.code, visible: true, validee: true, photo_url: photoUrl || '' });
+    return p;
+  }).then(function() {
+    addMsg('ia', 'Publié ! Ton ' + (pending ? pending.type : 'contenu') + ' est maintenant visible sur CQP.');
+  }).catch(function() {
+    addMsg('ia', "Erreur lors de la publication, réessaie.");
+  });
+}
+
+function addPhotoToPending() {
+  photoInp.onchange = function(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    photoInp.value = '';
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      if (pending) {
+        pending._imgB64 = ev.target.result.split(',')[1];
+        pending._imgMime = file.type || 'image/jpeg';
+        var pv = document.querySelector('.preview');
+        if (pv) pv.remove();
+        showPreview(pending);
+        msgsEl.scrollTop = msgsEl.scrollHeight;
       }
-    }
-    hist.push({role:'assistant',content:full})
-    const ft=full.trim()
-    if(ft.includes('"publier"')&&ft.includes('"type"')){
-      const s=ft.indexOf('{'),e=ft.lastIndexOf('}')
-      if(s>=0&&e>s){
-        try{
-          let pd=JSON.parse(ft.slice(s,e+1))
-          if(!pd.action)pd.action='publier'
-          if(pd.action==='publier'&&pd.type){
-            if(window._pendingImg){pd._imgB64=window._pendingImg.b64data;pd._imgMime=window._pendingImg.mime;window._pendingImg=null}
-            tel.textContent=''
-            if(!profil){tel.textContent='Tout est prêt ! Connecte-toi pour publier.'}
-            else{tel.textContent="Voilà l'aperçu :";showPreview(pd)}
+    };
+    reader.readAsDataURL(file);
+  };
+  photoInp.click();
+}
+
+function analyzeVision(b64data, mime) {
+  var q = profil ? profil.quartier : 'Toulouse';
+  var n = profil ? profil.prenom : 'Anonyme';
+  var prompt = 'Tu es l\'assistant IA de CQP reseau social de quartier Toulouse. Analyse cette image et genere DIRECTEMENT le JSON adapte. Utilisateur: ' + n + ', quartier: ' + q + '. Flyer evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}. Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + q + '"}. Autre: {"action":"publier","type":"post","contenu":"...","quartier":"' + q + '"}. Reponds UNIQUEMENT avec le JSON.';
+  return fetch(PROXY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      messages: [{ role: 'user', content: [
+        { type: 'image_url', image_url: { url: 'data:' + mime + ';base64,' + b64data } },
+        { type: 'text', text: prompt }
+      ]}],
+      max_tokens: 300
+    })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    return d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content || null;
+  }).catch(function() { return null; });
+}
+
+document.getElementById('clip-btn').addEventListener('click', function() {
+  photoInp.onchange = function(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    photoInp.value = '';
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var b64 = ev.target.result;
+      var b64data = b64.split(',')[1];
+      var mime = file.type || 'image/jpeg';
+      hideEmpty();
+      cardsEl.style.display = 'none';
+      var imgDiv = document.createElement('div');
+      imgDiv.className = 'msg';
+      var av = profil ? profil.prenom[0].toUpperCase() : '?';
+      var name = profil ? profil.prenom : 'Toi';
+      imgDiv.innerHTML = '<div class="av user">' + av + '</div><div class="mbody"><div class="mname">' + name + '</div><img src="' + b64 + '" style="max-width:100%;border-radius:12px;margin-top:6px;max-height:280px;object-fit:contain;"></div>';
+      msgsEl.appendChild(imgDiv);
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+      pendingImg = { b64data: b64data, mime: mime };
+      var tel = addMsg('ia', '');
+      tel.classList.add('typing');
+      typing = true;
+      analyzeVision(b64data, mime).then(function(vtext) {
+        tel.classList.remove('typing');
+        typing = false;
+        if (vtext) {
+          var ft = vtext.trim();
+          var s = ft.indexOf('{'); var e2 = ft.lastIndexOf('}');
+          if (s >= 0 && e2 > s) {
+            try {
+              var pd = JSON.parse(ft.slice(s, e2 + 1));
+              if (!pd.action) pd.action = 'publier';
+              if (pd.action === 'publier' && pd.type) {
+                pd._imgB64 = b64data; pd._imgMime = mime; pendingImg = null;
+                tel.textContent = "J'ai analysé l'image, voilà l'aperçu :";
+                showPreview(pd); return;
+              }
+            } catch(ex) {}
           }
-        }catch(ex){}
-      }
-    }
-  }catch(e){tel.classList.remove('typing');tel.textContent="Erreur, réessaie."}
-  typing=false
+        }
+        tel.textContent = 'Image reçue ! Dis-moi ce que tu veux en faire.';
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+  photoInp.click();
+});
+
+taEl.addEventListener('input', function() { sbtn.disabled = !taEl.value.trim(); });
+taEl.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!sbtn.disabled && !typing) doSend(); }
+});
+taEl.addEventListener('input', function() { taEl.style.height = 'auto'; taEl.style.height = Math.min(taEl.scrollHeight, 120) + 'px'; });
+
+document.getElementById('card-evt').addEventListener('click', function() { qaClick('evenement'); });
+document.getElementById('card-ann').addEventListener('click', function() { qaClick('annonce'); });
+document.getElementById('card-post').addEventListener('click', function() { qaClick('post'); });
+sbtn.addEventListener('click', function() { doSend(); });
+
+function qaClick(type) {
+  cardsEl.style.display = 'none';
+  var m = { post: 'je veux publier un post', annonce: 'je veux créer une annonce', evenement: 'je veux proposer un événement' };
+  taEl.value = m[type]; sbtn.disabled = false; doSend();
 }
 
-window.send=send;window.qa=qa;window.confirmPub=confirmPub;window.cancelPub=cancelPub;window.openPhoto=openPhoto;window.addPhotoToPending=addPhotoToPending
+function doSend() {
+  var txt = taEl.value.trim();
+  if (!txt || typing) return;
+  taEl.value = ''; taEl.style.height = 'auto'; sbtn.disabled = true;
+  cardsEl.style.display = 'none';
+  typing = true;
+  addMsg('user', txt);
+  hist.push({ role: 'user', content: txt });
+  var tel = addMsg('ia', '');
+  tel.classList.add('typing');
+  fetch(PROXY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() }].concat(hist), max_tokens: 300, temperature: 0.5, stream: true })
+  }).then(function(res) {
+    tel.classList.remove('typing'); tel.textContent = '';
+    var reader = res.body.getReader(); var dec = new TextDecoder(); var full = '';
+    function read() {
+      return reader.read().then(function(chunk) {
+        if (chunk.done) {
+          hist.push({ role: 'assistant', content: full });
+          if (!detectAndShow(full, tel)) {}
+          typing = false;
+          return;
+        }
+        var lines = dec.decode(chunk.value).split('\n').filter(function(l) { return l.indexOf('data: ') === 0; });
+        lines.forEach(function(line) {
+          var d = line.slice(6); if (d === '[DONE]') return;
+          try { var delta = JSON.parse(d).choices[0].delta.content || ''; full += delta; tel.textContent = full; msgsEl.scrollTop = msgsEl.scrollHeight; } catch(ex) {}
+        });
+        return read();
+      });
+    }
+    return read();
+  }).catch(function() { tel.classList.remove('typing'); tel.textContent = "Erreur, réessaie."; typing = false; });
+}
 
-init()
+init();
 </script>
 </body>
 </html>
