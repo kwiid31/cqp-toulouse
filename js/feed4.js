@@ -195,7 +195,7 @@ const Feed = (() => {
           </div>
         </div>` : '')
     return `
-    <article id="card-${p.id}" style="padding:14px 16px 0;background:#fff;">
+    <article id="card-${p.id}" style="padding:12px 16px 0;background:#fff;border-bottom:1px solid #eff3f4;">
       <div style="display:flex;gap:10px;">
         <div style="flex-shrink:0;width:36px;">
           <div style="width:36px;height:36px;border-radius:50%;background:#e4e6eb;"></div>
@@ -203,12 +203,12 @@ const Feed = (() => {
         <div style="flex:1;min-width:0;padding-bottom:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
             <div>
-              <span style="font-size:14px;font-weight:600;color:#1c1e21;">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</span>
-              <span style="font-size:12px;color:#65676b;margin-left:6px;">${p.quartier && p.prenom ? Utils.esc(p.prenom) + ' · ' : ''}${Utils.timeAgo(p.created_at)}</span>
+              <span style="font-size:15px;font-weight:700;color:#0f1419;">${p.quartier ? Utils.esc(p.quartier) : Utils.esc(p.prenom||'Anonyme')}</span>
+              <span style="font-size:14px;color:#536471;margin-left:5px;">${p.quartier && p.prenom ? Utils.esc(p.prenom) + ' · ' : ''}${Utils.timeAgo(p.created_at)}</span>
             </div>
             ${menuBtn}
           </div>
-          ${p.contenu ? `<p style="font-size:15px;color:#000;margin:4px 0 8px;line-height:1.55;font-weight:500;">${Utils.esc(p.contenu)}</p>` : ''}
+          ${p.contenu ? `<p style="font-size:15px;color:#0f1419;margin:4px 0 10px;line-height:1.5;font-weight:400;">${Utils.esc(p.contenu)}</p>` : ''}
           ${carousel || ''}
           ${img || ''}
           <div style="display:flex;gap:0;margin-top:8px;align-items:center;justify-content:space-between;max-width:220px;">
