@@ -124,7 +124,7 @@ async function sendMessage() {
   try {
     const res = await fetch(GROQ_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_KEY}` },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: SYSTEM }, ...history], max_tokens: 600, temperature: 0.7, stream: true })
     })
     typingEl.classList.remove('typing'); typingEl.textContent = ''
