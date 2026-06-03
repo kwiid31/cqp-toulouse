@@ -446,17 +446,21 @@ async function sendMessage() {
 
     // Détecter si c'est une action de publication
     const trimmed = fullText.trim()
-    if (trimmed.startsWith('{') && trimmed.includes('"action":"publier"')) {
+    // Extraire le JSON même s'il y a du texte autour
+    const jsonMatch = trimmed.match(/\{[^{}]*"action"\s*:\s*"publier"[^{}]*\}/s)
+    if (jsonMatch) {
       try {
-        const pubData = JSON.parse(trimmed)
+        const pubData = JSON.parse(jsonMatch[0])
         typingEl.textContent = ''
         if (!profil) {
-          typingEl.textContent = "J'ai tout ce qu'il faut pour publier, mais tu dois d'abord te connecter !"
+          typingEl.textContent = "Tout est prêt ! Connecte-toi pour publier."
         } else {
-          typingEl.textContent = "Voilà ce que je vais publier pour toi :"
+          typingEl.textContent = "Voilà l'aperçu :"
           showPreview(pubData)
         }
-      } catch(e) {}
+      } catch(e) {
+        // JSON invalide, garder le texte normal
+      }
     }
 
   } catch(e) {
