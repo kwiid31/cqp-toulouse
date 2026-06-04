@@ -41,10 +41,18 @@ const Stories = (() => {
 
     // Card "Créer ma story" en premier
     const createCard = `
-      <div class="add-story" style="cursor:pointer;" onclick="if(Auth.getCode()){Stories.openCompose()}else{window.location.href='profil.html'}">
-        <div class="add-story-photo">${photo ? `<img src="${Utils.esc(photo)}" alt="">` : ''}</div>
-        <div class="add-story-ring">+</div>
-        <div class="add-story-txt">Créer une<br>story</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;width:80px;" onclick="if(Auth.getCode()){Stories.openCompose()}else{window.location.href='profil.html'}">
+        <div style="position:relative;width:76px;height:76px;">
+          <div style="width:76px;height:76px;border-radius:50%;background:#dbdbdb;padding:3px;box-sizing:border-box;">
+            <div style="width:100%;height:100%;border-radius:50%;background:#fff;border:3px solid #fff;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+              ${photo ? '<img src="'+Utils.esc(photo)+'" style="width:100%;height:100%;object-fit:cover;" alt="">' : '<span style="font-size:24px;font-weight:700;color:#8a8d91;">?</span>'}
+            </div>
+          </div>
+          <div style="position:absolute;bottom:1px;right:1px;width:24px;height:24px;background:#0f1419;border-radius:50%;border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </div>
+        </div>
+        <span style="font-size:12px;color:#0f1419;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Ma story</span>
       </div>`
 
     // Cards quartier
