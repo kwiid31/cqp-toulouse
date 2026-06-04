@@ -610,5 +610,33 @@ const Feed = (() => {
     }
   }
 
-  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh, hideAnnonce, hideEvt, updateDots, carouselFitHeight, renderAnnonces: _blocAnnonces, renderEvts: _blocEvts }
+  // ── CARDS UNIFIÉES MÊME TAILLE ──────────────────────────────
+  function _renderUnifiedCard(type, titre, meta, photoUrl, onClick) {
+    const typeColor = type === 'evenement' ? '#1877F2' : '#e67e22'
+    const typeLabel = type === 'evenement' ? '📅 Événement' : '📋 Annonce'
+    const photo = photoUrl
+      ? '<img src="' + Utils.esc(photoUrl) + '" style="width:100%;height:100%;object-fit:cover;" alt="">'
+      : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f2f5;"><span style="font-size:28px;">' + (type==='evenement'?'📅':'📋') + '</span></div>'
+    return '<div onclick="' + onClick + '" style="flex-shrink:0;width:140px;border-radius:12px;overflow:hidden;border:.5px solid #e4e6eb;background:#fff;cursor:pointer;">'
+      + '<div style="height:110px;position:relative;overflow:hidden;">' + photo + '</div>'
+      + '<div style="padding:8px 10px;">'
+      + '<div style="font-size:10px;font-weight:600;color:' + typeColor + ';margin-bottom:3px;">' + typeLabel + '</div>'
+      + '<div style="font-size:12px;font-weight:700;color:#0f1419;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">' + Utils.esc(titre) + '</div>'
+      + (meta ? '<div style="font-size:11px;color:#536471;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + meta + '</div>' : '')
+      + '</div></div>'
+  }
+
+
+  return { init, loadMore, prepend, toggleLike, setupDoubleTap, deletePost, adminHidePost, toggleMenu, share, setupPullToRefresh, refresh, hideAnnonce, hideEvt, updateDots, carouselFitHeight, renderAnnonces: _blocAnnonces, renderEvts: _blocEvts ,
+    renderEvtCard: function(e) {
+      var d = e.date_debut ? new Date(e.date_debut) : null
+      var dateStr = d ? d.toLocaleDateString('fr-FR', {day:'numeric', month:'short'}) : ''
+      var meta = [dateStr, e.lieu].filter(Boolean).join(' · ')
+      return _renderUnifiedCard('evenement', e.titre || 'Événement', meta, e.photo_url, "location.href='evenements.html#evt-" + e.id + "'")
+    },
+    renderAnnCard: function(a) {
+      var meta = [a.categorie, a.quartier].filter(Boolean).join(' · ')
+      return _renderUnifiedCard('annonce', a.titre || 'Annonce', meta, a.photo_url, "location.href='annonces.html#an-" + a.id + "'")
+    }
+  }
 })()
