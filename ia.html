@@ -214,7 +214,7 @@ function detectAndShow(fullText, tel) {
 function uploadImg(b64data, mime) {
   var formData = new FormData();
   formData.append('file', 'data:' + mime + ';base64,' + b64data);
-  formData.append('upload_preset', 'cqp_unsigned');
+  formData.append('upload_preset', 'cqp_toulouse');
   formData.append('folder', 'site-photos/posts');
   return fetch('https://api.cloudinary.com/v1_1/vzfwtyczqfbhbjzotjft/auto/upload', {
     method: 'POST',
