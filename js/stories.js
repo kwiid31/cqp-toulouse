@@ -41,21 +41,10 @@ const Stories = (() => {
 
     // Card "Créer ma story" en premier
     const createCard = `
-      <div style="display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0;width:72px;" onclick="if(Auth.getCode()){Stories.openCompose()}else{window.location.href='profil.html'}">
-        <div style="position:relative;width:66px;height:66px;">
-          <div style="width:66px;height:66px;border-radius:50%;background:#dbdbdb;padding:2px;box-sizing:border-box;">
-            <div style="width:100%;height:100%;border-radius:50%;background:#fff;border:2px solid #fff;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-              ${photo
-                ? `<img src="${Utils.esc(photo)}" style="width:100%;height:100%;object-fit:cover;" alt="">`
-                : `<span style="font-size:22px;font-weight:700;color:#8a8d91;">?</span>`
-              }
-            </div>
-          </div>
-          <div style="position:absolute;bottom:1px;right:1px;width:22px;height:22px;background:#0f1419;border-radius:50%;border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;">
-            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </div>
-        </div>
-        <span style="font-size:11px;color:#0f1419;text-align:center;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Ma story</span>
+      <div class="add-story" style="cursor:pointer;" onclick="if(Auth.getCode()){Stories.openCompose()}else{window.location.href='profil.html'}">
+        <div class="add-story-photo">${photo ? `<img src="${Utils.esc(photo)}" alt="">` : ''}</div>
+        <div class="add-story-ring">+</div>
+        <div class="add-story-txt">Créer une<br>story</div>
       </div>`
 
     // Cards quartier
@@ -74,21 +63,21 @@ const Stories = (() => {
       return (() => {
       const initial = q[0].toUpperCase()
       const ringStyle = hasNew
-        ? 'background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);padding:2.5px;'
-        : 'background:#dbdbdb;padding:2.5px;'
+        ? 'background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);padding:3px;'
+        : 'background:#dbdbdb;padding:3px;'
       return `
-        <div style="display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0;width:68px;" onclick="Stories.openQuartier('${q.replace(/'/g,"\\'")}')">
-          <div style="${ringStyle}width:62px;height:62px;border-radius:50%;box-sizing:border-box;">
-            <div style="width:100%;height:100%;border-radius:50%;background:#fff;border:2.5px solid #fff;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;width:80px;" onclick="Stories.openQuartier('${q.replace(/'/g,"\\'")}')">
+          <div style="${ringStyle}width:76px;height:76px;border-radius:50%;box-sizing:border-box;">
+            <div style="width:100%;height:100%;border-radius:50%;background:#fff;border:3px solid #fff;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;">
               ${latest?.photo_url
                 ? `<img src="${Utils.esc(latest.photo_url)}" style="width:100%;height:100%;object-fit:cover;" alt="">`
                 : (latest?.video_url
                   ? `<video src="${Utils.esc(latest.video_url)}" style="width:100%;height:100%;object-fit:cover;" autoplay muted loop playsinline></video>`
-                  : `<span style="font-size:20px;font-weight:700;color:${hasNew?'#C8102E':'#8a8d91'};">${initial}</span>`)
+                  : `<span style="font-size:24px;font-weight:700;color:${hasNew?'#C8102E':'#8a8d91'};">${initial}</span>`)
               }
             </div>
           </div>
-          <span style="font-size:11px;color:#0f1419;font-weight:${hasNew?'600':'400'};max-width:68px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${q}</span>
+          <span style="font-size:12px;color:#0f1419;font-weight:${hasNew?'600':'400'};max-width:80px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${q}</span>
         </div>`
     })()
     }).join('')
