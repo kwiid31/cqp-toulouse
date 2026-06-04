@@ -47,10 +47,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="/css/main.css?v=511830">
-<script src="/js/app.js?v=511830"></script>
-<script src="/js/utils.js?v=511830"></script>
-<script src="/js/auth.js?v=511830"></script>
+<link rel="stylesheet" href="/css/main.css?v=608728">
+<script src="/js/app.js?v=608728"></script>
+<script src="/js/utils.js?v=608728"></script>
+<script src="/js/auth.js?v=608728"></script>
 <style>
 /* ── PTR ── */
 #ptr{display:none;justify-content:center;align-items:center;padding:12px;position:fixed;top:var(--nav);left:0;right:0;z-index:150;}
@@ -171,11 +171,8 @@
 <!-- STORIES BAR -->
 <div class="stories-bar" id="stories-bar"></div>
 
-<!-- ÉVÉNEMENTS -->
-<div id="evts-bar"></div>
-
-<!-- ANNONCES -->
-<div id="annonces-bar"></div>
+<!-- BLOC UNIFIÉ ANNONCES + ÉVÉNEMENTS -->
+<div id="content-bar"></div>
 
 <!-- FEED -->
 <div id="feed" style="max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:0;padding:0 0 8px;"></div>
@@ -466,9 +463,9 @@
   </div>
 </div>
 
-<script src="/js/api.js?v=511830"></script>
-<script src="/js/feed4.js?v=511830"></script>
-<script src="/js/stories.js?v=511830"></script>
+<script src="/js/api.js?v=608728"></script>
+<script src="/js/feed4.js?v=608728"></script>
+<script src="/js/stories.js?v=608728"></script>
 <script>
 'use strict'
 const esc = s => Utils.esc(s)
@@ -1230,10 +1227,31 @@ async function init() {
       Api.getEvenements(null, 6),
       Api.getAnnonces(null, 6)
     ])
-    const evtsBar = document.getElementById('evts-bar')
-    const annBar = document.getElementById('annonces-bar')
-    if (evtsRes.data?.length && evtsBar) evtsBar.innerHTML = Feed.renderEvts(evtsRes.data.map(x=>({_data:x})))
-    if (annRes.data?.length && annBar) annBar.innerHTML = Feed.renderAnnonces(annRes.data.map(x=>({_data:x})))
+    const contentBar = document.getElementById('content-bar')
+    if (contentBar) {
+      const evts = (evtsRes.data || []).map(x => ({_data:x, _type:'evenement'}))
+      const anns = (annRes.data || []).map(x => ({_data:x, _type:'annonce'}))
+      // Mélanger : 1 evt, 1 ann, 1 evt, 1 ann...
+      const mixed = []
+      const maxLen = Math.max(evts.length, anns.length)
+      for (let i = 0; i < maxLen; i++) {
+        if (evts[i]) mixed.push(evts[i])
+        if (anns[i]) mixed.push(anns[i])
+      }
+      if (mixed.length) {
+        const evtItems = mixed.filter(x => x._type === 'evenement')
+        const annItems = mixed.filter(x => x._type === 'annonce')
+        let html = '<div style="padding:10px 0 4px;">'
+        html += '<div style="font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8a8d91;padding:0 16px 8px 62px;">À voir dans le quartier</div>'
+        html += '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 0 62px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
+        mixed.slice(0, 8).forEach(item => {
+          if (item._type === 'evenement') html += Feed.renderEvtCard(item._data)
+          else html += Feed.renderAnnCard(item._data)
+        })
+        html += '</div></div>'
+        contentBar.innerHTML = html
+      }
+    }
   } catch(e) {}
 
   // Non-bloquant
