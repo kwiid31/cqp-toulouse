@@ -212,15 +212,16 @@ function detectAndShow(fullText, tel) {
 }
 
 function uploadImg(b64data, mime) {
-  var ext = mime.split('/')[1] || 'jpg';
-  var fname = 'ia_' + Date.now() + '.' + ext;
-  var bytes = atob(b64data);
-  var arr = new Uint8Array(bytes.length);
-  for (var i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
-  var blob = new Blob([arr], { type: mime });
-  return sbc.storage.from('site-photos').upload('posts/' + fname, blob, { contentType: mime, upsert: true }).then(function(res) {
-    if (res.error) throw res.error;
-    return sbc.storage.from('site-photos').getPublicUrl('posts/' + fname).data.publicUrl;
+  var formData = new FormData();
+  formData.append('file', 'data:' + mime + ';base64,' + b64data);
+  formData.append('upload_preset', 'cqp_unsigned');
+  formData.append('folder', 'site-photos/posts');
+  return fetch('https://api.cloudinary.com/v1_1/vzfwtyczqfbhbjzotjft/auto/upload', {
+    method: 'POST',
+    body: formData
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.error) throw new Error(d.error.message);
+    return d.secure_url;
   });
 }
 
