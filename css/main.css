@@ -312,8 +312,8 @@ img { max-width:100%; display:block; }
   --stories-h: 210px;
 }
 .stories-bar {
-  background:#fff; border-bottom:4px solid #E4E6EB;
-  display:flex; gap:6px; padding:6px 8px 8px;
+  background:#fff; border-bottom:.5px solid #eff3f4;
+  display:flex; gap:14px; padding:12px 16px 14px;
   overflow-x:auto; scrollbar-width:none;
 }
 .stories-bar::-webkit-scrollbar { display:none; }
