@@ -269,7 +269,7 @@ function addPhotoToPending() {
 function analyzeVision(b64data, mime) {
   var q = profil ? profil.quartier : 'Toulouse';
   var n = profil ? profil.prenom : 'Anonyme';
-  var prompt = 'Tu es l\'assistant IA de CQP reseau social de quartier Toulouse. Analyse cette image et genere DIRECTEMENT le JSON adapte. Utilisateur: ' + n + ', quartier: ' + q + '. Flyer evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}. Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + q + '"}. Autre: {"action":"publier","type":"post","contenu":"...","quartier":"' + q + '"}. Reponds UNIQUEMENT avec le JSON.';
+  var prompt = 'Tu es l\'assistant IA de CQP reseau social de quartier Toulouse. Décris ce que tu vois dans cette image en 1-2 phrases simples. Si c\'est un flyer ou une affiche, extrais le texte et les infos importantes. Ne génère PAS de JSON. Dis juste ce que tu vois et demande à l\'utilisateur ce qu\'il veut en faire : en faire un post, une annonce ou un événement.';
   return fetch(PROXY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
