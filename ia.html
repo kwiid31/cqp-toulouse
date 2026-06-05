@@ -321,15 +321,28 @@ function analyzeVision(b64data, mime, userInstruction) {
   var q = profil ? profil.quartier : 'Toulouse';
   var n = profil ? profil.prenom : 'Anonyme';
   var baseInstruction = userInstruction || null
-  var prompt = 'Tu es l\'assistante IA de CQP, réseau social de quartier Toulouse. Tu parles à ' + n + ' du quartier ' + q + '.\n\n'
-    + 'Regarde cette image et réponds en français de façon naturelle et courte.\n\n'
-    + (baseInstruction
-      ? 'L\'utilisateur demande : "' + baseInstruction + '"\n\nRéponds à sa demande en tenant compte de l\'image.\n\n'
-      : 'Décris ce que tu vois en 1-2 phrases simples, puis demande ce qu\'il veut faire avec (post, annonce, événement, ou juste extraire du texte).\n\n')
-    + 'Si tu dois générer une publication, utilise ce format JSON (ne l\'affiche JAMAIS, c\'est juste pour le système) :\n'
-    + 'Post: {"action":"publier","type":"post","contenu":"...","quartier":"' + q + '"}\n'
-    + 'Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + q + '"}\n'
-    + 'Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}';
+  var QUARTIERS_TLS = ['Bellefontaine','Reynerie','Mirail','Papus','Empalot','Bagatelle','Faourette','Izards','Arènes','Bourbaki','Grand Mirail','Croix d\'Aurade']
+  
+  var prompt = 'Tu es Leila, l\'assistante IA de CQP Toulouse, réseau social de quartier.'
+    + ' Tu parles à ' + n + ' dont le quartier habituel est ' + q + '.'
+    + ' Quartiers de Toulouse connus : ' + QUARTIERS_TLS.join(', ') + '.'
+    + '\n\nANALYSE CETTE IMAGE en tenant compte de la demande de l\'utilisateur.'
+    + '\n\nDEMANDE : ' + (baseInstruction || 'Décris ce que tu vois et demande ce que l\'utilisateur veut faire.')
+    + '\n\nCAPACITÉS :'
+    + '\n- OCR : si l\'image contient du texte, extrais-le fidèlement'
+    + '\n- Si c\'est un flyer : extrais titre, lieu, date, description'
+    + '\n- Si c\'est une photo de quartier : décris le lieu et l\'ambiance'
+    + '\n- Si l\'utilisateur mentionne un quartier différent de son quartier habituel, utilise celui qu\'il mentionne'
+    + '\n\nCOMPORTEMENT :'
+    + '\n- Réponds en français naturel et court'
+    + '\n- Si la demande est claire (ex: "fais un post"), génère directement le JSON'
+    + '\n- Si la demande est vague, décris et demande confirmation'
+    + '\n- Détecte automatiquement le quartier depuis l\'image ou le message de l\'utilisateur'
+    + '\n\nFORMAT JSON si publication (ne jamais afficher, juste générer) :'
+    + '\nPost: {"action":"publier","type":"post","contenu":"...","quartier":"QUARTIER_DETECTE"}'
+    + '\nAnnonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"QUARTIER_DETECTE"}'
+    + '\nEvenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}'
+
   return fetch(PROXY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
