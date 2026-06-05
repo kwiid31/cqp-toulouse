@@ -97,9 +97,12 @@ textarea::placeholder{color:#8b98a5}
 
   <input type="file" id="photo-input" accept="image/*" style="display:none">
   <div class="input-zone">
-    <div id="img-preview-bar" style="display:none;align-items:center;gap:6px;padding:6px 14px 0;position:relative;">
-      <img id="img-preview-thumb" style="width:44px;height:44px;border-radius:8px;object-fit:cover;border:.5px solid #e4e6eb;">
-      <button onclick="window.removePendingImg()" style="width:18px;height:18px;background:#0f1419;border-radius:50%;border:none;color:#fff;font-size:10px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div id="img-preview-bar" style="display:none;align-items:flex-start;gap:8px;padding:8px 14px 0;position:relative;">
+      <div style="position:relative;flex-shrink:0;">
+        <img id="img-preview-thumb" style="width:72px;height:72px;border-radius:10px;object-fit:cover;border:.5px solid #e4e6eb;display:block;">
+        <button onclick="window.removePendingImg()" style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;background:#0f1419;border-radius:50%;border:2px solid #fff;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
+      </div>
+      <span style="font-size:13px;color:#536471;padding-top:4px;">Photo prête — écris ton message ou envoie directement</span>
     </div>
     <div class="input-box">
       <button class="clip-btn" id="clip-btn" aria-label="Ajouter une photo">
@@ -385,6 +388,23 @@ function doSend() {
   } else {
     addMsg('user', txt);
     hist.push({ role: 'user', content: txt });
+  }
+  // Si photo jointe, analyser avec vision avant d'envoyer à Groq
+  if (pendingImg) {
+    var imgB64 = pendingImg.b64data;
+    var imgMime = pendingImg.mime;
+    pendingImg = null;
+    typing = true;
+    var tel2 = addMsg('ia', '');
+    tel2.classList.add('typing');
+    analyzeVision(imgB64, imgMime).then(function(desc) {
+      var visionMsg = desc || 'Image reçue.';
+      tel2.classList.remove('typing');
+      tel2.textContent = visionMsg;
+      hist.push({ role: 'assistant', content: visionMsg });
+      typing = false;
+    });
+    return;
   }
   var tel = addMsg('ia', '');
   tel.classList.add('typing');
