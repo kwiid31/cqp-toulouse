@@ -62,7 +62,20 @@ const Feed = (() => {
 
       // Stocker les counts sur les items
       _allItems.forEach(item => {
-        if (item._type === 'post') {
+        if (item._type === 'mixed-bloc') {
+        const mc = item._items || []
+        if (mc.length) {
+          let bhtml = '<div style="padding:12px 0 4px;">'
+          bhtml += '<div style="font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8a8d91;padding:0 16px 8px 62px;">À voir dans le quartier</div>'
+          bhtml += '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 12px 62px;scrollbar-width:none;-webkit-overflow-scrolling:touch;">'
+          mc.forEach(function(ci) {
+            if (ci._type === 'evt') bhtml += Feed.renderEvtCard(ci._data)
+            else bhtml += Feed.renderAnnCard(ci._data)
+          })
+          bhtml += '</div></div><div style="height:.5px;background:#eff3f4;"></div>'
+          _el.insertAdjacentHTML('beforeend', bhtml)
+        }
+      } else if (item._type === 'post') {
           item._likes = likeCounts[item._data.id] || 0
           item._cmts = cmtCounts[item._data.id] || 0
           item._liked = _myLikes.has(item._data.id)
@@ -82,16 +95,16 @@ const Feed = (() => {
   const _buildFeed = (posts, actus, annonces, evts) => {
     const result = []
     let aIdx = 0
-    // Injecter un bloc annonces toutes les 4 posts, evenements toutes les 7 posts
-    // Annonces et événements affichés en dehors du feed
-    if (annonces.length) {
-      const evtsBar = document.getElementById('evts-bar')
-      const annBar = document.getElementById('annonces-bar')
-      // Chargés séparément dans init
+    let blocInserted = false
+
+    // Construire le bloc mixé annonces+événements
+    const mixed = []
+    const ml = Math.max((annonces||[]).length, (evts||[]).length)
+    for (let i = 0; i < ml; i++) {
+      if (evts[i]) mixed.push(evts[i])
+      if (annonces[i]) mixed.push(annonces[i])
     }
-    var annoncesBloc = null
-    var evtsBloc = null
-    var annoncesInserted = false, evtsInserted = false
+    const mixedBloc = mixed.length ? { _type: 'mixed-bloc', _items: mixed.slice(0, 8) } : null
 
     posts.forEach((p, i) => {
       result.push(p)
@@ -99,17 +112,21 @@ const Feed = (() => {
       if ((i + 1) % 4 === 0 && aIdx < actus.length) {
         result.push(actus[aIdx++])
       }
-      // Apres 3 posts → bloc annonces
-      if (i === 2 && annoncesBloc && !annoncesInserted) {
-        result.push(annoncesBloc)
-        annoncesInserted = true
+      // Après le 5ème post → bloc annonces+événements (1 seule fois)
+      if (!blocInserted && i === 4 && mixedBloc) {
+        result.push(mixedBloc)
+        blocInserted = true
       }
-      // Apres 7 posts → bloc evenements
-      if (i === 6 && evtsBloc && !evtsInserted) {
-        result.push(evtsBloc)
-        evtsInserted = true
+      // Toutes les 10 posts après → réinsérer le bloc
+      if (blocInserted && i > 4 && (i + 1) % 10 === 0 && mixedBloc) {
+        result.push(mixedBloc)
       }
     })
+
+    // Si moins de 5 posts → mettre le bloc à la fin quand même
+    if (!blocInserted && mixedBloc) {
+      result.push(mixedBloc)
+    }
 
     // Actus restantes a la fin
     while (aIdx < actus.length) result.push(actus[aIdx++])
