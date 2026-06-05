@@ -61,7 +61,13 @@ const Feed = (() => {
       saveLikes()
 
       // Stocker les counts sur les items
-      
+      _allItems.forEach(item => {
+        if (item._type === 'post') {
+          item._likes = likeCounts[item._data.id] || 0
+          item._cmts = cmtCounts[item._data.id] || 0
+          item._liked = _myLikes.has(item._data.id)
+        }
+      })
 
       _renderChunk()
       _setupInfiniteScroll()
