@@ -102,11 +102,21 @@ const Feed = (() => {
 
   // ── CONSTRUCTION DU FEED MIXTE ────────────────────────────────
   const _buildFeed = (posts, actus, annonces, evts) => {
+    // Construire le bloc mixé annonces+événements
+    const mixed = []
+    const maxLen = Math.max((annonces||[]).length, (evts||[]).length)
+    for (let i = 0; i < maxLen; i++) {
+      if (evts && evts[i]) mixed.push(evts[i])
+      if (annonces && annonces[i]) mixed.push(annonces[i])
+    }
+    const mixedBloc = mixed.length ? { _type: 'mixed-bloc', _items: mixed.slice(0,8) } : null
+
     // 1. Composer "Parle !" en premier
     const profPhoto = localStorage.getItem('cqp_photo') || ''
     const result = [{ _type: 'composer', _photo: profPhoto }]
     let aIdx = 0
     let postCount = 0
+    let blocInserted = false
 
     posts.forEach((p, i) => {
       result.push(p)
@@ -115,12 +125,13 @@ const Feed = (() => {
       if (postCount % 4 === 0 && aIdx < actus.length) {
         result.push(actus[aIdx++])
       }
-      // Bloc après 2 posts si peu de posts, sinon toutes les 5
-      const threshold = posts.length < 5 ? 2 : 5
-      if (postCount === threshold && window._mixedContent && window._mixedContent.length) {
-        result.push({ _type: 'mixed-bloc' })
-      } else if (postCount > threshold && postCount % 5 === 0 && window._mixedContent && window._mixedContent.length) {
-        result.push({ _type: 'mixed-bloc' })
+      // Bloc annonces+événements : après 3 posts (si peu) ou toutes les 5
+      const threshold = posts.length <= 5 ? 3 : 5
+      if (!blocInserted && postCount === threshold && mixedBloc) {
+        result.push(mixedBloc)
+        blocInserted = true
+      } else if (blocInserted && postCount % 10 === 0 && mixedBloc) {
+        result.push(mixedBloc)
       }
     })
 
