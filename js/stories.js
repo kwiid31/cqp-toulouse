@@ -7,6 +7,10 @@ const Stories = (() => {
   'Empalot':       'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635518/cqp/posts/qiofmgtdrf5m27ziyauv.jpg',
   'Bellefontaine': 'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635520/cqp/posts/jcw4yaytliz7swhz8pxm.jpg',
   'Faourette':     'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635521/cqp/posts/z5wr5jqpo2jayqworrhe.jpg',
+  'Arène':         'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684662/cqp/posts/viae65lfcpwkjnyydwyc.jpg',
+  'Papus':         'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684663/cqp/posts/qo2e83g1wt3ityupc0dj.jpg',
+  'Reynerie':      'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684664/cqp/posts/p6vdov9rwu3ulvyas7ph.jpg',
+  'Izards':        'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684665/cqp/posts/y9kajri0hcj1sun04jje.jpg',
 }
 
 const QUARTIERS = [
