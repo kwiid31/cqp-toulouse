@@ -47,10 +47,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="/css/main.css?v=610759">
-<script src="/js/app.js?v=610759"></script>
-<script src="/js/utils.js?v=610759"></script>
-<script src="/js/auth.js?v=610759"></script>
+<link rel="stylesheet" href="/css/main.css?v=636254">
+<script src="/js/app.js?v=636254"></script>
+<script src="/js/utils.js?v=636254"></script>
+<script src="/js/auth.js?v=636254"></script>
 <style>
 /* ── PTR ── */
 #ptr{display:none;justify-content:center;align-items:center;padding:12px;position:fixed;top:var(--nav);left:0;right:0;z-index:150;}
@@ -160,14 +160,6 @@
 <div id="ptr"><div class="ptr-dot"></div><div class="ptr-dot"></div><div class="ptr-dot"></div></div>
 
 <!-- COMPOSER — comme Facebook, au-dessus des stories -->
-<div class="composer" style="border-bottom:4px solid #E4E6EB;display:flex;align-items:center;gap:8px;padding:12px 14px;background:#fff;">
-  <div onclick="openPub()" style="flex:1;padding:8px 14px;background:#fff;border-radius:20px;font-size:1.05rem;font-weight:700;color:#65676b;cursor:pointer;">Parle !</div>
-  <label style="display:flex;align-items:center;padding:7px;border-radius:8px;cursor:pointer;flex-shrink:0;" title="Ajouter une photo/vidéo">
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1c1e21" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    <input type="file" accept="image/*,video/*" multiple style="display:none" onchange="openPubWithMedia(this)">
-  </label>
-</div>
-
 <!-- STORIES BAR -->
 <div class="stories-bar" id="stories-bar"></div>
 
@@ -463,9 +455,9 @@
   </div>
 </div>
 
-<script src="/js/api.js?v=610759"></script>
-<script src="/js/feed4.js?v=610759"></script>
-<script src="/js/stories.js?v=610759"></script>
+<script src="/js/api.js?v=636254"></script>
+<script src="/js/feed4.js?v=636254"></script>
+<script src="/js/stories.js?v=636254"></script>
 <script>
 'use strict'
 const esc = s => Utils.esc(s)
@@ -1227,31 +1219,16 @@ async function init() {
       Api.getEvenements(null, 6),
       Api.getAnnonces(null, 6)
     ])
-    const contentBar = document.getElementById('content-bar')
-    if (contentBar) {
-      const evts = (evtsRes.data || []).map(x => ({_data:x, _type:'evenement'}))
-      const anns = (annRes.data || []).map(x => ({_data:x, _type:'annonce'}))
-      // Mélanger : 1 evt, 1 ann, 1 evt, 1 ann...
-      const mixed = []
-      const maxLen = Math.max(evts.length, anns.length)
-      for (let i = 0; i < maxLen; i++) {
-        if (evts[i]) mixed.push(evts[i])
-        if (anns[i]) mixed.push(anns[i])
-      }
-      if (mixed.length) {
-        const evtItems = mixed.filter(x => x._type === 'evenement')
-        const annItems = mixed.filter(x => x._type === 'annonce')
-        let html = '<div style="padding:10px 0 4px;">'
-        html += '<div style="font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8a8d91;padding:0 16px 8px 62px;">À voir dans le quartier</div>'
-        html += '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 0 62px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
-        mixed.slice(0, 8).forEach(item => {
-          if (item._type === 'evenement') html += Feed.renderEvtCard(item._data)
-          else html += Feed.renderAnnCard(item._data)
-        })
-        html += '</div></div>'
-        contentBar.innerHTML = html
-      }
+    // Stocker les données pour injection dans le feed
+    const evts = (evtsRes.data || []).map(x => ({_data:x, _type:'evenement'}))
+    const anns = (annRes.data || []).map(x => ({_data:x, _type:'annonce'}))
+    const mixed = []
+    const maxLen = Math.max(evts.length, anns.length)
+    for (let i = 0; i < maxLen; i++) {
+      if (evts[i]) mixed.push(evts[i])
+      if (anns[i]) mixed.push(anns[i])
     }
+    window._mixedContent = mixed.slice(0, 8)
   } catch(e) {}
 
   // Non-bloquant
