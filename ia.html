@@ -312,22 +312,8 @@ document.getElementById('clip-btn').addEventListener('click', function() {
       analyzeVision(b64data, mime).then(function(vtext) {
         tel.classList.remove('typing');
         typing = false;
-        if (vtext) {
-          var ft = vtext.trim();
-          var s = ft.indexOf('{'); var e2 = ft.lastIndexOf('}');
-          if (s >= 0 && e2 > s) {
-            try {
-              var pd = JSON.parse(ft.slice(s, e2 + 1));
-              if (!pd.action) pd.action = 'publier';
-              if (pd.action === 'publier' && pd.type) {
-                pd._imgB64 = b64data; pd._imgMime = mime; pendingImg = null;
-                tel.textContent = "J'ai analysé l'image, voilà l'aperçu :";
-                showPreview(pd); return;
-              }
-            } catch(ex) {}
-          }
-        }
-        tel.textContent = 'Image reçue ! Dis-moi ce que tu veux en faire.';
+        tel.textContent = (vtext ? vtext.trim() : 'Image reçue.') + '\n\nQu\'est-ce que tu veux en faire ?';
+        hist.push({role:'assistant', content: tel.textContent});
       });
     };
     reader.readAsDataURL(file);
