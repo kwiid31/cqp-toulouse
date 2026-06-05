@@ -2,7 +2,14 @@
 'use strict'
 
 const Stories = (() => {
-  const QUARTIERS = [
+  const QUARTIER_PHOTOS = {
+  'Bagatelle':     'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635516/cqp/posts/tndfsw5236unfgjhh6mi.jpg',
+  'Empalot':       'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635518/cqp/posts/qiofmgtdrf5m27ziyauv.jpg',
+  'Bellefontaine': 'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635520/cqp/posts/jcw4yaytliz7swhz8pxm.jpg',
+  'Faourette':     'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635521/cqp/posts/z5wr5jqpo2jayqworrhe.jpg',
+}
+
+const QUARTIERS = [
     'Bagatelle','Faourette','Reynerie','Bellefontaine',
     'Papus','Empalot','Izards','Croix d\'Aurade',
     'Arènes','Bourbaki','Grand Mirail','Autre'
@@ -81,7 +88,9 @@ const Stories = (() => {
                 ? `<img src="${Utils.esc(latest.photo_url)}" style="width:100%;height:100%;object-fit:cover;" alt="">`
                 : (latest?.video_url
                   ? `<video src="${Utils.esc(latest.video_url)}" style="width:100%;height:100%;object-fit:cover;" autoplay muted loop playsinline></video>`
-                  : `<span style="font-size:24px;font-weight:700;color:${hasNew?'#C8102E':'#8a8d91'};">${initial}</span>`)
+                  : (QUARTIER_PHOTOS[q]
+                    ? `<img src="${QUARTIER_PHOTOS[q]}" style="width:100%;height:100%;object-fit:cover;" alt="">`
+                    : `<span style="font-size:24px;font-weight:700;color:${hasNew?'#C8102E':'#8a8d91'};">${initial}</span>`))
               }
             </div>
           </div>
