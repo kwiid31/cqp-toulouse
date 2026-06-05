@@ -61,26 +61,7 @@ const Feed = (() => {
       saveLikes()
 
       // Stocker les counts sur les items
-      _allItems.forEach(item => {
-        if (item._type === 'mixed-bloc') {
-        const mc = item._items || []
-        if (mc.length) {
-          let bhtml = '<div style="padding:12px 0 4px;">'
-          bhtml += '<div style="font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8a8d91;padding:0 16px 8px 62px;">À voir dans le quartier</div>'
-          bhtml += '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 12px 62px;scrollbar-width:none;-webkit-overflow-scrolling:touch;">'
-          mc.forEach(function(ci) {
-            if (ci._type === 'evt') bhtml += Feed.renderEvtCard(ci._data)
-            else bhtml += Feed.renderAnnCard(ci._data)
-          })
-          bhtml += '</div></div><div style="height:.5px;background:#eff3f4;"></div>'
-          _el.insertAdjacentHTML('beforeend', bhtml)
-        }
-      } else if (item._type === 'post') {
-          item._likes = likeCounts[item._data.id] || 0
-          item._cmts = cmtCounts[item._data.id] || 0
-          item._liked = _myLikes.has(item._data.id)
-        }
-      })
+      
 
       _renderChunk()
       _setupInfiniteScroll()
