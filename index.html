@@ -454,7 +454,7 @@
 </div>
 
 <script src="/js/api.js?v=610759"></script>
-<script src="/js/feed4.js?v=656877"></script>
+<script src="/js/feed4.js?v=656973"></script>
 <script src="/js/stories.js?v=637472"></script>
 <script>
 'use strict'
@@ -1206,24 +1206,7 @@ async function init() {
   if (!code) { window.location.href = 'profil.html'; return }
 
   // Feed en priorité — s'assurer qu'il est visible
-  // Charger annonces+événements EN PARALLÈLE avec le feed
-  try {
-    const [evtsRes, annRes] = await Promise.all([
-      Api.getEvenements(null, 6),
-      Api.getAnnonces(null, 6)
-    ])
-    const evts = (evtsRes.data || []).map(x => ({_data:x, _type:'evenement'}))
-    const anns = (annRes.data || []).map(x => ({_data:x, _type:'annonce'}))
-    const mixed = []
-    const maxLen = Math.max(evts.length, anns.length)
-    for (let i = 0; i < maxLen; i++) {
-      if (evts[i]) mixed.push(evts[i])
-      if (anns[i]) mixed.push(anns[i])
-    }
-    window._mixedContent = mixed.slice(0, 8)
-  } catch(e) {}
-
-  // Maintenant init le feed — _mixedContent est prêt
+  // Feed.init charge lui-même les annonces+événements
   document.getElementById('feed').style.visibility = ''
   await Feed.init(document.getElementById('feed'))
   Feed.setupDoubleTap(document.getElementById('feed'))
