@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Notifications — CQP Toulouse</title>
+<link rel="stylesheet" href="css/main.css?v=notifs1">
+<style>
+.notifs-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:60vh; padding:40px 24px; text-align:center; }
+.notifs-icon { font-size:48px; margin-bottom:16px; }
+.notifs-title { font-size:20px; font-weight:700; color:#0f1419; margin-bottom:8px; }
+.notifs-sub { font-size:14px; color:#536471; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div class="logo-box" style="background:#C8102E;color:#fff;font-weight:900;font-size:13px;padding:4px 7px;border-radius:6px;">CQP</div>
+    <div>
+      <div style="font-size:14px;font-weight:700;line-height:1.1;">TOULOUSE</div>
+      <div style="font-size:9px;color:#65676b;letter-spacing:1px;">QUARTIERS POPULAIRES</div>
+    </div>
+  </div>
+  <span style="font-size:16px;font-weight:700;color:#0f1419;">Notifications</span>
+  <div style="width:60px;"></div>
+</div>
+
+<div class="notifs-wrap">
+  <div class="notifs-icon">🔔</div>
+  <div class="notifs-title">Aucune notification</div>
+  <div class="notifs-sub">Tes likes, commentaires et<br>mentions apparaîtront ici.</div>
+</div>
+
+<nav class="bottom-nav">
+  <a class="nav-item" href="index.html" aria-label="Accueil"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
+  <a class="nav-item" href="explorer.html" aria-label="Explorer"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Explorer</a>
+  <div class="nav-center"><button class="nav-pub" onclick="window.location.href='ia.html'" aria-label="IA"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
+  <a class="nav-item" href="#" onclick="openNotifs();return false;" aria-label="Notifications"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notifs</a>
+  <a class="nav-item" href="profil.html" aria-label="Profil"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
+</nav>
+
+</body>
+</html>
