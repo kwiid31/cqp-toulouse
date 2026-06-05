@@ -72,13 +72,13 @@ const Feed = (() => {
           + '</div>'
         _el.insertAdjacentHTML('beforeend', cHtml)
       } else if (item._type === 'mixed-bloc') {
-        const mc = window._mixedContent || []
+        const mc = item._items || []
         if (mc.length) {
           let bhtml = '<div style="padding:12px 0 4px;border-top:.5px solid #eff3f4;">'
           bhtml += '<div style="font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8a8d91;padding:0 16px 8px 62px;">À voir dans le quartier</div>'
           bhtml += '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 12px 62px;scrollbar-width:none;-webkit-overflow-scrolling:touch;">'
           mc.forEach(function(ci) {
-            if (ci._type === 'evenement') bhtml += Feed.renderEvtCard(ci._data)
+            if (ci._type === 'evt') bhtml += Feed.renderEvtCard(ci._data)
             else bhtml += Feed.renderAnnCard(ci._data)
           })
           bhtml += '</div></div><div style="height:.5px;background:#eff3f4;"></div>'
