@@ -31,6 +31,16 @@ const Feed = (() => {
         Api.getEvenements(10)
       ])
 
+      // Composer "Parle !" en premier dans le feed
+      const profPhoto = localStorage.getItem('cqp_photo') || ''
+      const composerHtml = '<div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:.5px solid #eff3f4;cursor:pointer;" onclick="openPub()">'
+        + '<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#e4e6eb;display:flex;align-items:center;justify-content:center;">'
+        + (profPhoto ? '<img src="' + profPhoto + '" style="width:100%;height:100%;object-fit:cover;">' : '<span style="font-size:18px;">👤</span>')
+        + '</div>'
+        + '<div style="flex:1;padding:8px 14px;background:#f0f2f5;border-radius:20px;font-size:1.05rem;font-weight:700;color:#65676b;">Parle !</div>'
+        + '</div>'
+      _el.insertAdjacentHTML('afterbegin', composerHtml)
+
       const posts = (postsRes.data || []).map(p => ({ _type: 'post', _data: p }))
       const actus = (actusRes.data || []).map(a => ({ _type: 'actu', _data: a }))
       const annonces = (annoncesRes.data || []).map(a => ({ _type: 'annonce', _data: a }))
@@ -62,29 +72,7 @@ const Feed = (() => {
 
       // Stocker les counts sur les items
       _allItems.forEach(item => {
-        if (item._type === 'composer') {
-        const ph = item._photo || ''
-        const cHtml = '<div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:.5px solid #eff3f4;cursor:pointer;" onclick="openPub()">'
-          + '<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#e4e6eb;display:flex;align-items:center;justify-content:center;">'
-          + (ph ? '<img src="' + ph + '" style="width:100%;height:100%;object-fit:cover;">' : '<span style="font-size:18px;color:#536471;">👤</span>')
-          + '</div>'
-          + '<div style="flex:1;padding:8px 14px;background:#f0f2f5;border-radius:20px;font-size:1.05rem;font-weight:700;color:#65676b;">Parle !</div>'
-          + '</div>'
-        _el.insertAdjacentHTML('beforeend', cHtml)
-      } else if (item._type === 'mixed-bloc') {
-        const mc = item._items || []
-        if (mc.length) {
-          let bhtml = '<div style="padding:12px 0 4px;border-top:.5px solid #eff3f4;">'
-          bhtml += '<div style="font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8a8d91;padding:0 16px 8px 62px;">À voir dans le quartier</div>'
-          bhtml += '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 12px 62px;scrollbar-width:none;-webkit-overflow-scrolling:touch;">'
-          mc.forEach(function(ci) {
-            if (ci._type === 'evt') bhtml += Feed.renderEvtCard(ci._data)
-            else bhtml += Feed.renderAnnCard(ci._data)
-          })
-          bhtml += '</div></div><div style="height:.5px;background:#eff3f4;"></div>'
-          _el.insertAdjacentHTML('beforeend', bhtml)
-        }
-      } else if (item._type === 'post') {
+        if (item._type === 'post') {
           item._likes = likeCounts[item._data.id] || 0
           item._cmts = cmtCounts[item._data.id] || 0
           item._liked = _myLikes.has(item._data.id)
@@ -102,42 +90,76 @@ const Feed = (() => {
 
   // ── CONSTRUCTION DU FEED MIXTE ────────────────────────────────
   const _buildFeed = (posts, actus, annonces, evts) => {
-    // Composer en premier
-    const profPhoto = localStorage.getItem('cqp_photo') || ''
-    const result = [{ _type: 'composer', _photo: profPhoto }]
-
-    // Construire le bloc mixé une seule fois
-    const mixed = []
-    const ml = Math.max((annonces||[]).length, (evts||[]).length)
-    for (let i = 0; i < ml; i++) {
-      if (evts && evts[i]) mixed.push(evts[i])
-      if (annonces && annonces[i]) mixed.push(annonces[i])
-    }
-    const mixedBloc = mixed.length ? { _type: 'mixed-bloc', _items: mixed.slice(0, 8) } : null
-
+    const result = []
     let aIdx = 0
-    let blocDone = false
+    // Injecter un bloc annonces toutes les 4 posts, evenements toutes les 7 posts
+    // Annonces et événements affichés en dehors du feed
+    if (annonces.length) {
+      const evtsBar = document.getElementById('evts-bar')
+      const annBar = document.getElementById('annonces-bar')
+      // Chargés séparément dans init
+    }
+    var annoncesBloc = null
+    var evtsBloc = null
+    var annoncesInserted = false, evtsInserted = false
 
     posts.forEach((p, i) => {
       result.push(p)
-      // Actu toutes les 4 posts
+      // Toutes les 4 posts → actu
       if ((i + 1) % 4 === 0 && aIdx < actus.length) {
         result.push(actus[aIdx++])
       }
-      // Bloc annonces+événements une seule fois après le 5ème post
-      if (!blocDone && i === 4 && mixedBloc) {
-        result.push(mixedBloc)
-        blocDone = true
+      // Apres 3 posts → bloc annonces
+      if (i === 2 && annoncesBloc && !annoncesInserted) {
+        result.push(annoncesBloc)
+        annoncesInserted = true
+      }
+      // Apres 7 posts → bloc evenements
+      if (i === 6 && evtsBloc && !evtsInserted) {
+        result.push(evtsBloc)
+        evtsInserted = true
       }
     })
 
-    // Si moins de 5 posts, mettre le bloc à la fin
-    if (!blocDone && mixedBloc) {
-      result.push(mixedBloc)
+    // Actus restantes a la fin
+    while (aIdx < actus.length) result.push(actus[aIdx++])
+
+    return result
+  }
+
+  // ── RENDER UN CHUNK ──────────────────────────────────────────
+  const _renderChunk = () => {
+    if (_loading) return
+    _loading = true
+
+    const total = _allItems.length
+    if (!total) { _loading = false; return }
+
+    // Si on a tout vu → repart du début
+    if (_index >= total) {
+      _index = 0
+      // Séparateur visuel
+      _el.insertAdjacentHTML('beforeend',
+        '<div class="feed-end">— Tout vu ! On repart du début —</div>'
+      )
     }
 
-    while (aIdx < actus.length) result.push(actus[aIdx++])
-    return result
+    const chunk = _allItems.slice(_index, _index + CHUNK)
+    _index += CHUNK
+
+    chunk.forEach(item => {
+      if (item._type === 'post') {
+        _el.insertAdjacentHTML('beforeend', _cardPost(item._data, item._likes, item._cmts, item._liked))
+      } else if (item._type === 'actu') {
+        _el.insertAdjacentHTML('beforeend', _cardActu(item._data))
+      } else if (item._type === 'annonce') {
+        _el.insertAdjacentHTML('beforeend', _cardAnnonce(item._data))
+      } else if (item._type === 'evenement') {
+        _el.insertAdjacentHTML('beforeend', _cardEvenement(item._data))
+      }
+    })
+
+    _loading = false
   }
 
   // ── CARDS ────────────────────────────────────────────────────
