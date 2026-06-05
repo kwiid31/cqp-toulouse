@@ -28,7 +28,7 @@ const Feed = (() => {
         Api.getFeed(0, 100),
         Api.getActus(null, 20),
         Api.getAnnonces(null, 20),
-        Api.getEvenements(10)
+        Api.getEvenements(null, 6)
       ])
 
       const posts = (postsRes.data || []).map(p => ({ _type: 'post', _data: p }))
