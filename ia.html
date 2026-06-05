@@ -323,6 +323,7 @@ function analyzeVision(b64data, mime, userInstruction) {
   var baseInstruction = userInstruction || null
   var QUARTIERS_TLS = ['Bellefontaine','Reynerie','Mirail','Papus','Empalot','Bagatelle','Faourette','Izards','Arènes','Bourbaki','Grand Mirail','Croix d\'Aurade']
   
+  var dejaEnConv = hist.length > 0
   var prompt = 'Tu es Leila, l\'assistante IA de CQP Toulouse, réseau social de quartier.'
     + ' Tu parles à ' + n + ' dont le quartier habituel est ' + q + '.'
     + ' Quartiers de Toulouse connus : ' + QUARTIERS_TLS.join(', ') + '.'
