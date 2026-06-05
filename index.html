@@ -160,19 +160,11 @@
 <div id="ptr"><div class="ptr-dot"></div><div class="ptr-dot"></div><div class="ptr-dot"></div></div>
 
 <!-- COMPOSER — comme Facebook, au-dessus des stories -->
-<div class="composer" style="border-bottom:4px solid #E4E6EB;display:flex;align-items:center;gap:8px;padding:12px 14px;background:#fff;">
-  <div onclick="openPub()" style="flex:1;padding:8px 14px;background:#fff;border-radius:20px;font-size:1.05rem;font-weight:700;color:#65676b;cursor:pointer;">Parle !</div>
-  <label style="display:flex;align-items:center;padding:7px;border-radius:8px;cursor:pointer;flex-shrink:0;" title="Ajouter une photo/vidéo">
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1c1e21" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-    <input type="file" accept="image/*,video/*" multiple style="display:none" onchange="openPubWithMedia(this)">
-  </label>
-</div>
-
 <!-- STORIES BAR -->
 <div class="stories-bar" id="stories-bar"></div>
 
 <!-- BLOC UNIFIÉ ANNONCES + ÉVÉNEMENTS -->
-<div id="content-bar"></div>
+
 
 <!-- FEED -->
 <div id="feed" style="max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:0;padding:0 0 8px;"></div>
@@ -464,8 +456,8 @@
 </div>
 
 <script src="/js/api.js?v=610759"></script>
-<script src="/js/feed4.js?v=636330"></script>
-<script src="/js/stories.js?v=610759"></script>
+<script src="/js/feed4.js?v=636599"></script>
+<script src="/js/stories.js?v=636599"></script>
 <script>
 'use strict'
 const esc = s => Utils.esc(s)
