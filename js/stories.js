@@ -3,14 +3,18 @@
 
 const Stories = (() => {
   const QUARTIER_PHOTOS = {
-  'Bagatelle':     'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635516/cqp/posts/tndfsw5236unfgjhh6mi.jpg',
-  'Empalot':       'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635518/cqp/posts/qiofmgtdrf5m27ziyauv.jpg',
-  'Bellefontaine': 'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635520/cqp/posts/jcw4yaytliz7swhz8pxm.jpg',
-  'Faourette':     'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635521/cqp/posts/z5wr5jqpo2jayqworrhe.jpg',
-  'Arènes':        'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684662/cqp/posts/viae65lfcpwkjnyydwyc.jpg',
-  'Papus':         'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684663/cqp/posts/qo2e83g1wt3ityupc0dj.jpg',
-  'Reynerie':      'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684664/cqp/posts/p6vdov9rwu3ulvyas7ph.jpg',
-  'Izards':        'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684665/cqp/posts/y9kajri0hcj1sun04jje.jpg',
+  'Bagatelle':       'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635516/cqp/posts/tndfsw5236unfgjhh6mi.jpg',
+  'Empalot':         'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635518/cqp/posts/qiofmgtdrf5m27ziyauv.jpg',
+  'Bellefontaine':   'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635520/cqp/posts/jcw4yaytliz7swhz8pxm.jpg',
+  'Faourette':       'https://res.cloudinary.com/dbpe9xree/image/upload/v1780635521/cqp/posts/z5wr5jqpo2jayqworrhe.jpg',
+  'Arènes':          'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684662/cqp/posts/viae65lfcpwkjnyydwyc.jpg',
+  'Papus':           'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684663/cqp/posts/qo2e83g1wt3ityupc0dj.jpg',
+  'Reynerie':        'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684664/cqp/posts/p6vdov9rwu3ulvyas7ph.jpg',
+  'Izards':          'https://res.cloudinary.com/dbpe9xree/image/upload/v1780684665/cqp/posts/y9kajri0hcj1sun04jje.jpg',
+  'Autre':           'https://res.cloudinary.com/dbpe9xree/image/upload/v1780685405/cqp/posts/qxjlcvwcveb86gznoc3c.jpg',
+  'Grand Mirail':    'https://res.cloudinary.com/dbpe9xree/image/upload/v1780685406/cqp/posts/nasso2xtdmsiyonwjv3f.jpg',
+  'Bourbaki':        'https://res.cloudinary.com/dbpe9xree/image/upload/v1780685408/cqp/posts/bzqrrnj5wxkyo9voka3t.jpg',
+  "Croix d'Aurade":  'https://res.cloudinary.com/dbpe9xree/image/upload/v1780685410/cqp/posts/cnx6umggcc7sbquohy5g.jpg',
 }
 
 const QUARTIERS = [
