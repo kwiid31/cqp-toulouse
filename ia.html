@@ -136,8 +136,22 @@ var pending = null;
 var pendingImg = null;
 
 function getSYS() {
-  var u = profil ? 'Utilisateur: ' + profil.prenom + ', quartier: ' + (profil.quartier || 'Toulouse') + '.' : 'Utilisateur non connecte.';
-  return 'Tu es l\'assistant IA de CQP, reseau social de quartier Toulouse.\n' + u + '\n\nCOMPORTEMENT: Si le message contient assez d\'infos, reponds DIRECTEMENT avec le JSON sans poser de questions. Ne demande des infos QUE si vraiment manquantes.\n\nPour un post: contenu suffit.\nPour une annonce: titre + description suffisent.\nPour un evenement: lieu + date suffisent, genere le titre.\n\nNe montre JAMAIS le JSON. Reponds UNIQUEMENT le JSON quand tu publies:\nPost: {"action":"publier","type":"post","contenu":"...","quartier":"' + (profil ? profil.quartier : 'Toulouse') + '"}\nAnnonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + (profil ? profil.quartier : 'Toulouse') + '"}\nEvenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}\n\nSi l\'utilisateur veut juste discuter, reponds en 1-2 phrases.';
+  var prenom = profil ? profil.prenom : 'quelqu\'un'
+  var quartier = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
+  return 'Tu es l\'assistante IA de CQP Toulouse, un réseau social de quartier pour les habitants des quartiers populaires de Toulouse (Bellefontaine, Reynerie, Mirail, Papus, Empalot, Bagatelle, Faourette, Izards, Arènes...).\n\n'
+    + 'Tu parles à ' + prenom + ' du quartier ' + quartier + '.\n\n'
+    + 'TON RÔLE : Aider les habitants à publier facilement sur le réseau — posts, annonces, événements. Tu es proche, bienveillante, tu parles comme quelqu\'un du quartier (pas trop formel).\n\n'
+    + 'RÈGLES :\n'
+    + '- Si quelqu\'un t\'envoie une photo, décris-la et demande ce qu\'il veut en faire.\n'
+    + '- Si quelqu\'un veut publier, génère le JSON et affiche l\'aperçu.\n'
+    + '- Réponds toujours en français, de façon courte et naturelle.\n'
+    + '- Tu peux aussi répondre à des questions sur le quartier, donner des conseils, aider à rédiger.\n'
+    + '- Ne génère le JSON QUE si l\'utilisateur confirme qu\'il veut publier.\n\n'
+    + 'FORMAT DE PUBLICATION (JSON uniquement, jamais affiché) :\n'
+    + 'Post: {"action":"publier","type":"post","contenu":"...","quartier":"' + quartier + '"}\n'
+    + 'Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + quartier + '"}\n'
+    + 'Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}\n\n'
+    + 'IMPORTANT: Ne montre JAMAIS le JSON brut. Génère-le seulement quand l\'utilisateur veut vraiment publier.';
 }
 
 function init() {
@@ -276,14 +290,16 @@ function addPhotoToPending() {
 function analyzeVision(b64data, mime, userInstruction) {
   var q = profil ? profil.quartier : 'Toulouse';
   var n = profil ? profil.prenom : 'Anonyme';
-  var baseInstruction = userInstruction || 'Décris ce que tu vois en 1-2 phrases et demande ce que l\'utilisateur veut faire avec cette photo (post, annonce, événement ou extraire du texte).'
-  var prompt = 'Tu es l\'assistant IA de CQP, réseau social de quartier Toulouse. Utilisateur: ' + n + ', quartier: ' + q + '.\n\n'
-    + 'Instruction: ' + baseInstruction + '\n\n'
-    + 'Si l\'utilisateur veut publier, génère le JSON approprié:\n'
+  var baseInstruction = userInstruction || null
+  var prompt = 'Tu es l\'assistante IA de CQP, réseau social de quartier Toulouse. Tu parles à ' + n + ' du quartier ' + q + '.\n\n'
+    + 'Regarde cette image et réponds en français de façon naturelle et courte.\n\n'
+    + (baseInstruction
+      ? 'L\'utilisateur demande : "' + baseInstruction + '"\n\nRéponds à sa demande en tenant compte de l\'image.\n\n'
+      : 'Décris ce que tu vois en 1-2 phrases simples, puis demande ce qu\'il veut faire avec (post, annonce, événement, ou juste extraire du texte).\n\n')
+    + 'Si tu dois générer une publication, utilise ce format JSON (ne l\'affiche JAMAIS, c\'est juste pour le système) :\n'
     + 'Post: {"action":"publier","type":"post","contenu":"...","quartier":"' + q + '"}\n'
     + 'Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + q + '"}\n'
-    + 'Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}\n'
-    + 'Sinon réponds naturellement en français.';
+    + 'Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}';
   return fetch(PROXY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
