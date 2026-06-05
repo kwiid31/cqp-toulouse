@@ -102,78 +102,42 @@ const Feed = (() => {
 
   // ── CONSTRUCTION DU FEED MIXTE ────────────────────────────────
   const _buildFeed = (posts, actus, annonces, evts) => {
-    // Construire le bloc mixé annonces+événements
+    // Composer en premier
+    const profPhoto = localStorage.getItem('cqp_photo') || ''
+    const result = [{ _type: 'composer', _photo: profPhoto }]
+
+    // Construire le bloc mixé une seule fois
     const mixed = []
-    const maxLen = Math.max((annonces||[]).length, (evts||[]).length)
-    for (let i = 0; i < maxLen; i++) {
+    const ml = Math.max((annonces||[]).length, (evts||[]).length)
+    for (let i = 0; i < ml; i++) {
       if (evts && evts[i]) mixed.push(evts[i])
       if (annonces && annonces[i]) mixed.push(annonces[i])
     }
-    const mixedBloc = mixed.length ? { _type: 'mixed-bloc', _items: mixed.slice(0,8) } : null
+    const mixedBloc = mixed.length ? { _type: 'mixed-bloc', _items: mixed.slice(0, 8) } : null
 
-    // 1. Composer "Parle !" en premier
-    const profPhoto = localStorage.getItem('cqp_photo') || ''
-    const result = [{ _type: 'composer', _photo: profPhoto }]
     let aIdx = 0
-    let postCount = 0
-    let blocInserted = false
+    let blocDone = false
 
     posts.forEach((p, i) => {
       result.push(p)
-      postCount++
-      // Toutes les 4 posts → actu
-      if (postCount % 4 === 0 && aIdx < actus.length) {
+      // Actu toutes les 4 posts
+      if ((i + 1) % 4 === 0 && aIdx < actus.length) {
         result.push(actus[aIdx++])
       }
-      // Bloc annonces+événements : après 3 posts (si peu) ou toutes les 5
-      const threshold = posts.length <= 5 ? 3 : 5
-      if (!blocInserted && postCount === threshold && mixedBloc) {
+      // Bloc annonces+événements une seule fois après le 5ème post
+      if (!blocDone && i === 4 && mixedBloc) {
         result.push(mixedBloc)
-        blocInserted = true
-      } else if (blocInserted && postCount % 10 === 0 && mixedBloc) {
-        result.push(mixedBloc)
+        blocDone = true
       }
     })
 
-    // Actus restantes a la fin
-    while (aIdx < actus.length) result.push(actus[aIdx++])
-
-    return result
-  }
-
-  // ── RENDER UN CHUNK ──────────────────────────────────────────
-  const _renderChunk = () => {
-    if (_loading) return
-    _loading = true
-
-    const total = _allItems.length
-    if (!total) { _loading = false; return }
-
-    // Si on a tout vu → repart du début
-    if (_index >= total) {
-      _index = 0
-      // Séparateur visuel
-      _el.insertAdjacentHTML('beforeend',
-        '<div class="feed-end">— Tout vu ! On repart du début —</div>'
-      )
+    // Si moins de 5 posts, mettre le bloc à la fin
+    if (!blocDone && mixedBloc) {
+      result.push(mixedBloc)
     }
 
-    const chunk = _allItems.slice(_index, _index + CHUNK)
-    _index += CHUNK
-
-    chunk.forEach(item => {
-      if (item._type === 'post') {
-        _el.insertAdjacentHTML('beforeend', _cardPost(item._data, item._likes, item._cmts, item._liked))
-      } else if (item._type === 'actu') {
-        _el.insertAdjacentHTML('beforeend', _cardActu(item._data))
-      } else if (item._type === 'annonce') {
-        _el.insertAdjacentHTML('beforeend', _cardAnnonce(item._data))
-      } else if (item._type === 'evenement') {
-        _el.insertAdjacentHTML('beforeend', _cardEvenement(item._data))
-      }
-    })
-
-    _loading = false
+    while (aIdx < actus.length) result.push(actus[aIdx++])
+    return result
   }
 
   // ── CARDS ────────────────────────────────────────────────────
