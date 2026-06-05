@@ -47,7 +47,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="stylesheet" href="/css/main.css?v=1780686133">
+<link rel="stylesheet" href="/css/main.css?v=686347">
 <script src="/js/app.js?v=610759"></script>
 <script src="/js/utils.js?v=610759"></script>
 <script src="/js/auth.js?v=610759"></script>
@@ -1267,5 +1267,29 @@ function closeConfirm() {
 document.getElementById('confirm-sheet').addEventListener('click', e => { if (e.target === e.currentTarget) closeConfirm() })
 </script>
 
+
+<script>
+(function() {
+  var nav = document.querySelector('.bottom-nav')
+  if (!nav) return
+  var lastY = 0
+  var ticking = false
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        var y = window.scrollY
+        if (y > lastY && y > 60) {
+          nav.classList.add('hidden')
+        } else {
+          nav.classList.remove('hidden')
+        }
+        lastY = y
+        ticking = false
+      })
+      ticking = true
+    }
+  }, { passive: true })
+})()
+</script>
 </body>
 </html>
