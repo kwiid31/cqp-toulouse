@@ -17,6 +17,8 @@ html, body { font-size:15px; background:#fff; color:var(--txt); font-family:syst
 body { padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px); overscroll-behavior:none; }
 a { text-decoration:none; color:inherit; }
 button, label { cursor:pointer; font-family:inherit; outline:none; border:none; }
+/* iOS — empêche le zoom automatique au focus */
+input, textarea, select { font-size:16px !important; }
 img { max-width:100%; display:block; }
 
 /* ── Topbar ───────────────────────────────────────────────────── */
