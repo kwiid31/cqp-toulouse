@@ -273,10 +273,17 @@ function addPhotoToPending() {
   photoInp.click();
 }
 
-function analyzeVision(b64data, mime) {
+function analyzeVision(b64data, mime, userInstruction) {
   var q = profil ? profil.quartier : 'Toulouse';
   var n = profil ? profil.prenom : 'Anonyme';
-  var prompt = 'Tu es l\'assistant IA de CQP reseau social de quartier Toulouse. Analyse cette image et genere DIRECTEMENT le JSON adapte. Utilisateur: ' + n + ', quartier: ' + q + '. Flyer evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}. Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + q + '"}. Autre: {"action":"publier","type":"post","contenu":"...","quartier":"' + q + '"}. Reponds UNIQUEMENT avec le JSON.';
+  var baseInstruction = userInstruction || 'Décris ce que tu vois en 1-2 phrases et demande ce que l\'utilisateur veut faire avec cette photo (post, annonce, événement ou extraire du texte).'
+  var prompt = 'Tu es l\'assistant IA de CQP, réseau social de quartier Toulouse. Utilisateur: ' + n + ', quartier: ' + q + '.\n\n'
+    + 'Instruction: ' + baseInstruction + '\n\n'
+    + 'Si l\'utilisateur veut publier, génère le JSON approprié:\n'
+    + 'Post: {"action":"publier","type":"post","contenu":"...","quartier":"' + q + '"}\n'
+    + 'Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + q + '"}\n'
+    + 'Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}\n'
+    + 'Sinon réponds naturellement en français.';
   return fetch(PROXY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -397,9 +404,25 @@ function doSend() {
     typing = true;
     var tel2 = addMsg('ia', '');
     tel2.classList.add('typing');
-    analyzeVision(imgB64, imgMime).then(function(desc) {
+    analyzeVision(imgB64, imgMime, txt || null).then(function(desc) {
       var visionMsg = desc || 'Image reçue.';
       tel2.classList.remove('typing');
+      // Vérifier si c'est un JSON de publication
+      var ft = visionMsg.trim()
+      var s = ft.indexOf('{'); var e2 = ft.lastIndexOf('}');
+      if (s >= 0 && e2 > s) {
+        try {
+          var pd = JSON.parse(ft.slice(s, e2+1));
+          if (pd.action === 'publier' && pd.type) {
+            pd._imgB64 = imgB64; pd._imgMime = imgMime;
+            tel2.textContent = "Voilà l'aperçu :";
+            hist.push({ role: 'assistant', content: tel2.textContent });
+            showPreview(pd);
+            typing = false;
+            return;
+          }
+        } catch(ex) {}
+      }
       tel2.textContent = visionMsg;
       hist.push({ role: 'assistant', content: visionMsg });
       typing = false;
