@@ -99,15 +99,9 @@ const Feed = (() => {
       if ((i + 1) % 4 === 0 && aIdx < actus.length) {
         result.push(actus[aIdx++])
       }
-      // Apres 3 posts → bloc annonces
-      if (i === 2 && annoncesBloc && !annoncesInserted) {
-        result.push(annoncesBloc)
-        annoncesInserted = true
-      }
-      // Apres 7 posts → bloc evenements
-      if (i === 6 && evtsBloc && !evtsInserted) {
-        result.push(evtsBloc)
-        evtsInserted = true
+      // Toutes les 5 posts → bloc annonces + événements mixés
+      if ((i + 1) % 5 === 0 && window._mixedContent && window._mixedContent.length) {
+        result.push({ _type: 'mixed-bloc', _data: window._mixedContent })
       }
     })
 
@@ -138,7 +132,20 @@ const Feed = (() => {
     _index += CHUNK
 
     chunk.forEach(item => {
-      if (item._type === 'post') {
+      if (item._type === 'mixed-bloc') {
+        const mc = item._data || []
+        if (mc.length) {
+          let bhtml = '<div style="padding:12px 0 4px;border-top:.5px solid #eff3f4;">'
+          bhtml += '<div style="font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8a8d91;padding:0 16px 8px 62px;">À voir dans le quartier</div>'
+          bhtml += '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 12px 62px;scrollbar-width:none;-webkit-overflow-scrolling:touch;">'
+          mc.forEach(item => {
+            if (item._type === 'evenement') bhtml += Feed.renderEvtCard(item._data)
+            else bhtml += Feed.renderAnnCard(item._data)
+          })
+          bhtml += '</div></div><div style="height:.5px;background:#eff3f4;"></div>'
+          _el.insertAdjacentHTML('beforeend', bhtml)
+        }
+      } else if (item._type === 'post') {
         _el.insertAdjacentHTML('beforeend', _cardPost(item._data, item._likes, item._cmts, item._liked))
       } else if (item._type === 'actu') {
         _el.insertAdjacentHTML('beforeend', _cardActu(item._data))
