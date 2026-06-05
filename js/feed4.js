@@ -102,30 +102,21 @@ const Feed = (() => {
 
   // ── CONSTRUCTION DU FEED MIXTE ────────────────────────────────
   const _buildFeed = (posts, actus, annonces, evts) => {
-    // Composer "Parle !" comme premier élément
+    // 1. Composer "Parle !" en premier
     const profPhoto = localStorage.getItem('cqp_photo') || ''
-    const composerItem = { _type: 'composer', _photo: profPhoto }
-    const result = [composerItem]
+    const result = [{ _type: 'composer', _photo: profPhoto }]
     let aIdx = 0
-    // Injecter un bloc annonces toutes les 4 posts, evenements toutes les 7 posts
-    // Annonces et événements affichés en dehors du feed
-    if (annonces.length) {
-      const evtsBar = document.getElementById('evts-bar')
-      const annBar = document.getElementById('annonces-bar')
-      // Chargés séparément dans init
-    }
-    var annoncesBloc = null
-    var evtsBloc = null
-    var annoncesInserted = false, evtsInserted = false
+    let postCount = 0
 
     posts.forEach((p, i) => {
       result.push(p)
+      postCount++
       // Toutes les 4 posts → actu
-      if ((i + 1) % 4 === 0 && aIdx < actus.length) {
+      if (postCount % 4 === 0 && aIdx < actus.length) {
         result.push(actus[aIdx++])
       }
-      // Toutes les 5 posts → bloc annonces+événements (pas au premier)
-      if (i > 0 && (i + 1) % 5 === 0) {
+      // Après chaque 5ème post → bloc annonces+événements (1 seule fois par tranche)
+      if (postCount % 5 === 0 && window._mixedContent && window._mixedContent.length) {
         result.push({ _type: 'mixed-bloc' })
       }
     })
