@@ -31,16 +31,6 @@ const Feed = (() => {
         Api.getEvenements(10)
       ])
 
-      // Composer "Parle !" en premier dans le feed
-      const profPhoto = localStorage.getItem('cqp_photo') || ''
-      const composerHtml = '<div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:.5px solid #eff3f4;cursor:pointer;" onclick="openPub()">'
-        + '<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#e4e6eb;display:flex;align-items:center;justify-content:center;">'
-        + (profPhoto ? '<img src="' + profPhoto + '" style="width:100%;height:100%;object-fit:cover;">' : '<span style="font-size:18px;">👤</span>')
-        + '</div>'
-        + '<div style="flex:1;padding:8px 14px;background:#f0f2f5;border-radius:20px;font-size:1.05rem;font-weight:700;color:#65676b;">Parle !</div>'
-        + '</div>'
-      _el.insertAdjacentHTML('afterbegin', composerHtml)
-
       const posts = (postsRes.data || []).map(p => ({ _type: 'post', _data: p }))
       const actus = (actusRes.data || []).map(a => ({ _type: 'actu', _data: a }))
       const annonces = (annoncesRes.data || []).map(a => ({ _type: 'annonce', _data: a }))
