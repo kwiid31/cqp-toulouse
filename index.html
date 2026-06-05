@@ -171,8 +171,6 @@
 <!-- STORIES BAR -->
 <div class="stories-bar" id="stories-bar"></div>
 
-<!-- BLOC UNIFIÉ ANNONCES + ÉVÉNEMENTS -->
-<div id="content-bar"></div>
 
 <!-- FEED -->
 <div id="feed" style="max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:0;padding:0 0 8px;"></div>
@@ -464,7 +462,7 @@
 </div>
 
 <script src="/js/api.js?v=610759"></script>
-<script src="/js/feed4.js?v=658505"></script>
+<script src="/js/feed4.js?v=658591"></script>
 <script src="/js/stories.js?v=610759"></script>
 <script>
 'use strict'
@@ -1222,37 +1220,7 @@ async function init() {
   Feed.setupPullToRefresh()
 
   // Événements et annonces en blocs séparés après le feed
-  try {
-    const [evtsRes, annRes] = await Promise.all([
-      Api.getEvenements(null, 6),
-      Api.getAnnonces(null, 6)
-    ])
-    const contentBar = document.getElementById('content-bar')
-    if (contentBar) {
-      const evts = (evtsRes.data || []).map(x => ({_data:x, _type:'evenement'}))
-      const anns = (annRes.data || []).map(x => ({_data:x, _type:'annonce'}))
-      // Mélanger : 1 evt, 1 ann, 1 evt, 1 ann...
-      const mixed = []
-      const maxLen = Math.max(evts.length, anns.length)
-      for (let i = 0; i < maxLen; i++) {
-        if (evts[i]) mixed.push(evts[i])
-        if (anns[i]) mixed.push(anns[i])
-      }
-      if (mixed.length) {
-        const evtItems = mixed.filter(x => x._type === 'evenement')
-        const annItems = mixed.filter(x => x._type === 'annonce')
-        let html = '<div style="padding:10px 0 4px;">'
-        html += '<div style="font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#8a8d91;padding:0 16px 8px 62px;">À voir dans le quartier</div>'
-        html += '<div style="display:flex;gap:10px;overflow-x:auto;padding:0 16px 0 62px;scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;">'
-        mixed.slice(0, 8).forEach(item => {
-          if (item._type === 'evenement') html += Feed.renderEvtCard(item._data)
-          else html += Feed.renderAnnCard(item._data)
-        })
-        html += '</div></div>'
-        contentBar.innerHTML = html
-      }
-    }
-  } catch(e) {}
+  
 
   // Non-bloquant
   setTimeout(() => Stories.load(document.getElementById('stories-bar')), 300)
