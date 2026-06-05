@@ -278,10 +278,9 @@ async function doSignup() {
   const btn = document.getElementById('signup-btn')
   btn.textContent = '…'; btn.disabled = true
   try {
-    const { data, error } = await Api.createProfil({ prenom, quartier: quartier || null })
-    if (error) throw error
-    Auth.save(data)
-    showCodePopup(data.code)
+    const profil = await Api.createProfil({ prenom, quartier: quartier || null })
+    Auth.save(profil)
+    showCodePopup(profil.code)
   } catch(e) { msg.textContent = 'Erreur: ' + e.message; btn.textContent = 'Créer'; btn.disabled = false }
 }
 
