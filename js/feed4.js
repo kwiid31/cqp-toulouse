@@ -115,8 +115,11 @@ const Feed = (() => {
       if (postCount % 4 === 0 && aIdx < actus.length) {
         result.push(actus[aIdx++])
       }
-      // Après chaque 5ème post → bloc annonces+événements (1 seule fois par tranche)
-      if (postCount % 5 === 0 && window._mixedContent && window._mixedContent.length) {
+      // Bloc après 2 posts si peu de posts, sinon toutes les 5
+      const threshold = posts.length < 5 ? 2 : 5
+      if (postCount === threshold && window._mixedContent && window._mixedContent.length) {
+        result.push({ _type: 'mixed-bloc' })
+      } else if (postCount > threshold && postCount % 5 === 0 && window._mixedContent && window._mixedContent.length) {
         result.push({ _type: 'mixed-bloc' })
       }
     })
