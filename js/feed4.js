@@ -31,16 +31,6 @@ const Feed = (() => {
         Api.getEvenements(10)
       ])
 
-      // Composer "Parle !" en premier dans le feed
-      const profPhoto = localStorage.getItem('cqp_photo') || ''
-      const composerHtml = '<div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:.5px solid #eff3f4;cursor:pointer;" onclick="openPub()">'
-        + '<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#e4e6eb;display:flex;align-items:center;justify-content:center;">'
-        + (profPhoto ? '<img src="' + profPhoto + '" style="width:100%;height:100%;object-fit:cover;">' : '<span style="font-size:18px;">👤</span>')
-        + '</div>'
-        + '<div style="flex:1;padding:8px 14px;background:#f0f2f5;border-radius:20px;font-size:1.05rem;font-weight:700;color:#65676b;">Parle !</div>'
-        + '</div>'
-      _el.insertAdjacentHTML('afterbegin', composerHtml)
-
       const posts = (postsRes.data || []).map(p => ({ _type: 'post', _data: p }))
       const actus = (actusRes.data || []).map(a => ({ _type: 'actu', _data: a }))
       const annonces = (annoncesRes.data || []).map(a => ({ _type: 'annonce', _data: a }))
@@ -72,7 +62,16 @@ const Feed = (() => {
 
       // Stocker les counts sur les items
       _allItems.forEach(item => {
-        if (item._type === 'mixed-bloc') {
+        if (item._type === 'composer') {
+        const ph = item._photo || ''
+        const cHtml = '<div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:.5px solid #eff3f4;cursor:pointer;" onclick="openPub()">'
+          + '<div style="width:38px;height:38px;border-radius:50%;overflow:hidden;flex-shrink:0;background:#e4e6eb;display:flex;align-items:center;justify-content:center;">'
+          + (ph ? '<img src="' + ph + '" style="width:100%;height:100%;object-fit:cover;">' : '<span style="font-size:18px;color:#536471;">👤</span>')
+          + '</div>'
+          + '<div style="flex:1;padding:8px 14px;background:#f0f2f5;border-radius:20px;font-size:1.05rem;font-weight:700;color:#65676b;">Parle !</div>'
+          + '</div>'
+        _el.insertAdjacentHTML('beforeend', cHtml)
+      } else if (item._type === 'mixed-bloc') {
         const mc = window._mixedContent || []
         if (mc.length) {
           let bhtml = '<div style="padding:12px 0 4px;border-top:.5px solid #eff3f4;">'
@@ -103,7 +102,10 @@ const Feed = (() => {
 
   // ── CONSTRUCTION DU FEED MIXTE ────────────────────────────────
   const _buildFeed = (posts, actus, annonces, evts) => {
-    const result = []
+    // Composer "Parle !" comme premier élément
+    const profPhoto = localStorage.getItem('cqp_photo') || ''
+    const composerItem = { _type: 'composer', _photo: profPhoto }
+    const result = [composerItem]
     let aIdx = 0
     // Injecter un bloc annonces toutes les 4 posts, evenements toutes les 7 posts
     // Annonces et événements affichés en dehors du feed
@@ -122,8 +124,8 @@ const Feed = (() => {
       if ((i + 1) % 4 === 0 && aIdx < actus.length) {
         result.push(actus[aIdx++])
       }
-      // Toutes les 5 posts → bloc annonces+événements
-      if ((i + 1) % 5 === 0) {
+      // Toutes les 5 posts → bloc annonces+événements (pas au premier)
+      if (i > 0 && (i + 1) % 5 === 0) {
         result.push({ _type: 'mixed-bloc' })
       }
     })
