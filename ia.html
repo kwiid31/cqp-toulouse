@@ -119,7 +119,36 @@ textarea::placeholder{color:#8b98a5}
 <script>
 var SB_URL = 'https://rlrazcitmwxfaxlnnfau.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzODU4MzQsImV4cCI6MjA5NTk2MTgzNH0.0SSaUUq4x_-Slr4QJ3XJlF0mu0Ub_-ouXD3EC2-PGG0';
-var PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy';
+var PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
+var TAVILY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/tavily-proxy'
+
+// Recherche web via Tavily
+async function searchWeb(query) {
+  try {
+    var res = await fetch(TAVILY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: query, max_results: 3 })
+    })
+    var data = await res.json()
+    if (!data.results || !data.results.length) return null
+    return data.results.map(function(r) {
+      return r.title + ' : ' + r.content.slice(0, 200)
+    }).join('\n\n')
+  } catch(e) {
+    return null
+  }
+}
+
+// Détecter si la question nécessite une recherche web
+function needsSearch(txt) {
+  var keywords = ['événement','evenement','agenda','programme','actualité','actualite',
+    'news','aujourd','semaine','week-end','weekend','mois','2026','récent','recent',
+    'ouvert','ferme','horaire','prix','adresse','téléphone','contact','info','quoi faire',
+    'que faire','sortie','concert','marché','marche','fête','fete','animation']
+  var t = txt.toLowerCase()
+  return keywords.some(function(k) { return t.includes(k) })
+};
 var sbc = supabase.createClient(SB_URL, SB_KEY);
 
 var msgsEl = document.getElementById('msgs');
@@ -538,7 +567,7 @@ function doSend() {
   fetch(PROXY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() }].concat(hist), max_tokens: 300, temperature: 0.5, stream: true })
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() + webContext }].concat(hist), max_tokens: 300, temperature: 0.5, stream: true })
   }).then(function(res) {
     tel.classList.remove('typing'); tel.textContent = '';
     var reader = res.body.getReader(); var dec = new TextDecoder(); var full = '';
