@@ -122,18 +122,47 @@ var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 var PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
 var TAVILY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/tavily-proxy'
 
+// Enrichir la requête pour Tavily
+function enrichQuery(query, quartier) {
+  var q = query.toLowerCase()
+  var enriched = query
+  
+  // Ajouter le quartier si pas déjà mentionné
+  var quartiers = ['bellefontaine','reynerie','mirail','papus','empalot','bagatelle','faourette','izards','arènes']
+  var hasQuartier = quartiers.some(function(k){ return q.includes(k) })
+  if (!hasQuartier && quartier) enriched += ' ' + quartier
+
+  // Toujours ajouter Toulouse
+  if (!q.includes('toulouse')) enriched += ' Toulouse'
+
+  // Ajouter des mots clés selon le type de recherche
+  if (q.includes('infirmier') || q.includes('médecin') || q.includes('docteur') || q.includes('dentiste')) {
+    enriched += ' téléphone adresse rendez-vous'
+  } else if (q.includes('kebab') || q.includes('restaurant') || q.includes('épicerie') || q.includes('bouffe')) {
+    enriched += ' adresse horaires ouvert'
+  } else if (q.includes('événement') || q.includes('agenda') || q.includes('sortie')) {
+    enriched += ' 2026 programme dates'
+  } else if (q.includes('association') || q.includes('aide') || q.includes('service')) {
+    enriched += ' contact téléphone adresse'
+  }
+  
+  return enriched
+}
+
 // Recherche web via Tavily — toutes sources
 async function searchWeb(query) {
   try {
+    var quartier = profil ? (profil.quartier || '') : ''
+    var enriched = enrichQuery(query, quartier)
     var res = await fetch(TAVILY, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: query + ' Toulouse', max_results: 4, country: 'France' })
+      body: JSON.stringify({ query: enriched, max_results: 4, country: 'France' })
     })
     var data = await res.json()
     if (!data.results || !data.results.length) return null
     return data.results.map(function(r) {
-      return '[' + r.title + '] ' + r.content.slice(0, 200)
+      return '[' + r.title + '] ' + r.content.slice(0, 250)
     }).join('\n')
   } catch(e) { return null }
 }
