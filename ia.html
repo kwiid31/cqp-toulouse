@@ -325,6 +325,9 @@ function init() {
       document.getElementById('badge').style.display = 'flex';
       document.getElementById('uname').textContent = res.data.prenom;
       document.getElementById('connbtn').style.display = 'none';
+      // Titre personnalisé style Claude
+      var t = document.getElementById('empty-title');
+      if (t && res.data.prenom) t.textContent = 'Le retour de ' + res.data.prenom + ' !';
     }
   });
 }
