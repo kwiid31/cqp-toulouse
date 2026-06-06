@@ -74,11 +74,11 @@ img { max-width:100%; display:block; }
 }
 .nav-item {
   flex:1; display:flex; flex-direction:column; align-items:center;
-  justify-content:center; gap:2px;
+  justify-content:center;
   background:none; border:none;
-  color:var(--txt3); font-family:'Barlow Condensed',sans-serif;
-  font-size:.67rem; letter-spacing:.4px; text-transform:uppercase;
-  text-decoration:none; padding:5px 0; transition:color .15s;
+  color:#1a1a1a;
+  font-size:0; /* cache le texte */
+  text-decoration:none; padding:8px 0; transition:color .15s;
   min-height:44px;
 }
 .nav-item.active, .nav-item:hover { color:var(--rouge); }
