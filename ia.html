@@ -122,40 +122,20 @@ var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 var PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
 var TAVILY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/tavily-proxy'
 
-// Recherche web via Tavily — sources fiables Toulouse
-async function searchWeb(query, includeDomains) {
+// Recherche web via Tavily — toutes sources
+async function searchWeb(query) {
   try {
-    var body = {
-      query: query,
-      max_results: 4,
-      country: 'France',
-      include_domains: includeDomains || [
-        'toulouse.fr', 'wikipedia.org', 'tactikollectif.org',
-        'jds.fr', 'actu.fr', 'ladepeche.fr', 'mairie-toulouse.fr'
-      ]
-    }
     var res = await fetch(TAVILY, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify({ query: query + ' Toulouse', max_results: 4, country: 'France' })
     })
     var data = await res.json()
-    // Si pas de résultats avec les domaines ciblés, cherche partout
-    if (!data.results || !data.results.length) {
-      var res2 = await fetch(TAVILY, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: query, max_results: 3, country: 'France' })
-      })
-      data = await res2.json()
-    }
     if (!data.results || !data.results.length) return null
     return data.results.map(function(r) {
-      return '[' + r.title + ']\n' + r.content.slice(0, 250)
-    }).join('\n\n')
-  } catch(e) {
-    return null
-  }
+      return '[' + r.title + '] ' + r.content.slice(0, 200)
+    }).join('\n')
+  } catch(e) { return null }
 }
 
 // Recherche info quartier Toulouse spécifiquement
@@ -198,22 +178,12 @@ function needsFeedSearch(txt) {
 
 // Détecter si la question nécessite une recherche web
 function needsSearch(txt) {
-  var keywords = [
-    // Actualité
-    'événement','evenement','agenda','programme','actualité','actualite',
-    'news','aujourd','semaine','week-end','weekend','mois','2026','récent','recent',
-    'ouvert','ferme','horaire','prix','adresse','téléphone','contact',
-    'sortie','concert','marché','marche','fête','fete','animation',
-    // Quartiers — recherche info locale
-    'bellefontaine','reynerie','mirail','papus','empalot','bagatelle',
-    'faourette','izards','arènes','bourbaki','croix d',
-    'association','centre social','médiathèque','mediathèque',
-    'transport','métro','bus','tram','ligne',
-    'mairie','préfecture','service','aide','logement','hlm',
-    'école','collège','lycée','stade','parc','jardin'
-  ]
+  // Pas de recherche uniquement pour les intentions de publication simples
+  var noSearch = ['publier un post','créer une annonce','créer un événement','je veux publier','aide moi à rédiger']
   var t = txt.toLowerCase()
-  return keywords.some(function(k) { return t.includes(k) })
+  if (noSearch.some(function(k){ return t.includes(k) })) return false
+  // Tout le reste déclenche une recherche — l'info fraîche vaut mieux que rien
+  return t.length > 8
 };
 var sbc = supabase.createClient(SB_URL, SB_KEY);
 
@@ -595,8 +565,8 @@ async function doSend() {
   var webContext = ''
   if (txt && needsSearch(txt)) {
     try {
-      var sr = await searchWeb(txt + ' Toulouse quartiers populaires')
-      if (sr) webContext = '\n\n[RÉSULTATS WEB]\n' + sr + '\n[FIN]'
+      var sr = await searchWeb(txt)
+      if (sr) webContext = '\n\n<web_results>\nVoici les résultats trouvés sur internet pour répondre à la question. Utilise ces infos directement dans ta réponse sans dire à l\'utilisateur d\'aller chercher ailleurs :\n' + sr + '\n</web_results>'
     } catch(e) {}
   }
   // Afficher le message + photo dans le chat
