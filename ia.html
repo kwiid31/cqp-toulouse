@@ -2,14 +2,13 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="theme-color" content="#f0ede6">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>IA CQP</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#f0ede6;font-family:-apple-system,system-ui,sans-serif;overflow:hidden}
-.wrap{display:flex;flex-direction:column;height:100dvh;background:#f0ede6}
+html,body{height:100%;background:#fff;font-family:-apple-system,system-ui,sans-serif;overflow:hidden}
+.wrap{display:flex;flex-direction:column;height:100dvh}
 .top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;padding-top:max(14px,env(safe-area-inset-top));border-bottom:.5px solid #eff3f4;flex-shrink:0}
 .back{background:none;border:none;cursor:pointer;padding:4px}
 .brand{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:#0f1419}
@@ -17,11 +16,11 @@ html,body{height:100%;background:#f0ede6;font-family:-apple-system,system-ui,san
 .badge{font-size:12px;color:#536471;background:#f7f9f9;border:.5px solid #e4e6eb;border-radius:20px;padding:4px 10px;display:flex;align-items:center;gap:5px}
 .dot{width:6px;height:6px;border-radius:50%;background:#00ba7c}
 .conn-btn{background:none;border:.5px solid #e4e6eb;border-radius:20px;padding:5px 12px;font-size:12px;color:#0f1419;cursor:pointer;font-family:inherit;font-weight:600}
-.msgs{flex:1;overflow-y:auto;padding-bottom:8px;scroll-behavior:smooth;background:#f0ede6}
-.empty{background:#f0ede6;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:32px 24px 0}
-.empty-logo{width:52px;height:52px;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
-.empty h1{font-size:28px;font-weight:400;color:#1c1a17;margin-bottom:8px;line-height:1.2;font-family:Georgia,"Times New Roman",serif;letter-spacing:-.3px}
-.empty p{font-size:14px;color:#9a9080;font-style:italic;line-height:1.5}
+.msgs{flex:1;overflow-y:auto;padding-bottom:8px;scroll-behavior:smooth}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:32px 24px 0}
+.empty-logo{width:48px;height:48px;background:#C8102E;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.empty h1{font-size:24px;font-weight:700;color:#0f1419;margin-bottom:8px;line-height:1.3}
+.empty p{font-size:14px;color:#536471}
 .msg{padding:16px 16px 0;display:flex;gap:10px;animation:up .2s ease}
 @keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .av{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
@@ -49,8 +48,8 @@ html,body{height:100%;background:#f0ede6;font-family:-apple-system,system-ui,san
 .ia-card{flex-shrink:0;background:#fff;border:.5px solid #e4e6eb;border-radius:12px;padding:12px 14px;cursor:pointer;font-family:inherit;text-align:left;width:136px;display:flex;flex-direction:column;gap:8px;transition:background .1s}
 .ia-card:active{background:#f7f9f9}
 .ia-card-label{font-size:13px;font-weight:600;color:#0f1419;line-height:1.35}
-.input-zone{padding:10px 16px;padding-bottom:max(24px,env(safe-area-inset-bottom));background:#f0ede6;flex-shrink:0;border-top:none;margin-bottom:env(safe-area-inset-bottom)}
-.input-box{display:flex;align-items:flex-end;gap:10px;border:.5px solid #e4e6eb;border-radius:16px;padding:14px 12px 14px 14px;background:#fff;border:.5px solid #ddd8d0;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:border-color .15s}
+.input-zone{padding:10px 16px;padding-bottom:max(14px,env(safe-area-inset-bottom));background:#fff;flex-shrink:0}
+.input-box{display:flex;align-items:flex-end;gap:10px;border:.5px solid #e4e6eb;border-radius:16px;padding:14px 12px 14px 14px;background:#f7f9f9;transition:border-color .15s}
 .input-box:focus-within{border-color:#C8102E;background:#fff}
 .clip-btn{background:none;border:none;cursor:pointer;padding:2px;flex-shrink:0;display:flex;align-items:center;margin-bottom:2px}
 textarea{flex:1;border:none;background:none;outline:none;resize:none;font-size:16px;font-family:inherit;color:#0f1419;line-height:1.5;min-height:48px;max-height:120px;overflow-y:auto;padding:0}
@@ -61,26 +60,22 @@ textarea::placeholder{color:#8b98a5}
 </head>
 <body>
 <div class="wrap">
-  <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));flex-shrink:0;">
-    <button onclick="history.back()" style="background:none;border:none;cursor:pointer;padding:4px;color:#888;">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+  <div class="top">
+    <button class="back" onclick="history.back()">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0f1419" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <div class="badge" id="badge" style="display:none"><div class="dot"></div><span id="uname"></span></div>
-      <button class="conn-btn" id="connbtn" onclick="location.href='profil.html'">Connexion</button>
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></div>
+      CQP IA
     </div>
+    <div class="badge" id="badge" style="display:none"><div class="dot"></div><span id="uname"></span></div>
+    <button class="conn-btn" id="connbtn" onclick="location.href='profil.html'">Connexion</button>
   </div>
 
   <div class="msgs" id="msgs">
     <div class="empty" id="empty">
-      <div class="empty-logo">
-        <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#C8102E" stroke-width="1.5" stroke-linecap="round">
-          <line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/>
-          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/>
-          <circle cx="12" cy="12" r="2.5" fill="#C8102E" stroke="none"/>
-        </svg>
-      </div>
-      <h1 id="empty-title">Leila, ton assistante CQP</h1>
+      <div class="empty-logo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg></div>
+      <h1>Par quoi<br>commençons-nous ?</h1>
       <p>Dis-moi ce que tu veux faire,<br>je m'occupe du reste.</p>
     </div>
   </div>
@@ -113,7 +108,7 @@ textarea::placeholder{color:#8b98a5}
       <button class="clip-btn" id="clip-btn" aria-label="Ajouter une photo">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#536471" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
       </button>
-      <textarea id="ta" placeholder="Discuter avec Leila…" rows="2"></textarea>
+      <textarea id="ta" placeholder="Pose une question ou dis-moi ce que tu veux faire…" rows="2"></textarea>
       <button class="send" id="sbtn" disabled aria-label="Envoyer">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
       </button>
@@ -126,72 +121,19 @@ var SB_URL = 'https://rlrazcitmwxfaxlnnfau.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzODU4MzQsImV4cCI6MjA5NTk2MTgzNH0.0SSaUUq4x_-Slr4QJ3XJlF0mu0Ub_-ouXD3EC2-PGG0';
 var PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
 var TAVILY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/tavily-proxy'
-var HF_PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/huggingface-proxy'
-
-// Générer une image via Hugging Face FLUX.1
-async function generateImage(prompt) {
-  try {
-    var res = await fetch(HF_PROXY, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt, model: 'black-forest-labs/FLUX.1-schnell' })
-    })
-    var data = await res.json()
-    if (data.error) return null
-    return data.image // base64 data URL
-  } catch(e) { return null }
-}
-
-// Détecter si l'utilisateur veut générer une image
-function needsImageGen(txt) {
-  var t = txt.toLowerCase()
-  var keywords = ['génère','genere','génerer','crée une image','cree une image',
-    'fais une image','fais un flyer','génère une affiche','dessine','illustration',
-    'image pour','photo pour','visuel pour']
-  return keywords.some(function(k){ return t.includes(k) })
-}
-
-// Enrichir la requête pour Tavily
-function enrichQuery(query, quartier) {
-  var q = query.toLowerCase()
-  var enriched = query
-  
-  // Ajouter le quartier si pas déjà mentionné
-  var quartiers = ['bellefontaine','reynerie','mirail','papus','empalot','bagatelle','faourette','izards','arènes']
-  var hasQuartier = quartiers.some(function(k){ return q.includes(k) })
-  if (!hasQuartier && quartier) enriched += ' ' + quartier
-
-  // Toujours ajouter Toulouse
-  if (!q.includes('toulouse')) enriched += ' Toulouse'
-
-  // Ajouter des mots clés selon le type de recherche
-  if (q.includes('infirmier') || q.includes('médecin') || q.includes('docteur') || q.includes('dentiste')) {
-    enriched += ' téléphone adresse rendez-vous'
-  } else if (q.includes('kebab') || q.includes('restaurant') || q.includes('épicerie') || q.includes('bouffe')) {
-    enriched += ' adresse horaires ouvert'
-  } else if (q.includes('événement') || q.includes('agenda') || q.includes('sortie')) {
-    enriched += ' 2026 programme dates'
-  } else if (q.includes('association') || q.includes('aide') || q.includes('service')) {
-    enriched += ' contact téléphone adresse'
-  }
-  
-  return enriched
-}
 
 // Recherche web via Tavily — toutes sources
 async function searchWeb(query) {
   try {
-    var quartier = profil ? (profil.quartier || '') : ''
-    var enriched = enrichQuery(query, quartier)
     var res = await fetch(TAVILY, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: enriched, max_results: 4, country: 'France' })
+      body: JSON.stringify({ query: query + ' Toulouse', max_results: 4, country: 'France' })
     })
     var data = await res.json()
     if (!data.results || !data.results.length) return null
     return data.results.map(function(r) {
-      return '[' + r.title + '] ' + r.content.slice(0, 250)
+      return '[' + r.title + '] ' + r.content.slice(0, 200)
     }).join('\n')
   } catch(e) { return null }
 }
@@ -226,10 +168,6 @@ async function searchFeed(query) {
 }
 
 // Détecter si la question concerne le feed interne
-function isArabic(txt) {
-  return /[؀-ۿ]/.test(txt)
-}
-
 function needsFeedSearch(txt) {
   var t = txt.toLowerCase()
   var keywords = ['post','feed','réseau','reseau','habitant','quartier','dit','parle',
@@ -274,9 +212,8 @@ Tu es chaleureuse, directe, honnête. Tu parles en français naturellement, comm
 </leila_identity>
 
 <tone_and_formatting>
-Tu réponds COURT et DIRECT — 1 à 3 phrases max. Pas de 'Je peux te dire que', 'Cependant', 'Est-ce que ça t\'intéresse'.
-Tu donnes l'info directement sans introduction. Si tu as une adresse et un tel, tu les donnes tout de suite.
-Tu poses une question seulement si vraiment nécessaire.
+Tu réponds en phrases courtes et naturelles, jamais de listes à puces sauf si vraiment nécessaire.
+Tu poses au maximum une question à la fois — tu n'écrases pas l'utilisateur de questions.
 ${nbMsg === 0 ? "C'est le début : une phrase d'accueil courte, puis aide directement." : "Conversation en cours : pas de re-salutation, va droit au but."}
 Tu n'utilises pas d'emojis sauf si l'utilisateur en met.
 Tu es concise : une réponse courte et utile vaut mieux qu'une longue réponse vague.
@@ -329,8 +266,6 @@ CE QUE TU FAIS BIEN :
 TU AS ACCÈS À INTERNET : pour toute question sur l'actualité, les événements, les horaires ou les
 infos récentes, tu cherches automatiquement et tu réponds avec les vraies infos du moment.
 Tu ne dis JAMAIS que tu ne peux pas accéder à internet ou chercher des infos récentes.
-TU PEUX GÉNÉRER DES IMAGES : si l'utilisateur demande une image, un flyer ou une affiche,
-tu lui confirmes que tu la génères. L'image apparaît automatiquement dans le chat.
 
 SUR LES PHOTOS : décris ce que tu vois en 1-2 phrases, pose UNE question sur ce que l'utilisateur veut faire.
 </capabilities>
@@ -353,9 +288,6 @@ function init() {
       document.getElementById('badge').style.display = 'flex';
       document.getElementById('uname').textContent = res.data.prenom;
       document.getElementById('connbtn').style.display = 'none';
-      // Titre personnalisé style Claude
-      var t = document.getElementById('empty-title');
-      if (t && res.data.prenom) t.textContent = 'Le retour de ' + res.data.prenom + ' !';
     }
   });
 }
@@ -513,16 +445,6 @@ function analyzeVision(b64data, mime, userInstruction) {
     '- Si tu n\'es pas sûre d\'un lieu, dis-le honnêtement — ne jamais inventer',
     '</image_analysis>',
     '',
-    '<reasoning>',
-    'Avant chaque réponse, réfléchis en 3 étapes (ne les affiche pas) :',
-    '1. QUE VEUT VRAIMENT L\'UTILISATEUR ? (service, info, publication, discussion...)',
-    '2. AI-JE L\'INFO ou dois-je chercher sur internet ou dans le feed CQP ?',
-    '3. QUELLE EST LA RÉPONSE LA PLUS COURTE ET UTILE ?',
-    'Si service/commerce/lieu → cherche et donne adresse + téléphone directement.',
-    'Si actualité → cherche et résume.',
-    'Si publication → aide à rédiger.',
-    'Ne renvoie JAMAIS vers Google — donne la réponse toi-même.',
-    '</reasoning>',
     '<rules>',
     'Tu ne sors JAMAIS de ton rôle d\'assistante CQP.',
     'JSON uniquement quand l\'utilisateur confirme vouloir publier.',
@@ -637,22 +559,6 @@ async function doSend() {
       var fr = await searchFeed(txt)
       if (fr) feedContext = '\n\n[CONTENU DU RÉSEAU CQP]\n' + fr + '\n[FIN CONTENU CQP]'
     } catch(e) {}
-  }
-
-  // Génération d'image si demandée
-  var imageGenerated = null
-  if (txt && needsImageGen(txt)) {
-    var loadEl = addMsg('ia', '⏳ Je génère l\'image...')
-    imageGenerated = await generateImage(txt)
-    loadEl.remove()
-    if (imageGenerated) {
-      // Afficher l'image directement dans le chat
-      var imgEl = document.createElement('div')
-      imgEl.className = 'msg ia-msg'
-      imgEl.innerHTML = '<img src="' + imageGenerated + '" style="max-width:100%;border-radius:12px;margin-top:8px;" />'
-      msgsEl.appendChild(imgEl)
-      msgsEl.scrollTop = msgsEl.scrollHeight
-    }
   }
 
   // Recherche web si question d'actualité
