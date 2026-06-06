@@ -240,21 +240,12 @@ function needsFeedSearch(txt) {
 
 // Détecter si la question nécessite une recherche web
 function needsSearch(txt) {
+  // Pas de recherche uniquement pour les intentions de publication simples
+  var noSearch = ['publier un post','créer une annonce','créer un événement','je veux publier','aide moi à rédiger']
   var t = txt.toLowerCase()
-  // Pas de recherche pour messages courts ou conversationnels
-  var noSearch = ['bonjour','salut','merci','ok','oui','non','super','bien','cool',
-    'publier','créer une annonce','créer un événement','aide moi à rédiger',
-    'hello','bonsoir','bonne nuit','au revoir','ciao']
   if (noSearch.some(function(k){ return t.includes(k) })) return false
-  if (t.length < 15) return false
-  // Mots clés qui déclenchent une vraie recherche
-  var keywords = ['événement','evenement','agenda','programme','actualité','actualite',
-    'infirmier','médecin','docteur','dentiste','pharmacie','kebab','restaurant',
-    'épicerie','horaire','adresse','téléphone','contact','association','aide',
-    'logement','transport','métro','bus','école','stade','parc','info','actu',
-    'nouveau','quartier','bellefontaine','reynerie','mirail','papus','empalot',
-    'semaine','week-end','weekend','aujourd','concert','marché','fête','sortie']
-  return keywords.some(function(k){ return t.includes(k) })
+  // Tout le reste déclenche une recherche — l'info fraîche vaut mieux que rien
+  return t.length > 8
 };
 var sbc = supabase.createClient(SB_URL, SB_KEY);
 
@@ -534,8 +525,6 @@ function analyzeVision(b64data, mime, userInstruction) {
     '</reasoning>',
     '<rules>',
     'Tu ne sors JAMAIS de ton rôle d\'assistante CQP.',
-    'GROUNDING STRICT : si des résultats web (<web_results>) ou des posts CQP (<cqp_feed>) sont fournis, tu DOIS les utiliser et citer les vraies infos (noms, adresses, téléphones) tels quels dans ta réponse.',
-    'Ne jamais inventer ou paraphraser des infos qui sont déjà dans les résultats — recopie-les fidèlement.',
     'JSON uniquement quand l\'utilisateur confirme vouloir publier.',
     'Si l\'utilisateur mentionne un quartier différent du sien, utilise celui-là.',
     'Ne montre JAMAIS le JSON brut — il est traité automatiquement.',
@@ -646,7 +635,7 @@ async function doSend() {
   if (txt && needsFeedSearch(txt)) {
     try {
       var fr = await searchFeed(txt)
-      if (fr) feedContext = '\n\n<cqp_feed>\nPOSTS RÉELS DES HABITANTS DE CQP — cite ces posts directement dans ta réponse :\n' + fr + '\n</cqp_feed>'
+      if (fr) feedContext = '\n\n[CONTENU DU RÉSEAU CQP]\n' + fr + '\n[FIN CONTENU CQP]'
     } catch(e) {}
   }
 
@@ -671,7 +660,7 @@ async function doSend() {
   if (txt && needsSearch(txt)) {
     try {
       var sr = await searchWeb(txt)
-      if (sr) webContext = '\n\n<web_results>\nINFOS TROUVÉES SUR INTERNET — utilise ces données DIRECTEMENT dans ta réponse. Cite les noms, adresses et numéros tels quels. Ne dis PAS que tu ne sais pas si ces infos existent dans tes résultats :\n' + sr + '\n</web_results>'
+      if (sr) webContext = '\n\n<web_results>\nVoici les résultats trouvés sur internet pour répondre à la question. Utilise ces infos directement dans ta réponse sans dire à l\'utilisateur d\'aller chercher ailleurs :\n' + sr + '\n</web_results>'
     } catch(e) {}
   }
   // Afficher le message + photo dans le chat
@@ -733,7 +722,7 @@ async function doSend() {
   fetch(PROXY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() + feedContext + webContext }].concat(hist), max_tokens: 300, temperature: 0.3, stream: true })
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() + feedContext + webContext }].concat(hist), max_tokens: 300, temperature: 0.5, stream: true })
   }).then(function(res) {
     tel.classList.remove('typing'); tel.textContent = '';
     var reader = res.body.getReader(); var dec = new TextDecoder(); var full = '';
