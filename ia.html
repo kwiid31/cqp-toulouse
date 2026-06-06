@@ -140,6 +140,37 @@ async function searchWeb(query) {
   }
 }
 
+// Recherche dans le feed CQP
+async function searchFeed(query) {
+  try {
+    var terms = query.toLowerCase().split(' ').filter(function(w) { return w.length > 3 })
+    var res = await window.__sb.from('posts')
+      .select('prenom, quartier, contenu, created_at')
+      .eq('visible', true)
+      .order('created_at', { ascending: false })
+      .limit(50)
+    if (!res.data || !res.data.length) return null
+    var matches = res.data.filter(function(p) {
+      var txt = (p.contenu || '').toLowerCase()
+      return terms.some(function(t) { return txt.includes(t) })
+    }).slice(0, 5)
+    if (!matches.length) return null
+    return 'POSTS DU RÉSEAU CQP correspondants :\n' + matches.map(function(p) {
+      var date = new Date(p.created_at).toLocaleDateString('fr-FR')
+      return '- ' + p.prenom + ' (' + (p.quartier||'?') + ') le ' + date + ' : ' + p.contenu.slice(0, 150)
+    }).join('\n')
+  } catch(e) { return null }
+}
+
+// Détecter si la question concerne le feed interne
+function needsFeedSearch(txt) {
+  var t = txt.toLowerCase()
+  var keywords = ['post','feed','réseau','reseau','habitant','quartier','dit','parle',
+    'trouve','cherche','récent','recent','dernier','discussion','membre','avis','opinion',
+    'raconte','opinion','témoignage','temoignage','retour','experience','expérience']
+  return keywords.some(function(k) { return t.includes(k) })
+}
+
 // Détecter si la question nécessite une recherche web
 function needsSearch(txt) {
   var keywords = ['événement','evenement','agenda','programme','actualité','actualite',
@@ -510,6 +541,15 @@ async function doSend() {
   cardsEl.style.display = 'none';
   typing = true;
   
+  // Recherche dans le feed CQP
+  var feedContext = ''
+  if (txt && needsFeedSearch(txt)) {
+    try {
+      var fr = await searchFeed(txt)
+      if (fr) feedContext = '\n\n[CONTENU DU RÉSEAU CQP]\n' + fr + '\n[FIN CONTENU CQP]'
+    } catch(e) {}
+  }
+
   // Recherche web si question d'actualité
   var webContext = ''
   if (txt && needsSearch(txt)) {
@@ -577,7 +617,7 @@ async function doSend() {
   fetch(PROXY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() + webContext }].concat(hist), max_tokens: 300, temperature: 0.5, stream: true })
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() + feedContext + webContext }].concat(hist), max_tokens: 300, temperature: 0.5, stream: true })
   }).then(function(res) {
     tel.classList.remove('typing'); tel.textContent = '';
     var reader = res.body.getReader(); var dec = new TextDecoder(); var full = '';
