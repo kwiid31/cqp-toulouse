@@ -178,12 +178,15 @@ function needsFeedSearch(txt) {
 
 // Détecter si la question nécessite une recherche web
 function needsSearch(txt) {
-  // Pas de recherche uniquement pour les intentions de publication simples
-  var noSearch = ['publier un post','créer une annonce','créer un événement','je veux publier','aide moi à rédiger']
   var t = txt.toLowerCase()
-  if (noSearch.some(function(k){ return t.includes(k) })) return false
-  // Tout le reste déclenche une recherche — l'info fraîche vaut mieux que rien
-  return t.length > 8
+  var keywords = ['infirmier','médecin','docteur','dentiste','pharmacie',
+    'kebab','restaurant','épicerie','traiteur','boulangerie',
+    'événement','evenement','agenda','concert','marché','fête','animation',
+    'horaire','adresse','téléphone','contact','association',
+    'actualité','actualite','news','info récente','que se passe',
+    'logement','appartement','hlm','transport','métro','bus',
+    'école','collège','lycée','crèche','garde enfant']
+  return keywords.some(function(k){ return t.includes(k) })
 };
 var sbc = supabase.createClient(SB_URL, SB_KEY);
 
@@ -565,7 +568,10 @@ async function doSend() {
   var webContext = ''
   if (txt && needsSearch(txt)) {
     try {
-      var sr = await searchWeb(txt)
+      var sr = await Promise.race([
+        searchWeb(txt),
+        new Promise(function(resolve){ setTimeout(function(){ resolve(null) }, 5000) })
+      ])
       if (sr) webContext = '\n\n<web_results>\nVoici les résultats trouvés sur internet pour répondre à la question. Utilise ces infos directement dans ta réponse sans dire à l\'utilisateur d\'aller chercher ailleurs :\n' + sr + '\n</web_results>'
     } catch(e) {}
   }
