@@ -502,12 +502,22 @@ function qaClick(type) {
   taEl.value = m[type]; sbtn.disabled = false; doSend();
 }
 
-function doSend() {
+async function doSend() {
   var txt = taEl.value.trim();
-  if (!txt || typing) return;
+  if (!txt && !pendingImg) return;
+  if (typing) return;
   taEl.value = ''; taEl.style.height = 'auto'; sbtn.disabled = true;
   cardsEl.style.display = 'none';
   typing = true;
+  
+  // Recherche web si question d'actualité
+  var webContext = ''
+  if (txt && needsSearch(txt)) {
+    try {
+      var sr = await searchWeb(txt + ' Toulouse quartiers populaires')
+      if (sr) webContext = '\n\n[RÉSULTATS WEB]\n' + sr + '\n[FIN]'
+    } catch(e) {}
+  }
   // Afficher le message + photo dans le chat
   if (pendingImg) {
     var b64url = 'data:' + pendingImg.mime + ';base64,' + pendingImg.b64data;
