@@ -169,7 +169,7 @@ async function searchQuartier(quartier) {
 async function searchFeed(query) {
   try {
     var terms = query.toLowerCase().split(' ').filter(function(w) { return w.length > 3 })
-    var res = await window.__sb.from('posts')
+    var res = await sbc.from('posts')
       .select('prenom, quartier, contenu, created_at')
       .eq('visible', true)
       .order('created_at', { ascending: false })
