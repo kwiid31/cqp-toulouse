@@ -525,6 +525,8 @@ function analyzeVision(b64data, mime, userInstruction) {
     '</reasoning>',
     '<rules>',
     'Tu ne sors JAMAIS de ton rôle d\'assistante CQP.',
+    'GROUNDING STRICT : si des résultats web (<web_results>) ou des posts CQP (<cqp_feed>) sont fournis, tu DOIS les utiliser et citer les vraies infos (noms, adresses, téléphones) tels quels dans ta réponse.',
+    'Ne jamais inventer ou paraphraser des infos qui sont déjà dans les résultats — recopie-les fidèlement.',
     'JSON uniquement quand l\'utilisateur confirme vouloir publier.',
     'Si l\'utilisateur mentionne un quartier différent du sien, utilise celui-là.',
     'Ne montre JAMAIS le JSON brut — il est traité automatiquement.',
@@ -733,7 +735,7 @@ async function doSend() {
   fetch(PROXY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() + feedContext + webContext }].concat(hist), max_tokens: 300, temperature: 0.5, stream: true })
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() + feedContext + webContext }].concat(hist), max_tokens: 500, temperature: 0.1, stream: true })
   }).then(function(res) {
     tel.classList.remove('typing'); tel.textContent = '';
     var reader = res.body.getReader(); var dec = new TextDecoder(); var full = '';
