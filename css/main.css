@@ -79,7 +79,7 @@ img { max-width:100%; display:block; }
   color:#1a1a1a;
   font-size:0; /* cache le texte */
   text-decoration:none; padding:8px 0; transition:color .15s;
-  min-height:44px;
+  min-height:52px;
 }
 .nav-item.active, .nav-item:hover { color:var(--rouge); }
 .nav-item svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; transition:transform .15s; }
