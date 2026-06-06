@@ -240,12 +240,21 @@ function needsFeedSearch(txt) {
 
 // Détecter si la question nécessite une recherche web
 function needsSearch(txt) {
-  // Pas de recherche uniquement pour les intentions de publication simples
-  var noSearch = ['publier un post','créer une annonce','créer un événement','je veux publier','aide moi à rédiger']
   var t = txt.toLowerCase()
+  // Pas de recherche pour messages courts ou conversationnels
+  var noSearch = ['bonjour','salut','merci','ok','oui','non','super','bien','cool',
+    'publier','créer une annonce','créer un événement','aide moi à rédiger',
+    'hello','bonsoir','bonne nuit','au revoir','ciao']
   if (noSearch.some(function(k){ return t.includes(k) })) return false
-  // Tout le reste déclenche une recherche — l'info fraîche vaut mieux que rien
-  return t.length > 8
+  if (t.length < 15) return false
+  // Mots clés qui déclenchent une vraie recherche
+  var keywords = ['événement','evenement','agenda','programme','actualité','actualite',
+    'infirmier','médecin','docteur','dentiste','pharmacie','kebab','restaurant',
+    'épicerie','horaire','adresse','téléphone','contact','association','aide',
+    'logement','transport','métro','bus','école','stade','parc','info','actu',
+    'nouveau','quartier','bellefontaine','reynerie','mirail','papus','empalot',
+    'semaine','week-end','weekend','aujourd','concert','marché','fête','sortie']
+  return keywords.some(function(k){ return t.includes(k) })
 };
 var sbc = supabase.createClient(SB_URL, SB_KEY);
 
