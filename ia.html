@@ -735,7 +735,7 @@ async function doSend() {
   fetch(PROXY, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model: 'mistral-saba-24b', messages: [{ role: 'system', content: getSYS() + feedContext + webContext }].concat(hist), max_tokens: 400, temperature: 0.1, stream: true })
+    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() + feedContext + webContext }].concat(hist), max_tokens: 300, temperature: 0.3, stream: true })
   }).then(function(res) {
     tel.classList.remove('typing'); tel.textContent = '';
     var reader = res.body.getReader(); var dec = new TextDecoder(); var full = '';
