@@ -635,7 +635,7 @@ async function doSend() {
   if (txt && needsFeedSearch(txt)) {
     try {
       var fr = await searchFeed(txt)
-      if (fr) feedContext = '\n\n[CONTENU DU RÉSEAU CQP]\n' + fr + '\n[FIN CONTENU CQP]'
+      if (fr) feedContext = '\n\n<cqp_feed>\nPOSTS RÉELS DES HABITANTS DE CQP — cite ces posts directement dans ta réponse :\n' + fr + '\n</cqp_feed>'
     } catch(e) {}
   }
 
@@ -660,7 +660,7 @@ async function doSend() {
   if (txt && needsSearch(txt)) {
     try {
       var sr = await searchWeb(txt)
-      if (sr) webContext = '\n\n<web_results>\nVoici les résultats trouvés sur internet pour répondre à la question. Utilise ces infos directement dans ta réponse sans dire à l\'utilisateur d\'aller chercher ailleurs :\n' + sr + '\n</web_results>'
+      if (sr) webContext = '\n\n<web_results>\nINFOS TROUVÉES SUR INTERNET — utilise ces données DIRECTEMENT dans ta réponse. Cite les noms, adresses et numéros tels quels. Ne dis PAS que tu ne sais pas si ces infos existent dans tes résultats :\n' + sr + '\n</web_results>'
     } catch(e) {}
   }
   // Afficher le message + photo dans le chat
