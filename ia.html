@@ -126,6 +126,30 @@ var SB_URL = 'https://rlrazcitmwxfaxlnnfau.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzODU4MzQsImV4cCI6MjA5NTk2MTgzNH0.0SSaUUq4x_-Slr4QJ3XJlF0mu0Ub_-ouXD3EC2-PGG0';
 var PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
 var TAVILY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/tavily-proxy'
+var HF_PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/huggingface-proxy'
+
+// Générer une image via Hugging Face FLUX.1
+async function generateImage(prompt) {
+  try {
+    var res = await fetch(HF_PROXY, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, model: 'black-forest-labs/FLUX.1-schnell' })
+    })
+    var data = await res.json()
+    if (data.error) return null
+    return data.image // base64 data URL
+  } catch(e) { return null }
+}
+
+// Détecter si l'utilisateur veut générer une image
+function needsImageGen(txt) {
+  var t = txt.toLowerCase()
+  var keywords = ['génère','genere','génerer','crée une image','cree une image',
+    'fais une image','fais un flyer','génère une affiche','dessine','illustration',
+    'image pour','photo pour','visuel pour']
+  return keywords.some(function(k){ return t.includes(k) })
+}
 
 // Enrichir la requête pour Tavily
 function enrichQuery(query, quartier) {
@@ -301,6 +325,8 @@ CE QUE TU FAIS BIEN :
 TU AS ACCÈS À INTERNET : pour toute question sur l'actualité, les événements, les horaires ou les
 infos récentes, tu cherches automatiquement et tu réponds avec les vraies infos du moment.
 Tu ne dis JAMAIS que tu ne peux pas accéder à internet ou chercher des infos récentes.
+TU PEUX GÉNÉRER DES IMAGES : si l'utilisateur demande une image, un flyer ou une affiche,
+tu lui confirmes que tu la génères. L'image apparaît automatiquement dans le chat.
 
 SUR LES PHOTOS : décris ce que tu vois en 1-2 phrases, pose UNE question sur ce que l'utilisateur veut faire.
 </capabilities>
@@ -607,6 +633,22 @@ async function doSend() {
       var fr = await searchFeed(txt)
       if (fr) feedContext = '\n\n[CONTENU DU RÉSEAU CQP]\n' + fr + '\n[FIN CONTENU CQP]'
     } catch(e) {}
+  }
+
+  // Génération d'image si demandée
+  var imageGenerated = null
+  if (txt && needsImageGen(txt)) {
+    var loadEl = addMsg('ia', '⏳ Je génère l\'image...')
+    imageGenerated = await generateImage(txt)
+    loadEl.remove()
+    if (imageGenerated) {
+      // Afficher l'image directement dans le chat
+      var imgEl = document.createElement('div')
+      imgEl.className = 'msg ia-msg'
+      imgEl.innerHTML = '<img src="' + imageGenerated + '" style="max-width:100%;border-radius:12px;margin-top:8px;" />'
+      msgsEl.appendChild(imgEl)
+      msgsEl.scrollTop = msgsEl.scrollHeight
+    }
   }
 
   // Recherche web si question d'actualité
