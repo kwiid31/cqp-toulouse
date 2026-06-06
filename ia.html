@@ -641,17 +641,6 @@ async function doSend() {
     } catch(e) {}
   }
 
-  // Afficher indicateur de recherche
-  function showStep(msg) {
-    var el = document.createElement('div')
-    el.className = 'msg ia-msg search-step'
-    el.style.cssText = 'font-size:12px;color:#999;padding:4px 16px;font-style:italic;'
-    el.textContent = msg
-    msgsEl.appendChild(el)
-    msgsEl.scrollTop = msgsEl.scrollHeight
-    return el
-  }
-
   // Génération d'image si demandée
   var imageGenerated = null
   if (txt && needsImageGen(txt)) {
