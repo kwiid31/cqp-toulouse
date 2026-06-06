@@ -168,21 +168,21 @@ async function searchQuartier(quartier) {
 // Recherche dans le feed CQP
 async function searchFeed(query) {
   try {
-    var terms = query.toLowerCase().split(' ').filter(function(w) { return w.length > 3 })
+    var terms = query.toLowerCase().split(' ').filter(function(w) { return w.length > 2 })
     var res = await sbc.from('posts')
       .select('prenom, quartier, contenu, created_at')
       .eq('visible', true)
       .order('created_at', { ascending: false })
-      .limit(50)
+      .limit(100)
     if (!res.data || !res.data.length) return null
     var matches = res.data.filter(function(p) {
       var txt = (p.contenu || '').toLowerCase()
       return terms.some(function(t) { return txt.includes(t) })
-    }).slice(0, 5)
+    }).slice(0, 6)
     if (!matches.length) return null
     return 'POSTS DU RÉSEAU CQP correspondants :\n' + matches.map(function(p) {
       var date = new Date(p.created_at).toLocaleDateString('fr-FR')
-      return '- ' + p.prenom + ' (' + (p.quartier||'?') + ') le ' + date + ' : ' + p.contenu.slice(0, 150)
+      return '- ' + p.prenom + ' (' + (p.quartier||'?') + ') le ' + date + ' : ' + p.contenu.slice(0, 200)
     }).join('\n')
   } catch(e) { return null }
 }
