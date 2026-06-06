@@ -226,6 +226,10 @@ async function searchFeed(query) {
 }
 
 // Détecter si la question concerne le feed interne
+function isArabic(txt) {
+  return /[؀-ۿ]/.test(txt)
+}
+
 function needsFeedSearch(txt) {
   var t = txt.toLowerCase()
   var keywords = ['post','feed','réseau','reseau','habitant','quartier','dit','parle',
