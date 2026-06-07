@@ -437,7 +437,7 @@ async function publish(pdStr, imgB64, imgMime) {
     var table = pd.type === 'post' ? 'posts' : pd.type === 'annonce' ? 'annonces' : 'evenements'
     var row = {visible: true}
     if (profil) {
-      row.profil_id = profil.id
+      row.profil_code = profil.code
       row.prenom = profil.prenom
       row.quartier = profil.quartier || pd.quartier
     }
