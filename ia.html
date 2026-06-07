@@ -306,12 +306,14 @@ function addMsg(role, txt) {
 // ═══════════════════════════════════════════
 // DETECTION ET PUBLICATION
 // ═══════════════════════════════════════════
-function detectAndShow(txt, el) {
+function detectAndShow(txt, el, imgB64, imgMime) {
   var s = txt.indexOf('{'), e = txt.lastIndexOf('}')
   if (s < 0 || e <= s) return false
   try {
     var pd = JSON.parse(txt.slice(s, e+1))
     if (pd.action === 'publier' && pd.type) {
+      if (imgB64) pd._imgB64 = imgB64
+      if (imgMime) pd._imgMime = imgMime
       el.textContent = ''
       showPreview(pd, el)
       return true
@@ -338,17 +340,52 @@ function showPreview(pd, el) {
   msgsEl.scrollTop = msgsEl.scrollHeight
 }
 
-async function publish(pdStr) {
+async function uploadToCloudinary(b64, mime) {
+  try {
+    var formData = new FormData()
+    var blob = await fetch('data:' + mime + ';base64,' + b64).then(r => r.blob())
+    formData.append('file', blob)
+    formData.append('upload_preset', CLOUD_PRESET)
+    formData.append('folder', 'cqp/posts')
+    var res = await fetch(CLOUDINARY, {method: 'POST', body: formData})
+    var data = await res.json()
+    return data.secure_url || null
+  } catch(e) { return null }
+}
+
+async function publish(pdStr, imgB64, imgMime) {
   var pd = JSON.parse(pdStr)
   try {
+    // Upload image si présente
+    var imageUrl = null
+    if (imgB64 && imgMime) {
+      addMsg('ia', '⏳ Upload de l\'image...')
+      imageUrl = await uploadToCloudinary(imgB64, imgMime)
+    }
+
     var table = pd.type === 'post' ? 'posts' : pd.type === 'annonce' ? 'annonces' : 'evenements'
     var row = {visible: true, profil_id: profil ? profil.id : null}
-    if (pd.type === 'post') { row.contenu = pd.contenu; row.quartier = pd.quartier }
-    else if (pd.type === 'annonce') { row.titre = pd.titre; row.description = pd.description; row.categorie = pd.categorie; row.quartier = pd.quartier }
-    else { row.titre = pd.titre; row.lieu = pd.lieu; row.date_debut = pd.date; row.description = pd.description }
+    if (pd.type === 'post') {
+      row.contenu = pd.contenu
+      row.quartier = pd.quartier
+      if (imageUrl) row.image_url = imageUrl
+    } else if (pd.type === 'annonce') {
+      row.titre = pd.titre
+      row.description = pd.description
+      row.categorie = pd.categorie
+      row.quartier = pd.quartier
+      if (imageUrl) row.image_url = imageUrl
+    } else {
+      row.titre = pd.titre
+      row.lieu = pd.lieu
+      row.date_debut = pd.date
+      row.description = pd.description
+      if (imageUrl) row.image_url = imageUrl
+    }
+
     var res = await sbc.from(table).insert(row)
     if (!res.error) {
-      addMsg('ia', '✅ Publié avec succès !')
+      addMsg('ia', '✅ Publié avec succès !' + (imageUrl ? ' Avec photo !' : ''))
     } else {
       addMsg('ia', 'Erreur lors de la publication.')
     }
@@ -445,7 +482,7 @@ async function doSend() {
     analyzeVision(imgB64, imgMime, txt || null).then(function(desc) {
       tel2.classList.remove('typing')
       var visionMsg = desc || 'Image reçue.'
-      if (!detectAndShow(visionMsg, tel2)) {
+      if (!detectAndShow(visionMsg, tel2, imgB64, imgMime)) {
         tel2.textContent = visionMsg
       }
       hist.push({role: 'assistant', content: tel2.textContent})
@@ -493,7 +530,7 @@ async function doSend() {
       return reader.read().then(function(chunk) {
         if (chunk.done) {
           hist.push({role: 'assistant', content: full})
-          if (!detectAndShow(full, tel)) {}
+          if (!detectAndShow(full, tel, null, null)) {}
           typing = false
           sbtn.disabled = false
           return
