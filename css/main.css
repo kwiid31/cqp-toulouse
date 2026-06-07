@@ -60,13 +60,14 @@ img { max-width:100%; display:block; }
 /* ── Bottom nav ───────────────────────────────────────────────── */
 .bottom-nav {
   position:fixed; bottom:0; left:0; right:0; z-index:200;
-  background:rgba(255,255,255,.95);
+  background:rgba(255,255,255,.97);
   backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   border-top:1px solid var(--border);
   display:flex; align-items:center;
-  height:calc(var(--nav) + env(safe-area-inset-bottom));
-  padding-bottom:env(safe-area-inset-bottom);
-  box-shadow:0 -4px 20px rgba(0,0,0,.06);
+  height:64px;
+  padding:12px 16px 10px;
+  padding-bottom:calc(10px + env(safe-area-inset-bottom));
+  box-shadow:0 -1px 0 rgba(0,0,0,.08);
   transition:transform .3s ease;
 }
 .bottom-nav.hidden {
@@ -78,12 +79,12 @@ img { max-width:100%; display:block; }
   background:none; border:none;
   color:#1a1a1a;
   font-size:0;
-  text-decoration:none; padding:4px 0;
+  text-decoration:none; padding:0;
   min-height:44px; cursor:pointer;
   transition:color .15s;
 }
 .nav-item.active, .nav-item:hover { color:var(--rouge); }
-.nav-item svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; transition:transform .15s; }
+.nav-item svg{width:26px;height:26px}; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; transition:transform .15s; }
 .nav-item.active svg { stroke:var(--rouge); }
 .nav-item:active svg { transform:scale(.88); }
 .nav-item:focus-visible, button:focus-visible, a:focus-visible { outline:2px solid var(--rouge); outline-offset:2px; border-radius:4px; }
