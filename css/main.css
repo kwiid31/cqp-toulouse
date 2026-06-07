@@ -84,9 +84,9 @@ img { max-width:100%; display:block; }
   transition:color .15s;
 }
 .nav-item.active, .nav-item:hover { color:var(--rouge); }
-.nav-item svg{width:26px;height:26px}; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; transition:transform .15s; }
-.nav-item.active svg { stroke:var(--rouge); }
-.nav-item:active svg { transform:scale(.88); }
+.nav-item .nav-item svg{width:26px;height:26px; fill:currentColor; transition:transform .15s; }
+.nav-item.active svg { color:#C8102E; }
+.nav-item:active svg { transform:scale(.9); /*  transform:scale(.88); }
 .nav-item:focus-visible, button:focus-visible, a:focus-visible { outline:2px solid var(--rouge); outline-offset:2px; border-radius:4px; }
 .nav-center { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:4px; flex-shrink:0; }
 .nav-pub {
