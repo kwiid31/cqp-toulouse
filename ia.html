@@ -421,21 +421,26 @@ async function publish(pdStr, imgB64, imgMime) {
     }
 
     var table = pd.type === 'post' ? 'posts' : pd.type === 'annonce' ? 'annonces' : 'evenements'
-    var row = {visible: true, profil_id: profil ? profil.id : null}
+    var row = {visible: true}
+    if (profil) {
+      row.profil_id = profil.id
+      row.prenom = profil.prenom
+      row.quartier = profil.quartier || pd.quartier
+    }
     if (pd.type === 'post') {
       row.contenu = pd.contenu
-      row.quartier = pd.quartier
+      row.quartier = row.quartier || pd.quartier
       if (imageUrl) row.image_url = imageUrl
     } else if (pd.type === 'annonce') {
       row.titre = pd.titre
       row.description = pd.description
-      row.categorie = pd.categorie
-      row.quartier = pd.quartier
+      row.categorie = pd.categorie || 'Autre'
+      row.quartier = row.quartier || pd.quartier
       if (imageUrl) row.image_url = imageUrl
     } else {
       row.titre = pd.titre
       row.lieu = pd.lieu
-      row.date_debut = pd.date
+      row.date_debut = pd.date || new Date().toISOString().slice(0,10)
       row.description = pd.description
       if (imageUrl) row.image_url = imageUrl
     }
@@ -444,7 +449,7 @@ async function publish(pdStr, imgB64, imgMime) {
     if (!res.error) {
       addMsg('ia', '✅ Publié avec succès !' + (imageUrl ? ' Avec photo !' : ''))
     } else {
-      addMsg('ia', 'Erreur lors de la publication.')
+      addMsg('ia', 'Erreur : ' + (res.error.message || JSON.stringify(res.error)))
     }
   } catch(e) { addMsg('ia', 'Erreur : ' + e.message) }
 }
@@ -519,7 +524,8 @@ async function doSend() {
     imgDiv.innerHTML = '<div class="av user">' + av2 + '</div>'
       + '<div class="mbody"><div class="mname">' + (profil ? profil.prenom : 'Toi') + '</div>'
       + (txt ? '<div class="mtext">' + txt + '</div>' : '')
-      + '<img src="' + b64url + '" style="max-width:100%;border-radius:12px;margin-top:6px;max-height:200px;object-fit:contain;"></div>'
+      + '<img src="' + b64url + '" style="max-width:100%;border-radius:12px;margin-top:6px;max-height:200px;object-fit:contain;display:block;">'
+      + '</div>'
     msgsEl.appendChild(imgDiv)
     msgsEl.scrollTop = msgsEl.scrollHeight
     document.getElementById('img-preview-bar').style.display = 'none'
