@@ -201,6 +201,20 @@ window.addEventListener('resize', fixHeight)
 function init() {
   var code = localStorage.getItem('cqp_code') || localStorage.getItem('profil_code') || localStorage.getItem('code') || localStorage.getItem('session_id')
   if (!code) return
+
+  // Charger depuis localStorage d'abord (instantané)
+  var prenom = localStorage.getItem('cqp_prenom') || ''
+  var quartier = localStorage.getItem('cqp_quartier') || 'Toulouse'
+  if (prenom) {
+    profil = {code: code, prenom: prenom, quartier: quartier}
+    document.getElementById('badge').style.display = 'flex'
+    document.getElementById('uname').textContent = prenom
+    document.getElementById('connbtn').style.display = 'none'
+    var t = document.getElementById('empty-title')
+    if (t) t.textContent = 'Le retour de ' + prenom + ' !'
+  }
+
+  // Charger profil complet depuis Supabase (async)
   sbc.from('profils').select('*').eq('code', code).maybeSingle().then(function(res) {
     if (res.data) {
       profil = res.data
