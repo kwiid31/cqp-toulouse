@@ -335,20 +335,63 @@ function showPreview(pd, el) {
   var type = pd.type === 'post' ? 'Post' : pd.type === 'annonce' ? 'Annonce' : 'Événement'
   var imgB64 = pd._imgB64 || null
   var imgMime = pd._imgMime || null
-  var pdClean = {action:pd.action,type:pd.type,contenu:pd.contenu,titre:pd.titre,
-    description:pd.description,categorie:pd.categorie,quartier:pd.quartier,
-    lieu:pd.lieu,date:pd.date}
+
   var preview = document.createElement('div')
   preview.className = 'preview-card'
-  preview.innerHTML = '<h4>' + type + '</h4>'
-    + (imgB64 ? '<img src="data:' + imgMime + ';base64,' + imgB64 + '" style="width:100%;border-radius:8px;margin-bottom:8px;max-height:150px;object-fit:cover;">' : '')
-    + '<p>' + (pd.contenu || pd.description || pd.titre || '') + '</p>'
-    + (pd.lieu ? '<p>📍 ' + pd.lieu + '</p>' : '')
-    + (pd.date ? '<p>📅 ' + pd.date + '</p>' : '')
-    + '<div class="preview-btns">'
-    + '<button class="btn-pub" onclick="publish(' + JSON.stringify(JSON.stringify(pdClean)) + ',' + JSON.stringify(imgB64) + ',' + JSON.stringify(imgMime) + ')">Publier</button>'
-    + '<button class="btn-cancel" onclick="this.closest(\'.preview-card\').remove()">Annuler</button>'
-    + '</div>'
+
+  // Image aperçu
+  if (imgB64) {
+    var img = document.createElement('img')
+    img.src = 'data:' + imgMime + ';base64,' + imgB64
+    img.style.cssText = 'width:100%;border-radius:8px;margin-bottom:8px;max-height:150px;object-fit:cover;'
+    preview.appendChild(img)
+  }
+
+  // Titre type
+  var h4 = document.createElement('h4')
+  h4.textContent = type
+  preview.appendChild(h4)
+
+  // Contenu
+  var p = document.createElement('p')
+  p.textContent = pd.contenu || pd.description || pd.titre || ''
+  preview.appendChild(p)
+
+  if (pd.lieu) {
+    var pl = document.createElement('p')
+    pl.textContent = '📍 ' + pd.lieu
+    preview.appendChild(pl)
+  }
+  if (pd.date) {
+    var pd2 = document.createElement('p')
+    pd2.textContent = '📅 ' + pd.date
+    preview.appendChild(pd2)
+  }
+
+  // Boutons
+  var btns = document.createElement('div')
+  btns.className = 'preview-btns'
+
+  var btnPub = document.createElement('button')
+  btnPub.className = 'btn-pub'
+  btnPub.textContent = 'Publier'
+  btnPub.addEventListener('click', function() {
+    var pdClean = {action:pd.action,type:pd.type,contenu:pd.contenu,titre:pd.titre,
+      description:pd.description,categorie:pd.categorie,quartier:pd.quartier,
+      lieu:pd.lieu,date:pd.date}
+    publish(JSON.stringify(pdClean), imgB64, imgMime)
+  })
+
+  var btnCancel = document.createElement('button')
+  btnCancel.className = 'btn-cancel'
+  btnCancel.textContent = 'Annuler'
+  btnCancel.addEventListener('click', function() {
+    preview.remove()
+  })
+
+  btns.appendChild(btnPub)
+  btns.appendChild(btnCancel)
+  preview.appendChild(btns)
   container.appendChild(preview)
   if (!el) msgsEl.appendChild(container)
   msgsEl.scrollTop = msgsEl.scrollHeight
