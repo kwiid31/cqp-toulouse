@@ -600,18 +600,18 @@ async function doSend() {
   cardsEl.style.display = 'none';
   typing = true;
   
-  // Recherche dans le feed CQP
+  // Feed DÉSACTIVÉ temporairement
   var feedContext = ''
-  if (txt && needsFeedSearch(txt)) {
+  if (false && txt && needsFeedSearch(txt)) {
     try {
       var fr = await searchFeed(txt)
       if (fr) feedContext = '\n\n[CONTENU DU RÉSEAU CQP]\n' + fr + '\n[FIN CONTENU CQP]'
     } catch(e) {}
   }
 
-  // Recherche web si question d'actualité
+  // Recherche web DÉSACTIVÉE temporairement
   var webContext = ''
-  if (txt && needsSearch(txt)) {
+  if (false && txt && needsSearch(txt)) {
     try {
       var sr = await searchWeb(txt)
       if (sr) webContext = '\n\n<web_results>\nVoici les résultats trouvés sur internet pour répondre à la question. Utilise ces infos directement dans ta réponse sans dire à l\'utilisateur d\'aller chercher ailleurs :\n' + sr + '\n</web_results>'
