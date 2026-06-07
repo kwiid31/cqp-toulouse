@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="css/main.css">
 <style>
 html,body{height:100%;background:#f0ede6;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.wrap{display:flex;flex-direction:column;height:100%;height:100dvh;max-height:-webkit-fill-available;background:#f0ede6}
+.wrap{display:flex;flex-direction:column;height:100dvh;background:#f0ede6}
 
 /* Topbar */
 .ia-top{display:flex;justify-content:space-between;align-items:center;
@@ -190,6 +190,14 @@ var emptyEl = document.getElementById('empty')
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
+// Fix hauteur Safari iOS
+function fixHeight() {
+  var vh = window.innerHeight
+  document.querySelector('.wrap').style.height = vh + 'px'
+}
+fixHeight()
+window.addEventListener('resize', fixHeight)
+
 function init() {
   var code = localStorage.getItem('cqp_code') || localStorage.getItem('profil_code') || localStorage.getItem('code')
   if (!code) return
