@@ -459,6 +459,9 @@ async function doSend() {
   var tel = addMsg('ia', '')
   tel.classList.add('typing')
 
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+  var useStream = !isIOS
+
   fetch(PROXY, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -467,11 +470,22 @@ async function doSend() {
       messages: [{role: 'system', content: getSYS() + feedContext + webContext}].concat(hist),
       max_tokens: 300,
       temperature: 0.5,
-      stream: true
+      stream: useStream
     })
   }).then(function(res) {
     tel.classList.remove('typing')
     tel.textContent = ''
+    if (!useStream) {
+      // Mode non-streaming pour iOS
+      return res.json().then(function(d) {
+        var full = d.choices && d.choices[0] ? d.choices[0].message.content || '' : ''
+        hist.push({role: 'assistant', content: full})
+        if (!detectAndShow(full, tel)) { tel.textContent = full }
+        typing = false
+        sbtn.disabled = false
+      })
+    }
+    // Mode streaming pour les autres
     var reader = res.body.getReader()
     var dec = new TextDecoder()
     var full = ''
