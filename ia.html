@@ -676,7 +676,7 @@ async function doSend() {
     function read() {
       return reader.read().then(function(chunk) {
         if (chunk.done) {
-          hist.push({ role: 'assistant', content: full });
+          var cleanFull = full.replace(/<think>[\s\S]*?<\/think>/g, '').trim(); hist.push({ role: 'assistant', content: cleanFull });
           if (!detectAndShow(full, tel)) {}
           typing = false;
           return;
@@ -684,7 +684,7 @@ async function doSend() {
         var lines = dec.decode(chunk.value).split('\n').filter(function(l) { return l.indexOf('data: ') === 0; });
         lines.forEach(function(line) {
           var d = line.slice(6); if (d === '[DONE]') return;
-          try { var delta = JSON.parse(d).choices[0].delta.content || ''; full += delta; tel.textContent = full; msgsEl.scrollTop = msgsEl.scrollHeight; } catch(ex) {}
+          try { var delta = JSON.parse(d).choices[0].delta.content || ''; full += delta; var display = full.replace(/<think>[\s\S]*?<\/think>/g, '').trim(); tel.textContent = display; msgsEl.scrollTop = msgsEl.scrollHeight; } catch(ex) {}
         });
         return read();
       });
