@@ -199,7 +199,7 @@ fixHeight()
 window.addEventListener('resize', fixHeight)
 
 function init() {
-  var code = localStorage.getItem('cqp_code') || localStorage.getItem('profil_code') || localStorage.getItem('code')
+  var code = localStorage.getItem('cqp_code') || localStorage.getItem('profil_code') || localStorage.getItem('code') || localStorage.getItem('session_id')
   if (!code) return
   sbc.from('profils').select('*').eq('code', code).maybeSingle().then(function(res) {
     if (res.data) {
