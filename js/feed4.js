@@ -172,7 +172,10 @@ const Feed = (() => {
     const av = p.photo_url
       ? `<div class="c-av c-av-40"><img src="${Utils.esc(p.photo_url)}" alt=""></div>`
       : `<div class="c-av c-av-40 c-av-init">${Utils.esc((p.prenom||'?')[0].toUpperCase())}</div>`
-    // Carousel multi-médias
+    // Carousel multi-médias — inclure image_url si pas de media_urls
+    if (!p.media_urls && p.image_url) {
+      p.media_urls = [{type: 'image', url: p.image_url}]
+    }
     const carousel = p.media_urls && p.media_urls.length > 0 ? (() => {
       const items = p.media_urls
       const cid = 'car-' + p.id
