@@ -192,22 +192,13 @@ init()
 function getSYS() {
   var prenom = profil ? profil.prenom : null
   var quartier = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
-  var debut = hist.length === 0
-  return 'Tu es Leila, assistante IA de CQP Toulouse — réseau social des quartiers populaires.'
-    + (prenom ? ' Tu parles à ' + prenom + ' du quartier ' + quartier + '.' : '')
-    + ' Réponds en français, naturel et direct, 1-3 phrases max.'
-    + (debut ? ' Accueil chaleureux en une phrase.' : ' Pas de re-salutation.')
-    + ' Si tu ne sais pas quelque chose, dis-le sans inventer.'
-    + ' L\'utilisateur peut poster dans n\'importe quel quartier de Toulouse — pas seulement le sien. Si il mentionne un autre quartier, utilise ce quartier dans le JSON.'
-    + ' IMPORTANT : quand tu prépares un post, une annonce ou un événement SANS photo,'
-    + ' demande à la fin : "Tu veux ajouter une photo ?" avant de générer le JSON.'
-    + ' Si l\'utilisateur dit non → génère le JSON directement sans attendre.'
-    + ' Si l\'utilisateur dit oui → dis-lui d\'envoyer la photo.'
-    + ' Quand l\'utilisateur confirme "oui" ou "publie" ou "vas-y" → génère IMMÉDIATEMENT le JSON sans redemander.'
-    + ' JSON publication uniquement si confirmé :'
-    + ' {"action":"publier","type":"post","contenu":"...","quartier":"' + quartier + '"}'
-    + ' {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + quartier + '"}'
-    + ' {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}'
+  return 'Tu es Leila, assistante IA de CQP Toulouse.'
+    + (prenom ? ' Tu parles à ' + prenom + ' de ' + quartier + '.' : '')
+    + ' Réponds en français, naturel et bref.'
+    + ' Quand l\'utilisateur veut publier quelque chose et que tout est confirmé, génère ce JSON :'
+    + ' Post: {"action":"publier","type":"post","contenu":"...","quartier":"' + quartier + '"}'
+    + ' Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + quartier + '"}'
+    + ' Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}'
 }
 
 // ═══════════════════════════════════════════
