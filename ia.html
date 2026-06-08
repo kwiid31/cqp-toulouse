@@ -668,7 +668,7 @@ async function doSend() {
 // ═══════════════════════════════════════════
 // UI HELPERS
 // ═══════════════════════════════════════════
-function setMsg(txt) { taEl.value = txt; taEl.dispatchEvent(new Event('input')); taEl.focus() }
+function setMsg(txt) { taEl.value = txt; taEl.dispatchEvent(new Event('input')); doSend() }
 function clearImg() { pendingImg = null; document.getElementById('img-preview-bar').style.display = 'none'; sbtn.classList.toggle('active', taEl.value.trim().length > 0) }
 
 taEl.addEventListener('input', function() {
