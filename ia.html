@@ -245,6 +245,56 @@ function addMsg(role, txt) {
 // ═══════════════════════════════════════════
 // PUBLICATION
 // ═══════════════════════════════════════════
+function showEditablePreview(type, suggestion, imgB64, imgMime, description) {
+  var typeLabel = type === 'post' ? 'Post' : type === 'annonce' ? 'Annonce' : 'Événement'
+  var card = document.createElement('div')
+  card.className = 'preview-card'
+
+  var h4 = document.createElement('h4')
+  h4.textContent = typeLabel
+  card.appendChild(h4)
+
+  if (imgB64) {
+    var img = document.createElement('img')
+    img.src = 'data:' + imgMime + ';base64,' + imgB64
+    img.style.cssText = 'width:100%;border-radius:8px;margin-bottom:8px;max-height:150px;object-fit:cover;display:block;'
+    card.appendChild(img)
+  }
+
+  // Textarea éditable
+  var ta = document.createElement('textarea')
+  ta.value = suggestion
+  ta.style.cssText = 'width:100%;border:1px solid #ddd;border-radius:8px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;box-sizing:border-box;color:#1a1a1a;'
+  card.appendChild(ta)
+
+  var btns = document.createElement('div')
+  btns.className = 'preview-btns'
+
+  var btnPub = document.createElement('button')
+  btnPub.className = 'btn-pub'
+  btnPub.textContent = 'Publier'
+  btnPub.addEventListener('click', function() {
+    var q = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
+    var pd = {action:'publier', type: type, quartier: q}
+    if (type === 'post') pd.contenu = ta.value
+    else if (type === 'annonce') { pd.titre = ta.value.split('\n')[0]; pd.description = ta.value; pd.categorie = 'Autre' }
+    else { pd.titre = ta.value.split('\n')[0]; pd.description = ta.value; pd.lieu = q; pd.date = '2026-06-15' }
+    publishPost(pd, imgB64, imgMime)
+    card.remove()
+  })
+
+  var btnCancel = document.createElement('button')
+  btnCancel.className = 'btn-cancel'
+  btnCancel.textContent = 'Annuler'
+  btnCancel.addEventListener('click', function() { card.remove() })
+
+  btns.appendChild(btnPub)
+  btns.appendChild(btnCancel)
+  card.appendChild(btns)
+  msgsEl.appendChild(card)
+  msgsEl.scrollTop = msgsEl.scrollHeight
+}
+
 function detectAndShow(txt, el, imgB64, imgMime) {
   var s = txt.indexOf('{'), e = txt.lastIndexOf('}')
   if (s < 0 || e <= s) return false
@@ -379,18 +429,10 @@ async function publishPost(pd, imgB64, imgMime) {
 function analyzeVision(b64, mime, userMsg) {
   var n = profil ? profil.prenom : 'l\'utilisateur'
   var q = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
-  var typePost = userMsg && userMsg.toLowerCase().includes('annonce') ? 'annonce'
-    : userMsg && (userMsg.toLowerCase().includes('event') || userMsg.toLowerCase().includes('événement')) ? 'evenement'
-    : 'post'
   var prompt = 'Tu es Leila, assistante IA de CQP Toulouse. Tu parles à ' + n + ' du quartier ' + q + '.'
-    + ' Regarde cette image et génère IMMÉDIATEMENT ce JSON (sans aucun texte avant ou après) :'
-    + (typePost === 'annonce'
-      ? ' {"action":"publier","type":"annonce","titre":"titre court","categorie":"Vente","description":"description basée sur l\'image","quartier":"' + q + '"}'
-      : typePost === 'evenement'
-      ? ' {"action":"publier","type":"evenement","titre":"titre court","lieu":"lieu visible sur image ou ' + q + '","date":"2026-06-15","description":"description basée sur l\'image"}'
-      : ' {"action":"publier","type":"post","contenu":"description naturelle de l\'image en 1-2 phrases accrocheuses","quartier":"' + q + '"}')
-    + (userMsg ? ' Contexte de l\'utilisateur : "' + userMsg + '".' : '')
-    + ' IMPORTANT : réponds UNIQUEMENT avec le JSON. Aucun texte avant ou après.'
+    + ' Analyse cette image et réponds en JSON uniquement (aucun texte autour) :'
+    + ' {"description":"1 phrase naturelle décrivant ce que tu vois","suggestion":"texte accrocheur pour un post de 1-2 phrases"}'
+    + (userMsg ? ' Contexte : "' + userMsg + '".' : '')
 
   return fetch(PROXY, {
     method: 'POST',
@@ -467,11 +509,54 @@ async function doSend() {
     tel2.classList.add('typing')
     analyzeVision(imgB64, imgMime, txt || null).then(function(desc) {
       tel2.classList.remove('typing')
-      var msg = desc || 'Image reçue.'
-      if (!detectAndShow(msg, tel2, imgB64, imgMime)) {
-        tel2.textContent = msg
-      }
-      hist.push({role: 'assistant', content: tel2.textContent || msg})
+      // Parser la réponse JSON de vision
+      var description = desc
+      var suggestion = ''
+      try {
+        var s = desc.indexOf('{'), e = desc.lastIndexOf('}')
+        if (s >= 0 && e > s) {
+          var parsed = JSON.parse(desc.slice(s, e+1))
+          description = parsed.description || desc
+          suggestion = parsed.suggestion || description
+        }
+      } catch(ex) { description = desc; suggestion = desc }
+
+      // Afficher la description
+      tel2.textContent = description
+
+      // Ajouter les boutons de choix
+      var choixDiv = document.createElement('div')
+      choixDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;'
+
+      var choices = [
+        {label:'📝 Post', type:'post'},
+        {label:'📢 Annonce', type:'annonce'},
+        {label:'🎉 Événement', type:'evenement'},
+        {label:'💬 Discuter', type:'chat'}
+      ]
+
+      choices.forEach(function(c) {
+        var btn = document.createElement('button')
+        btn.textContent = c.label
+        btn.style.cssText = 'background:#fff;border:1px solid #ddd;border-radius:20px;padding:6px 14px;font-size:13px;cursor:pointer;'
+        btn.addEventListener('click', function() {
+          choixDiv.remove()
+          if (c.type === 'chat') {
+            // Juste discuter — pas de publication
+            hist.push({role: 'assistant', content: description})
+            typing = false
+            sbtn.disabled = false
+            return
+          }
+          // Afficher textarea éditable avec suggestion
+          showEditablePreview(c.type, suggestion, imgB64, imgMime, description)
+        })
+        choixDiv.appendChild(btn)
+      })
+
+      tel2.parentElement.appendChild(choixDiv)
+      msgsEl.scrollTop = msgsEl.scrollHeight
+      hist.push({role: 'assistant', content: description})
       typing = false
       sbtn.disabled = false
     })
