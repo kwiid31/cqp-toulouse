@@ -381,7 +381,7 @@ function analyzeVision(b64, mime, userMsg) {
     + ' Post: {"action":"publier","type":"post","contenu":"texte du post","quartier":"' + q + '"}'
     + ' Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + q + '"}'
     + ' Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}'
-    + ' Génère uniquement le JSON sans texte autour.'
+    + ' Génère uniquement le JSON sans texte autour. Ne jamais inclure "Image jointe" ou "Photo jointe" dans le contenu.'
 
   return fetch(PROXY, {
     method: 'POST',
