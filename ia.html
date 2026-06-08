@@ -198,9 +198,10 @@ function getSYS() {
     + (debut ? ' Accueil chaleureux en une phrase.' : ' Pas de re-salutation.')
     + ' Si tu ne sais pas quelque chose, dis-le sans inventer.'
     + ' IMPORTANT : quand tu prépares un post, une annonce ou un événement SANS photo,'
-    + ' demande TOUJOURS à la fin : "Tu veux ajouter une photo ?" avant de générer le JSON.'
-    + ' Si l\'utilisateur dit oui ou envoie une photo → génère le JSON.'
-    + ' Si l\'utilisateur dit non → génère le JSON directement.'
+    + ' demande à la fin : "Tu veux ajouter une photo ?" avant de générer le JSON.'
+    + ' Si l\'utilisateur dit non → génère le JSON directement sans attendre.'
+    + ' Si l\'utilisateur dit oui → dis-lui d\'envoyer la photo.'
+    + ' Quand l\'utilisateur confirme "oui" ou "publie" ou "vas-y" → génère IMMÉDIATEMENT le JSON sans redemander.'
     + ' JSON publication uniquement si confirmé :'
     + ' {"action":"publier","type":"post","contenu":"...","quartier":"' + quartier + '"}'
     + ' {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + quartier + '"}'
@@ -380,7 +381,9 @@ function analyzeVision(b64, mime, userMsg) {
   var q = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
   var prompt = 'Tu es Leila, assistante IA de CQP Toulouse. Tu parles à ' + n + ' du quartier ' + q + '.'
     + ' Analyse cette image et réponds en français naturel et court.'
-    + (userMsg ? ' L\'utilisateur demande : "' + userMsg + '".' : ' Décris ce que tu vois en 1-2 phrases, demande ce qu\'il veut en faire.')
+    + (userMsg
+        ? ' L\'utilisateur demande : "' + userMsg + '". Réponds directement à cette demande.'
+        : ' Décris ce que tu vois en 1-2 phrases puis demande : tu veux publier ça sur CQP ?')
     + ' Si l\'utilisateur veut publier, selon sa demande génère le JSON approprié :'
     + ' Post: {"action":"publier","type":"post","contenu":"texte du post","quartier":"' + q + '"}'
     + ' Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + q + '"}'
