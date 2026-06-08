@@ -246,8 +246,10 @@ function addMsg(role, txt) {
 // ═══════════════════════════════════════════
 // PUBLICATION
 // ═══════════════════════════════════════════
-function showEditablePreview(type, suggestion, imgB64, imgMime, description) {
+function showEditablePreview(type, suggestion, imgB64, imgMime) {
   var typeLabel = type === 'post' ? 'Post' : type === 'annonce' ? 'Annonce' : 'Événement'
+  var q = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
+
   var card = document.createElement('div')
   card.className = 'preview-card'
 
@@ -262,10 +264,17 @@ function showEditablePreview(type, suggestion, imgB64, imgMime, description) {
     card.appendChild(img)
   }
 
+  // Hint modifiable
+  var hint = document.createElement('p')
+  hint.textContent = '✏️ Tu peux modifier le texte avant de publier'
+  hint.style.cssText = 'font-size:12px;color:#999;margin:0 0 6px;'
+  card.appendChild(hint)
+
   // Textarea éditable
   var ta = document.createElement('textarea')
-  ta.value = suggestion
-  ta.style.cssText = 'width:100%;border:1px solid #ddd;border-radius:8px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;box-sizing:border-box;color:#1a1a1a;'
+  ta.value = suggestion || ''
+  ta.placeholder = 'Écris ton texte ici...'
+  ta.style.cssText = 'width:100%;border:1px solid #e0d8d0;border-radius:8px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;box-sizing:border-box;color:#1a1a1a;background:#fafafa;'
   card.appendChild(ta)
 
   var btns = document.createElement('div')
@@ -275,7 +284,6 @@ function showEditablePreview(type, suggestion, imgB64, imgMime, description) {
   btnPub.className = 'btn-pub'
   btnPub.textContent = 'Publier'
   btnPub.addEventListener('click', function() {
-    var q = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
     var pd = {action:'publier', type: type, quartier: q}
     if (type === 'post') pd.contenu = ta.value
     else if (type === 'annonce') { pd.titre = ta.value.split('\n')[0]; pd.description = ta.value; pd.categorie = 'Autre' }
@@ -430,15 +438,26 @@ async function publishPost(pd, imgB64, imgMime) {
 function analyzeVision(b64, mime, userMsg) {
   var n = profil ? profil.prenom : 'l\'utilisateur'
   var q = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
+  // Détecter si l'utilisateur veut du texte proposé ou a déjà son texte
+  var wantsSuggestion = userMsg && ['propose','suggère','aide','génère','écris','rédige','fais le texte'].some(function(k){ return userMsg.toLowerCase().includes(k) })
+  var hasOwnText = userMsg && userMsg.length > 20 && !['post','annonce','evenement','événement'].every(function(k){ return userMsg.toLowerCase().includes(k) })
+
   var prompt = 'Tu es Leila, assistante IA de CQP Toulouse. Tu parles à ' + n + ' du quartier ' + q + '.'
-    + ' Réponds en français naturel et direct, maximum 2 phrases.'
-    + (userMsg
-      ? ' L\'utilisateur demande : "' + userMsg + '". Génère directement le JSON de publication :'
-        + ' Post: {"action":"publier","type":"post","contenu":"...","quartier":"' + q + '"}'
-        + ' Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Autre","description":"...","quartier":"' + q + '"}'
-        + ' Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}'
-        + ' Génère uniquement le JSON, rien d\'autre.'
-      : ' Regarde la photo et demande simplement ce que l\'utilisateur veut en faire — post, annonce ou événement. 1 seule phrase courte.')
+    + ' Réponds en français, naturel et court.'
+    + (!userMsg
+      // Pas de texte — juste demander ce qu'il veut faire
+      ? ' Regarde cette photo. Demande en UNE phrase courte et naturelle ce que l\'utilisateur veut en faire : post, annonce ou événement.'
+      : wantsSuggestion
+      // Veut une suggestion de texte — générer JSON avec texte accrocheur
+      ? ' L\'utilisateur veut que tu proposes un texte. Génère UNIQUEMENT ce JSON :'
+        + ' {"action":"publier","type":"post","contenu":"texte accrocheur 1-2 phrases basé sur l\'image","quartier":"' + q + '"}'
+      : hasOwnText
+      // A son propre texte — l'utiliser tel quel
+      ? ' L\'utilisateur a écrit ce texte pour accompagner sa photo : "' + userMsg + '".'
+        + ' Génère UNIQUEMENT ce JSON avec son texte :'
+        + ' {"action":"publier","type":"post","contenu":"' + userMsg.replace(/"/g, '\\"') + '","quartier":"' + q + '"}'
+      // Demande de type de publication — demander s'il veut du texte
+      : ' L\'utilisateur dit : "' + userMsg + '". Réponds en 1 phrase : demande s\'il veut écrire le texte lui-même ou si tu proposes quelque chose.')
 
   return fetch(PROXY, {
     method: 'POST',
@@ -517,10 +536,25 @@ async function doSend() {
     analyzeVision(imgB64, imgMime, txt || null).then(function(desc) {
       tel2.classList.remove('typing')
       var msg = desc || 'Photo reçue.'
-      // Si c'est un JSON de publication → preview
-      if (!detectAndShow(msg, tel2, imgB64, imgMime)) {
-        tel2.textContent = msg
-      }
+      // Si JSON de publication → extraire le texte et montrer preview éditable
+      try {
+        var s = msg.indexOf('{'), e = msg.lastIndexOf('}')
+        if (s >= 0 && e > s) {
+          var pd = JSON.parse(msg.slice(s, e+1))
+          if (pd.action === 'publier' && pd.type) {
+            tel2.textContent = ''
+            if (tel2.parentElement) tel2.parentElement.style.display = 'none'
+            var suggestion = pd.contenu || pd.description || pd.titre || ''
+            showEditablePreview(pd.type, suggestion, imgB64, imgMime)
+            hist.push({role: 'assistant', content: suggestion})
+            typing = false
+            sbtn.disabled = false
+            return
+          }
+        }
+      } catch(ex) {}
+      // Sinon texte normal — question de Leila
+      tel2.textContent = msg
       hist.push({role: 'assistant', content: msg})
       typing = false
       sbtn.disabled = false
