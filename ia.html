@@ -577,13 +577,13 @@ async function doSend() {
     tel3.classList.add('typing')
     analyzeVision(finalImg.b64, finalImg.mime, txt).then(function(desc) {
       tel3.classList.remove('typing')
+      // Cacher le message de chargement
+      if (tel3.parentElement) tel3.parentElement.style.display = 'none'
       try {
         var s = desc.indexOf('{'), e = desc.lastIndexOf('}')
         if (s >= 0 && e > s) {
           var pd = JSON.parse(desc.slice(s, e+1))
           if (pd.action === 'publier' && pd.type) {
-            tel3.textContent = ''
-            if (tel3.parentElement) tel3.parentElement.style.display = 'none'
             lastImg = null
             showEditablePreview(pd.type, pd.contenu || pd.description || pd.titre || '', finalImg.b64, finalImg.mime)
             hist.push({role: 'assistant', content: pd.contenu || pd.description || ''})
@@ -593,6 +593,8 @@ async function doSend() {
           }
         }
       } catch(ex) {}
+      // Si pas de JSON — afficher le texte
+      if (tel3.parentElement) tel3.parentElement.style.display = ''
       tel3.textContent = desc
       hist.push({role: 'assistant', content: desc})
       typing = false
