@@ -379,16 +379,18 @@ async function publishPost(pd, imgB64, imgMime) {
 function analyzeVision(b64, mime, userMsg) {
   var n = profil ? profil.prenom : 'l\'utilisateur'
   var q = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
+  var typePost = userMsg && userMsg.toLowerCase().includes('annonce') ? 'annonce'
+    : userMsg && (userMsg.toLowerCase().includes('event') || userMsg.toLowerCase().includes('événement')) ? 'evenement'
+    : 'post'
   var prompt = 'Tu es Leila, assistante IA de CQP Toulouse. Tu parles à ' + n + ' du quartier ' + q + '.'
-    + ' Analyse cette image et réponds en français naturel et court.'
-    + (userMsg
-        ? ' L\'utilisateur demande : "' + userMsg + '". Réponds directement à cette demande.'
-        : ' Décris ce que tu vois en 1-2 phrases puis demande : tu veux publier ça sur CQP ?')
-    + ' Si l\'utilisateur veut publier, selon sa demande génère le JSON approprié :'
-    + ' Post: {"action":"publier","type":"post","contenu":"texte du post","quartier":"' + q + '"}'
-    + ' Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + q + '"}'
-    + ' Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}'
-    + ' Génère uniquement le JSON sans texte autour. Ne jamais inclure "Image jointe" ou "Photo jointe" dans le contenu.'
+    + ' Regarde cette image et génère IMMÉDIATEMENT ce JSON (sans aucun texte avant ou après) :'
+    + (typePost === 'annonce'
+      ? ' {"action":"publier","type":"annonce","titre":"titre court","categorie":"Vente","description":"description basée sur l\'image","quartier":"' + q + '"}'
+      : typePost === 'evenement'
+      ? ' {"action":"publier","type":"evenement","titre":"titre court","lieu":"lieu visible sur image ou ' + q + '","date":"2026-06-15","description":"description basée sur l\'image"}'
+      : ' {"action":"publier","type":"post","contenu":"description naturelle de l\'image en 1-2 phrases accrocheuses","quartier":"' + q + '"}')
+    + (userMsg ? ' Contexte de l\'utilisateur : "' + userMsg + '".' : '')
+    + ' IMPORTANT : réponds UNIQUEMENT avec le JSON. Aucun texte avant ou après.'
 
   return fetch(PROXY, {
     method: 'POST',
