@@ -267,16 +267,17 @@ function showEditablePreview(type, suggestion, imgB64, imgMime) {
 
   // Hint modifiable
   var hint = document.createElement('p')
-  hint.textContent = '✏️ Tu peux modifier le texte avant de publier'
-  hint.style.cssText = 'font-size:12px;color:#999;margin:0 0 6px;'
+  hint.textContent = '✏️ Modifie le texte directement ci-dessous avant de publier'
+  hint.style.cssText = 'font-size:12px;color:#C8102E;margin:0 0 6px;font-weight:500;'
   card.appendChild(hint)
 
   // Textarea éditable
   var ta = document.createElement('textarea')
   ta.value = suggestion || ''
   ta.placeholder = 'Écris ton texte ici...'
-  ta.style.cssText = 'width:100%;border:1px solid #e0d8d0;border-radius:8px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;box-sizing:border-box;color:#1a1a1a;background:#fafafa;'
+  ta.style.cssText = 'width:100%;border:2px solid #C8102E;border-radius:8px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;box-sizing:border-box;color:#1a1a1a;background:#fff;'
   card.appendChild(ta)
+  setTimeout(function(){ ta.focus(); ta.select() }, 300)
 
   var btns = document.createElement('div')
   btns.className = 'preview-btns'
@@ -569,7 +570,7 @@ async function doSend() {
 
   // Si l'utilisateur confirme après une photo → réinjecter l'image dans le contexte
   // Si message texte + lastImg disponible → réutiliser la photo
-  var pubKeywords = ['post','annonce','événement','evenement','publie','propose','vas-y','oui','ok','génère','ecris','rédige','fais le','un post','une annonce']
+  var pubKeywords = ['post','annonce','événement','evenement','publie','vas-y','un post','une annonce','fais un post','fais une annonce','fais un événement']
   var wantsPublish = txt && lastImg && pubKeywords.some(function(k){ return txt.toLowerCase().includes(k) })
   if (wantsPublish) {
     var finalImg = lastImg
