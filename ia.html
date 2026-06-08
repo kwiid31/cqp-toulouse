@@ -567,20 +567,34 @@ async function doSend() {
   tel.classList.add('typing')
 
   // Si l'utilisateur confirme après une photo → réinjecter l'image dans le contexte
-  var wantsPublish = txt && ['oui','post','annonce','événement','evenement','publie','vas-y','ok publie'].some(function(k){ return txt.toLowerCase().includes(k) })
-  var imgContext = ''
-  if (wantsPublish && lastImg) {
-    // Faire analyzeVision avec le message de confirmation
+  // Si message texte + lastImg disponible → réutiliser la photo
+  var pubKeywords = ['post','annonce','événement','evenement','publie','propose','vas-y','oui','ok','génère','ecris','rédige','fais le','un post','une annonce']
+  var wantsPublish = txt && lastImg && pubKeywords.some(function(k){ return txt.toLowerCase().includes(k) })
+  if (wantsPublish) {
     var finalImg = lastImg
-    lastImg = null
+    // On garde lastImg au cas où l'utilisateur voudrait modifier
     var tel3 = addMsg('ia', '')
     tel3.classList.add('typing')
     analyzeVision(finalImg.b64, finalImg.mime, txt).then(function(desc) {
       tel3.classList.remove('typing')
-      if (!detectAndShow(desc, tel3, finalImg.b64, finalImg.mime)) {
-        tel3.textContent = desc
-      }
-      hist.push({role: 'assistant', content: tel3.textContent || desc})
+      try {
+        var s = desc.indexOf('{'), e = desc.lastIndexOf('}')
+        if (s >= 0 && e > s) {
+          var pd = JSON.parse(desc.slice(s, e+1))
+          if (pd.action === 'publier' && pd.type) {
+            tel3.textContent = ''
+            if (tel3.parentElement) tel3.parentElement.style.display = 'none'
+            lastImg = null
+            showEditablePreview(pd.type, pd.contenu || pd.description || pd.titre || '', finalImg.b64, finalImg.mime)
+            hist.push({role: 'assistant', content: pd.contenu || pd.description || ''})
+            typing = false
+            sbtn.disabled = false
+            return
+          }
+        }
+      } catch(ex) {}
+      tel3.textContent = desc
+      hist.push({role: 'assistant', content: desc})
       typing = false
       sbtn.disabled = false
     })
