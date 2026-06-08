@@ -561,8 +561,13 @@ async function doSend() {
 
   // Si l'utilisateur confirme après une photo → réinjecter l'image dans le contexte
   // Si message texte + lastImg disponible → réutiliser la photo
-  var pubKeywords = ['post','annonce','événement','evenement','publie','vas-y','un post','une annonce','fais un post','fais une annonce','fais un événement']
-  var wantsPublish = txt && lastImg && pubKeywords.some(function(k){ return txt.toLowerCase().includes(k) })
+  // Si lastImg existe et que le message est court (< 50 chars) → wantsPublish automatique
+  // Si lastImg existe et contient un mot de publication → wantsPublish
+  var pubKeywords = ['post','annonce','événement','evenement','event','publie','vas-y',
+    'oui','ok','ouais','yep','go','allez','parfait','super','bien',
+    'un post','une annonce','fais','propose','génère','ecris','rédige']
+  var isShortReply = txt && txt.length < 40
+  var wantsPublish = txt && lastImg && (isShortReply || pubKeywords.some(function(k){ return txt.toLowerCase().includes(k) }))
   if (wantsPublish) {
     var finalImg = lastImg
     // On garde lastImg au cas où l'utilisateur voudrait modifier
