@@ -338,7 +338,7 @@ async function publishPost(pd, imgB64, imgMime) {
     }
 
     if (pd.type === 'post') {
-      row.contenu = pd.contenu
+      row.contenu = (pd.contenu || '').replace(/\[Image jointe\]/g, '').trim()
       row.quartier = row.quartier || pd.quartier
       if (imageUrl) row.image_url = imageUrl
     } else if (pd.type === 'annonce') {
@@ -442,7 +442,7 @@ async function doSend() {
     msgsEl.appendChild(imgDiv)
     msgsEl.scrollTop = msgsEl.scrollHeight
     document.getElementById('img-preview-bar').style.display = 'none'
-    hist.push({role: 'user', content: (txt ? txt + '\n' : '') + '[Image jointe]'})
+    hist.push({role: 'user', content: txt || 'Photo envoyée.'})
   } else {
     addMsg('user', txt)
     hist.push({role: 'user', content: txt})
