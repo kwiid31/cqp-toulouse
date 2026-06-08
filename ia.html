@@ -279,7 +279,8 @@ function showPreview(pd, container) {
   }
 
   var p = document.createElement('p')
-  p.textContent = pd.contenu || pd.description || pd.titre || ''
+  var rawTxt = pd.contenu || pd.description || pd.titre || ''
+  p.textContent = rawTxt.replace(/\[Image jointe\]/gi, '').replace(/\[Photo jointe\]/gi, '').trim()
   card.appendChild(p)
 
   if (pd.lieu) { var pl = document.createElement('p'); pl.textContent = '📍 ' + pd.lieu; card.appendChild(pl) }
@@ -338,7 +339,7 @@ async function publishPost(pd, imgB64, imgMime) {
     }
 
     if (pd.type === 'post') {
-      row.contenu = (pd.contenu || '').replace(/\[Image jointe\]/g, '').trim()
+      row.contenu = (pd.contenu || '').replace(/\[Image jointe\]/gi, '').replace(/\[Photo jointe\]/gi, '').trim()
       row.quartier = row.quartier || pd.quartier
       if (imageUrl) row.image_url = imageUrl
     } else if (pd.type === 'annonce') {
