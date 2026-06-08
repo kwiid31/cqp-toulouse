@@ -197,6 +197,10 @@ function getSYS() {
     + ' Réponds en français, naturel et direct, 1-3 phrases max.'
     + (debut ? ' Accueil chaleureux en une phrase.' : ' Pas de re-salutation.')
     + ' Si tu ne sais pas quelque chose, dis-le sans inventer.'
+    + ' IMPORTANT : quand tu prépares un post, une annonce ou un événement SANS photo,'
+    + ' demande TOUJOURS à la fin : "Tu veux ajouter une photo ?" avant de générer le JSON.'
+    + ' Si l\'utilisateur dit oui ou envoie une photo → génère le JSON.'
+    + ' Si l\'utilisateur dit non → génère le JSON directement.'
     + ' JSON publication uniquement si confirmé :'
     + ' {"action":"publier","type":"post","contenu":"...","quartier":"' + quartier + '"}'
     + ' {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + quartier + '"}'
