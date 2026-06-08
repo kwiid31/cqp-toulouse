@@ -249,7 +249,7 @@ function detectAndShow(txt, el, imgB64, imgMime) {
       if (imgB64) pd._imgB64 = imgB64
       if (imgMime) pd._imgMime = imgMime
       el.textContent = ''
-      showPreview(pd, el.parentElement)
+      showPreview(pd, msgsEl)
       return true
     }
   } catch(ex) {}
