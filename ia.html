@@ -699,9 +699,9 @@ function startFlow(type) {
   // Définir le type forcé pour ce flow
   forcedType = type
   var msgs = {
-    'evenement': 'Je veux créer un événement dans l\'agenda. Tu peux me poser les questions une par une (titre, date, lieu, description). Je pourrai aussi joindre un flyer ou une photo si je veux.',
-    'annonce': 'Je veux déposer une annonce. Tu peux me demander la catégorie (vente, service, emploi, logement, don), le titre et la description. Je pourrai aussi joindre une photo.',
-    'post': 'Je veux publier un post dans le feed. Je peux écrire un texte, joindre une photo, plusieurs photos ou une vidéo.'
+    'evenement': 'Je veux créer un événement',
+    'annonce': 'Je veux déposer une annonce',
+    'post': 'Je veux publier un post'
   }
   taEl.value = msgs[type]
   taEl.dispatchEvent(new Event('input'))
