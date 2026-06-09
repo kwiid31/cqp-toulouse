@@ -283,7 +283,7 @@ const Feed = (() => {
       </div>
       <div class="card-text" class="card-titre-lg">${titre}</div>
       ${desc ? `<div class="card-text" class="card-desc">${desc}</div>` : ''}
-      ${photo${imgHtml}Html}
+      ${imgHtml}
     </article>`
   }
 
