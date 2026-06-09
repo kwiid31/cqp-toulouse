@@ -116,8 +116,8 @@ function render(annonces){
   const catColors={'Logement':'#1565c0','Emploi':'#6a1b9a','Vente':'#e65100','Service':'#2e7d32','Don':'#00695c'}
   el.innerHTML=annonces.map(a=>{
     const color=catColors[a.categorie]||'#555'
-    const img=a.photo_url
-      ? '<img src="'+esc(a.photo_url)+'" loading="lazy" alt="" style="width:90px;height:90px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
+    const img=(a.image_url||a.photo_url)
+      ? '<img src="'+esc(a.image_url||a.photo_url)+'" loading="lazy" alt="" style="width:90px;height:90px;object-fit:cover;border-radius:8px;flex-shrink:0;">'
       : '<div style="width:90px;height:90px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,#020510,#081a5e,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">📋</div>'
     return '<div id="an-'+a.id+'" onclick="openAn('+a.id+')" style="display:flex;gap:12px;padding:14px;background:#fff;border-bottom:1px solid var(--border);cursor:pointer;align-items:flex-start;">'
       + img
