@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CQP Toulouse — Rejoins ton quartier</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#f0ede6;font-family:'Barlow',sans-serif;color:#1a1a1a;min-height:100vh}
+
+  .page{max-width:480px;margin:0 auto;padding:32px 24px 48px}
+
+  /* Header */
+  .logo-row{display:flex;align-items:center;gap:12px;margin-bottom:40px}
+  .logo{width:48px;height:48px;background:#C8102E;border-radius:12px;display:flex;align-items:center;justify-content:center}
+  .logo span{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;color:#fff}
+  .site-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;letter-spacing:.5px}
+  .tagline{font-size:12px;color:#888;margin-top:2px}
+
+  /* Hero */
+  .hero{margin-bottom:40px}
+  .hero h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;line-height:1;color:#1a1a1a;margin-bottom:16px}
+  .hero h1 span{color:#C8102E}
+  .hero p{font-size:16px;color:#555;line-height:1.6}
+
+  /* QR */
+  .qr-block{background:#fff;border-radius:20px;padding:28px;text-align:center;margin-bottom:28px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+  .qr-block canvas{border-radius:8px}
+  .qr-label{margin-top:14px;font-size:13px;color:#888}
+  .qr-url{font-size:15px;font-weight:600;color:#C8102E;margin-top:4px}
+
+  /* Boutons partage */
+  .share-title{font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:14px;font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;margin-bottom:10px;text-decoration:none;transition:opacity .15s}
+  .btn:active{opacity:.8}
+  .btn-wa{background:#25D366;color:#fff}
+  .btn-copy{background:#1a1a1a;color:#fff}
+  .btn-sms{background:#C8102E;color:#fff}
+
+  /* Quartiers */
+  .quartiers{margin-top:36px}
+  .quartiers h3{font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
+  .tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{background:#fff;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:500;color:#555;border:1px solid #e8e2d9}
+
+  /* Toast */
+  .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="logo-row">
+    <div class="logo"><span>CQP</span></div>
+    <div>
+      <div class="site-name">CQP Toulouse</div>
+      <div class="tagline">Quartiers Populaires</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>Ton quartier,<br><span>ta voix.</span></h1>
+    <p>Le réseau social des habitants de Bellefontaine, Reynerie, Mirail, Empalot et tous les quartiers populaires de Toulouse.</p>
+  </div>
+
+  <div class="qr-block">
+    <canvas id="qr"></canvas>
+    <div class="qr-label">Scanne pour rejoindre</div>
+    <div class="qr-url">cqp-toulouse.fr</div>
+  </div>
+
+  <div class="share-title">Partager avec</div>
+
+  <a class="btn btn-wa" id="btn-wa" href="#">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.552 4.116 1.52 5.847L0 24l6.335-1.492A11.934 11.934 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.001-1.368l-.36-.214-3.76.885.899-3.658-.234-.376A9.818 9.818 0 1 1 12 21.818z"/></svg>
+    WhatsApp
+  </a>
+
+  <button class="btn btn-sms" id="btn-sms">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+    SMS
+  </button>
+
+  <button class="btn btn-copy" id="btn-copy">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+    Copier le lien
+  </button>
+
+  <div class="quartiers">
+    <h3>Quartiers présents</h3>
+    <div class="tags">
+      <span class="tag">Bellefontaine</span>
+      <span class="tag">Reynerie</span>
+      <span class="tag">Mirail</span>
+      <span class="tag">Papus</span>
+      <span class="tag">Empalot</span>
+      <span class="tag">Bagatelle</span>
+      <span class="tag">Faourette</span>
+      <span class="tag">Izards</span>
+      <span class="tag">Arènes</span>
+      <span class="tag">Bourbaki</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Lien copié !</div>
+
+<!-- QR Code library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  var URL = 'https://cqp-toulouse.fr'
+  var MSG = 'Rejoins CQP Toulouse — le réseau social de notre quartier ! 🏘️\n' + URL
+
+  // Générer le QR code
+  new QRCode(document.getElementById('qr'), {
+    text: URL,
+    width: 200,
+    height: 200,
+    colorDark: '#1a1a1a',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  })
+
+  // WhatsApp
+  document.getElementById('btn-wa').href = 'https://wa.me/?text=' + encodeURIComponent(MSG)
+
+  // SMS
+  document.getElementById('btn-sms').addEventListener('click', function() {
+    window.location.href = 'sms:?body=' + encodeURIComponent(MSG)
+  })
+
+  // Copier lien
+  document.getElementById('btn-copy').addEventListener('click', function() {
+    navigator.clipboard.writeText(URL).then(function() {
+      var t = document.getElementById('toast')
+      t.classList.add('show')
+      setTimeout(function(){ t.classList.remove('show') }, 2000)
+    })
+  })
+</script>
+</body>
+</html>
