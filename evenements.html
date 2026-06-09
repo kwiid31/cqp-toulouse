@@ -116,6 +116,7 @@ async function load(){
         <div style="flex:1"><div style="font-weight:600;font-size:.94rem;">${esc(e.titre)}</div><div style="font-size:.78rem;color:var(--txt3);">📅 ${day} ${month} à ${heure}${e.lieu?' · 📍 '+esc(e.lieu):''}</div></div>
         <span class="badge badge-blue">${esc(e.categorie||'Evt')}</span>
       </div>
+      ${(e.image_url||e.photo_url)?`<div style="border-radius:12px;overflow:hidden;margin:8px 0;"><img src="${esc(e.image_url||e.photo_url)}" style="width:100%;max-height:220px;object-fit:cover;display:block;"></div>`:''}
       ${e.description?`<div class="evt-body">${esc(e.description.substring(0,160))}${e.description.length>160?'…':''}</div>`:''}
       <div class="evt-footer">
         <span class="tag">${Utils.countdown(e.date_debut)}</span>
