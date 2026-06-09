@@ -436,7 +436,7 @@ async function publishPost(pd, imgB64, imgMime) {
       row.date_debut = pd.date || new Date().toISOString().slice(0,10)
       row.description = pd.description || ''
       row.visible = true
-      row.validee = false
+      row.validee = true
       if (profil) row.prenom = profil.prenom
       if (imageUrl) row.image_url = imageUrl
       // Pas de colonne quartier dans evenements
