@@ -271,6 +271,7 @@ const Feed = (() => {
     const titre = Utils.esc(a.titre)
     const desc = Utils.esc((a.description || '').substring(0, 100)) + ((a.description || '').length > 100 ? '…' : '')
     const av = prenom ? prenom[0].toUpperCase() : '?'
+    const imgHtml = (a.image_url || a.photo_url) ? `<div style="border-radius:12px;overflow:hidden;margin-top:8px;"><img src="${Utils.esc(a.image_url||a.photo_url)}" style="width:100%;max-height:220px;object-fit:cover;display:block;"></div>` : ''
     return `<article class="card" class="card-clickable card-border-vert" onclick="location.href='annonces.html#an-${a.id}'">
       <div class="card-head">
         <div class="c-av c-av-40 c-av-init" class="c-av c-av-40 c-av-init card-av-annonce-v2">${av}</div>
@@ -282,7 +283,7 @@ const Feed = (() => {
       </div>
       <div class="card-text" class="card-titre-lg">${titre}</div>
       ${desc ? `<div class="card-text" class="card-desc">${desc}</div>` : ''}
-      ${photoHtml}
+      ${photo${imgHtml}Html}
     </article>`
   }
 
