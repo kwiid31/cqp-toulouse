@@ -295,7 +295,7 @@ const Feed = (() => {
     const heureStr = d ? d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' }) : ''
     const prenom = Utils.esc(e.prenom || 'CQP')
     const av = prenom[0].toUpperCase()
-    const photoHtml = e.photo_url ? `<div style="border-radius:12px;overflow:hidden;margin-top:8px;"><img src="${Utils.esc(e.photo_url)}" style="width:100%;height:auto;display:block;max-height:300px;object-fit:cover;"></div>` : ''
+    const photoHtml = (e.image_url || e.photo_url) ? `<div style="border-radius:12px;overflow:hidden;margin-top:8px;"><img src="${Utils.esc(e.image_url || e.photo_url)}" style="width:100%;height:auto;display:block;max-height:300px;object-fit:cover;"></div>` : ''
     return `<article class="card" class="card-clickable card-border-bleu" onclick="location.href='evenements.html#evt-${e.id}'">
       <div class="card-head">
         <div class="c-av c-av-40 c-av-init" class="c-av c-av-40 c-av-init card-av-evenement-v2">${av}</div>
