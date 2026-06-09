@@ -435,7 +435,12 @@ async function publishPost(pd, imgB64, imgMime) {
       row.lieu = pd.lieu || ''
       row.date_debut = pd.date || new Date().toISOString().slice(0,10)
       row.description = pd.description || ''
+      row.visible = true
+      row.validee = false
+      if (profil) row.prenom = profil.prenom
       if (imageUrl) row.image_url = imageUrl
+      // Pas de colonne quartier dans evenements
+      delete row.quartier
     }
 
     var res = await sbc.from(table).insert(row)
