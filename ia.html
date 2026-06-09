@@ -208,7 +208,7 @@ function getSYS() {
     + ' L\'utilisateur peut publier dans n\'importe quel quartier pas seulement le sien.'
     + ' TON STYLE : français naturel, direct, chaleureux, max 2-3 phrases, comme quelqu\'un du quartier. Pas de listes, pas de bullet points.'
     + ' Tu peux aider à rédiger, améliorer ou modifier un texte si l\'utilisateur le demande.'
-    + ' JSON uniquement quand l\'utilisateur a confirmé ce qu\'il veut publier, sans texte avant ni après :'
+    + ' Génère le JSON dès que l\'utilisateur te dit clairement ce qu\'il veut publier — que ce soit avec des mots comme : publie, ajoute, crée, fais, mets, poste, vas-y, ok, oui, ou n\'importe quelle phrase qui exprime une intention de publication. Sans texte avant ni après le JSON :'
     + ' Post: {"action":"publier","type":"post","contenu":"...","quartier":"' + quartier + '"}'
     + ' Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + quartier + '"}'
     + ' Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}'
