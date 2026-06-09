@@ -7,8 +7,9 @@
 <title>IA CQP</title>
 <link rel="stylesheet" href="css/main.css">
 <style>
-html,body{height:100%;background:#f0ede6;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-.wrap{display:flex;flex-direction:column;height:100dvh;background:#f0ede6}
+html{height:-webkit-fill-available;background:#f0ede6}
+body{height:100%;height:-webkit-fill-available;background:#f0ede6;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.wrap{display:flex;flex-direction:column;height:100vh;height:100dvh;background:#f0ede6;position:fixed;top:0;left:0;right:0;bottom:0}
 .ia-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));flex-shrink:0}
 .back-btn{background:none;border:none;cursor:pointer;padding:4px;color:#888;line-height:0}
 .badge{display:none;align-items:center;gap:6px;font-size:13px;font-weight:500;background:#f0f0f0;padding:4px 10px;border-radius:20px}
@@ -149,10 +150,14 @@ var sbtn = document.getElementById('sbtn')
 var cardsEl = document.getElementById('cards-zone')
 var emptyEl = document.getElementById('empty')
 
-// Fix hauteur Safari
-function fixHeight() { document.querySelector('.wrap').style.height = window.innerHeight + 'px' }
+// Fix hauteur Safari — position fixed gère tout
+function fixHeight() {
+  var wrap = document.querySelector('.wrap')
+  if (wrap) wrap.style.height = window.innerHeight + 'px'
+}
 fixHeight()
 window.addEventListener('resize', fixHeight)
+window.addEventListener('orientationchange', function(){ setTimeout(fixHeight, 300) })
 
 // ═══════════════════════════════════════════
 // INIT — Charger profil
