@@ -453,8 +453,12 @@ async function publishPost(pd, imgB64, imgMime) {
     var res = await sbc.from(table).insert(row)
     if (!res.error) {
       forcedType = null
-      tel.textContent = '✅ Publié avec succès !' + (imageUrl ? ' 📸' : '')
-      hist.push({role: 'assistant', content: tel.textContent})
+      var successMsg = '✅ Publié avec succès !' + (imageUrl ? ' 📸' : '')
+      if (pd.type === 'evenement') successMsg += ' Visible dans l\'agenda 📅'
+      else if (pd.type === 'annonce') successMsg += ' Visible dans les annonces 📋'
+      else successMsg += ' Visible dans le feed 🏠'
+      tel.textContent = successMsg
+      hist.push({role: 'assistant', content: successMsg})
     } else {
       tel.textContent = 'Erreur : ' + res.error.message
     }
