@@ -59,7 +59,7 @@ img { max-width:100%; display:block; }
 
 /* ── Bottom nav ───────────────────────────────────────────────── */
 .bottom-nav {
-  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  position:fixed; bottom:0; left:0; right:0; z-index:500;
   background:rgba(255,255,255,.97);
   backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   border-top:1px solid var(--border);
@@ -246,7 +246,7 @@ img { max-width:100%; display:block; }
 .btn-outline:active { background:var(--bg3); }
 
 /* ── Modal ────────────────────────────────────────────────────── */
-.modal-ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; align-items:flex-end; justify-content:center; }
+.modal-ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:400; align-items:flex-end; justify-content:center; }
 .modal-ov.open { display:flex; }
 .modal-box {
   background:#fff; border-radius:20px 20px 0 0;
