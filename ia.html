@@ -195,9 +195,15 @@ function getSYS() {
   var quartier = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
   var p = prenom ? prenom : 'l\'habitant'
 
+  var typeContext = ''
+  if (forcedType === 'evenement') typeContext = ' IMPORTANT : l\'utilisateur veut créer un ÉVÉNEMENT pour l\'agenda. Tu dois UNIQUEMENT l\'aider à créer un événement (titre, date, lieu, description). Ne parle pas de post ou d\'annonce. Si il envoie une photo c\'est un flyer pour l\'événement.'
+  else if (forcedType === 'annonce') typeContext = ' IMPORTANT : l\'utilisateur veut déposer une ANNONCE. Tu dois UNIQUEMENT l\'aider à créer une annonce (catégorie, titre, description). Ne parle pas de post ou d\'événement.'
+  else if (forcedType === 'post') typeContext = ' IMPORTANT : l\'utilisateur veut publier un POST dans le feed. Il peut joindre une photo, plusieurs photos ou une vidéo.'
+
   return 'Tu es Leila, l\'assistante IA de CQP Toulouse.'
     + ' CQP est un réseau social gratuit pour les habitants des quartiers populaires de Toulouse : Bellefontaine, Reynerie, Mirail, Papus, Empalot, Bagatelle, Faourette, Izards, Arènes, Bourbaki.'
     + (prenom ? ' Tu parles à ' + p + ' du quartier ' + quartier + '.' : '')
+    + typeContext
     + ' TON RÔLE : aider les habitants à partager et publier sur CQP.'
     + ' LE SITE A PLUSIEURS SECTIONS :'
     + ' Le FEED (page d\'accueil) affiche les posts des habitants — messages, photos, coups de gueule, bons plans du quotidien.'
