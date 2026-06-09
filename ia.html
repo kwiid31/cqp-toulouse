@@ -457,26 +457,23 @@ async function publishPost(pd, imgB64, imgMime) {
 function analyzeVision(b64, mime, userMsg) {
   var n = profil ? profil.prenom : 'l\'utilisateur'
   var q = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
-  // Détecter si l'utilisateur veut du texte proposé ou a déjà son texte
-  var wantsSuggestion = userMsg && ['propose','suggère','aide','génère','écris','rédige','fais le texte'].some(function(k){ return userMsg.toLowerCase().includes(k) })
-  var hasOwnText = userMsg && userMsg.length > 20 && !['post','annonce','evenement','événement'].every(function(k){ return userMsg.toLowerCase().includes(k) })
+  var fType = forcedType
 
-  var prompt = 'Tu es Leila, assistante IA de CQP Toulouse. Tu parles à ' + n + ' du quartier ' + q + '.'
-    + ' Réponds en français, naturel et court.'
-    + (!userMsg
-      // Pas de texte — juste demander ce qu'il veut faire
-      ? ' Regarde cette photo. Demande en UNE phrase courte et naturelle ce que l\'utilisateur veut en faire : post, annonce ou événement.'
-      : wantsSuggestion
-      // Veut une suggestion de texte — générer JSON avec texte accrocheur
-      ? ' L\'utilisateur veut que tu proposes un texte. Génère UNIQUEMENT ce JSON :'
-        + ' {"action":"publier","type":"post","contenu":"texte accrocheur 1-2 phrases basé sur l\'image","quartier":"' + q + '"}'
-      : hasOwnText
-      // A son propre texte — l'utiliser tel quel
-      ? ' L\'utilisateur a écrit ce texte pour accompagner sa photo : "' + userMsg + '".'
-        + ' Génère UNIQUEMENT ce JSON avec son texte :'
-        + ' {"action":"publier","type":"post","contenu":"' + userMsg.replace(/"/g, '\\"') + '","quartier":"' + q + '"}'
-      // Demande de type de publication — demander s'il veut du texte
-      : ' L\'utilisateur dit : "' + userMsg + '". Réponds en 1 phrase : demande s\'il veut écrire le texte lui-même ou si tu proposes quelque chose.')
+  var typeInstruction = ''
+  if (fType === 'evenement') {
+    typeInstruction = ' L\'utilisateur veut créer un ÉVÉNEMENT avec cette image (c\'est probablement un flyer). Génère UNIQUEMENT ce JSON sans rien d\'autre : {"action":"publier","type":"evenement","titre":"titre de l\'événement visible sur le flyer ou déduit","lieu":"lieu visible ou ' + q + '","date":"2026-06-20","description":"description courte de l\'événement"}'
+  } else if (fType === 'annonce') {
+    typeInstruction = ' L\'utilisateur veut créer une ANNONCE avec cette image. Génère UNIQUEMENT ce JSON : {"action":"publier","type":"annonce","titre":"titre court","categorie":"Vente","description":"description basée sur l\'image","quartier":"' + q + '"}'
+  } else if (fType === 'post') {
+    typeInstruction = ' L\'utilisateur veut publier un POST avec cette image. Génère UNIQUEMENT ce JSON : {"action":"publier","type":"post","contenu":"texte accrocheur 1-2 phrases","quartier":"' + q + '"}'
+  } else if (userMsg) {
+    typeInstruction = ' L\'utilisateur demande : "' + userMsg + '". Génère directement le JSON de publication approprié.'
+  } else {
+    typeInstruction = ' Regarde cette photo et demande en une seule phrase courte ce que l\'utilisateur veut en faire : post, annonce ou événement.'
+  }
+
+  var prompt = 'Tu es Leila, assistante IA de CQP Toulouse. Tu parles à ' + n + ' du quartier ' + q + '.' + typeInstruction
+
 
   return fetch(PROXY, {
     method: 'POST',
