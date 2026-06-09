@@ -246,7 +246,7 @@ img { max-width:100%; display:block; }
 .btn-outline:active { background:var(--bg3); }
 
 /* ── Modal ────────────────────────────────────────────────────── */
-.modal-ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:150; align-items:flex-end; justify-content:center; }
+.modal-ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; align-items:flex-end; justify-content:center; }
 .modal-ov.open { display:flex; }
 .modal-box {
   background:#fff; border-radius:20px 20px 0 0;
