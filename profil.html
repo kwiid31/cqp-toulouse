@@ -52,7 +52,7 @@ body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
   gap: 12px;
   overflow-x: auto;
   padding-right: 16px;
-  padding-bottom: 4px;
+  padding-bottom:max(4px,env(safe-area-inset-bottom));
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
@@ -154,7 +154,7 @@ body { padding-top: env(safe-area-inset-top); }
 </div>
 
 <!-- VUE PROFIL -->
-<div id="view-profil" style="display:none;background:#fff;min-height:100vh;padding-bottom:80px;">
+<div id="view-profil" style="display:none;background:#fff;min-height:100vh;padding-bottom:max(80px,env(safe-area-inset-bottom));">
 
   <div style="padding:20px 16px 0;">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
