@@ -1,207 +1,278 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><link rel="icon" href="/favicon.ico"><link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#C8102E"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>Événements et Agenda Quartiers de Toulouse — Mirail, Bellefontaine</title>
-<meta name="description" content="Agenda des événements dans les quartiers populaires de Toulouse. Fêtes de quartier Mirail, réunions de voisins, activités culturelles Bellefontaine, sport Empalot. Inscription en ligne gratuite.">
-<meta name="keywords" content="événements quartier Toulouse, fête quartier Mirail, agenda Bellefontaine, activités Empalot, sorties quartiers populaires Toulouse">
-<meta name="robots" content="index, follow">
-<meta name="author" content="CQP Toulouse">
-<meta name="geo.region" content="FR-31">
-<meta name="geo.placename" content="Toulouse">
-<meta property="og:title" content="Événements Quartiers Populaires Toulouse — Agenda CQP">
-<meta property="og:description" content="Agenda des événements dans les quartiers populaires de Toulouse. Fêtes de quartier, réunions, activités culturelles, sport. Inscrivez-vous en ligne.">
-<meta property="og:url" content="https://cqp-toulouse.fr">
-<meta property="og:image" content="https://cqp-toulouse.fr/icons/icon-512.png">
-<meta property="og:type" content="website">
-<meta property="og:locale" content="fr_FR">
-<meta property="og:site_name" content="CQP Toulouse">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Événements Quartiers Populaires Toulouse — Agenda CQP">
-<meta name="twitter:description" content="Agenda des événements dans les quartiers populaires de Toulouse. Fêtes de quartier, réunions, activités culturelles, sport. Inscrivez-vous en ligne.">
-<link rel="canonical" href="https://cqp-toulouse.fr/">
-<script type="application/ld+json">{
-      "@context": "https://schema.org",
-      "@type": "EventSeries",
-      "name": "Événements Quartiers Populaires Toulouse",
-      "url": "https://cqp-toulouse.fr/evenements.html",
-      "location": {"@type": "City", "name": "Toulouse, France"}
-    }</script>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><link rel="stylesheet" href="/css/main.css?v=20260514"><script src="/js/app.js?v=20260514"></script><script src="/js/utils.js?v=20260514"></script><script src="/js/auth.js?v=20260514"></script><script src="/js/api.js?v=20260514"></script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f0ede6">
+<title>Agenda — CQP Toulouse</title>
+<link rel="stylesheet" href="/css/main.css">
 <style>
-.evt-card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-card);margin-bottom:10px;overflow:hidden;}
-.evt-cover{height:120px;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;position:relative;overflow:hidden;}
-.evt-cover::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#020510,#081a5e,#1877F2);opacity:.97;}
-.evt-head{display:flex;align-items:center;gap:10px;padding:12px 14px 6px;}
-.evt-body{padding:6px 14px 12px;font-size:.86rem;color:var(--txt2);line-height:1.6;}
-.evt-footer{padding:10px 14px;border-top:1px solid var(--bg3);display:flex;align-items:center;gap:8px;}
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s ease;}
-.modal-ov.open{opacity:1;pointer-events:auto;}
-.modal-box{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding-bottom:max(24px,env(safe-area-inset-bottom));}
+body{background:#f0ede6;margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.page-wrap{max-width:600px;margin:0 auto;padding-bottom:100px}
+
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));background:#f0ede6;position:sticky;top:0;z-index:50}
+.topbar-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:1px;text-transform:uppercase}
+.back-btn{background:none;border:none;cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:#fff}
+.btn-proposer{background:#C8102E;color:#fff;border:none;border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+
+/* Header date */
+.agenda-header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:20px 16px;margin:0 0 16px;color:#fff}
+.agenda-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;margin:0 0 4px;letter-spacing:.5px}
+.agenda-header p{font-size:13px;opacity:.7;margin:0}
+.agenda-date{display:inline-flex;flex-direction:column;align-items:center;background:rgba(255,255,255,.15);border-radius:12px;padding:8px 14px;margin-bottom:12px}
+.agenda-date .mois{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:.8}
+.agenda-date .jour{font-size:32px;font-weight:900;line-height:1;font-family:'Barlow Condensed',sans-serif}
+
+/* Filtres */
+.filters{display:flex;gap:8px;padding:0 16px 12px;overflow-x:auto;scrollbar-width:none}
+.filters::-webkit-scrollbar{display:none}
+.filter-btn{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;font-size:13px;font-family:inherit;cursor:pointer;transition:all .15s;white-space:nowrap}
+.filter-btn.active{background:#C8102E;color:#fff;border-color:#C8102E}
+
+/* Cards événement */
+.evt-list{padding:0 16px;display:flex;flex-direction:column;gap:12px}
+.evt-card{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s}
+.evt-card:active{transform:scale(.98)}
+.evt-cover{width:100%;height:160px;object-fit:cover;display:block;background:#e8e3db}
+.evt-cover-placeholder{width:100%;height:140px;background:linear-gradient(135deg,#1a1a2e,#0f3460);display:flex;align-items:center;justify-content:center}
+.evt-cover-placeholder span{font-size:40px}
+.evt-body{padding:14px}
+.evt-badge{display:inline-block;background:#f0f0f0;color:#666;font-size:11px;font-weight:600;padding:3px 8px;border-radius:10px;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.evt-titre{font-size:16px;font-weight:700;color:#1a1a1a;margin:0 0 6px;line-height:1.3}
+.evt-meta{font-size:13px;color:#888;display:flex;flex-direction:column;gap:3px}
+.evt-meta span{display:flex;align-items:center;gap:4px}
+.evt-desc{font-size:13px;color:#555;margin-top:8px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.evt-footer{display:flex;gap:8px;margin-top:12px}
+.btn-inscrire{flex:1;background:#C8102E;color:#fff;border:none;border-radius:10px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-inscrire.inscrit{background:#22c55e}
+.btn-lire{background:#f0f0f0;color:#555;border:none;border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer;font-family:inherit}
+
+/* Vide */
+.empty-state{text-align:center;padding:60px 24px;color:#888}
+.empty-state div{font-size:48px;margin-bottom:12px}
+.empty-state p{font-size:15px}
+
+/* Modal détail */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-box{background:#fff;border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding-bottom:max(24px,env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s}
+.modal-overlay.open .modal-box{transform:translateY(0)}
+.modal-img{width:100%;height:200px;object-fit:cover;display:block}
+.modal-content{padding:20px 16px}
+.modal-badge{font-size:11px;font-weight:700;color:#C8102E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.modal-titre{font-size:20px;font-weight:700;margin:0 0 12px;line-height:1.3}
+.modal-meta{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.modal-meta span{font-size:14px;color:#555;display:flex;align-items:center;gap:6px}
+.modal-desc{font-size:14px;color:#333;line-height:1.6;margin-bottom:20px}
+.modal-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.2);border:none;cursor:pointer;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center}
+
+/* Loading */
+.loading{display:flex;justify-content:center;padding:40px;color:#888;font-size:14px}
 </style>
-</head><body>
-<header class="topbar">
-  <button class="back-btn" onclick="history.back()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-  <div class="topbar-logo"><span class="logo-pill">CQP</span><div class="logo-text"><span class="logo-name">Événements</span></div></div>
-  <button onclick="openModal()" style="padding:8px 14px;background:var(--blue);border:none;border-radius:20px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">+ Proposer</button>
-</header>
-<div style="background:linear-gradient(135deg,#020510,#081a5e,#1877F2);padding:20px 16px 18px;display:flex;align-items:center;gap:14px;">
-  <div style="width:56px;height:56px;background:rgba(255,255,255,.12);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid rgba(255,255,255,.2);">
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:.55rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.6);" id="hero-month"></div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:#fff;line-height:1;" id="hero-day"></div>
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="topbar">
+    <button class="back-btn" onclick="history.back()">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <span class="topbar-title">📅 Agenda</span>
+    <button class="btn-proposer" onclick="window.location.href='ia.html'">+ Proposer</button>
   </div>
-  <div><div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:#fff;">Agenda CQP</div><div style="font-family:'Barlow Condensed',sans-serif;font-size:.72rem;color:rgba(255,255,255,.6);letter-spacing:1px;" id="hero-sub">Chargement…</div></div>
-</div>
-<div style="max-width:680px;margin:10px auto;padding:0 10px 16px;" id="evt-list">
-  <div class="spinner"><div class="spinner-dot"></div><div class="spinner-dot"></div><div class="spinner-dot"></div></div>
-</div>
-<div class="modal-ov" id="modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal-box">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:16px;">📅 Proposer un événement</div>
-    <div class="fg"><label>Titre *</label><input id="pe-titre" placeholder="Nom de l'événement" maxlength="80" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <div class="fg"><label>Date *</label><input type="datetime-local" id="pe-date" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <div class="fg"><label>Catégorie</label><select id="pe-cat" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"><option>Réunion</option><option>Manifestation</option><option>Culture</option><option>Solidarité</option><option>Sport</option><option>Autre</option></select></div>
+
+  <div class="agenda-header">
+    <div class="agenda-date">
+      <span class="mois" id="h-mois">JUN</span>
+      <span class="jour" id="h-jour">10</span>
     </div>
-    <div class="fg"><label>Lieu</label><input id="pe-lieu" placeholder="Adresse ou salle" maxlength="100" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-    <div class="fg"><label>Description</label><textarea id="pe-desc" rows="3" placeholder="Décrivez l'événement…" maxlength="500" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;resize:vertical;"></textarea></div>
-    <div class="fg"><label>Votre prénom *</label><input id="pe-prenom" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-    <button class="btn-rouge" onclick="submitEvt()">📅 Proposer l'événement</button>
-    <div class="form-msg" id="pe-msg"></div>
-    <button onclick="closeModal()" style="width:100%;padding:12px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;margin-top:4px;cursor:pointer;">Annuler</button>
+    <h1>Agenda CQP</h1>
+    <p id="h-count">Chargement...</p>
   </div>
+
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-cat="">Tout</button>
+    <button class="filter-btn" data-cat="Sport">⚽ Sport</button>
+    <button class="filter-btn" data-cat="Culture">🎭 Culture</button>
+    <button class="filter-btn" data-cat="Fête">🎉 Fête</button>
+    <button class="filter-btn" data-cat="Réunion">🗣️ Réunion</button>
+    <button class="filter-btn" data-cat="Atelier">🎨 Atelier</button>
+    <button class="filter-btn" data-cat="Concert">🎵 Concert</button>
+  </div>
+
+  <div class="evt-list" id="evt-list">
+    <div class="loading">Chargement des événements...</div>
+  </div>
+
 </div>
-<!-- MODAL INSCRIPTION -->
-<div class="modal-ov" id="modal-ins" onclick="if(event.target===this)closeInsModal()">
-  <div class="modal-box">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;margin-bottom:4px;">S'inscrire</div>
-    <div style="font-size:.85rem;color:var(--txt2);margin-bottom:16px;" id="ins-titre-display"></div>
-    <div class="fg"><label>Prénom *</label><input id="ins-prenom" maxlength="30" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-      <div class="fg"><label>Nom *</label><input id="ins-nom" maxlength="40" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-      <div class="fg"><label>Email *</label><input id="ins-email" type="email" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
+
+<!-- Modal détail -->
+<div class="modal-overlay" id="modal-detail" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box" style="position:relative">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <img id="modal-img" src="" alt="" style="display:none" class="modal-img">
+    <div class="modal-content">
+      <div class="modal-badge" id="modal-cat">Événement</div>
+      <div class="modal-titre" id="modal-titre"></div>
+      <div class="modal-meta">
+        <span>📅 <span id="modal-date"></span></span>
+        <span id="modal-lieu-wrap" style="display:none">📍 <span id="modal-lieu"></span></span>
+      </div>
+      <div class="modal-desc" id="modal-desc"></div>
+      <button class="btn-inscrire" id="modal-inscrire-btn" onclick="inscrireModal()">S'inscrire</button>
     </div>
-    <div class="fg"><label>Téléphone</label><input id="ins-tel" type="tel" style="width:100%;padding:11px 14px;background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;font-family:'Barlow',sans-serif;font-size:.9rem;outline:none;"></div>
-    <button class="btn-rouge" onclick="submitInscription()">Confirmer mon inscription</button>
-    <div class="form-msg" id="ins-msg"></div>
-    <button onclick="closeInsModal()" style="width:100%;padding:10px;background:none;border:none;color:var(--txt3);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;cursor:pointer;margin-top:4px;">Annuler</button>
   </div>
 </div>
 
+<!-- Navbar -->
 <nav class="bottom-nav">
-  <a class="nav-item" href="index.html"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Accueil</a>
-  <a class="nav-item" href="groupes.html"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Groupes</a>
-  <a class="nav-item" href="annonces2.html"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>Annonces</a>
-  <div class="nav-center"><button class="nav-pub" onclick="openModal()" aria-label="Proposer un événement"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
-  <a class="nav-item active" href="evenements.html"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-  <a class="nav-item" href="actus2.html"><svg viewBox="0 0 24 24"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>Actus</a>
-  <a class="nav-item" href="profil.html"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
+  <a class="nav-item" href="index.html">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Accueil
+  </a>
+  <a class="nav-item" href="groupes.html">
+    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Groupes
+  </a>
+  <a class="nav-item" href="annonces.html">
+    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Annonces
+  </a>
+  <a class="nav-item active" href="evenements.html">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Agenda
+  </a>
+  <a class="nav-item" href="actus.html">
+    <svg viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="9" x2="10" y2="9"/></svg>
+    Actus
+  </a>
+  <a class="nav-item" href="profil.html">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profil
+  </a>
 </nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/js/app.js?v=610759"></script>
+<script src="/js/utils.js?v=610759"></script>
+<script src="/js/auth.js?v=610759"></script>
+<script src="/js/api.js?v=610759"></script>
 <script>
-const esc=s=>Utils.esc(s),timeAgo=d=>Utils.timeAgo(d)
-const now=new Date()
-document.getElementById('hero-month').textContent=now.toLocaleDateString('fr-FR',{month:'short'}).toUpperCase()
-document.getElementById('hero-day').textContent=now.getDate()
-const _inscrits=new Set(JSON.parse(localStorage.getItem('cqp_inscriptions')||'[]'))
-async function load(){
-  const el=document.getElementById('evt-list')
-  const{data,error}=await Api.getEvenements(null, 20)
-  if(error||!data?.length){el.innerHTML='<div class="empty" style="text-align:center;padding:48px 20px"><div style="font-size:2.5rem;margin-bottom:12px">📅</div><div style="font-weight:700;font-size:1rem;margin-bottom:8px">Aucun événement à venir</div><div style="color:var(--txt3);font-size:.85rem;line-height:1.6">Vous organisez quelque chose dans le quartier ?<br>Proposez-le avec le bouton + Proposer !</div></div>';document.getElementById('hero-sub').textContent='Aucun événement à venir';return}
-  _eventsData=data
-  document.getElementById('hero-sub').textContent=`${data.length} événement${data.length>1?'s':''} à venir`
-  el.innerHTML=data.map(e=>{
-    const d=new Date(e.date_debut)
-    const day=d.getDate(),month=d.toLocaleDateString('fr-FR',{month:'short'}).toUpperCase()
-    const heure=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
-    const ins=_inscrits.has(e.id)
-    return `<div class="evt-card">
-      <div class="evt-cover"><div style="position:relative;z-index:1;"><div style="font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.6);">${month}</div><div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#fff;line-height:1;">${day}</div></div></div>
-      <div class="evt-head">
-        <div style="flex:1"><div style="font-weight:600;font-size:.94rem;">${esc(e.titre)}</div><div style="font-size:.78rem;color:var(--txt3);">📅 ${day} ${month} à ${heure}${e.lieu?' · 📍 '+esc(e.lieu):''}</div></div>
-        <span class="badge badge-blue">${esc(e.categorie||'Evt')}</span>
+const esc = s => Utils.esc(s)
+const _inscrits = new Set(JSON.parse(localStorage.getItem('cqp_inscriptions') || '[]'))
+let _allEvts = []
+let _currentEvt = null
+
+// Header date
+const now = new Date()
+document.getElementById('h-mois').textContent = now.toLocaleDateString('fr-FR', {month:'short'}).toUpperCase()
+document.getElementById('h-jour').textContent = now.getDate()
+
+// Filtres
+document.getElementById('filters').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn')
+  if (!btn) return
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  renderList(btn.dataset.cat)
+})
+
+async function load() {
+  const el = document.getElementById('evt-list')
+  const { data, error } = await Api.getEvenements(null, 50)
+  if (error || !data?.length) {
+    el.innerHTML = '<div class="empty-state"><div>📅</div><p>Aucun événement à venir.<br>Sois le premier à en proposer un !</p></div>'
+    document.getElementById('h-count').textContent = 'Aucun événement à venir'
+    return
+  }
+  _allEvts = data
+  document.getElementById('h-count').textContent = data.length + ' événement' + (data.length > 1 ? 's' : '') + ' à venir'
+  renderList('')
+}
+
+function renderList(cat) {
+  const el = document.getElementById('evt-list')
+  const filtered = cat ? _allEvts.filter(e => (e.categorie || '').toLowerCase().includes(cat.toLowerCase())) : _allEvts
+  if (!filtered.length) {
+    el.innerHTML = '<div class="empty-state"><div>🔍</div><p>Aucun événement dans cette catégorie.</p></div>'
+    return
+  }
+  el.innerHTML = filtered.map(e => cardHTML(e)).join('')
+}
+
+function cardHTML(e) {
+  const d = e.date_debut ? new Date(e.date_debut) : null
+  const dateStr = d ? d.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'}) : ''
+  const heureStr = d ? d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) : ''
+  const img = e.image_url || e.photo_url
+  const inscrit = _inscrits.has(e.id)
+  return `<div class="evt-card" onclick="openDetail(${e.id})">
+    ${img
+      ? `<img class="evt-cover" src="${esc(img)}" alt="${esc(e.titre)}" loading="lazy">`
+      : `<div class="evt-cover-placeholder"><span>📅</span></div>`
+    }
+    <div class="evt-body">
+      <div class="evt-badge">${esc(e.categorie || 'Événement')}</div>
+      <div class="evt-titre">${esc(e.titre)}</div>
+      <div class="evt-meta">
+        ${dateStr ? `<span>📅 ${dateStr}${heureStr ? ' à ' + heureStr : ''}</span>` : ''}
+        ${e.lieu ? `<span>📍 ${esc(e.lieu)}</span>` : ''}
       </div>
-      ${(e.image_url||e.photo_url)?`<div style="border-radius:12px;overflow:hidden;margin:8px 0;"><img src="${esc(e.image_url||e.photo_url)}" style="width:100%;max-height:220px;object-fit:cover;display:block;"></div>`:''}
-      ${e.description?`<div class="evt-body">${esc(e.description.substring(0,160))}${e.description.length>160?'…':''}</div>`:''}
+      ${e.description ? `<div class="evt-desc">${esc(e.description)}</div>` : ''}
       <div class="evt-footer">
-        <span class="tag">${Utils.countdown(e.date_debut)}</span>
-        <button onclick="openDetail(${e.id})" style="padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:22px;color:var(--txt);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">Lire +</button>
-        <button id="ins-${e.id}" onclick="openInscription(${e.id},'${Utils.esc(e.titre)}')" style="flex:1;padding:10px;background:${_inscrits.has(e.id)?'var(--green)':'var(--blue)'};border:none;border-radius:22px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">${_inscrits.has(e.id)?'✅ Inscrit':"S'inscrire"}</button>
+        <button class="btn-lire" onclick="event.stopPropagation();openDetail(${e.id})">Lire +</button>
+        <button class="btn-inscrire ${inscrit ? 'inscrit' : ''}" onclick="event.stopPropagation();inscrire(${e.id},this)">
+          ${inscrit ? '✅ Inscrit' : "S'inscrire"}
+        </button>
       </div>
-    </div>`
-  }).join('')
-}
-let _currentInsEvtId=null
-let _eventsData=[]
-function openDetail(id){
-  const e=_eventsData.find(x=>x.id===id)
-  if(!e)return
-  const d=e.date_debut?new Date(e.date_debut):null
-  const dateStr=d?d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}):''
-  const heureStr=d?d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):''
-  document.getElementById('detail-titre').textContent=e.titre||''
-  document.getElementById('detail-date').textContent=(dateStr?dateStr+' ':'')+( heureStr?'à '+heureStr:'')
-  document.getElementById('detail-lieu').textContent=e.lieu?'📍 '+e.lieu:''
-  document.getElementById('detail-body').textContent=e.description||'Aucune description.'
-  document.getElementById('detail-cat').textContent=e.categorie||'Événement'
-  document.getElementById('modal-detail').classList.add('open')
-  document.body.style.overflow='hidden'
-}
-function closeDetail(){document.getElementById('modal-detail').classList.remove('open');document.body.style.overflow=''}
-function openInscription(id,titre){
-  _currentInsEvtId=id
-  const el=document.getElementById('ins-titre-display');if(el)el.textContent=titre||''
-  const p=Auth.getPrenom();if(p){const inp=document.getElementById('ins-prenom');if(inp)inp.value=p}
-  document.getElementById('modal-ins').classList.add('open');document.body.style.overflow='hidden'
-}
-function closeInsModal(){document.getElementById('modal-ins').classList.remove('open');document.body.style.overflow=''}
-async function submitInscription(){
-  const prenom=document.getElementById('ins-prenom').value.trim()
-  const nom=document.getElementById('ins-nom').value.trim()
-  const email=document.getElementById('ins-email').value.trim()
-  const tel=document.getElementById('ins-tel')?.value.trim()
-  const msg=document.getElementById('ins-msg')
-  if(!prenom||!nom||!email){msg.style.color='var(--rouge)';msg.textContent='Prénom, nom et email obligatoires.';return}
-  msg.style.color='var(--txt3)';msg.textContent='Inscription en cours…'
-  const{error}=await Api.createInscription({evenement_id:_currentInsEvtId,prenom,nom,email,telephone:tel||null})
-  if(error){msg.style.color='var(--rouge)';msg.textContent='Erreur: '+error.message;return}
-  _inscrits.add(_currentInsEvtId)
-  localStorage.setItem('cqp_inscriptions',JSON.stringify([..._inscrits]))
-  const btn=document.getElementById('ins-'+_currentInsEvtId)
-  if(btn){btn.textContent='✅ Inscrit';btn.style.background='var(--green)'}
-  msg.style.color='var(--green)';msg.textContent='✅ Inscription confirmée !'
-  setTimeout(closeInsModal,1500)
-}
-function openModal(){
-  const p=Auth.getPrenom();if(p){const el=document.getElementById('pe-prenom');el.value=p;el.readOnly=true;}
-  document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'
-}
-function closeModal(){document.getElementById('modal').classList.remove('open');document.body.style.overflow=''}
-async function submitEvt(){
-  const titre=document.getElementById('pe-titre').value.trim()
-  const dateVal=document.getElementById('pe-date').value
-  const cat=document.getElementById('pe-cat').value
-  const lieu=document.getElementById('pe-lieu').value.trim()
-  const desc=document.getElementById('pe-desc').value.trim()
-  const prenom=document.getElementById('pe-prenom').value.trim()||Auth.getPrenom()
-  const msg=document.getElementById('pe-msg')
-  if(!titre||!dateVal||!prenom){msg.style.color='var(--rouge)';msg.textContent='Titre, date et prénom obligatoires.';return}
-  msg.style.color='var(--txt3)';msg.textContent='Envoi…'
-  const{error}=await Api.createEvenement({titre,date_debut:new Date(dateVal).toISOString(),categorie:cat,lieu:lieu||'',description:desc||'',propose_par:prenom})
-  if(error){msg.style.color='var(--rouge)';msg.textContent='Erreur: '+error.message;return}
-  msg.style.color='var(--green)';msg.textContent='✅ Proposé — validation sous 24h.'
-  setTimeout(closeModal,2000)
-}
-load();Api.trackView('evenements');
-// Deep link
-setTimeout(function(){ var h=location.hash.replace('#evt-',''); if(h&&!isNaN(h)) openDetail(parseInt(h)); }, 600);
-if(window.location.search.includes('new=1'))openModal()
-</script>
-<div class="modal-ov" id="modal-detail" onclick="if(event.target===this)closeDetail()" style="align-items:center;">
-  <div style="background:#fff;border-radius:16px;width:92%;max-width:420px;padding:24px 20px;max-height:80vh;overflow-y:auto;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <span id="detail-cat" style="font-size:.7rem;background:#e8f0fe;color:#1877F2;padding:4px 12px;border-radius:20px;font-weight:700;letter-spacing:.5px;"></span>
-      <button onclick="closeDetail()" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--txt3);">✕</button>
     </div>
-    <div id="detail-titre" style="font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:8px;line-height:1.3;"></div>
-    <div id="detail-date" style="font-size:.82rem;color:var(--txt3);margin-bottom:4px;"></div>
-    <div id="detail-lieu" style="font-size:.82rem;color:var(--txt3);margin-bottom:16px;"></div>
-    <div id="detail-body" style="font-size:.9rem;line-height:1.7;color:var(--txt);white-space:pre-wrap;border-top:1px solid var(--border);padding-top:14px;"></div>
-  </div>
-</div>
-</body></html>
+  </div>`
+}
+
+function openDetail(id) {
+  const e = _allEvts.find(x => x.id === id)
+  if (!e) return
+  _currentEvt = e
+  const d = e.date_debut ? new Date(e.date_debut) : null
+  const dateStr = d ? d.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) : ''
+  const heureStr = d ? d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'}) : ''
+  const img = e.image_url || e.photo_url
+  const modalImg = document.getElementById('modal-img')
+  if (img) { modalImg.src = img; modalImg.style.display = 'block' }
+  else { modalImg.style.display = 'none' }
+  document.getElementById('modal-cat').textContent = e.categorie || 'Événement'
+  document.getElementById('modal-titre').textContent = e.titre || ''
+  document.getElementById('modal-date').textContent = (dateStr || '') + (heureStr ? ' à ' + heureStr : '')
+  const lieuWrap = document.getElementById('modal-lieu-wrap')
+  if (e.lieu) { document.getElementById('modal-lieu').textContent = e.lieu; lieuWrap.style.display = 'flex' }
+  else { lieuWrap.style.display = 'none' }
+  document.getElementById('modal-desc').textContent = e.description || 'Aucune description.'
+  const inscrit = _inscrits.has(e.id)
+  const btn = document.getElementById('modal-inscrire-btn')
+  btn.textContent = inscrit ? '✅ Déjà inscrit' : "S'inscrire"
+  btn.className = 'btn-inscrire' + (inscrit ? ' inscrit' : '')
+  document.getElementById('modal-detail').classList.add('open')
+  document.body.style.overflow = 'hidden'
+}
+
+function closeModal() {
+  document.getElementById('modal-detail').classList.remove('open')
+  document.body.style.overflow = ''
+}
+
+function inscrire(id, btn) {
+  if (_inscrits.has(id)) return
+  _inscrits.add(id)
+  localStorage.setItem('cqp_inscriptions', JSON.stringify([..._inscrits]))
+  if (btn) { btn.textContent = '✅ Inscrit'; btn.classList.add('inscrit') }
+}
+
+function inscrireModal() {
+  if (_currentEvt) inscrire(_currentEvt.id, document.getElementById('modal-inscrire-btn'))
+}
+
+load()
+</script>
+</body>
+</html>
