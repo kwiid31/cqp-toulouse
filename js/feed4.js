@@ -290,7 +290,7 @@ const Feed = (() => {
         <span class="card-link-annonce">Voir →</span>
       </div>
       <div class="card-text" class="card-titre-lg">${titre}</div>
-      ${desc ? `<div class="card-text" class="card-desc">${desc}</div>` : ''}
+      ${desc ? `<div style="font-size:13px;color:#555;margin-top:6px;line-height:1.4;">${desc}</div>` : ''}
       ${imgHtml}
     </article>`
   }
@@ -305,26 +305,22 @@ const Feed = (() => {
     const prenom = Utils.esc(e.prenom || 'CQP')
     const av = prenom[0].toUpperCase()
     const photoHtml = (e.image_url || e.photo_url) ? `<div style="border-radius:12px;overflow:hidden;margin-top:8px;"><img src="${Utils.esc(e.image_url || e.photo_url)}" style="width:100%;height:auto;display:block;max-height:300px;object-fit:cover;"></div>` : ''
-    return `<article class="card" class="card-clickable card-border-bleu" onclick="location.href='evenements.html#evt-${e.id}'">
-      <div class="card-head">
-        <div class="c-av c-av-40 c-av-init" class="c-av c-av-40 c-av-init card-av-evenement-v2">${av}</div>
-        <div class="card-meta">
-          <div class="card-author" class="card-author-evenement">📅 ÉVÉNEMENT${dateStr ? ' · ' + dateStr : ''}</div>
-          <div class="card-ts">${heureStr ? '🕐 ' + heureStr : ''}${lieu ? ' · ' + lieu : ''}</div>
+    return `<article class="card card-clickable card-border-bleu" onclick="location.href='evenements.html'" style="padding:0;overflow:hidden;">
+      ${photoHtml ? photoHtml.replace('margin-top:8px;', 'margin-top:0;border-radius:0;') : `<div style="height:8px;background:linear-gradient(90deg,#1a1a2e,#0f3460);"></div>`}
+      <div style="padding:12px 14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-size:11px;font-weight:700;color:#0f3460;text-transform:uppercase;letter-spacing:.5px;">📅 AGENDA${dateStr ? ' · ' + dateStr : ''}</div>
+          ${(_isAdmin ? `<div style="position:relative;">
+            <button onclick="event.stopPropagation();Feed.toggleMenu('evt-${e.id}',event)" style="background:none;border:none;color:#C8102E;font-size:1.2rem;letter-spacing:2px;padding:2px 6px;cursor:pointer;line-height:1;">···</button>
+            <div id="menu-evt-${e.id}" style="display:none;position:absolute;right:0;top:100%;background:#fff;border:0.5px solid #ddd;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:200;min-width:140px;">
+              <button onclick="Feed.adminHideEvt(${e.id})" style="width:100%;padding:9px 14px;background:none;border:none;text-align:left;font-size:.85rem;color:#E24B4A;cursor:pointer;">👁 Masquer</button>
+            </div>
+          </div>` : '')}
         </div>
-        ${(_isAdmin ? `<div style="position:relative;">
-          <button onclick="Feed.toggleMenu('evt-${e.id}',event)" style="background:none;border:none;color:#C8102E;font-size:1.1rem;letter-spacing:1px;padding:4px 6px;cursor:pointer;line-height:1;">···</button>
-          <div id="menu-evt-${e.id}" style="display:none;position:absolute;right:0;top:100%;background:#fff;border:0.5px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:100;min-width:160px;">
-            <button onclick="Feed.adminHideEvt(${e.id})" style="width:100%;padding:9px 14px;background:none;border:none;text-align:left;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">
-              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>Masquer
-            </button>
-          </div>
-        </div>` : '')}
-        <span class="card-link-bleu">Voir →</span>
+        <div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.3;">${titre}</div>
+        ${heureStr || lieu ? `<div style="font-size:12px;color:#888;">${heureStr ? '🕐 ' + heureStr : ''}${lieu ? ' · 📍 ' + lieu : ''}</div>` : ''}
+        ${desc ? `<div style="font-size:13px;color:#555;margin-top:6px;line-height:1.4;">${desc}</div>` : ''}
       </div>
-      <div class="card-text" class="card-titre-lg">${titre}</div>
-      ${desc ? `<div class="card-text" class="card-desc">${desc}</div>` : ''}
-      ${photoHtml}
     </article>`
   }
 
