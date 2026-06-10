@@ -279,6 +279,14 @@ const Feed = (() => {
           <div class="card-author" class="card-author-annonce">📋 ANNONCE${qrt ? ' · ' + qrt : ''}</div>
           <div class="card-ts">${prenom}</div>
         </div>
+        ${(_isAdmin ? `<div style="position:relative;">
+          <button onclick="Feed.toggleMenu('ann-${a.id}',event)" style="background:none;border:none;color:#C8102E;font-size:1.1rem;letter-spacing:1px;padding:4px 6px;cursor:pointer;line-height:1;">···</button>
+          <div id="menu-ann-${a.id}" style="display:none;position:absolute;right:0;top:100%;background:#fff;border:0.5px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:100;min-width:160px;">
+            <button onclick="Feed.adminHideAnn(${a.id})" style="width:100%;padding:9px 14px;background:none;border:none;text-align:left;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>Masquer
+            </button>
+          </div>
+        </div>` : '')}
         <span class="card-link-annonce">Voir →</span>
       </div>
       <div class="card-text" class="card-titre-lg">${titre}</div>
@@ -304,6 +312,14 @@ const Feed = (() => {
           <div class="card-author" class="card-author-evenement">📅 ÉVÉNEMENT${dateStr ? ' · ' + dateStr : ''}</div>
           <div class="card-ts">${heureStr ? '🕐 ' + heureStr : ''}${lieu ? ' · ' + lieu : ''}</div>
         </div>
+        ${(_isAdmin ? `<div style="position:relative;">
+          <button onclick="Feed.toggleMenu('evt-${e.id}',event)" style="background:none;border:none;color:#C8102E;font-size:1.1rem;letter-spacing:1px;padding:4px 6px;cursor:pointer;line-height:1;">···</button>
+          <div id="menu-evt-${e.id}" style="display:none;position:absolute;right:0;top:100%;background:#fff;border:0.5px solid var(--border);border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:100;min-width:160px;">
+            <button onclick="Feed.adminHideEvt(${e.id})" style="width:100%;padding:9px 14px;background:none;border:none;text-align:left;font-size:.85rem;color:#E24B4A;cursor:pointer;display:flex;align-items:center;gap:8px;">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>Masquer
+            </button>
+          </div>
+        </div>` : '')}
         <span class="card-link-bleu">Voir →</span>
       </div>
       <div class="card-text" class="card-titre-lg">${titre}</div>
