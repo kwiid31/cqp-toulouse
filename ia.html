@@ -270,9 +270,10 @@ function addMsg(role, txt) {
 // ═══════════════════════════════════════════
 // PUBLICATION
 // ═══════════════════════════════════════════
-function showEditablePreview(type, suggestion, imgB64, imgMime) {
+function showEditablePreview(type, suggestion, imgB64, imgMime, extraData) {
   var typeLabel = type === 'post' ? 'Post' : type === 'annonce' ? 'Annonce' : 'Événement'
   var q = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
+  extraData = extraData || {}
 
   var card = document.createElement('div')
   card.className = 'preview-card'
@@ -288,19 +289,52 @@ function showEditablePreview(type, suggestion, imgB64, imgMime) {
     card.appendChild(img)
   }
 
-  // Hint modifiable
+  // Champs date/heure pour les événements
+  var dateInput = null
+  var heureInput = null
+  var lieuInput = null
+  if (type === 'evenement') {
+    var defaultDate = new Date(); defaultDate.setDate(defaultDate.getDate() + 14)
+    var dateStr = (extraData.date || defaultDate.toISOString().slice(0,10))
+
+    var fieldsDiv = document.createElement('div')
+    fieldsDiv.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;'
+
+    dateInput = document.createElement('input')
+    dateInput.type = 'date'
+    dateInput.value = dateStr
+    dateInput.style.cssText = 'flex:1;border:1px solid #ddd;border-radius:8px;padding:8px;font-size:14px;font-family:inherit;'
+
+    heureInput = document.createElement('input')
+    heureInput.type = 'time'
+    heureInput.value = extraData.heure || '14:00'
+    heureInput.style.cssText = 'width:110px;border:1px solid #ddd;border-radius:8px;padding:8px;font-size:14px;font-family:inherit;'
+
+    fieldsDiv.appendChild(dateInput)
+    fieldsDiv.appendChild(heureInput)
+    card.appendChild(fieldsDiv)
+
+    lieuInput = document.createElement('input')
+    lieuInput.type = 'text'
+    lieuInput.value = extraData.lieu || ''
+    lieuInput.placeholder = 'Lieu de l\'événement...'
+    lieuInput.style.cssText = 'width:100%;border:1px solid #ddd;border-radius:8px;padding:8px;font-size:14px;font-family:inherit;box-sizing:border-box;margin-bottom:8px;'
+    card.appendChild(lieuInput)
+  }
+
+  // Hint
   var hint = document.createElement('p')
-  hint.textContent = '✏️ Modifie le texte directement ci-dessous avant de publier'
+  hint.textContent = '✏️ Modifie le texte avant de publier'
   hint.style.cssText = 'font-size:12px;color:#C8102E;margin:0 0 6px;font-weight:500;'
   card.appendChild(hint)
 
-  // Textarea éditable
+  // Textarea
   var ta = document.createElement('textarea')
   ta.value = suggestion || ''
-  ta.placeholder = 'Écris ton texte ici...'
+  ta.placeholder = type === 'evenement' ? 'Description de l\'événement...' : 'Écris ton texte ici...'
   ta.style.cssText = 'width:100%;border:2px solid #C8102E;border-radius:8px;padding:10px;font-size:14px;font-family:inherit;resize:vertical;min-height:80px;box-sizing:border-box;color:#1a1a1a;background:#fff;'
   card.appendChild(ta)
-  setTimeout(function(){ ta.focus(); ta.select() }, 300)
+  setTimeout(function(){ ta.focus() }, 300)
 
   var btns = document.createElement('div')
   btns.className = 'preview-btns'
@@ -310,9 +344,21 @@ function showEditablePreview(type, suggestion, imgB64, imgMime) {
   btnPub.textContent = 'Publier'
   btnPub.addEventListener('click', function() {
     var pd = {action:'publier', type: type, quartier: q}
-    if (type === 'post') pd.contenu = ta.value
-    else if (type === 'annonce') { pd.titre = ta.value.split('\n')[0]; pd.description = ta.value; pd.categorie = 'Autre' }
-    else { pd.titre = ta.value.split('\n')[0]; pd.description = ta.value; pd.lieu = q; pd.date = '2026-06-15' }
+    if (type === 'post') {
+      pd.contenu = ta.value
+    } else if (type === 'annonce') {
+      pd.titre = ta.value.split('\n')[0] || ta.value
+      pd.description = ta.value
+      pd.categorie = extraData.categorie || 'Autre'
+    } else {
+      // Événement — avec date + heure + lieu
+      pd.titre = extraData.titre || ta.value.split('\n')[0] || 'Événement'
+      pd.description = ta.value
+      pd.lieu = lieuInput ? lieuInput.value : (extraData.lieu || q)
+      var date = dateInput ? dateInput.value : (extraData.date || new Date(Date.now() + 14*86400000).toISOString().slice(0,10))
+      var heure = heureInput ? heureInput.value : (extraData.heure || '14:00')
+      pd.date = date + 'T' + heure + ':00'
+    }
     publishPost(pd, imgB64, imgMime)
     card.remove()
   })
