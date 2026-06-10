@@ -230,7 +230,7 @@ function getSYS() {
     + ' Génère le JSON dès que l\'utilisateur te dit clairement ce qu\'il veut publier — que ce soit avec des mots comme : publie, ajoute, crée, fais, mets, poste, vas-y, ok, oui, ou n\'importe quelle phrase qui exprime une intention de publication. Sans texte avant ni après le JSON :'
     + ' Post: {"action":"publier","type":"post","contenu":"...","quartier":"' + quartier + '"}'
     + ' Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + quartier + '"}'
-    + ' Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}'
+    + ' Evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"" + defaultDateStr + ","description":"..."}'
 }
 
 // ═══════════════════════════════════════════
@@ -476,12 +476,16 @@ function analyzeVision(b64, mime, userMsg) {
   var q = profil ? (profil.quartier || 'Toulouse') : 'Toulouse'
   var fType = forcedType
 
+  // Date par défaut = dans 2 semaines
+  var defaultEvtDate = new Date(); defaultEvtDate.setDate(defaultEvtDate.getDate() + 14)
+  var defaultDateStr = defaultEvtDate.toISOString().slice(0,10)
+
   var typeInstruction = ''
   if (fType === 'evenement') {
     typeInstruction = ' L\'utilisateur veut créer un ÉVÉNEMENT avec cette image (probablement un flyer).'
       + ' Si la date est visible sur le flyer → génère le JSON avec la vraie date au format YYYY-MM-DD.'
       + ' Si la date n\'est PAS visible → pose UNE question : "C\'est pour quelle date ?"'
-      + ' Si tu as la date → génère UNIQUEMENT ce JSON : {"action":"publier","type":"evenement","titre":"...","lieu":"lieu ou ' + q + '","date":"YYYY-MM-DD","description":"..."}'
+      + ' Si tu as la date → génère UNIQUEMENT ce JSON : {"action":"publier","type":"evenement","titre":"...","lieu":"lieu ou ' + q + '","date":"" + defaultDateStr + ","description":"..."}'
   } else if (fType === 'annonce') {
     typeInstruction = ' L\'utilisateur veut créer une ANNONCE avec cette image. Génère UNIQUEMENT ce JSON : {"action":"publier","type":"annonce","titre":"titre court","categorie":"Vente","description":"description basée sur l\'image","quartier":"' + q + '"}'
   } else if (fType === 'post') {
