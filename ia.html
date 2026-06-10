@@ -440,7 +440,8 @@ async function publishPost(pd, imgB64, imgMime) {
     } else {
       row.titre = pd.titre
       row.lieu = pd.lieu || ''
-      row.date_debut = pd.date || new Date().toISOString().slice(0,10)
+      var defaultDate = new Date(); defaultDate.setDate(defaultDate.getDate() + 14)
+      row.date_debut = pd.date || defaultDate.toISOString().slice(0,10)
       row.description = pd.description || ''
       row.visible = true
       row.validee = true
@@ -477,7 +478,7 @@ function analyzeVision(b64, mime, userMsg) {
 
   var typeInstruction = ''
   if (fType === 'evenement') {
-    typeInstruction = ' L\'utilisateur veut créer un ÉVÉNEMENT avec cette image (c\'est probablement un flyer). Génère UNIQUEMENT ce JSON sans rien d\'autre : {"action":"publier","type":"evenement","titre":"titre de l\'événement visible sur le flyer ou déduit","lieu":"lieu visible ou ' + q + '","date":"2026-06-20","description":"description courte de l\'événement"}'
+    typeInstruction = ' L\'utilisateur veut créer un ÉVÉNEMENT avec cette image (c\'est probablement un flyer). Génère UNIQUEMENT ce JSON sans rien d\'autre : {"action":"publier","type":"evenement","titre":"titre de l\'événement visible sur le flyer ou déduit","lieu":"lieu visible ou ' + q + '","date":"2026-06-21","description":"description courte de l\'événement"}'
   } else if (fType === 'annonce') {
     typeInstruction = ' L\'utilisateur veut créer une ANNONCE avec cette image. Génère UNIQUEMENT ce JSON : {"action":"publier","type":"annonce","titre":"titre court","categorie":"Vente","description":"description basée sur l\'image","quartier":"' + q + '"}'
   } else if (fType === 'post') {
