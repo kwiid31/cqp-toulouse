@@ -467,7 +467,23 @@ function openMedia(url, type) {
     el.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;border-radius:10px;'
   }
   viewer.appendChild(el)
-  viewer.addEventListener('click', () => viewer.remove())
+  // Cacher navbar pendant le viewer
+  var nav = document.querySelector('.bottom-nav')
+  if (nav) nav.classList.add('hidden')
+  viewer.addEventListener('click', () => {
+    viewer.remove()
+    // Remettre navbar
+    if (nav) nav.classList.remove('hidden')
+  })
+  // Swipe vers le bas pour fermer
+  var startY = 0
+  viewer.addEventListener('touchstart', function(e) { startY = e.touches[0].clientY }, {passive:true})
+  viewer.addEventListener('touchend', function(e) {
+    if (e.changedTouches[0].clientY - startY > 80) {
+      viewer.remove()
+      if (nav) nav.classList.remove('hidden')
+    }
+  }, {passive:true})
   document.body.appendChild(viewer)
 }
 
