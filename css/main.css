@@ -269,7 +269,7 @@ img { max-width:100%; display:block; }
   transform:translateZ(0);
   /* Micro-boost contraste sur l'image elle-même */
 }
-.card-img-wrap img { width:100%; display:block; height:auto; max-height:600px; object-fit:contain; }
+.card-img-wrap img { width:100%; display:block; height:auto; max-height:600px; object-fit:contain; outline:1.5px solid rgba(0,0,0,.14); outline-offset:-1px; }
 .card-img-wrap video { width:100%; display:block; max-height:500px; background:#000; object-fit:contain; }
 
 /* ── Action bar ───────────────────────────────────────────────── */
