@@ -663,11 +663,11 @@ const Feed = (() => {
       var d = e.date_debut ? new Date(e.date_debut) : null
       var dateStr = d ? d.toLocaleDateString('fr-FR', {day:'numeric', month:'short'}) : ''
       var meta = [dateStr, e.lieu].filter(Boolean).join(' · ')
-      return _renderUnifiedCard('evenement', e.titre || 'Événement', meta, e.photo_url, "location.href='evenements.html#evt-" + e.id + "'")
+      return _renderUnifiedCard('evenement', e.titre || 'Événement', meta, e.image_url || e.photo_url, "location.href='evenements.html#evt-" + e.id + "'")
     },
     renderAnnCard: function(a) {
       var meta = [a.categorie, a.quartier].filter(Boolean).join(' · ')
-      return _renderUnifiedCard('annonce', a.titre || 'Annonce', meta, a.photo_url, "location.href='annonces.html#an-" + a.id + "'")
+      return _renderUnifiedCard('annonce', a.titre || 'Annonce', meta, a.image_url || a.photo_url, "location.href='annonces.html#an-" + a.id + "'")
     }
   }
 })()
