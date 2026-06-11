@@ -13,8 +13,8 @@
   --txt:#111111;   --txt2:#555555;  --txt3:#999999;
 
   /* Rétrocompat */
-  --bg:#F0F2F5; --bg2:#fff; --bg3:#F0F2F5;
-  --bg-app:#F0F2F5; --bg-low:#F7F8FA; --bg-card:#fff; --bg-float:#fff;
+  --bg:#E8EAF0; --bg2:#FFFFFF; --bg3:#F0F2F5;
+  --bg-app:#E8EAF0; --bg-low:#F4F5F8; --bg-card:#FFFFFF; --bg-float:#FFFFFF;
 
   /* Borders — très subtils pour ne pas alourdir */
   --border: rgba(0,0,0,.07);
@@ -33,7 +33,7 @@
   --gap-feed: 8px;   /* entre les cards du feed */
   --gap-section: 16px; /* entre les sections */
 }
-html, body { font-size:15px; background:var(--bg); color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
+html, body { font-size:15px; background:#E4E6EC; color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
 body { padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px); overscroll-behavior:none; }
 a { text-decoration:none; color:inherit; }
 button, label { cursor:pointer; font-family:inherit; outline:none; border:none; }
@@ -90,8 +90,8 @@ img { max-width:100%; display:block; }
   z-index:200;
   /* Liquid Glass */
   background:rgba(255,255,255,.28);
-  backdrop-filter:saturate(180%) blur(48px) brightness(1.08);
-  -webkit-backdrop-filter:saturate(180%) blur(48px) brightness(1.08);
+  backdrop-filter:saturate(160%) blur(48px) brightness(1.12) contrast(1.04);
+  -webkit-backdrop-filter:saturate(160%) blur(48px) brightness(1.12) contrast(1.04);
   /* Bord verre — reflet lumineux */
   border:.5px solid rgba(255,255,255,.55);
   border-radius:28px;
