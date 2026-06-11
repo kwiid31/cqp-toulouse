@@ -18,22 +18,21 @@ if ('serviceWorker' in navigator) {
 }
 
 // ── Navbar + Topbar scroll hide/show (Liquid Glass style) ────────
-;(function() {
+document.addEventListener('DOMContentLoaded', function() {
   var nav = document.querySelector('.bottom-nav')
   var top = document.querySelector('.topbar')
   if (!nav && !top) return
-  var lastY = 0
+  var lastY = window.scrollY
   var ticking = false
   window.addEventListener('scroll', function() {
     if (!ticking) {
       requestAnimationFrame(function() {
         var y = window.scrollY
-        if (y > lastY + 6) {
-          // Scroll vers le bas → cacher
+        var diff = y - lastY
+        if (diff > 4 && y > 80) {
           if (nav) nav.classList.add('hidden')
           if (top) top.classList.add('hidden')
-        } else if (y < lastY - 6) {
-          // Scroll vers le haut → montrer
+        } else if (diff < -4) {
           if (nav) nav.classList.remove('hidden')
           if (top) top.classList.remove('hidden')
         }
@@ -43,4 +42,4 @@ if ('serviceWorker' in navigator) {
       ticking = true
     }
   }, { passive: true })
-})()
+})
