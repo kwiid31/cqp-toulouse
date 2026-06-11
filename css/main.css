@@ -238,7 +238,7 @@ img { max-width:100%; display:block; }
 .card-more:active { background:var(--bg3); }
 .card-text { padding:4px 12px 10px; font-size:15px; line-height:1.4; white-space:pre-wrap; word-break:break-word; color:#000000; font-weight:400; -webkit-font-smoothing:antialiased; }
 .card-img-wrap {
-  overflow:hidden; margin:0 0 10px; border-radius:0;
+  overflow:hidden; margin:0 8px 10px; border-radius:18px;
   position:relative;
   /* Isolation GPU propre */
   transform:translateZ(0);
