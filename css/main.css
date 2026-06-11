@@ -33,7 +33,7 @@
   --gap-feed: 8px;   /* entre les cards du feed */
   --gap-section: 16px; /* entre les sections */
 }
-html, body { font-size:15px; background:#FFFFFF; color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
+html, body { font-size:15px; background:#FFFFFF; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
 body { padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px); overscroll-behavior:none; }
 a { text-decoration:none; color:inherit; }
 button, label { cursor:pointer; font-family:inherit; outline:none; border:none; }
