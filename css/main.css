@@ -12,16 +12,16 @@
   /* Text */
   --txt:#111111;   --txt2:#555555;  --txt3:#999999;
 
-  /* Elevated surfaces — 4 niveaux de profondeur */
-  --bg-app:   #EDEAE4;   /* niveau 0 — fond app, le plus bas */
-  --bg-low:   #F4F1EC;   /* niveau 1 — surface secondaire (encarts, input zones) */
-  --bg-card:  #FAFAF8;   /* niveau 2 — cards posts, items */
-  --bg-float: #FFFFFF;   /* niveau 3 — modals, topbar, navbar flottante */
+  /* Elevated surfaces — 4 niveaux de profondeur (nuances de blanc) */
+  --bg-app:   #F0F2F5;   /* niveau 0 — fond app, gris très léger */
+  --bg-low:   #F7F8FA;   /* niveau 1 — surface secondaire */
+  --bg-card:  #FFFFFF;   /* niveau 2 — cards posts, blanc pur */
+  --bg-float: #FFFFFF;   /* niveau 3 — modals, topbar, navbar */
 
   /* Rétrocompat */
-  --bg:  #EDEAE4;
-  --bg2: #FAFAF8;
-  --bg3: #F4F1EC;
+  --bg:  #F0F2F5;
+  --bg2: #FFFFFF;
+  --bg3: #F7F8FA;
 
   /* Borders — très subtils pour ne pas alourdir */
   --border: rgba(0,0,0,.07);
