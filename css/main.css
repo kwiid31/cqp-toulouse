@@ -49,7 +49,10 @@ img { max-width:100%; display:block; }
 .topbar {
   position:fixed; top:0; left:0; right:0; z-index:100;
   background:#fff;
-  border:none; box-shadow:none; transition:transform .35s cubic-bezier(.4,0,.2,1), opacity .25s; border-bottom:none;
+  border:none; box-shadow:none; transition:transform .35s cubic-bezier(.4,0,.2,1), opacity .25s;
+  will-change:transform;
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden; border-bottom:none;
   display:flex; align-items:center; justify-content:space-between;
   padding:0 16px;
   padding-top:env(safe-area-inset-top);
@@ -109,6 +112,9 @@ img { max-width:100%; display:block; }
     inset 0 1.5px 0 rgba(255,255,255,.75),
     inset 0 -1px 0 rgba(255,255,255,.2);
   transition:transform .4s cubic-bezier(.4,0,.2,1), opacity .3s ease;
+  will-change:transform;
+  -webkit-backface-visibility:hidden;
+  backface-visibility:hidden;
 }
 .bottom-nav.hidden {
   transform:translateX(-50%) translateY(calc(100% + 24px));
@@ -226,11 +232,11 @@ img { max-width:100%; display:block; }
 .c-av-28 { width:28px; height:28px; min-width:28px; font-size:.7rem; }
 .c-av-36 { width:36px; height:36px; min-width:36px; font-size:.85rem; }
 .card-meta { flex:1; min-width:0; }
-.card-author { font-weight:600; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#000000; }
+.card-author { font-weight:600; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#000000; -webkit-font-smoothing:antialiased; }
 .card-ts { font-size:.8rem; color:#737373; margin-top:1px; display:flex; align-items:center; gap:3px; font-weight:400; }
 .card-more { background:none; border:none; padding:10px; min-width:44px; min-height:44px; color:var(--txt3); border-radius:6px; transition:background .15s; }
 .card-more:active { background:var(--bg3); }
-.card-text { padding:4px 12px 10px; font-size:.9375rem; line-height:1.4; white-space:pre-wrap; word-break:break-word; color:#000000; font-weight:400; }
+.card-text { padding:4px 12px 10px; font-size:15px; line-height:1.4; white-space:pre-wrap; word-break:break-word; color:#000000; font-weight:400; -webkit-font-smoothing:antialiased; }
 .card-img-wrap { overflow:hidden; margin:0 0 10px; border-radius:0; }
 .card-img-wrap img { width:100%; display:block; max-height:500px; object-fit:cover; }
 .card-img-wrap video { width:100%; display:block; max-height:500px; background:#000; }
