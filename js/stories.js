@@ -56,9 +56,9 @@ const QUARTIERS = [
 
     // Card "Créer ma story" en premier
     const createCard = `
-      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;width:80px;" onclick="if(Auth.getCode()){Stories.openCompose()}else{window.location.href='profil.html'}">
-        <div style="position:relative;width:76px;height:76px;">
-          <div style="width:76px;height:76px;border-radius:50%;background:rgba(0,0,0,.65);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border:.5px solid rgba(255,255,255,.15);box-shadow:0 4px 16px rgba(0,0,0,.25),0 1px 4px rgba(0,0,0,.15),inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 -1px 0 rgba(0,0,0,.3);padding:3px;box-sizing:border-box;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;width:90px;" onclick="if(Auth.getCode()){Stories.openCompose()}else{window.location.href='profil.html'}">
+        <div style="position:relative;width:86px;height:86px;">
+          <div style="width:86px;height:86px;border-radius:50%;background:rgba(0,0,0,.65);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border:.5px solid rgba(255,255,255,.15);box-shadow:0 4px 16px rgba(0,0,0,.25),0 1px 4px rgba(0,0,0,.15),inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 -1px 0 rgba(0,0,0,.3);padding:3px;box-sizing:border-box;">
             <div style="width:100%;height:100%;border-radius:50%;background:#fff;border:2.5px solid rgba(255,255,255,.9);overflow:hidden;display:flex;align-items:center;justify-content:center;">
               ${photo ? '<img src="'+Utils.esc(photo)+'" style="width:100%;height:100%;object-fit:cover;" alt="">' : '<span style="font-size:24px;font-weight:700;color:#8a8d91;">?</span>'}
             </div>
@@ -67,7 +67,7 @@ const QUARTIERS = [
             <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </div>
         </div>
-        <span style="font-size:12px;color:#0f1419;text-align:center;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Ma story</span>
+        <span style="font-size:12px;color:#0f1419;text-align:center;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Ma story</span>
       </div>`
 
     // Cards quartier
@@ -89,8 +89,8 @@ const QUARTIERS = [
         ? 'background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);padding:3px;'
         : 'background:rgba(0,0,0,.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 4px 16px rgba(0,0,0,.25),inset 0 1.5px 0 rgba(255,255,255,.2);border:.5px solid rgba(255,255,255,.15);padding:3px;'
       return `
-        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;width:80px;" onclick="Stories.openQuartier('${q.replace(/'/g,"\\'")}')">
-          <div style="${ringStyle}width:76px;height:76px;border-radius:50%;box-sizing:border-box;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;width:90px;" onclick="Stories.openQuartier('${q.replace(/'/g,"\\'")}')">
+          <div style="${ringStyle}width:86px;height:86px;border-radius:50%;box-sizing:border-box;">
             <div style="width:100%;height:100%;border-radius:50%;background:#fff;border:2.5px solid rgba(255,255,255,.95);overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;">
               ${latest?.photo_url
                 ? `<img src="${Utils.esc(latest.photo_url)}" style="width:100%;height:100%;object-fit:cover;" alt="">`
@@ -102,7 +102,7 @@ const QUARTIERS = [
               }
             </div>
           </div>
-          <span style="font-size:12px;color:#0f1419;font-weight:${hasNew?'600':'400'};max-width:80px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${q}</span>
+          <span style="font-size:12px;color:#0f1419;font-weight:${hasNew?'600':'400'};max-width:90px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${q}</span>
         </div>`
     })()
     }).join('')
