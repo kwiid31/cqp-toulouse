@@ -16,3 +16,28 @@ window.__sb = sb;
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
+
+// ── Navbar scroll hide/show (Liquid Glass style) ─────────────────
+;(function() {
+  var nav = document.querySelector('.bottom-nav')
+  if (!nav) return
+  var lastY = 0
+  var ticking = false
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        var y = window.scrollY
+        if (y > lastY + 4) {
+          // Scroll vers le bas → cacher
+          nav.classList.add('hidden')
+        } else if (y < lastY - 4) {
+          // Scroll vers le haut → montrer
+          nav.classList.remove('hidden')
+        }
+        lastY = y
+        ticking = false
+      })
+      ticking = true
+    }
+  }, { passive: true })
+})()
