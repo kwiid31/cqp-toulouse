@@ -20,7 +20,7 @@ if ('serviceWorker' in navigator) {
 // ── Navbar + Topbar scroll hide/show (Liquid Glass style) ────────
 ;(function() {
   var nav = document.querySelector('.bottom-nav')
-  var top = document.querySelector('.top-bar')
+  var top = document.querySelector('.topbar')
   if (!nav && !top) return
   var lastY = 0
   var ticking = false
