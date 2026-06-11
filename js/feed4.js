@@ -152,7 +152,7 @@ const Feed = (() => {
             if (ci._type === 'evt') bhtml += Feed.renderEvtCard(ci._data)
             else bhtml += Feed.renderAnnCard(ci._data)
           })
-          bhtml += '</div></div><div style="height:.5px;background:#eff3f4;"></div>'
+          bhtml += '</div></div><div style="height:.5px;background:#fff;"></div>'
           _el.insertAdjacentHTML('beforeend', bhtml)
         }
       } else if (item._type === 'post') {
@@ -212,7 +212,7 @@ const Feed = (() => {
           </div>
         </div>` : '')
     return `
-    <article id="card-${p.id}" style="padding:12px 16px 0;background:#fff;border-bottom:1px solid #eff3f4;">
+    <article id="card-${p.id}" style="padding:12px 16px 0;background:#fff;border-bottom:1px solid #fff;">
       <div style="display:flex;gap:10px;">
         <div style="flex-shrink:0;width:42px;">
           <div style="width:42px;height:42px;border-radius:50%;background:#cfd9de;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#536471;"></div>
