@@ -37,7 +37,7 @@
   --gap-feed: 8px;   /* entre les cards du feed */
   --gap-section: 16px; /* entre les sections */
 }
-html, body { font-size:15px; line-height:1.4; background:#FFFFFF; color:#000000; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility; color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
+html, body { font-size:15px; line-height:1.4; background:#FFFFFF; color:#000000; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; min-height:100vh; }
 body { padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px); overscroll-behavior:none; }
 a { text-decoration:none; color:inherit; }
 button, label { cursor:pointer; font-family:inherit; outline:none; border:none; }
@@ -226,11 +226,11 @@ img { max-width:100%; display:block; }
 .c-av-28 { width:28px; height:28px; min-width:28px; font-size:.7rem; }
 .c-av-36 { width:36px; height:36px; min-width:36px; font-size:.85rem; }
 .card-meta { flex:1; min-width:0; }
-.card-author { font-weight:600; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#000000; letter-spacing:-.015em; }
+.card-author { font-weight:600; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#000000; }
 .card-ts { font-size:.8rem; color:#737373; margin-top:1px; display:flex; align-items:center; gap:3px; font-weight:400; }
 .card-more { background:none; border:none; padding:10px; min-width:44px; min-height:44px; color:var(--txt3); border-radius:6px; transition:background .15s; }
 .card-more:active { background:var(--bg3); }
-.card-text { padding:4px 12px 10px; font-size:.9375rem; line-height:1.4; white-space:pre-wrap; word-break:break-word; color:#000000; font-weight:400; letter-spacing:-.01em; }
+.card-text { padding:4px 12px 10px; font-size:.9375rem; line-height:1.4; white-space:pre-wrap; word-break:break-word; color:#000000; font-weight:400; }
 .card-img-wrap { overflow:hidden; margin:0 0 10px; border-radius:0; }
 .card-img-wrap img { width:100%; display:block; max-height:500px; object-fit:cover; }
 .card-img-wrap video { width:100%; display:block; max-height:500px; background:#000; }
