@@ -648,8 +648,8 @@ const Feed = (() => {
     const photo = photoUrl
       ? '<img src="' + Utils.esc(photoUrl) + '" style="width:100%;height:100%;object-fit:cover;" alt="">'
       : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f2f5;"><span style="font-size:28px;">' + (type==='evenement'?'📅':'📋') + '</span></div>'
-    return '<div onclick="' + onClick + '" style="flex-shrink:0;width:140px;border-radius:12px;overflow:hidden;border:.5px solid #e4e6eb;background:#fff;cursor:pointer;">'
-      + '<div style="height:110px;position:relative;overflow:hidden;">' + photo + '</div>'
+    return '<div onclick="' + onClick + '" style="flex-shrink:0;width:180px;border-radius:16px;overflow:hidden;border:.5px solid rgba(0,0,0,.08);background:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.06);">'
+      + '<div style="height:150px;position:relative;overflow:hidden;">' + photo + '</div>'
       + '<div style="padding:8px 10px;">'
       + '<div style="font-size:10px;font-weight:600;color:' + typeColor + ';margin-bottom:3px;">' + typeLabel + '</div>'
       + '<div style="font-size:12px;font-weight:700;color:#000000;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">' + Utils.esc(titre) + '</div>'
