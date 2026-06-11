@@ -10,7 +10,11 @@
   --blue:#1877F2;  --green:#42B72A; --purple:#7C3AED; --orange:#EA580C;
 
   /* Text */
-  --txt:#111111;   --txt2:#555555;  --txt3:#999999;
+  /* Texte — système Threads/Instagram */
+  --txt:  #000000;   /* texte principal — noir pur */
+  --txt1: #000000;   /* alias */
+  --txt2: #737373;   /* secondaire — gris moyen */
+  --txt3: #999999;   /* tertiaire — timestamp, labels */
 
   /* Rétrocompat */
   --bg:#E8EAF0; --bg2:#FFFFFF; --bg3:#F0F2F5;
@@ -33,7 +37,7 @@
   --gap-feed: 8px;   /* entre les cards du feed */
   --gap-section: 16px; /* entre les sections */
 }
-html, body { font-size:15px; background:#FFFFFF; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
+html, body { font-size:15px; background:#FFFFFF; color:#000000; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility; color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
 body { padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px); overscroll-behavior:none; }
 a { text-decoration:none; color:inherit; }
 button, label { cursor:pointer; font-family:inherit; outline:none; border:none; }
@@ -115,7 +119,7 @@ img { max-width:100%; display:block; }
   flex:1; display:flex; flex-direction:column; align-items:center;
   justify-content:center;
   background:none; border:none;
-  color:#1a1a1a;
+  color:#000000;
   font-size:0;
   text-decoration:none; padding:0;
   min-height:44px; cursor:pointer;
@@ -211,7 +215,7 @@ img { max-width:100%; display:block; }
   -webkit-backdrop-filter:saturate(180%) blur(16px);
   border:.5px solid rgba(255,255,255,.7) !important;
   box-shadow:0 2px 8px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.8) !important;
-  color:#333 !important;
+  color:#000000 !important;
   font-weight:600;
 }
 .c-av img { width:100%; height:100%; object-fit:cover; }
@@ -222,11 +226,11 @@ img { max-width:100%; display:block; }
 .c-av-28 { width:28px; height:28px; min-width:28px; font-size:.7rem; }
 .c-av-36 { width:36px; height:36px; min-width:36px; font-size:.85rem; }
 .card-meta { flex:1; min-width:0; }
-.card-author { font-weight:700; font-size:.9375rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#111; letter-spacing:-.02em; }
-.card-ts { font-size:.75rem; color:#aaa; margin-top:1px; display:flex; align-items:center; gap:3px; font-weight:400; }
+.card-author { font-weight:600; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#000000; letter-spacing:-.015em; }
+.card-ts { font-size:.8rem; color:#737373; margin-top:1px; display:flex; align-items:center; gap:3px; font-weight:400; }
 .card-more { background:none; border:none; padding:10px; min-width:44px; min-height:44px; color:var(--txt3); border-radius:6px; transition:background .15s; }
 .card-more:active { background:var(--bg3); }
-.card-text { padding:6px 14px 10px; font-size:.9375rem; line-height:1.6; white-space:pre-wrap; word-break:break-word; color:#111; font-weight:400; letter-spacing:-.01em; }
+.card-text { padding:6px 14px 10px; font-size:.9375rem; line-height:1.65; white-space:pre-wrap; word-break:break-word; color:#000000; font-weight:400; letter-spacing:-.01em; }
 .card-img-wrap { overflow:hidden; margin:0 10px 10px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.10), inset 0 0 0 .5px rgba(0,0,0,.06); }
 .card-img-wrap img { width:100%; display:block; max-height:500px; object-fit:cover; }
 .card-img-wrap video { width:100%; display:block; max-height:500px; background:#000; }
