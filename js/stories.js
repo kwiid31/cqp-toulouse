@@ -87,7 +87,7 @@ const QUARTIERS = [
       const initial = q[0].toUpperCase()
       const ringStyle = hasNew
         ? 'background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);padding:3px;'
-        : 'background:#dbdbdb;padding:3px;'
+        : 'background:rgba(0,0,0,.7);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 4px 16px rgba(0,0,0,.25),inset 0 1.5px 0 rgba(255,255,255,.2);border:.5px solid rgba(255,255,255,.15);padding:3px;'
       return `
         <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;width:80px;" onclick="Stories.openQuartier('${q.replace(/'/g,"\\'")}')">
           <div style="${ringStyle}width:76px;height:76px;border-radius:50%;box-sizing:border-box;">
