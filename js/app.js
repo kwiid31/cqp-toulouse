@@ -17,22 +17,25 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
 
-// ── Navbar scroll hide/show (Liquid Glass style) ─────────────────
+// ── Navbar + Topbar scroll hide/show (Liquid Glass style) ────────
 ;(function() {
   var nav = document.querySelector('.bottom-nav')
-  if (!nav) return
+  var top = document.querySelector('.top-bar')
+  if (!nav && !top) return
   var lastY = 0
   var ticking = false
   window.addEventListener('scroll', function() {
     if (!ticking) {
       requestAnimationFrame(function() {
         var y = window.scrollY
-        if (y > lastY + 4) {
+        if (y > lastY + 6) {
           // Scroll vers le bas → cacher
-          nav.classList.add('hidden')
-        } else if (y < lastY - 4) {
+          if (nav) nav.classList.add('hidden')
+          if (top) top.classList.add('hidden')
+        } else if (y < lastY - 6) {
           // Scroll vers le haut → montrer
-          nav.classList.remove('hidden')
+          if (nav) nav.classList.remove('hidden')
+          if (top) top.classList.remove('hidden')
         }
         lastY = y
         ticking = false
