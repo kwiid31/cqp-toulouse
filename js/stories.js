@@ -58,7 +58,7 @@ const QUARTIERS = [
     const createCard = `
       <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;width:80px;" onclick="if(Auth.getCode()){Stories.openCompose()}else{window.location.href='profil.html'}">
         <div style="position:relative;width:76px;height:76px;">
-          <div style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.55);backdrop-filter:saturate(180%) blur(12px);-webkit-backdrop-filter:saturate(180%) blur(12px);border:.5px solid rgba(255,255,255,.8);box-shadow:0 2px 12px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.6);padding:3px;box-sizing:border-box;">
+          <div style="width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.42);backdrop-filter:saturate(200%) blur(20px);-webkit-backdrop-filter:saturate(200%) blur(20px);border:.5px solid rgba(255,255,255,.75);box-shadow:0 4px 16px rgba(0,0,0,.10),0 1px 4px rgba(0,0,0,.06),inset 0 1.5px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.2);padding:3px;box-sizing:border-box;">
             <div style="width:100%;height:100%;border-radius:50%;background:#fff;border:2.5px solid rgba(255,255,255,.9);overflow:hidden;display:flex;align-items:center;justify-content:center;">
               ${photo ? '<img src="'+Utils.esc(photo)+'" style="width:100%;height:100%;object-fit:cover;" alt="">' : '<span style="font-size:24px;font-weight:700;color:#8a8d91;">?</span>'}
             </div>
