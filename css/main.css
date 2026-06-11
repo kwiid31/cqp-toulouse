@@ -97,8 +97,8 @@ img { max-width:100%; display:block; }
   z-index:200;
   /* Liquid Glass */
   background:rgba(255,255,255,.28);
-  backdrop-filter:saturate(160%) blur(48px) brightness(1.12) contrast(1.04);
-  -webkit-backdrop-filter:saturate(160%) blur(48px) brightness(1.12) contrast(1.04);
+  backdrop-
+  -webkit-backdrop-
   /* Bord verre — reflet lumineux */
   border:.5px solid rgba(255,255,255,.55);
   border-radius:28px;
@@ -217,8 +217,8 @@ img { max-width:100%; display:block; }
 }
 .c-av-init {
   background:rgba(255,255,255,.45) !important;
-  backdrop-filter:saturate(180%) blur(16px);
-  -webkit-backdrop-filter:saturate(180%) blur(16px);
+  backdrop-
+  -webkit-backdrop-
   border:.5px solid rgba(255,255,255,.7) !important;
   box-shadow:0 2px 8px rgba(0,0,0,.10), inset 0 1px 0 rgba(255,255,255,.8) !important;
   color:#000000 !important;
@@ -265,7 +265,6 @@ img { max-width:100%; display:block; }
   backface-visibility:hidden;
   transform:translateZ(0);
   /* Micro-boost contraste sur l'image elle-même */
-  filter:contrast(1.03) saturate(1.05);
 }
 .card-img-wrap img { width:100%; display:block; max-height:500px; object-fit:cover; }
 .card-img-wrap video { width:100%; display:block; max-height:500px; background:#000; }
@@ -412,7 +411,6 @@ img { max-width:100%; display:block; }
 :root {
   --stories-h: 210px;
 }
-#feed { filter:brightness(1.03) contrast(1.02); }
 .stories-bar {
   background:#fff; margin-top:calc(var(--nav) + env(safe-area-inset-top)); border-bottom:.5px solid rgba(0,0,0,.06);
   display:flex; gap:14px; padding:12px 16px 14px;
