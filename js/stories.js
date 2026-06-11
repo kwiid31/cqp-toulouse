@@ -91,7 +91,7 @@ const QUARTIERS = [
       return `
         <div style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;width:80px;" onclick="Stories.openQuartier('${q.replace(/'/g,"\\'")}')">
           <div style="${ringStyle}width:76px;height:76px;border-radius:50%;box-sizing:border-box;">
-            <div style="width:100%;height:100%;border-radius:50%;background:#fff;border:3px solid #fff;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;">
+            <div style="width:100%;height:100%;border-radius:50%;background:#fff;border:2.5px solid rgba(255,255,255,.95);overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;">
               ${latest?.photo_url
                 ? `<img src="${Utils.esc(latest.photo_url)}" style="width:100%;height:100%;object-fit:cover;" alt="">`
                 : (latest?.video_url
