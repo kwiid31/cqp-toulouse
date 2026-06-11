@@ -965,7 +965,12 @@ function openMedia(url, type) {
 
   const viewer = document.createElement('div')
   viewer.id = 'media-viewer'
-  viewer.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;'
+  viewer.style.cssText = 'position:fixed;inset:0;z-index:10000;background:#000;display:flex;align-items:center;justify-content:center;'
+  // Cacher navbar + topbar
+  var _nav = document.querySelector('.bottom-nav')
+  var _top = document.querySelector('.topbar')
+  if (_nav) _nav.style.display = 'none'
+  if (_top) _top.style.display = 'none'
 
   let mediaEl
   if (type === 'video') {
@@ -1061,6 +1066,8 @@ function openMedia(url, type) {
           if (viewer._savedNext) viewer._savedParent.insertBefore(viewer._feedVid, viewer._savedNext)
           else viewer._savedParent.appendChild(viewer._feedVid)
         }
+        if (_nav) _nav.style.display = ''
+        if (_top) _top.style.display = ''
         viewer.remove()
       }, 300)
     } else {
@@ -1081,6 +1088,8 @@ function openMedia(url, type) {
         if (viewer._savedNext) viewer._savedParent.insertBefore(viewer._feedVid, viewer._savedNext)
         else viewer._savedParent.appendChild(viewer._feedVid)
       }
+      if (_nav) _nav.style.display = ''
+      if (_top) _top.style.display = ''
       viewer.remove()
     }
   })
