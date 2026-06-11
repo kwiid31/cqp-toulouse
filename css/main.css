@@ -5,13 +5,40 @@
 /* ── Reset & variables ────────────────────────────────────────── */
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 :root {
+  /* Brand */
   --rouge:#C8102E; --rouge-dk:#a00d24; --rouge-lt:#fff0f2;
   --blue:#1877F2;  --green:#42B72A; --purple:#7C3AED; --orange:#EA580C;
-  --txt:#050505;   --txt2:#65676B;  --txt3:#8A8D91;
-  --bg:#F0F2F5;    --bg2:#fff;      --bg3:#F0F2F5; --border:#CED0D4;
-  --shadow:0 1px 3px rgba(0,0,0,.1);
-  --shadow-card:0 2px 8px rgba(0,0,0,.07);
-  --r:12px; --r-sm:8px; --nav:50px;
+
+  /* Text */
+  --txt:#111111;   --txt2:#555555;  --txt3:#999999;
+
+  /* Elevated surfaces — 4 niveaux de profondeur */
+  --bg-app:   #EDEAE4;   /* niveau 0 — fond app, le plus bas */
+  --bg-low:   #F4F1EC;   /* niveau 1 — surface secondaire (encarts, input zones) */
+  --bg-card:  #FAFAF8;   /* niveau 2 — cards posts, items */
+  --bg-float: #FFFFFF;   /* niveau 3 — modals, topbar, navbar flottante */
+
+  /* Rétrocompat */
+  --bg:  #EDEAE4;
+  --bg2: #FAFAF8;
+  --bg3: #F4F1EC;
+
+  /* Borders — très subtils pour ne pas alourdir */
+  --border: rgba(0,0,0,.07);
+  --border-md: rgba(0,0,0,.10);
+
+  /* Shadows — légers, jamais lourds */
+  --shadow-sm:   0 1px 2px rgba(0,0,0,.06);
+  --shadow:      0 2px 8px rgba(0,0,0,.08);
+  --shadow-card: 0 1px 4px rgba(0,0,0,.06), 0 0 0 0.5px rgba(0,0,0,.05);
+  --shadow-float:0 4px 20px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
+
+  /* Radius */
+  --r:14px; --r-sm:8px; --r-xs:6px; --nav:50px;
+
+  /* Spacing vertical — le vide crée la profondeur */
+  --gap-feed: 8px;   /* entre les cards du feed */
+  --gap-section: 16px; /* entre les sections */
 }
 html, body { font-size:15px; background:#fff; color:var(--txt); font-family:system-ui,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif; min-height:100vh; }
 body { padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 4px); overscroll-behavior:none; }
