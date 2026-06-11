@@ -79,23 +79,35 @@ img { max-width:100%; display:block; }
 
 /* ── Bottom nav ───────────────────────────────────────────────── */
 .bottom-nav {
-  position:fixed; bottom:0; left:0; right:0; z-index:200;
-  /* Verre givré style Threads/iOS */
-  background:rgba(255,255,255,.72);
-  backdrop-filter:saturate(180%) blur(24px);
-  -webkit-backdrop-filter:saturate(180%) blur(24px);
-  /* Ligne top ultra fine */
-  border-top:.5px solid rgba(0,0,0,.08);
+  position:fixed;
+  /* Bulle flottante — pas pleine largeur */
+  bottom:max(16px, env(safe-area-inset-bottom));
+  left:50%;
+  transform:translateX(-50%);
+  width:calc(100% - 32px);
+  max-width:420px;
+  z-index:200;
+  /* Liquid Glass */
+  background:rgba(255,255,255,.78);
+  backdrop-filter:saturate(200%) blur(28px);
+  -webkit-backdrop-filter:saturate(200%) blur(28px);
+  /* Bord lumineux subtil */
+  border:.5px solid rgba(255,255,255,.9);
+  border-radius:28px;
   display:flex; align-items:center;
-  height:56px;
+  height:54px;
   padding:0 8px;
-  padding-bottom:env(safe-area-inset-bottom);
-  /* Ombre douce vers le haut */
-  box-shadow:0 -1px 0 rgba(0,0,0,.05), 0 -8px 32px rgba(0,0,0,.04);
-  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  /* Ombre portée douce */
+  box-shadow:
+    0 8px 32px rgba(0,0,0,.12),
+    0 2px 8px rgba(0,0,0,.08),
+    inset 0 1px 0 rgba(255,255,255,.6);
+  transition:transform .4s cubic-bezier(.4,0,.2,1), opacity .3s ease;
 }
 .bottom-nav.hidden {
-  transform:translateY(100%);
+  transform:translateX(-50%) translateY(calc(100% + 24px));
+  opacity:0;
+  pointer-events:none;
 }
 .nav-item {
   flex:1; display:flex; flex-direction:column; align-items:center;
