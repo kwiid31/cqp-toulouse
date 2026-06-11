@@ -88,7 +88,7 @@ img { max-width:100%; display:block; }
   max-width:420px;
   z-index:200;
   /* Liquid Glass */
-  background:rgba(255,255,255,.78);
+  background:rgba(255,255,255,.52);
   backdrop-filter:saturate(200%) blur(28px);
   -webkit-backdrop-filter:saturate(200%) blur(28px);
   /* Bord lumineux subtil */
