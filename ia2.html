@@ -113,6 +113,12 @@ textarea::placeholder{color:#8b98a5}
 var SB_URL = 'https://rlrazcitmwxfaxlnnfau.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzODU4MzQsImV4cCI6MjA5NTk2MTgzNH0.0SSaUUq4x_-Slr4QJ3XJlF0mu0Ub_-ouXD3EC2-PGG0';
 var PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy';
+// Jeton de session Supabase du membre connecté (exigé par les fonctions IA)
+function authHeaders() {
+  var t = ''
+  try { t = JSON.parse(localStorage.getItem('sb-rlrazcitmwxfaxlnnfau-auth-token') || '{}').access_token || '' } catch (e) {}
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (t || SB_KEY) }
+}
 var sbc = supabase.createClient(SB_URL, SB_KEY);
 
 var msgsEl = document.getElementById('msgs');
@@ -136,7 +142,7 @@ function getSYS() {
 function init() {
   var code = localStorage.getItem('cqp_code') || localStorage.getItem('profil_code') || localStorage.getItem('code') || localStorage.getItem('session_id');
   if (!code) return;
-  sbc.from('profils').select('*').eq('code', code).maybeSingle().then(function(res) {
+  sbc.from('profils').select('id,prenom,quartier,bio,photo_url,code,is_admin').eq('code', code).maybeSingle().then(function(res) {
     if (res.data) {
       profil = res.data;
       document.getElementById('badge').style.display = 'flex';
@@ -271,7 +277,7 @@ function analyzeVision(b64data, mime) {
   var prompt = 'Tu es l\'assistant IA de CQP reseau social de quartier Toulouse. Analyse cette image et genere DIRECTEMENT le JSON adapte. Utilisateur: ' + n + ', quartier: ' + q + '. Flyer evenement: {"action":"publier","type":"evenement","titre":"...","lieu":"...","date":"2026-06-15","description":"..."}. Annonce: {"action":"publier","type":"annonce","titre":"...","categorie":"Vente|Service|Emploi|Logement|Don|Autre","description":"...","quartier":"' + q + '"}. Autre: {"action":"publier","type":"post","contenu":"...","quartier":"' + q + '"}. Reponds UNIQUEMENT avec le JSON.';
   return fetch(PROXY, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(),
     body: JSON.stringify({
       model: 'meta-llama/llama-4-scout-17b-16e-instruct',
       messages: [{ role: 'user', content: [
@@ -363,7 +369,7 @@ function doSend() {
   tel.classList.add('typing');
   fetch(PROXY, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: authHeaders(),
     body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: getSYS() }].concat(hist), max_tokens: 300, temperature: 0.5, stream: true })
   }).then(function(res) {
     tel.classList.remove('typing'); tel.textContent = '';

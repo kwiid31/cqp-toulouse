@@ -133,6 +133,12 @@ var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
 // ═══════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════
+// Jeton de session Supabase du membre connecté (exigé par les fonctions IA)
+function authHeaders() {
+  var t = ''
+  try { t = JSON.parse(localStorage.getItem('sb-rlrazcitmwxfaxlnnfau-auth-token') || '{}').access_token || '' } catch (e) {}
+  return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (t || SB_KEY) }
+}
 var sbc = supabase.createClient(SB_URL, SB_KEY)
 var profil = null
 var hist = []
@@ -173,7 +179,7 @@ function init() {
   }
   // 2. Depuis Supabase (complet, pour avoir toutes les infos)
   if (code) {
-    sbc.from('profils').select('*').eq('code', code).maybeSingle().then(function(res) {
+    sbc.from('profils').select('id,prenom,quartier,bio,photo_url,code,is_admin').eq('code', code).maybeSingle().then(function(res) {
       if (res.data) {
         profil = res.data
         showConnected(res.data.prenom)
@@ -547,7 +553,7 @@ function analyzeVision(b64, mime, userMsg) {
 
   return fetch(PROXY, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: authHeaders(),
     body: JSON.stringify({
       model: 'meta-llama/llama-4-scout-17b-16e-instruct',
       messages: [{role: 'user', content: [
@@ -696,7 +702,7 @@ async function doSend() {
 
   fetch(PROXY, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: authHeaders(),
     body: JSON.stringify({
       model: MODEL,
       messages: [{role: 'system', content: getSYS()}].concat(hist),

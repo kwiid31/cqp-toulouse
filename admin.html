@@ -9,10 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="/css/main.css">
-<script src="/js/app.js?v=9490"></script>
+<script src="/js/app.js?v=20261026"></script>
 <script src="/js/utils.js?v=9490"></script>
-<script src="/js/auth.js?v=9490"></script>
-<script src="/js/api.js?v=9490"></script>
+<script src="/js/auth.js?v=20261026"></script>
+<script src="/js/api.js?v=20261026"></script>
 <style>
 #gate{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;z-index:999;}
 #gate.hidden{display:none;}
@@ -48,7 +48,8 @@
   <div class="gate-logo">CQP</div>
   <div class="gate-sub">Administration</div>
   <div class="gate-box">
-    <input class="gate-input" type="password" id="pwd" placeholder="Mot de passe" onkeydown="if(event.key==='Enter')doLogin()">
+    <input class="gate-input" id="adm-code" inputmode="numeric" maxlength="6" placeholder="Code à 6 chiffres">
+    <input class="gate-input" type="password" id="adm-cle" placeholder="Clé secrète" autocapitalize="characters" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="btn-rouge" onclick="doLogin()">Accéder au dashboard</button>
     <div class="form-msg" id="gate-msg"></div>
   </div>
@@ -167,25 +168,23 @@
 
 <script>
 const esc=s=>Utils.esc(s),timeAgo=d=>Utils.timeAgo(d)
-const PWD_HASH='020986c183f52e2e3c211d20bfc7477ee24d4e6ec122b03d8793c2608891a03f'
+// L'accès admin est vérifié par la base (profils.is_admin + RLS), pas par la page
+function openDashboard(){
+  document.getElementById('gate').classList.add('hidden')
+  document.getElementById('dashboard').style.display='block'
+  loadAll()
+}
 
 async function doLogin(){
-  const v=document.getElementById('pwd').value
   const msg=document.getElementById('gate-msg')
-  if(!v){msg.style.color='var(--rouge)';msg.textContent='Mot de passe requis.';return}
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v))
-  const hex=[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('')
-  if(hex===PWD_HASH){
-    sessionStorage.setItem('cqp_adm','1')
-    document.getElementById('gate').classList.add('hidden')
-    document.getElementById('dashboard').style.display='block'
-    loadAll()
-  }else{
-    msg.style.color='var(--rouge)';msg.textContent='Mot de passe incorrect.'
-    document.getElementById('pwd').value=''
-  }
+  msg.style.color='var(--rouge)'
+  try{
+    const p=await Auth.login(document.getElementById('adm-code').value.trim(),document.getElementById('adm-cle').value)
+    if(!p.is_admin){msg.textContent='Ce profil n\'est pas admin.';return}
+    openDashboard()
+  }catch(e){msg.textContent=e.message;document.getElementById('adm-cle').value=''}
 }
-function doLogout(){sessionStorage.removeItem('cqp_adm');location.reload()}
+function doLogout(){Auth.logout()}
 
 function switchTab(name,btn){
   ['dashboard','actus','stories','mod','evts','profils'].forEach(t=>{
@@ -392,7 +391,7 @@ async function rejectEvt(id){await Api.rejectEvenement(id);loadModEvts();}
 
 async function loadProfils(){
   const el=document.getElementById('profils-list')
-  const{data}=await sb.from('profils').select('*').order('created_at',{ascending:false}).limit(50)
+  const{data}=await sb.from('profils').select(CQP.PROFIL_COLS).order('created_at',{ascending:false}).limit(50)
   if(!data?.length){el.innerHTML='<div class="empty">Aucun profil.</div>';return}
   el.innerHTML=data.map(p=>`<div class="tbl-row">
     <div class="c-av c-av-36 c-av-init">${p.photo_url?`<img src="${esc(p.photo_url)}" alt="">`:esc((p.prenom||'?')[0].toUpperCase())}</div>
@@ -400,17 +399,24 @@ async function loadProfils(){
       <div class="tbl-title2">${esc(p.prenom||'Anonyme')} ${p.is_admin?'<span style="font-size:.6rem;background:var(--orange);color:#fff;padding:2px 6px;border-radius:4px;margin-left:4px;">Admin</span>':''}</div>
       <div class="tbl-sub">Code: ${esc(p.code)} · ${esc(p.quartier||'—')} · ${timeAgo(p.created_at)}</div>
     </div>
-    <div class="tbl-actions"><button class="btn-del" onclick="toggleAdmin('${p.code}',${!p.is_admin})">${p.is_admin?'Retirer admin':'Rendre admin'}</button></div>
+    <div class="tbl-actions"><button class="btn-del" onclick="resetCle('${esc(p.code)}')">Nouvelle clé</button><button class="btn-del" onclick="toggleAdmin('${esc(p.code)}',${!p.is_admin})">${p.is_admin?'Retirer admin':'Rendre admin'}</button></div>
   </div>`).join('')
 }
-async function toggleAdmin(code,val){await sb.from('profils').update({is_admin:val}).eq('code',code);loadProfils();}
-
-// Auto-login si déjà authentifié
-if(sessionStorage.getItem('cqp_adm')==='1'){
-  document.getElementById('gate').classList.add('hidden')
-  document.getElementById('dashboard').style.display='block'
-  loadAll()
+async function toggleAdmin(code,val){
+  const{error}=await Api.setAdmin(code,val)
+  if(error){Utils.toast?.(error.message);return}
+  loadProfils()
 }
+async function resetCle(code){
+  if(!confirm('Générer une nouvelle clé secrète pour le code '+code+' ? L\'ancienne ne marchera plus.'))return
+  try{
+    const cle=await Auth.resetCle(code)
+    Auth.showCle(code,cle,{titre:'Nouvelle clé'})
+  }catch(e){alert(e.message)}
+}
+
+// Ouverture directe si déjà connecté avec un profil admin
+Auth.ready.then(p=>{ if(p?.is_admin) openDashboard() })
 </script>
 </body>
 </html>

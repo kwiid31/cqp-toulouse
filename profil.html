@@ -13,10 +13,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="/css/main.css?v=20260514">
-<script src="/js/app.js?v=1781184375"></script>
+<script src="/js/app.js?v=20261026"></script>
 <script src="/js/utils.js?v=20260514"></script>
-<script src="/js/auth.js?v=20260514"></script>
-<script src="/js/api.js?v=20260514"></script>
+<script src="/js/auth.js?v=20261026"></script>
+<script src="/js/api.js?v=20261026"></script>
 <style>
 * { box-sizing: border-box; }
 body { background: #fff; font-family: -apple-system, system-ui, sans-serif; }
@@ -132,8 +132,10 @@ body { padding-top: env(safe-area-inset-top); }
     </button>
     <div id="panel-login" style="display:none;">
       <h2 style="font-size:22px;font-weight:700;margin-bottom:6px;">Mon code d'accès</h2>
-      <p style="font-size:14px;color:#65676b;margin-bottom:24px;">Entre ton code à 6 chiffres</p>
+      <p style="font-size:14px;color:#65676b;margin-bottom:24px;">Entre ton code à 6 chiffres et ta clé secrète</p>
       <div class="code-inputs" id="login-inputs"></div>
+      <input id="login-cle" placeholder="Clé secrète" autocomplete="current-password" autocapitalize="characters" oninput="checkLoginReady()" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;border:1.5px solid #e4e6eb;border-radius:10px;padding:12px;font-size:16px;font-family:monospace;letter-spacing:2px;text-transform:uppercase;margin:14px 0 14px;">
+      <p style="font-size:12px;color:#65676b;margin:-6px 0 14px;">Clé perdue ? Demande à un admin du CQP de t'en générer une nouvelle.</p>
       <button id="login-btn" onclick="doLogin()" disabled style="width:100%;background:#C8102E;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;opacity:.4;">Accéder à mon profil</button>
       <div id="login-msg" style="margin-top:12px;text-align:center;font-size:13px;color:#C8102E;min-height:18px;"></div>
     </div>
@@ -258,8 +260,9 @@ function buildCodeInputs() {
 function checkLoginReady() {
   const code = [...document.querySelectorAll('.code-digit')].map(i => i.value).join('')
   const btn = document.getElementById('login-btn')
-  btn.disabled = code.length < 6
-  btn.style.opacity = code.length < 6 ? '0.4' : '1'
+  const ok = code.length === 6 && document.getElementById('login-cle').value.trim().length >= 6
+  btn.disabled = !ok
+  btn.style.opacity = ok ? '1' : '0.4'
 }
 
 async function doLogin() {
@@ -268,10 +271,10 @@ async function doLogin() {
   const btn = document.getElementById('login-btn')
   const msg = document.getElementById('login-msg')
   btn.textContent = '…'; btn.disabled = true
-  const p = await Api.getProfil(code)
-  if (!p) { msg.textContent = 'Code invalide'; btn.textContent = 'Accéder'; btn.disabled = false; return }
-  Auth.save(p)
-  window.location.reload()
+  try {
+    await Auth.login(code, document.getElementById('login-cle').value)
+    window.location.reload()
+  } catch(e) { msg.textContent = e.message; btn.textContent = 'Accéder à mon profil'; btn.disabled = false }
 }
 
 async function doSignup() {
@@ -282,28 +285,12 @@ async function doSignup() {
   const btn = document.getElementById('signup-btn')
   btn.textContent = '…'; btn.disabled = true
   try {
-    const profil = await Api.createProfil({ prenom, quartier: quartier || null })
-    Auth.save(profil)
-    showCodePopup(profil.code)
+    const { code, cle } = await Auth.signup({ prenom, quartier: quartier || null })
+    Auth.showCle(code, cle, { onClose: () => window.location.reload() })
   } catch(e) { msg.textContent = 'Erreur: ' + e.message; btn.textContent = 'Créer'; btn.disabled = false }
 }
 
-function showCodePopup(code) {
-  const html = '<div style="position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">'
-    + '<div style="background:#fff;border-radius:16px;padding:28px 24px;width:100%;max-width:320px;text-align:center;">'
-    + '<div style="font-size:40px;margin-bottom:12px;">🎉</div>'
-    + '<h3 style="font-size:20px;font-weight:700;margin-bottom:8px;">Bienvenue !</h3>'
-    + '<p style="font-size:14px;color:#65676b;margin-bottom:20px;">Note ton code — il te permettra de te connecter depuis n\'importe quel appareil</p>'
-    + '<div style="font-family:monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#C8102E;background:#fff0f2;border-radius:10px;padding:16px;margin-bottom:20px;">' + esc(code) + '</div>'
-    + '<button onclick="this.parentElement.parentElement.remove();window.location.reload()" style="width:100%;background:#000;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;">C\'est parti !</button>'
-    + '</div></div>'
-  document.body.insertAdjacentHTML('beforeend', html)
-}
-
-function doLogout() {
-  Auth.clear ? Auth.clear() : localStorage.clear()
-  window.location.reload()
-}
+function doLogout() { Auth.logout() }
 
 function renderProfil(p) {
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val }
@@ -488,6 +475,7 @@ function openMedia(url, type) {
 }
 
 async function init() {
+  if (Auth.getCode()) await Auth.ready
   const code = Auth.getCode()
   if (!code) { showView('view-welcome'); return }
   showView('view-profil')

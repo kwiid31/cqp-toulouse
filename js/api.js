@@ -7,24 +7,13 @@ const Api = (() => {
 
   // PROFILS
   const getProfil = code =>
-    sb.from('profils').select('*').eq('code', code).limit(1).then(r => r.data?.[0] ?? null)
+    sb.from('profils').select(CQP.PROFIL_COLS).eq('code', code).limit(1).then(r => r.data?.[0] ?? null)
 
   const updateProfil = (code, fields) =>
-    sb.from('profils').update(fields).eq('code', code)
+    sb.from('profils').update({ ...fields, updated_at: new Date().toISOString() }).eq('code', code)
 
-  const createProfil = async ({ prenom, quartier, email }) => {
-    const code = String(Math.floor(100000 + Math.random() * 900000))
-    const { data, error } = await sb.from('profils').insert({
-      session_id: code,
-      prenom,
-      quartier: quartier || null,
-      email: email || null,
-      code,
-      is_admin: false,
-    }).select().single()
-    if (error) throw error
-    return data
-  }
+  // Le code et la clé secrète sont générés côté serveur (Edge Function profil-auth)
+  const createProfil = ({ prenom, quartier, email }) => Auth.signup({ prenom, quartier, email })
 
   const getProfilStats = async code => {
     const [p, l, c] = await Promise.all([
@@ -252,10 +241,10 @@ const Api = (() => {
       .order('created_at', { ascending: false }).limit(limit)
 
   const getAllProfils = (limit = 100) =>
-    sb.from('profils').select('*').order('created_at', { ascending: false }).limit(limit)
+    sb.from('profils').select(CQP.PROFIL_COLS).order('created_at', { ascending: false }).limit(limit)
 
   const setAdmin = (code, val) =>
-    sb.from('profils').update({ is_admin: val }).eq('code', code)
+    sb.rpc('set_admin', { p_code: code, p_val: val })
 
   const hidePostAdmin = id =>
     sb.from('posts').update({ visible: false }).eq('id', id)
