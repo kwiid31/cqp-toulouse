@@ -9,10 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="/css/main.css">
-<script src="/js/app.js?v=20261026"></script>
+<script src="/js/app.js?v=20261026b"></script>
 <script src="/js/utils.js?v=9490"></script>
 <script src="/js/auth.js?v=20261026"></script>
-<script src="/js/api.js?v=20261026"></script>
+<script src="/js/api.js?v=20261026b"></script>
 <style>
 #gate{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;z-index:999;}
 #gate.hidden{display:none;}
@@ -75,6 +75,7 @@
       <div class="stat-card"><div class="stat-n" id="st-posts" style="color:var(--blue)">—</div><div class="stat-l">Posts</div></div>
       <div class="stat-card"><div class="stat-n" id="st-annonces" style="color:var(--green)">—</div><div class="stat-l">Annonces</div></div>
       <div class="stat-card"><div class="stat-n" id="st-new7j" style="color:var(--orange)">—</div><div class="stat-l">Nouveaux 7j</div></div>
+      <div class="stat-card"><div class="stat-n" id="st-stockage">—</div><div class="stat-l">Stockage photos/vidéos (1 Go)</div></div>
     </div>
 
     <!-- TABS -->
@@ -256,7 +257,17 @@ async function loadAll(){
   }).subscribe()
 }
 
+async function loadStockage(){
+  const el=document.getElementById('st-stockage')
+  const{data,error}=await sb.rpc('stockage_utilise')
+  if(error||!data?.[0])return
+  const mo=data[0].octets/1048576, pct=Math.round(mo/1024*100)
+  el.textContent=(mo<1024?mo.toFixed(0)+' Mo':(mo/1024).toFixed(2)+' Go')+' · '+pct+'%'
+  el.style.color=pct>=90?'var(--rouge)':pct>=70?'var(--orange)':'#43a047'
+}
+
 async function loadStats(){
+  loadStockage()
   const{data,error}=await sb.from('v_stats_admin').select('*').single()
   if(error||!data)return
   const m={'st-profils':data.total_profils,'st-posts':data.total_posts,'st-annonces':data.total_annonces,'st-evts':data.total_evenements,'st-new7j':data.nouveaux_7j,'st-vues':data.visiteurs_7j}

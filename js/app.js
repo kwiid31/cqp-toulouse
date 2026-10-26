@@ -4,7 +4,7 @@
 const CQP = Object.freeze({
   SBU: 'https://rlrazcitmwxfaxlnnfau.supabase.co',
   SBK: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzODU4MzQsImV4cCI6MjA5NTk2MTgzNH0.0SSaUUq4x_-Slr4QJ3XJlF0mu0Ub_-ouXD3EC2-PGG0',
-  BUCKET: 'site-photos',
+  BUCKET: 'medias',
   // Colonnes publiques de profils (email et session_id ne sont plus lisibles)
   PROFIL_COLS: 'id,prenom,quartier,bio,photo_url,created_at,updated_at,code,is_admin',
   FEED_SIZE: 10,

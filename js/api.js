@@ -249,35 +249,44 @@ const Api = (() => {
   const hidePostAdmin = id =>
     sb.from('posts').update({ visible: false }).eq('id', id)
 
-  // UPLOAD CLOUDINARY
-  const CLOUDINARY_CLOUD = 'dbpe9xree'
-  const CLOUDINARY_PRESET = 'cqp_toulouse'
+  // UPLOAD — Supabase Storage, espace « medias » (1 Go gratuit)
+  // Chemin : <code membre>/<dossier>/<fichier> (vérifié par les règles RLS)
+  const MAX_MO = 8
+  const MAX_VIDEO_SEC = 15
+
+  const uploadFile = async (file, folder) => {
+    const code = Auth.getCode()
+    if (!code) throw new Error('Connecte-toi pour envoyer un fichier')
+    if (file.size > MAX_MO * 1024 * 1024) throw new Error('Fichier trop lourd (' + MAX_MO + ' Mo maximum)')
+    const ext = (file.type.split('/')[1] || 'jpg').replace('quicktime', 'mov').replace('jpeg', 'jpg')
+    const path = code + '/' + folder + '/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext
+    const { error } = await sb.storage.from(CQP.BUCKET).upload(path, file, { contentType: file.type, cacheControl: '31536000', upsert: false })
+    if (error) {
+      if (/row-level security|policy/i.test(error.message)) throw new Error('Limite de 30 envois par jour atteinte, réessaie demain.')
+      if (/size|large/i.test(error.message)) throw new Error('Fichier trop lourd (' + MAX_MO + ' Mo maximum)')
+      if (/mime|type/i.test(error.message)) throw new Error('Format non accepté (photo JPG/PNG/WebP ou vidéo MP4/MOV)')
+      throw new Error('Envoi échoué : ' + error.message)
+    }
+    return sb.storage.from(CQP.BUCKET).getPublicUrl(path).data.publicUrl
+  }
+
+  const videoDuration = file => new Promise(resolve => {
+    const v = document.createElement('video')
+    v.preload = 'metadata'
+    v.onloadedmetadata = () => { URL.revokeObjectURL(v.src); resolve(v.duration) }
+    v.onerror = () => resolve(0)
+    v.src = URL.createObjectURL(file)
+  })
 
   const uploadPhoto = async (file, folder = 'posts') => {
     if (file.type.startsWith('video/')) return uploadVideo(file, folder)
-    const compressed = await Utils.compressImage(file)
-    const fd = new FormData()
-    fd.append('file', compressed)
-    fd.append('upload_preset', CLOUDINARY_PRESET)
-    fd.append('folder', 'cqp/' + folder)
-    const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/image/upload', { method: 'POST', body: fd })
-    if (!res.ok) throw new Error('Upload echoue: ' + res.status)
-    const data = await res.json()
-    if (data.error) throw new Error(data.error.message)
-    return data.secure_url
+    return uploadFile(await Utils.compressImage(file), folder)
   }
 
   const uploadVideo = async (file, folder = 'posts') => {
-    const fd = new FormData()
-    fd.append('file', file)
-    fd.append('upload_preset', CLOUDINARY_PRESET)
-    fd.append('folder', 'cqp/' + folder)
-    fd.append('resource_type', 'video')
-    const res = await fetch('https://api.cloudinary.com/v1_1/' + CLOUDINARY_CLOUD + '/video/upload', { method: 'POST', body: fd })
-    if (!res.ok) throw new Error('Upload video echoue: ' + res.status)
-    const data = await res.json()
-    if (data.error) throw new Error(data.error.message)
-    return data.secure_url
+    const sec = await videoDuration(file)
+    if (sec > MAX_VIDEO_SEC + 0.5) throw new Error('Vidéo trop longue (' + MAX_VIDEO_SEC + ' secondes maximum)')
+    return uploadFile(file, folder)
   }
 
   // PAGE VIEW

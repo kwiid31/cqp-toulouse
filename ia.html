@@ -125,8 +125,6 @@ var SB_URL = 'https://rlrazcitmwxfaxlnnfau.supabase.co'
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscmF6Y2l0bXd4ZmF4bG5uZmF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzODU4MzQsImV4cCI6MjA5NTk2MTgzNH0.0SSaUUq4x_-Slr4QJ3XJlF0mu0Ub_-ouXD3EC2-PGG0'
 var PROXY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/groq-proxy'
 var TAVILY = 'https://rlrazcitmwxfaxlnnfau.supabase.co/functions/v1/tavily-proxy'
-var CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dbpe9xree/image/upload'
-var CLOUD_PRESET = 'cqp_toulouse'
 var MODEL = 'llama-3.3-70b-versatile'
 var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
 
@@ -140,6 +138,19 @@ function authHeaders() {
   return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (t || SB_KEY) }
 }
 var sbc = supabase.createClient(SB_URL, SB_KEY)
+// Envoi d'image dans Supabase Storage (espace « medias », dossier du membre)
+function uploadMedia(b64data, mime) {
+  var code = localStorage.getItem('cqp_code')
+  if (!code) return Promise.reject(new Error('Connecte-toi pour envoyer une image'))
+  var bytes = atob(b64data), arr = new Uint8Array(bytes.length)
+  for (var i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i)
+  var ext = (mime.split('/')[1] || 'jpg').replace('jpeg', 'jpg')
+  var path = code + '/posts/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext
+  return sbc.storage.from('medias').upload(path, new Blob([arr], { type: mime }), { contentType: mime, cacheControl: '31536000', upsert: false }).then(function(res) {
+    if (res.error) throw res.error
+    return sbc.storage.from('medias').getPublicUrl(path).data.publicUrl
+  })
+}
 var profil = null
 var hist = []
 var typing = false
@@ -450,16 +461,7 @@ function showPreview(pd, container) {
 }
 
 async function uploadCloudinary(b64, mime) {
-  try {
-    var blob = await fetch('data:' + mime + ';base64,' + b64).then(function(r){ return r.blob() })
-    var form = new FormData()
-    form.append('file', blob)
-    form.append('upload_preset', CLOUD_PRESET)
-    form.append('folder', 'cqp/posts')
-    var res = await fetch(CLOUDINARY_URL, {method:'POST', body: form})
-    var data = await res.json()
-    return data.secure_url || null
-  } catch(e) { return null }
+  try { return await uploadMedia(b64, mime) } catch(e) { return null }
 }
 
 async function publishPost(pd, imgB64, imgMime) {
