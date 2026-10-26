@@ -78,7 +78,7 @@ commit;
 -- (l'Edge Function « nettoyage-medias » les supprime via l'API Storage,
 --  appelée chaque nuit à 4 h par pg_cron)
 create extension if not exists pg_cron;
-create extension if not exists pg_net;
+create extension if not exists pg_net with schema extensions;
 
 select cron.unschedule('nettoyage-medias') where exists (select 1 from cron.job where jobname = 'nettoyage-medias');
 select cron.schedule('nettoyage-medias', '0 4 * * *', $$
